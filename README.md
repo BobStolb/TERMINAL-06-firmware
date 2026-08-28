@@ -19,9 +19,12 @@ this source — see the header of `nixieClock_TS06.ino`.
   firmware so the two don't collide at compile time). Run it once per new
   SEC module to map IN-17 cathodes to K155ID1 pins — see the comment header
   in `secCathodeMap.ino` for the full procedure.
-- `libraries/` — third-party libraries this sketch depends on (GyverButton,
-  RTClib). Not yet added to this repo as of the first commit — Wire and
-  EEPROM are built into the Arduino AVR core and don't need anything extra.
+- `libraries/` — actual source for the third-party libraries this sketch
+  depends on: `GyverButton/` and `RTClib/`, each in the standard Arduino
+  library layout (`.h`/`.cpp`, `library.properties`, examples). To build
+  from scratch, copy both folders into your Arduino sketchbook's
+  `libraries/` directory before compiling. Wire and EEPROM are built into
+  the Arduino AVR core and don't need anything extra.
 
 ## Status vs. the project spec (as of 28.08.26)
 
