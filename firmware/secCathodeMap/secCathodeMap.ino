@@ -34,7 +34,7 @@
   --------------------------------------------------------------
 */
 
-#define BOARD_TYPE 1      // MUST match the value in nixieClock_TS06.ino
+#define BOARD_TYPE 0      // MUST match the value in nixieClock_TS06.ino
 
 #define DECODER0 A0
 #define DECODER1 A1

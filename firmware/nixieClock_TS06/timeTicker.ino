@@ -28,6 +28,12 @@ void calculateTime() {
       hrs++;
       if (hrs > 23) hrs = 0;
       changeBright();
+      newTimeFlag = true;   // BUGFIX: without this the tubes keep showing
+                            // whatever was displayed before this correction
+                            // (e.g. a bad boot-time RTC read) until the next
+                            // secs>59 rollover happens to also fire - up to
+                            // a minute of stale/nonsense digits. Inherited
+                            // as-is from AlexGyver's original timeTicker.ino.
     }
     if (newTimeFlag) setNewTime();
 

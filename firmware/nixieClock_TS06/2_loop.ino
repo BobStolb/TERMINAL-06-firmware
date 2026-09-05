@@ -3,7 +3,9 @@ void loop() {
   if (newTimeFlag && curMode == 0) flipTick();      // digit transition effect
   dotBrightTick();                                  // colon fade
   backlBrightTick();                                // backlight breathing
+#if GLITCH_ENABLED
   if (GLITCH_ALLOWED && curMode == 0) glitchTick();  // random flicker
+#endif
   buttonsTick();
   settingsTick();
 }

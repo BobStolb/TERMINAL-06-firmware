@@ -7,7 +7,8 @@
     * 4 tubes -> 6 tubes  (4x IN-12 HH:MM + 2x IN-17 SS on the SEC module)
     * anode drivers 5 and 6 on D2 (freed from the buzzer) and D13
     * multiplex ISR rewritten with direct port access, Timer2 prescaler 1
-      => 62.5 kHz ISR, 400 Hz whole-display refresh (flicker-free on camera)
+      => 62.5 kHz ISR, 200 Hz whole-display refresh with an explicit
+      optocoupler dead-time gap (see MULTIPLEX TIMING below and isr.ino)
     * 3 buttons -> 2 buttons + 1 PROGRAM/RUN lever on D12
     * alarm/buzzer removed (D2 reused)
     * anti-poisoning cycle and glitch effect extended over all 6 tubes
@@ -32,9 +33,9 @@
 */
 
 // ************************** SETTINGS **************************
-#define BOARD_TYPE 1
+#define BOARD_TYPE 0
 // hours/minutes board type:
-// 0 - IN-12 turned (tubes mounted the right way up)
+// 0 - IN-12 turned (tubes mounted the right way up)   <-- confirmed on this board
 // 1 - IN-12 (tubes upside down)   <-- AlexGyver IN-12 board as shipped
 // 2 - IN-14
 // 3 - custom
@@ -42,6 +43,53 @@
 #define DUTY 190        // boost PWM duty. Sets HV. 180 ~ 175 V, 190 ~ 185 V.
                         // Six tubes need a little more headroom than four:
                         // tune on the bench for 180-190 V no-load (see manual).
+
+// ==================  MULTIPLEX TIMING ==================
+/*
+  Every number the multiplex ISR uses is derived from these two. Nothing
+  else in the firmware may assume a slot length or a brightness range -
+  hardcoding those is exactly what caused the ghosting bug described below.
+
+  Timer2 stays at prescaler 1: one tick = 1 / 62500 Hz = 16 us. Timer2's
+  prescaler ladder is 1 / 8 / 32 / 64 / ..., so there is nothing between 1
+  and 8 and the slot length is the only timing knob we actually have.
+
+  SLOT_TICKS   ticks each tube owns: brightness steps plus dead time.
+  DEAD_TICKS   ticks at the END of every slot with the anode off AND the
+               decoder blanked. This is the ghost margin. The TLP627's
+               Darlington output keeps conducting for ~250-300 us after
+               its drive is removed (bench-measured), so the next tube's
+               digit must not reach the shared cathode bus until that tail
+               has died. Below ~18 ticks the outgoing tube faintly shows
+               the incoming tube's digit.
+
+  Derived:
+    frame rate = 62500 / SLOT_TICKS / NUM_INDI = 62500 / 52 / 6 = 200.3 Hz
+    dead time  = DEAD_TICKS * 16 us            = 288 us
+    slot duty  = MAX_BRIGHT / SLOT_TICKS       = 34 / 52 = 65 %
+
+  History: stock AlexGyver firmware ran prescaler 8 (one tick = 128 us) and
+  got 256 us of margin for free even at full brightness. This fork moved to
+  prescaler 1 for a faster refresh and nothing was rescaled, which cut the
+  margin to 32 us and produced the ghosting. Dead time is now its own
+  number instead of a side effect of the brightness setting.
+*/
+#define SLOT_TICKS 52       // ticks per tube slot
+#define DEAD_TICKS 18       // forced-blank ticks at the end of each slot
+
+// Highest brightness a tube may be given. The ISR clamps to this, so the
+// dead-time gap can never be eaten by turning the brightness up.
+#define MAX_BRIGHT (SLOT_TICKS - DEAD_TICKS)
+
+// ================  BENCH BUILD FLAGS  ==================
+/*
+  Both of these deliberately light digits that are not the current time,
+  which makes it impossible to tell real ghosting from intended effect
+  when judging the display by eye. Set either to 0 to compile it out for a
+  bench session; the code stays in the tree either way.
+*/
+#define GLITCH_ENABLED 1    // 0 = no random "bad contact" flicker
+#define BURN_ENABLED   1    // 0 = no anti-poisoning cathode sweep
 
 // ======================= EFFECTS =======================
 byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
@@ -52,13 +100,19 @@ byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
 #define NIGHT_START 23
 #define NIGHT_END 7
 
-#define INDI_BRIGHT 23      // day digit brightness   (1 - 24)
-#define INDI_BRIGHT_N 3     // night digit brightness (1 - 24)
+// Brightness is measured in ISR ticks, so the usable range is
+// 1 - MAX_BRIGHT (34). Values above MAX_BRIGHT are clamped by the ISR and
+// behave identically to MAX_BRIGHT - they do not get brighter.
+#define INDI_BRIGHT 34      // day digit brightness   (1 - 34)
+#define INDI_BRIGHT_N 6     // night digit brightness (1 - 34)
 
-#define SEC_BRIGHT_TRIM 2   // added to the seconds tubes only.
+#define SEC_BRIGHT_TRIM 4   // added to the seconds tubes only.
                             // IN-17 is a small tube on the same 1/6 duty as
-                            // the IN-12s; +1..+3 balances them by eye.
-                            // Result is clamped to 24.
+                            // the IN-12s; a few ticks balance them by eye.
+                            // Result is clamped to MAX_BRIGHT.
+                            // NOTE: with INDI_BRIGHT sitting at MAX_BRIGHT
+                            // this trim has no headroom left - lower
+                            // INDI_BRIGHT if the seconds need lifting.
 
 #define DOT_BRIGHT 35
 #define DOT_BRIGHT_N 15
@@ -86,7 +140,12 @@ byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
 
 // *********************** INTERNALS ***********************
 byte BACKL_MODE = 0;
-byte FLIP_SPEED[] = {0, 130, 50, 40, 70, 70};
+// ms per effect step. Index 1 (crossfade) steps brightness, so its step
+// COUNT is indiMaxBright - it got 48% longer when brightness rescaled from
+// a 24-tick range to a 34-tick one. 88 ms keeps the fade at the ~6 s it has
+// always been (130 * 23/34). The other effects step digits, not brightness,
+// and are unaffected by the slot length.
+byte FLIP_SPEED[] = {0, 88, 50, 40, 70, 70};
 byte FLIP_EFFECT_NUM = sizeof(FLIP_SPEED);
 boolean GLITCH_ALLOWED = 1;
 

@@ -21,12 +21,14 @@ GButton btnSet(BTN_SET, HIGH_PULL, NORM_OPEN);
 GButton btnAdj(BTN_ADJ, HIGH_PULL, NORM_OPEN);
 
 // ---------------- display state ----------------
-volatile uint8_t indiDimm[NUM_INDI];      // dimming threshold per tube (0-24)
+volatile uint8_t indiDimm[NUM_INDI];      // dimming threshold per tube,
+                                          // in ISR ticks (0 - MAX_BRIGHT)
 volatile int8_t indiDigits[NUM_INDI];     // digit shown per tube (0-9, 10 = blank)
 volatile uint8_t curIndi = NUM_INDI - 1;  // tube being driven right now
 
 // ISR working set - cached at changeover so the common path stays cheap
-volatile uint8_t curCount = 26;
+volatile uint8_t curCount = SLOT_TICKS;   // forces a changeover on the
+                                          // very first interrupt
 volatile uint8_t curDimm = 0;
 volatile uint8_t *curPort = &PORTD;
 volatile uint8_t curMaskOn = 0, curMaskOff = 0xFF;

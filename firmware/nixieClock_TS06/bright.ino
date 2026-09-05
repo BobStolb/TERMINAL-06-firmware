@@ -50,7 +50,7 @@ void dotBrightTick() {
 // applies indiMaxBright to every tube, with the seconds trim on tubes 4-5
 void applyBright() {
   int16_t sec = (int16_t)indiMaxBright + SEC_BRIGHT_TRIM;
-  if (sec > 24) sec = 24;
+  if (sec > MAX_BRIGHT) sec = MAX_BRIGHT;   // was a hardcoded 24
   if (sec < 1) sec = 1;
   for (byte i = 0; i < NUM_INDI; i++)
     indiDimm[i] = (i < NUM_HM) ? indiMaxBright : (uint8_t)sec;
