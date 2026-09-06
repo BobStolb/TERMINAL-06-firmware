@@ -77,17 +77,22 @@
                which is why INDI_BRIGHT is 21 and not 24 - do not
                "restore" it.
 
-  Derived:
-    frame rate = 7812.5 / SLOT_TICKS / NUM_INDI = 7812.5 / 26 / 6 = 50.1 Hz
-    dead time  = DEAD_TICKS * 128 us            = 640 us
-    slot duty  = MAX_BRIGHT / SLOT_TICKS        = 21 / 26 = 81 %
-    per-tube duty = MAX_BRIGHT / (SLOT * NUM)   = 21 / 156 = 13.5 %
+  Derived (recompute these whenever a constant moves - the frame rate
+  divides by MUX_SLOTS, the number of slots actually visited, NOT NUM_INDI):
+    frame rate    = 7812.5 / SLOT_TICKS / MUX_SLOTS
+    dead time     = (SLOT_TICKS - min(INDI_BRIGHT, MAX_BRIGHT)) * 128 us
+    per-tube duty = min(INDI_BRIGHT, MAX_BRIGHT) / (SLOT_TICKS * MUX_SLOTS)
 
-  50 Hz is the whole-display refresh. It is above flicker fusion for a
-  steady glow and is what the stock firmware always ran, but it WILL beat
-  against camera shutters - that is the accepted cost, not an oversight.
+  At SLOT_TICKS 24 / DEAD_TICKS 5 / MUX_SLOTS 4 that is 81.4 Hz, 640 us of
+  dead time and 19.8 % per-tube duty. NOTE that MAX_BRIGHT is 19 here, so
+  INDI_BRIGHT 21 is being clamped down to 19 by the ISR - raise SLOT_TICKS
+  or lower INDI_BRIGHT if you want the setting to mean what it says.
+
+  Refresh rate is deliberately not a target any more. It only needs to stay
+  above flicker fusion; it will beat against camera shutters and that is
+  the accepted cost.
 */
-#define SLOT_TICKS 26       // ticks per tube slot
+#define SLOT_TICKS 24       // ticks per tube slot
 #define DEAD_TICKS 5        // forced-blank ticks at the end of each slot
 
 // Highest brightness a tube may be given. The ISR clamps to this, so the
@@ -166,8 +171,37 @@ byte FLIP_SPEED[] = {0, 142, 50, 40, 70, 70};
 byte FLIP_EFFECT_NUM = sizeof(FLIP_SPEED);
 boolean GLITCH_ALLOWED = 1;
 
-#define NUM_INDI 6          // total tubes
+#define NUM_INDI 6          // total tubes (sizes every per-tube array)
 #define NUM_HM   4          // tubes carrying hours+minutes (effects act on these)
+
+// ================  MULTIPLEX ROTATION  =================
+/*
+  How many slots the ISR actually visits per rotation. Normally NUM_INDI.
+
+  Set to 4 to keep the ISR off the two seconds slots WITHOUT resizing any
+  array - the arrays stay NUM_INDI long, the rotation just stops short.
+
+  Why this matters, and why it is the first thing to try when stock
+  AlexGyver firmware is clean on a board where this one ghosts:
+
+  Stock writes the decoder ONLY inside its changeover, in the same breath
+  as switching that tube's anode on. A digit is therefore never sitting on
+  the shared cathode bus without a driven anode to take the current.
+
+  This fork rotates through 6 slots. On a board with no SEC module fitted
+  there is no tube and no anode on slots 4 and 5, so for 21 of every 26
+  ticks in those two slots a digit IS on the cathode bus with NO anode
+  driven anywhere. Any leakage - a TLP627 still tailing off, a tube not
+  fully deionised - has no preferred path to take, so it lights that digit
+  on whichever real tube is still decaying. Stock cannot create this
+  condition; it has no empty slots. That is a firmware difference, not a
+  hardware fault, and no amount of dead time fixes it because the offending
+  digit is driven in a slot that has no anode of its own to blank.
+
+  MUX_SLOTS 4 reproduces the stock rotation exactly (75.1 Hz, 4 slots).
+  If the ghosting goes away, this was the cause.
+*/
+#define MUX_SLOTS 4         // 4 = diagnostic (stock rotation), 6 = normal
 
 // ---------------- pins ----------------
 #define KEY4 2      // anode, seconds TENS   (was PIEZO)

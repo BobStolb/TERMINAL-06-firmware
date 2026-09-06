@@ -65,6 +65,9 @@
 #if MAX_BRIGHT < 1
 #error "MAX_BRIGHT is below 1 - every tube would be dark"
 #endif
+#if MUX_SLOTS > NUM_INDI || MUX_SLOTS < 1
+#error "MUX_SLOTS must be between 1 and NUM_INDI"
+#endif
 
 ISR(TIMER2_COMPA_vect) {
   uint8_t c = curCount + 1;
@@ -79,7 +82,7 @@ ISR(TIMER2_COMPA_vect) {
     curCount = 0;
 
     uint8_t i = curIndi + 1;
-    if (i >= NUM_INDI) i = 0;
+    if (i >= MUX_SLOTS) i = 0;              // MUX_SLOTS <= NUM_INDI
     curIndi = i;
 
     uint8_t d = indiDimm[i];
