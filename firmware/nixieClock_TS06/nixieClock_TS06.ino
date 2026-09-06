@@ -83,16 +83,16 @@
     dead time     = (SLOT_TICKS - min(INDI_BRIGHT, MAX_BRIGHT)) * 128 us
     per-tube duty = min(INDI_BRIGHT, MAX_BRIGHT) / (SLOT_TICKS * MUX_SLOTS)
 
-  At SLOT_TICKS 24 / DEAD_TICKS 5 / MUX_SLOTS 4 that is 81.4 Hz, 640 us of
-  dead time and 19.8 % per-tube duty. NOTE that MAX_BRIGHT is 19 here, so
-  INDI_BRIGHT 21 is being clamped down to 19 by the ISR - raise SLOT_TICKS
-  or lower INDI_BRIGHT if you want the setting to mean what it says.
+  At SLOT_TICKS 26 / DEAD_TICKS 5 / MUX_SLOTS 4 that is 75.1 Hz, 640 us of
+  dead time and 20.2 % per-tube duty, with MAX_BRIGHT 21 so INDI_BRIGHT 21
+  is exactly at the ceiling and is not being clamped. This is the
+  configuration measured ghost-free on the bench.
 
   Refresh rate is deliberately not a target any more. It only needs to stay
   above flicker fusion; it will beat against camera shutters and that is
   the accepted cost.
 */
-#define SLOT_TICKS 24       // ticks per tube slot
+#define SLOT_TICKS 26       // ticks per tube slot
 #define DEAD_TICKS 5        // forced-blank ticks at the end of each slot
 
 // Highest brightness a tube may be given. The ISR clamps to this, so the
@@ -198,10 +198,21 @@ boolean GLITCH_ALLOWED = 1;
   hardware fault, and no amount of dead time fixes it because the offending
   digit is driven in a slot that has no anode of its own to blank.
 
-  MUX_SLOTS 4 reproduces the stock rotation exactly (75.1 Hz, 4 slots).
-  If the ghosting goes away, this was the cause.
+  CONFIRMED ON THE BENCH: MUX_SLOTS 4 with SLOT_TICKS 26 is ghost-free on
+  this board; the same firmware at 6 slots ghosts. Empty slots were the
+  cause, not the dead time - which is why three rounds of widening the gap
+  changed nothing.
+
+  The invariant to hold onto: NEVER put a digit on the shared cathode bus
+  without a real anode to take the current. A slot whose tube is absent
+  must either be left out of the rotation (MUX_SLOTS) or marked off
+  (indiDimm 0 or anodeStates 0, both of which make the ISR skip the slot
+  and leave the bus blanked). This bites again the moment the board is
+  populated with fewer tubes than there are channels - which is exactly
+  what happens during bring-up.
 */
-#define MUX_SLOTS 4         // 4 = diagnostic (stock rotation), 6 = normal
+#define MUX_SLOTS 4         // slots the ISR visits: set to the number of
+                            // tubes ACTUALLY POPULATED, never more
 
 // ---------------- pins ----------------
 #define KEY4 2      // anode, seconds TENS   (was PIEZO)
