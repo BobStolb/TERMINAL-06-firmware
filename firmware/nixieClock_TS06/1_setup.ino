@@ -57,9 +57,11 @@ void setup() {
   mins = now.minute();
   hrs  = now.hour();
 
-  // ---------- Timer2: fast PWM, prescaler 1, COMPA interrupt ----------
+  // ---------- Timer2: fast PWM, prescaler 8, COMPA interrupt ----------
+  // Prescaler 8 is AlexGyver's original value. See MULTIPLEX TIMING in
+  // nixieClock_TS06.ino for why we came back to it.
   TCCR2A = _BV(WGM21) | _BV(WGM20);            // fast PWM, TOP = 0xFF
-  TCCR2B = (TCCR2B & B11111000) | 1;           // prescaler 1 -> 62.5 kHz
+  TCCR2B = (TCCR2B & B11111000) | 2;           // prescaler 8 -> 7812.5 Hz
   TIMSK2 |= _BV(OCIE2A);
 
   // ---------- EEPROM ----------

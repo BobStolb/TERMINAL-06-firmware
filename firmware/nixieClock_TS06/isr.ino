@@ -1,9 +1,9 @@
 /*
   Multiplex ISR - Timer2 compare A.
 
-  Timer2 runs Fast PWM, TOP = 255, prescaler 1  ->  62.5 kHz, one tick per
-  16 us. The tick rate is fixed by the prescaler and does NOT change with
-  the slot length, so this ISR always runs at 62.5 kHz.
+  Timer2 runs Fast PWM, TOP = 255, prescaler 8  ->  7812.5 Hz, one tick per
+  128 us. The tick rate is fixed by the prescaler and does NOT change with
+  the slot length, so this ISR always runs at 7812.5 Hz.
 
   Each tube owns SLOT_TICKS interrupts, split into two parts:
 
@@ -12,16 +12,21 @@
     ticks MAX_BRIGHT+1 .. SLOT     dead time. Anode already off, decoder
                                    blanked, nothing driven at all.
 
-  With SLOT_TICKS 52 / DEAD_TICKS 18 (see nixieClock_TS06.ino) that is a
-  200 Hz six-tube frame and 288 us of dead time.
+  With SLOT_TICKS 26 / DEAD_TICKS 5 (see nixieClock_TS06.ino) that is a
+  50 Hz six-tube frame and 640 us of dead time.
 
   The dead time is the whole point. The TLP627 optocoupler driving each
-  anode has a Darlington output that keeps conducting for ~250-300 us after
-  its drive is removed. If the decoder is switched to the next tube's digit
-  inside that tail, the outgoing tube lights that digit too - the ghosting
-  this timing exists to prevent. Blanking the decoder at MAX_BRIGHT rather
-  than merely turning the anode off means that even a still-conducting
-  anode has no cathode pulled low to light.
+  anode has a Darlington output that keeps conducting for a few hundred us
+  after its drive is removed. If the decoder is switched to the next tube's
+  digit inside that tail, the outgoing tube lights that digit too - the
+  ghosting this timing exists to prevent. Blanking the decoder at
+  MAX_BRIGHT rather than merely turning the anode off means that even a
+  still-conducting anode has no cathode pulled low to light.
+
+  640 us is the measured ghost-free figure on this hardware. It is reached
+  here with only 5 ticks because a prescaler-8 tick is 128 us; the same
+  margin cost 18 of the 16 us ticks the previous revision used, which is
+  why that revision had to trade away either brightness or refresh rate.
 
   Note the anode-off test is == curDimm, not >= curDimm: it fires on
   exactly one tick, so a curDimm past the end of the slot would never fire
@@ -29,9 +34,11 @@
   curDimm is clamped to MAX_BRIGHT below - the clamp is load-bearing, not
   defensive.
 
-  Budget: one PWM period is 256 CPU cycles, and the ISR must finish inside
-  it. Everything the common path needs is cached in scalars at changeover
-  time (curDimm / curPort / curMask) to keep it cheap.
+  Budget: at prescaler 8 one PWM period is 2048 CPU cycles, and the ISR
+  must finish inside it. Everything the common path needs is cached in
+  scalars at changeover time (curDimm / curPort / curMask) to keep it
+  cheap - less critical now than it was at prescaler 1, but the caching
+  costs nothing and the ISR is the one thing that must never be late.
 
   Measured on the linked ELF (avr-gcc 7.3.0 -Os, cycle-counted from the
   disassembly, including the 7-cycle interrupt dispatch):
@@ -39,15 +46,14 @@
       lit tick, nothing to do ....  84 cy
       anode-off tick ............  94 cy
       dead-time blank tick ......  96 cy
-      changeover ...............  161 cy   <- worst case, 63% of the period
+      changeover ...............  161 cy   <- worst case, 7.9% of the period
       ---------------------------------
-      mean over a 52-tick slot ..  86 cy   = 33.5% of the CPU
+      mean over a 26-tick slot ..  87 cy   = 4.3% of the CPU
 
-  The old 26-tick slot measured 85 cy mean / 155 cy worst case (33.3%), so
-  this change is cost-neutral: the ISR rate is set by the prescaler, not by
-  the slot length, and the one expensive path now runs half as often, which
-  offsets the extra dead-time branch. (The 45 cy / 18% figure that used to
-  be written here was simply wrong - it was never measured.)
+  The per-invocation costs are unchanged from the prescaler-1 revision -
+  it is the same code. What changed is that the ISR now fires 8x less
+  often, so 33.5% of the CPU became 4.3%. That headroom is a real result
+  of this change, not a rounding artefact.
 */
 
 #if DEAD_TICKS >= SLOT_TICKS

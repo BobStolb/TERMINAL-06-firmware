@@ -29,12 +29,11 @@ this source — see the header of `nixieClock_TS06.ino`.
 ## Status vs. the project spec (as of 28.08.26)
 
 This code is the display-layer port described in `TERMINAL-06-spec.md` §5:
-six-tube multiplex ISR (Timer2 prescaler 1, 200 Hz refresh with an explicit
-288 us optocoupler dead-time gap — see MULTIPLEX TIMING in the sketch; the
-earlier ~400 Hz figure left the TLP627 too little turn-off margin and
-ghosted), anti-poisoning and glitch effects extended to all six tubes
-(both now switchable off at build time for bench work), buzzer removed
-(D2 reused),
+six-tube multiplex ISR (Timer2 at AlexGyver's original prescaler 8, 50 Hz
+refresh with 640 us of optocoupler dead time — see MULTIPLEX TIMING in the
+sketch), anti-poisoning and glitch effects extended to all six tubes (both
+now switchable off at build time, and currently off pending bench sign-off
+of the timing), buzzer removed (D2 reused),
 old rev B control scheme (2 buttons + 1 lever) — not the rotary/lever panel
 described elsewhere in the project, which is a later firmware milestone.
 

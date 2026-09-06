@@ -6,9 +6,10 @@
 
     * 4 tubes -> 6 tubes  (4x IN-12 HH:MM + 2x IN-17 SS on the SEC module)
     * anode drivers 5 and 6 on D2 (freed from the buzzer) and D13
-    * multiplex ISR rewritten with direct port access, Timer2 prescaler 1
-      => 62.5 kHz ISR, 200 Hz whole-display refresh with an explicit
-      optocoupler dead-time gap (see MULTIPLEX TIMING below and isr.ino)
+    * multiplex ISR rewritten with direct port access (Timer2 prescaler
+      stays at AlexGyver's 8) => 7812.5 Hz ISR, 50 Hz whole-display
+      refresh with 640 us of optocoupler dead time - the measured
+      ghost-free setting (see MULTIPLEX TIMING below and isr.ino)
     * 3 buttons -> 2 buttons + 1 PROGRAM/RUN lever on D12
     * alarm/buzzer removed (D2 reused)
     * anti-poisoning cycle and glitch effect extended over all 6 tubes
@@ -48,34 +49,46 @@
 /*
   Every number the multiplex ISR uses is derived from these two. Nothing
   else in the firmware may assume a slot length or a brightness range -
-  hardcoding those is exactly what caused the ghosting bug described below.
+  hardcoding those is what caused the ghosting bug this timing fixes.
 
-  Timer2 stays at prescaler 1: one tick = 1 / 62500 Hz = 16 us. Timer2's
-  prescaler ladder is 1 / 8 / 32 / 64 / ..., so there is nothing between 1
-  and 8 and the slot length is the only timing knob we actually have.
+  WHAT WE ARE OPTIMISING FOR: ghost-free digits, not camera-clean video.
+  An earlier revision chased a ~400 Hz refresh so the display would not
+  band on camera for the product video, and moved Timer2 to prescaler 1
+  to get it. That was the wrong trade. Ghosting is a defect every owner
+  looks at every day; 60 fps video flicker is a photography problem we
+  can solve with a shutter speed. The camera requirement is dropped, and
+  everything it justified - the prescaler rewrite included - goes with it.
+
+  Timer2 runs at prescaler 8, AlexGyver's original: one tick =
+  1 / 7812.5 Hz = 128 us. Eight times the tick length means the dead time
+  we need costs only a handful of ticks instead of eighteen, which is
+  what makes a short slot and a bright display compatible. It also cuts
+  the ISR from ~34 % of the CPU to ~4 %.
 
   SLOT_TICKS   ticks each tube owns: brightness steps plus dead time.
   DEAD_TICKS   ticks at the END of every slot with the anode off AND the
                decoder blanked. This is the ghost margin. The TLP627's
-               Darlington output keeps conducting for ~250-300 us after
-               its drive is removed (bench-measured), so the next tube's
-               digit must not reach the shared cathode bus until that tail
-               has died. Below ~18 ticks the outgoing tube faintly shows
-               the incoming tube's digit.
+               Darlington output keeps conducting for a few hundred us
+               after its drive is removed, so the next tube's digit must
+               not reach the shared cathode bus until that tail has died.
+               640 us is the bench-measured ghost-free figure for six
+               tubes. 256 us (what stock INDI_BRIGHT 24 would give here)
+               sits in the band where faint ghosting was still visible,
+               which is why INDI_BRIGHT is 21 and not 24 - do not
+               "restore" it.
 
   Derived:
-    frame rate = 62500 / SLOT_TICKS / NUM_INDI = 62500 / 52 / 6 = 200.3 Hz
-    dead time  = DEAD_TICKS * 16 us            = 288 us
-    slot duty  = MAX_BRIGHT / SLOT_TICKS       = 34 / 52 = 65 %
+    frame rate = 7812.5 / SLOT_TICKS / NUM_INDI = 7812.5 / 26 / 6 = 50.1 Hz
+    dead time  = DEAD_TICKS * 128 us            = 640 us
+    slot duty  = MAX_BRIGHT / SLOT_TICKS        = 21 / 26 = 81 %
+    per-tube duty = MAX_BRIGHT / (SLOT * NUM)   = 21 / 156 = 13.5 %
 
-  History: stock AlexGyver firmware ran prescaler 8 (one tick = 128 us) and
-  got 256 us of margin for free even at full brightness. This fork moved to
-  prescaler 1 for a faster refresh and nothing was rescaled, which cut the
-  margin to 32 us and produced the ghosting. Dead time is now its own
-  number instead of a side effect of the brightness setting.
+  50 Hz is the whole-display refresh. It is above flicker fusion for a
+  steady glow and is what the stock firmware always ran, but it WILL beat
+  against camera shutters - that is the accepted cost, not an oversight.
 */
-#define SLOT_TICKS 52       // ticks per tube slot
-#define DEAD_TICKS 18       // forced-blank ticks at the end of each slot
+#define SLOT_TICKS 26       // ticks per tube slot
+#define DEAD_TICKS 5        // forced-blank ticks at the end of each slot
 
 // Highest brightness a tube may be given. The ISR clamps to this, so the
 // dead-time gap can never be eaten by turning the brightness up.
@@ -88,8 +101,8 @@
   when judging the display by eye. Set either to 0 to compile it out for a
   bench session; the code stays in the tree either way.
 */
-#define GLITCH_ENABLED 1    // 0 = no random "bad contact" flicker
-#define BURN_ENABLED   1    // 0 = no anti-poisoning cathode sweep
+#define GLITCH_ENABLED 0    // 0 = no random "bad contact" flicker
+#define BURN_ENABLED   0    // 0 = no anti-poisoning cathode sweep
 
 // ======================= EFFECTS =======================
 byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
@@ -101,10 +114,13 @@ byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
 #define NIGHT_END 7
 
 // Brightness is measured in ISR ticks, so the usable range is
-// 1 - MAX_BRIGHT (34). Values above MAX_BRIGHT are clamped by the ISR and
+// 1 - MAX_BRIGHT (21). Values above MAX_BRIGHT are clamped by the ISR and
 // behave identically to MAX_BRIGHT - they do not get brighter.
-#define INDI_BRIGHT 34      // day digit brightness   (1 - 34)
-#define INDI_BRIGHT_N 6     // night digit brightness (1 - 34)
+// Dimmer is always safer: dead time is SLOT_TICKS - brightness, so lowering
+// a brightness value only ever widens the ghost margin.
+#define INDI_BRIGHT 21      // day digit brightness   (1 - 21) - see the
+                            // MULTIPLEX TIMING note before raising this
+#define INDI_BRIGHT_N 6     // night digit brightness (1 - 21)
 
 #define SEC_BRIGHT_TRIM 4   // added to the seconds tubes only.
                             // IN-17 is a small tube on the same 1/6 duty as
@@ -141,11 +157,12 @@ byte FLIP_EFFECT = 1;   // stored in EEPROM, changed with BTN_ADJ
 // *********************** INTERNALS ***********************
 byte BACKL_MODE = 0;
 // ms per effect step. Index 1 (crossfade) steps brightness, so its step
-// COUNT is indiMaxBright - it got 48% longer when brightness rescaled from
-// a 24-tick range to a 34-tick one. 88 ms keeps the fade at the ~6 s it has
-// always been (130 * 23/34). The other effects step digits, not brightness,
-// and are unaffected by the slot length.
-byte FLIP_SPEED[] = {0, 88, 50, 40, 70, 70};
+// COUNT is indiMaxBright and its duration scales with the brightness range.
+// Retune it whenever MAX_BRIGHT changes: interval = 130 * 23 / MAX_BRIGHT,
+// which holds the fade at the ~6 s it has always been (the 23-step, 130 ms
+// original). At MAX_BRIGHT 21 that is 142. The other effects step digits,
+// not brightness, and are unaffected by the slot length.
+byte FLIP_SPEED[] = {0, 142, 50, 40, 70, 70};
 byte FLIP_EFFECT_NUM = sizeof(FLIP_SPEED);
 boolean GLITCH_ALLOWED = 1;
 
