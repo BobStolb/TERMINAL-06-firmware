@@ -8,3 +8,11 @@ __pycache__/
 # Render output — derived from render/*.py, regenerate with `python3 render.py`
 render/*.svg
 render/*.png
+
+# KiCad — autosave, backups and derived output
+*-backups/
+*.kicad_prl
+_autosave-*
+fp-info-cache
+*.kicad_sch-bak
+*.kicad_pcb-bak
