@@ -1,8 +1,14 @@
 # TERMINAL-06 — control scheme rev B (08.09.26)
 
 Two changes to `claude/TERMINAL-06-spec.md` §1, decided during the TS06-FASCIA panel
-design. **§1 has not been rewritten yet** — this file is the authority until it is, and
-the sweep is queued alongside the withdrawn 26.94 mm rotary figure.
+design.
+
+> **SUPERSEDED 08.09.26 — this file is no longer the authority.** The sweep has run:
+> spec Rev D.3 folds all of the below into §1 (the control table), §2 (the A6 threshold
+> map), §5 (the two new firmware items) and §6 (lettering and the identity move). Read
+> the spec. This file is kept as the decision record — *why* the two changes were made,
+> which the spec states more tersely — not as a second source of truth. If the two ever
+> disagree, **the spec wins.**
 
 ## Change 1 — INFO and FORMAT/DATE swap places
 
