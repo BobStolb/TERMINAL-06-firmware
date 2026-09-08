@@ -1,0 +1,141 @@
+(footprint "TS06_KMD1_Button_PanelMount"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "KMD1-1 Soviet pushbutton, panel mount. 8.0mm bushing clearance hole. WARNING: bushing diameter carried over from MT1 by eye, never calipered on this part - see TERMINAL-06-measurements-KMD1.md.")
+	(tags "KMD1 button panel-mount soviet TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -7.6 0)
+		(layer "F.SilkS")
+		(uuid "5c3ca55e-b6a8-410b-a2a1-8de7010c7f2a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_KMD1_Button_PanelMount"
+		(at 0 10.6 0)
+		(layer "F.Fab")
+		(uuid "9780b39f-0d5a-4b38-9468-5c0dce5f74e2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "9f8a1291-3a69-4ee5-a8f1-0b668611d052") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "bfe741cb-b202-4804-9dcd-469087c4362e") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2a4b9479-b48e-4a26-901e-205aa1b80d8a") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "" np_thru_hole circle
+		(at 0.0000 0.0000)
+		(size 8.0 8.0)
+		(drill 8.0)
+		(layers "F&B.Cu" "*.Mask")
+		(uuid "e528b544-6c42-462f-b97a-659be5e3950b")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 5.6 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "57a8ad26-d006-4eec-9450-cf4389d1dd1d")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 6.2 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "ebf315e0-0673-413b-bebf-6332d0241922")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4.0 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "08a15fcb-4651-439a-a63d-79fa22249bb6")
+	)
+	(pad "1" thru_hole circle
+		(at -2.5400 8.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "0c3adf5d-2f5d-4efa-a00a-5a3bd2e58ca4")
+	)
+	(pad "2" thru_hole circle
+		(at 0.0000 8.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "e6a0a06e-591d-4415-876d-a2610f323244")
+	)
+	(fp_text user "KMD1-1 button - bushing ~7.85 EYE-CORROBORATED"
+		(at 0 7.0 0)
+		(layer "F.Fab")
+		(uuid "af5e9615-e09f-4af8-93ce-385fa8e51fe0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "verify with calipers before the batch order"
+		(at 0 8.2 0)
+		(layer "F.Fab")
+		(uuid "5edf05b3-9dce-4086-968a-fc41da6aa159")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,318 @@
+(footprint "TS06_Rotary_SR25_PanelMount"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SR25-style 6-position 2-pole galette rotary, panel mount. Bushing hole 8.8mm from a CAD-MODEL bushing of 8.62mm - UNVERIFIED, caliper before ordering panels. F.Fab circle is the MEASURED 26.94mm body, a keepout behind the panel. User.1 shows the CAD tap ring (D19.99, 30deg pitch) for the board-mount option.")
+	(tags "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -8.4 0)
+		(layer "F.SilkS")
+		(uuid "b0a75aa0-064f-4cda-96ba-e75381a2226e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_Rotary_SR25_PanelMount"
+		(at 0 20.0 0)
+		(layer "F.Fab")
+		(uuid "ce4374b6-1c5f-4b0d-beb6-ae5327be18c7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "ea685309-5fd4-4527-be91-9c92cc0168c6") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c927a097-83cb-4606-814d-9d1559571877") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "085571fb-3960-4aca-ae00-bfef44ef0a6f") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "" np_thru_hole circle
+		(at 0.0000 0.0000)
+		(size 8.8 8.8)
+		(drill 8.8)
+		(layers "F&B.Cu" "*.Mask")
+		(uuid "7aafcbbe-0c6d-447a-b76a-03fc6c4b1d53")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 6.4 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "53522da4-2a53-4582-beef-5f6d43151c61")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 7.0 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "c182cd89-e0e3-4afd-9e46-5207f3021cd3")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 13.47 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "61ca6181-4f93-4cc8-8d95-185cf9028797")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 9.995 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "User.1")
+		(uuid "20344f9f-6c2a-467a-928a-9e6885b4880b")
+	)
+	(fp_line
+		(start 9.6544 2.5869)
+		(end 10.1422 2.7176)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "dd8f24de-2835-43b1-b5fc-c9e94b3dd5e1")
+	)
+	(fp_line
+		(start 7.0675 7.0675)
+		(end 7.4246 7.4246)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "570eb018-43fe-4e5f-944f-21a5ebd0e207")
+	)
+	(fp_line
+		(start 2.5869 9.6544)
+		(end 2.7176 10.1422)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "93059001-d4f9-46d5-9ff1-f5e073299089")
+	)
+	(fp_line
+		(start -2.5869 9.6544)
+		(end -2.7176 10.1422)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "edffaf74-45f2-4dc5-bfad-bdfe2fea9ed4")
+	)
+	(fp_line
+		(start -7.0675 7.0675)
+		(end -7.4246 7.4246)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "2fa5d6d4-8ff9-4542-8f5e-72150cc92efe")
+	)
+	(fp_line
+		(start -9.6544 2.5869)
+		(end -10.1422 2.7176)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "ef0e17d5-6862-4c74-969a-a7614945807f")
+	)
+	(fp_line
+		(start -9.6544 -2.5869)
+		(end -10.1422 -2.7176)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "3fe590f0-c7b2-46b3-aec3-6f5caa642002")
+	)
+	(fp_line
+		(start -7.0675 -7.0675)
+		(end -7.4246 -7.4246)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "ab1116bc-52a5-44a0-a2f2-a11a35e35986")
+	)
+	(fp_line
+		(start -2.5869 -9.6544)
+		(end -2.7176 -10.1422)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "e70f8636-681f-4421-8b2f-8aab959cfee9")
+	)
+	(fp_line
+		(start 2.5869 -9.6544)
+		(end 2.7176 -10.1422)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "60776b28-96b1-4d30-9c42-806488e4d04a")
+	)
+	(fp_line
+		(start 7.0675 -7.0675)
+		(end 7.4246 -7.4246)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "da7d5358-9329-4b0e-b601-c3569b145a7b")
+	)
+	(fp_line
+		(start 9.6544 -2.5869)
+		(end 10.1422 -2.7176)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "User.1")
+		(uuid "6b5a191a-ccbe-453f-8df9-8f4c8a756a4b")
+	)
+	(pad "1" thru_hole circle
+		(at -7.6200 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "98022e65-9277-44bf-be23-8f517482adfb")
+	)
+	(pad "2" thru_hole circle
+		(at -5.0800 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "edb25171-3f82-43a7-81ea-356b6ef025ae")
+	)
+	(pad "3" thru_hole circle
+		(at -2.5400 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8be1aaed-f589-4d05-b463-3ae8f8057f87")
+	)
+	(pad "4" thru_hole circle
+		(at 0.0000 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5d373f73-93a0-4cd4-bfd7-f89659f48e56")
+	)
+	(pad "5" thru_hole circle
+		(at 2.5400 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "7ef5429d-60df-4c56-ba2a-ea7a7d288247")
+	)
+	(pad "6" thru_hole circle
+		(at 5.0800 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "eb549217-318b-411e-b3f6-64987aa3f606")
+	)
+	(pad "7" thru_hole circle
+		(at 7.6200 17.5000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2b79f894-4977-4bd9-a62a-e919883089d4")
+	)
+	(fp_text user "SR25 rotary - bushing 8.62 UNVERIFIED (CAD only)"
+		(at 0 15.0 0)
+		(layer "F.Fab")
+		(uuid "80458659-16b1-4538-b669-9e6d0d54f447")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "body 26.94 MEASURED = keepout behind panel"
+		(at 0 16.2 0)
+		(layer "F.Fab")
+		(uuid "22f731c2-4ccf-46ee-880e-f8f10f85dbb5")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "User.1 ring = CAD tap positions, 30deg, D19.99"
+		(at 0 -15.5 0)
+		(layer "F.Fab")
+		(uuid "7631c604-139b-4b2a-a5c3-bc24f884ccbd")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(embedded_fonts no)
+)
