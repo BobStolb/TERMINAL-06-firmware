@@ -16,3 +16,6 @@ _autosave-*
 fp-info-cache
 *.kicad_sch-bak
 *.kicad_pcb-bak
+
+# VS Code Local History extension
+.history/
