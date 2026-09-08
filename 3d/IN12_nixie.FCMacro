@@ -1,0 +1,406 @@
+# -*- coding: utf-8 -*-
+# =====================================================================
+#  IN-12 nixie tube - parametric component model  (TERMINAL-06 library)
+#  FreeCAD 1.1.1
+#
+#  HOW TO RUN - pick one:
+#    A) Macro -> Macros... -> select IN12_nixie -> Execute        (preferred)
+#    B) paste this whole file into the Python console             (also works)
+#    C) one-liner in the Python console, no pasting at all:
+#         exec(open(r"<path>\IN12_nixie.FCMacro").read())
+#
+#  The file is deliberately written so that (B) works: every top-level block
+#  is followed by a blank line, and there are no top-level else/except
+#  clauses.  The console ends a block at the first blank line, so a dedented
+#  statement that follows an indented one without a blank line in between is
+#  a SyntaxError there - even though the same file runs fine from a macro.
+#
+#  Builds one PartDesign body:
+#    <PREFIX>_BODY   rectangular envelope + 12 pin pockets
+#
+#  Re-runnable: set REBUILD = True and re-execute after editing the
+#  spreadsheet; the old objects are deleted and regenerated.
+# =====================================================================
+
+import FreeCAD as App
+import Part
+import Sketcher
+
+# ------------------------------ config -------------------------------
+PREFIX      = "IN12"          # object name / label prefix
+SHEET_NAME  = "Spreadsheet"   # spreadsheet object to read from
+REBUILD     = True            # delete + rebuild existing PREFIX_* objects
+EXPORT_STEP = False           # write <doc dir>/<PREFIX>.step when done
+BIND_EXPR   = True            # bind pad/pocket lengths to the spreadsheet
+ADD_MISSING = True            # append absent parameters to the sheet
+
+# Defaults used only when the spreadsheet cell / alias is missing.
+DEFAULTS = {
+    "envW":          19.47,   # envelope width  (X)
+    "envH":          28.86,   # envelope height (Y)
+    "envD":          25.50,   # envelope depth  (Z, pad length)
+    "pinCount":      12,      # informational / sanity check
+    "pitchCorner":    2.75,   # row-to-row spacing (Y)
+    "pitchStraight":  3.53,   # in-row spacing     (X)
+    "pinD":           0.92,   # pin diameter -> pocket diameter
+    "pinFreeL":       6.25,   # pin free length -> pocket depth
+    "row3Inset":      1.38,   # X inset of the two row-3 corner pins
+    "pinClear":       0.00,   # added to pocket diameter (0 = nominal)
+}
+
+# Row order used when the macro creates or extends the sheet.
+KEYS = ("envW", "envH", "envD", "pinCount", "pitchCorner", "pitchStraight",
+        "pinD", "pinFreeL", "row3Inset", "pinClear")
+
+# ---------------------------- document -------------------------------
+doc = App.ActiveDocument
+
+if doc is None:
+    doc = App.newDocument(PREFIX)
+    App.Console.PrintMessage("[%s] no active document - created '%s'\n"
+                             % (PREFIX, doc.Name))
+
+# ------------------------ spreadsheet access -------------------------
+def resolves(sh, alias):
+    """True if sheet.get(alias) works, i.e. the alias really exists."""
+    try:
+        sh.get(alias)
+        return True
+    except Exception:
+        return False
+
+def first_free_row(sh, limit=500):
+    row = 1
+    while row <= limit:
+        try:
+            if not sh.getContents("A%d" % row):
+                return row
+        except Exception:
+            return row
+        row += 1
+    return limit
+
+def get_sheet(document, name):
+    """Return the named sheet, any sheet in the doc, or a new one."""
+    sh = document.getObject(name)
+    if sh is not None and sh.isDerivedFrom("Spreadsheet::Sheet"):
+        return sh, False
+    for o in document.Objects:
+        if o.isDerivedFrom("Spreadsheet::Sheet"):
+            return o, False
+    sh = document.addObject("Spreadsheet::Sheet", name)
+    sh.Label = name
+    return sh, True
+
+def ensure_aliases(sh, document, keys):
+    """A hand-filled sheet usually has the parameter name in column A and the
+    value in column B but no *alias* on the B cell - and an alias is what
+    sheet.get('envW') needs. Set any that are missing, matching on column A."""
+    fixed = []
+    for key in keys:
+        if resolves(sh, key):
+            continue
+        for row in range(1, 201):
+            try:
+                txt = sh.getContents("A%d" % row)
+            except Exception:
+                txt = ""
+            if not txt:
+                continue
+            if txt.strip().lstrip("'").strip().lower() == key.lower():
+                try:
+                    sh.setAlias("B%d" % row, key)
+                    fixed.append("%s=B%d" % (key, row))
+                except Exception as exc:
+                    App.Console.PrintWarning(
+                        "[%s] could not alias B%d as '%s': %s\n"
+                        % (PREFIX, row, key, exc))
+                break
+    if fixed:
+        document.recompute()
+    return fixed
+
+def add_missing(sh, document, keys):
+    """Append any parameter the sheet still lacks, with its default value and
+    alias, so every dimension really is driven by the sheet."""
+    added = []
+    row = first_free_row(sh)
+    for key in keys:
+        if resolves(sh, key):
+            continue
+        sh.set("A%d" % row, key)
+        sh.set("B%d" % row, str(DEFAULTS[key]))
+        document.recompute()            # alias only sticks after a recompute
+        try:
+            sh.setAlias("B%d" % row, key)
+            added.append("%s=B%d" % (key, row))
+        except Exception as exc:
+            App.Console.PrintWarning("[%s] could not alias B%d as '%s': %s\n"
+                                     % (PREFIX, row, key, exc))
+        row += 1
+    if added:
+        document.recompute()
+    return added
+
+sheet, sheet_created = get_sheet(doc, SHEET_NAME)
+
+App.Console.PrintMessage("[%s] using spreadsheet '%s' (internal name %s)\n"
+                         % (PREFIX, sheet.Label, sheet.Name))
+
+if not sheet_created:
+    _fixed = ensure_aliases(sheet, doc, KEYS)
+    if _fixed:
+        App.Console.PrintMessage(
+            "[%s] column A matched - set %d missing alias(es): %s\n"
+            % (PREFIX, len(_fixed), ", ".join(_fixed)))
+
+if ADD_MISSING:
+    _added = add_missing(sheet, doc, KEYS)
+    if _added:
+        App.Console.PrintMessage(
+            "[%s] added %d parameter(s) to the sheet at default values: %s\n"
+            % (PREFIX, len(_added), ", ".join(_added)))
+
+def as_float(value):
+    """Spreadsheet cells come back as float, int, str or Quantity."""
+    value = getattr(value, "Value", value)   # App.Units.Quantity -> float
+    return float(value)
+
+missing = []
+P = {}
+
+for key in KEYS:
+    try:
+        P[key] = as_float(sheet.get(key))
+    except Exception:
+        P[key] = float(DEFAULTS[key])
+        missing.append(key)
+
+if missing:
+    App.Console.PrintWarning(
+        "[%s] alias(es) still missing, using built-in defaults: %s\n"
+        % (PREFIX, ", ".join(sorted(missing))))
+
+envW          = P["envW"]
+envH          = P["envH"]
+envD          = P["envD"]
+pitchCorner   = P["pitchCorner"]
+pitchStraight = P["pitchStraight"]
+pinD          = P["pinD"]
+pinFreeL      = P["pinFreeL"]
+row3Inset     = P["row3Inset"]
+pinClear      = P["pinClear"]
+
+for name, val in (("envW", envW), ("envH", envH), ("envD", envD),
+                  ("pinD", pinD), ("pinFreeL", pinFreeL)):
+    if val <= 0:
+        raise ValueError("[%s] parameter '%s' must be > 0 (got %s)"
+                         % (PREFIX, name, val))
+
+if pinFreeL >= envD:
+    raise ValueError("[%s] pinFreeL (%.2f) must be less than envD (%.2f) or "
+                     "the pockets cut straight through" % (PREFIX, pinFreeL, envD))
+
+# ---------------------------- pin grid -------------------------------
+# Rectangular grid, origin at the lower-left pin, then centred on the part.
+#   row 1 : 4 pins   y = 0                x = 0, 1, 2, 3 * pitchStraight
+#   row 2 : 4 pins   y = 1*pitchCorner    x = 0, 1, 2, 3 * pitchStraight
+#   row 3 : 2 pins   y = 2*pitchCorner    x = row3Inset, span - row3Inset
+#   row 4 : 2 pins   y = 3*pitchCorner    x = 0, span
+span = 3.0 * pitchStraight                       # 10.59
+raw = []
+
+for r in (0, 1):
+    for c in range(4):
+        raw.append((c * pitchStraight, r * pitchCorner))
+
+raw.append((row3Inset,        2.0 * pitchCorner))
+raw.append((span - row3Inset, 2.0 * pitchCorner))
+raw.append((0.0,              3.0 * pitchCorner))
+raw.append((span,             3.0 * pitchCorner))
+
+cx = span / 2.0
+cy = (3.0 * pitchCorner) / 2.0
+PINS = [(x - cx, y - cy) for (x, y) in raw]
+
+if len(PINS) != int(P["pinCount"]):
+    App.Console.PrintWarning(
+        "[%s] generated %d pins but pinCount says %d\n"
+        % (PREFIX, len(PINS), int(P["pinCount"])))
+
+if span > envW or 3.0 * pitchCorner > envH:
+    App.Console.PrintWarning(
+        "[%s] pin pattern (%.2f x %.2f) is wider than the envelope "
+        "(%.2f x %.2f)\n" % (PREFIX, span, 3.0 * pitchCorner, envW, envH))
+
+# --------------------------- helpers ---------------------------------
+def purge(document, prefix):
+    """Remove previously generated objects so the macro is re-runnable."""
+    doomed = [o.Name for o in document.Objects
+              if o.Name.startswith(prefix + "_") or
+                 (o.Label or "").startswith(prefix + "_")]
+    for n in doomed:
+        if document.getObject(n) is not None:
+            document.removeObject(n)
+    if doomed:
+        App.Console.PrintMessage("[%s] removed %d old object(s)\n"
+                                 % (prefix, len(doomed)))
+    document.recompute()
+
+def new_sketch(body, name, z=0.0):
+    """Sketch created *inside* the body (no scope errors) on the XY plane."""
+    sk = body.newObject("Sketcher::SketchObject", name)
+    sk.Label = name
+    sk.Placement = App.Placement(App.Vector(0, 0, z), App.Rotation(0, 0, 0, 1))
+    return sk
+
+def add_centred_rect(sk, w, h):
+    """Four line segments + coincidence constraints -> guaranteed closed."""
+    hw, hh = w / 2.0, h / 2.0
+    pts = [App.Vector(-hw, -hh, 0), App.Vector(hw, -hh, 0),
+           App.Vector(hw,  hh, 0), App.Vector(-hw, hh, 0)]
+    idx = []
+    for i in range(4):
+        idx.append(sk.addGeometry(
+            Part.LineSegment(pts[i], pts[(i + 1) % 4]), False))
+    for i in range(4):
+        sk.addConstraint(Sketcher.Constraint(
+            "Coincident", idx[i], 2, idx[(i + 1) % 4], 1))
+
+def add_circles(sk, centres, radius):
+    for (x, y) in centres:
+        sk.addGeometry(Part.Circle(App.Vector(x, y, 0),
+                                   App.Vector(0, 0, 1), radius), False)
+
+def failed(obj):
+    st = obj.State
+    return ("Invalid" in st) or ("Error" in st)
+
+def one_side(feat):
+    """FreeCAD 1.1 replaced the boolean 'Midplane' with the 'SideType' enum;
+    setting the old property still works but prints a deprecation warning."""
+    if hasattr(feat, "SideType"):
+        try:
+            feat.SideType = "One side"
+        except Exception:
+            feat.SideType = 0
+    else:
+        feat.Midplane = False
+
+def bind(obj, prop, aliases, expr):
+    """Bind a property to the sheet, but ONLY when every alias it references
+    actually resolves - an expression pointing at an absent alias makes the
+    feature invalid and the build fails.  '{s}' expands to the sheet name."""
+    if not BIND_EXPR:
+        return False
+    absent = [a for a in aliases if not resolves(sheet, a)]
+    if absent:
+        App.Console.PrintWarning(
+            "[%s] %s.%s kept as a plain number - alias(es) not in the sheet: "
+            "%s\n" % (PREFIX, obj.Label, prop, ", ".join(absent)))
+        return False
+    try:
+        obj.setExpression(prop, expr.format(s=sheet.Name))
+        return True
+    except Exception as exc:
+        App.Console.PrintWarning("[%s] could not bind %s.%s: %s\n"
+                                 % (PREFIX, obj.Label, prop, exc))
+        return False
+
+# ---------------------------- build ----------------------------------
+if REBUILD:
+    purge(doc, PREFIX)
+
+body = doc.addObject("PartDesign::Body", PREFIX + "_BODY")
+body.Label = PREFIX + "_BODY"
+
+# ---- envelope pad ----
+sk_env = new_sketch(body, PREFIX + "_sk_envelope", 0.0)
+add_centred_rect(sk_env, envW, envH)
+doc.recompute()
+
+pad = body.newObject("PartDesign::Pad", PREFIX + "_pad_envelope")
+pad.Label = PREFIX + "_pad_envelope"
+pad.Profile = sk_env
+pad.Length = envD
+pad.Type = 0            # Length
+one_side(pad)
+pad.Reversed = False    # material grows +Z from the seating plane
+bind(pad, "Length", ("envD",), "{s}.envD")
+sk_env.Visibility = False
+doc.recompute()
+
+if failed(pad):
+    raise RuntimeError("[%s] envelope pad failed - check the sketch wire"
+                       % PREFIX)
+
+# ---- 12 pin pockets ----
+sk_pins = new_sketch(body, PREFIX + "_sk_pins", 0.0)
+add_circles(sk_pins, PINS, (pinD + pinClear) / 2.0)
+doc.recompute()
+
+pocket = body.newObject("PartDesign::Pocket", PREFIX + "_pocket_pins")
+pocket.Label = PREFIX + "_pocket_pins"
+pocket.Profile = sk_pins
+pocket.Length = pinFreeL
+pocket.Type = 0         # Length
+one_side(pocket)
+pocket.Reversed = True  # cut +Z, i.e. up into the padded material
+sk_pins.Visibility = False
+doc.recompute()
+
+if failed(pocket):      # material is on the other side - flip and retry
+    pocket.Reversed = not pocket.Reversed
+    pocket.touch()
+    doc.recompute()
+
+if failed(pocket):
+    raise RuntimeError("[%s] pin pocket failed - pockets fall outside the pad"
+                       % PREFIX)
+
+bind(pocket, "Length", ("pinFreeL",), "{s}.pinFreeL")
+doc.recompute()
+
+if failed(pocket):
+    raise RuntimeError("[%s] pin pocket became invalid after binding to the "
+                       "spreadsheet" % PREFIX)
+
+# ---- cosmetics (GUI only) ----
+if App.GuiUp:
+    try:
+        body.ViewObject.ShapeColor = (0.75, 0.75, 0.78)
+        import FreeCADGui
+        FreeCADGui.activeDocument().activeView().viewAxonometric()
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+    except Exception:
+        pass
+
+# ---- optional STEP export ----
+if EXPORT_STEP:
+    import os
+    import Import
+    base = os.path.dirname(doc.FileName) if doc.FileName else os.path.expanduser("~")
+    out = os.path.join(base, PREFIX + ".step")
+    Import.export([body], out)
+    App.Console.PrintMessage("[%s] exported %s\n" % (PREFIX, out))
+
+# ---------------------------- report ---------------------------------
+bb = body.Shape.BoundBox
+npockets = len([f for f in body.Shape.Faces
+                if hasattr(f.Surface, "Radius") and
+                abs(f.Surface.Radius - (pinD + pinClear) / 2.0) < 1e-9])
+
+App.Console.PrintMessage(
+    "[%s] OK - envelope %.2f x %.2f x %.2f mm, %d pin pockets in the solid "
+    "(D %.2f mm, depth %.2f mm)\n"
+    % (PREFIX, envW, envH, envD, npockets, pinD + pinClear, pinFreeL))
+
+App.Console.PrintMessage(
+    "[%s] bbox: X %.2f..%.2f  Y %.2f..%.2f  Z %.2f..%.2f  vol %.1f mm3\n"
+    % (PREFIX, bb.XMin, bb.XMax, bb.YMin, bb.YMax, bb.ZMin, bb.ZMax,
+       body.Shape.Volume))
+
+if npockets != len(PINS):
+    App.Console.PrintWarning(
+        "[%s] expected %d pockets in the solid but found %d\n"
+        % (PREFIX, len(PINS), npockets))

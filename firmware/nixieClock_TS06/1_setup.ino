@@ -51,7 +51,7 @@ void setup() {
 
   // ---------- RTC (before the multiplex ISR is armed) ----------
   rtc.begin();
-  if (rtc.lostPower()) rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   DateTime now = rtc.now();
   secs = now.second();
   mins = now.minute();

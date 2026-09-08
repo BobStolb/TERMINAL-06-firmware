@@ -1,0 +1,10 @@
+# FreeCAD backups — regenerated on every save
+*.FCBak
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Render output — derived from render/*.py, regenerate with `python3 render.py`
+render/*.svg
+render/*.png
