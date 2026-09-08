@@ -1,0 +1,198 @@
+(footprint "TS06_JST_XH_6"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "JST-XH 6-way vertical header, 2.5 mm pitch. Pin 1 square. Panel cable: GND, +5V, A6, A7, D7, D8.")
+	(tags "connector JST XH 6 panel TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -4.6 0)
+		(layer "F.SilkS")
+		(uuid "ba5d58c2-9846-4fb8-8b70-03880f5284a2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_JST_XH_6"
+		(at 0 5.9 0)
+		(layer "F.Fab")
+		(uuid "e8660d93-bae5-4a4b-927c-0e68222a95e8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "a78480f0-70c1-4e46-9d37-509d289a67be") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "fa63a53f-53e8-49e8-80cc-671dd6433180") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "e5b0a32e-e7c1-4d19-a265-17e31ec4c4e4") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -6.2500 0.0000)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8b26ad0e-e6c5-4286-9ff5-3ad9732dd5a5")
+	)
+	(pad "2" thru_hole circle
+		(at -3.7500 0.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "067998c7-093b-4d00-af38-3c855b0a55c3")
+	)
+	(pad "3" thru_hole circle
+		(at -1.2500 0.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "cbab123b-b581-432e-9399-4e6bf9c4defb")
+	)
+	(pad "4" thru_hole circle
+		(at 1.2500 0.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "40f285b7-aa2f-4ad1-8658-4e2c68529601")
+	)
+	(pad "5" thru_hole circle
+		(at 3.7500 0.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "793715c3-d56e-4967-8c48-09e19ae1b587")
+	)
+	(pad "6" thru_hole circle
+		(at 6.2500 0.0000)
+		(size 1.9 1.9)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "42f856e6-e4f7-4808-b000-6f79fa3bffa5")
+	)
+	(fp_line
+		(start -8.1500 -2.4000)
+		(end 8.1500 -2.4000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2ab4cc5a-4856-413c-8f99-a79f62cc2e70")
+	)
+	(fp_line
+		(start -8.1500 3.4000)
+		(end 8.1500 3.4000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "8864af7e-f057-4211-a482-7355a80b18b1")
+	)
+	(fp_line
+		(start -8.1500 -2.4000)
+		(end -8.1500 3.4000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "962fb3a6-626b-430f-9dc3-471691f70f48")
+	)
+	(fp_line
+		(start 8.1500 -2.4000)
+		(end 8.1500 3.4000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "be9039eb-af4a-4e4a-a538-ecd652131281")
+	)
+	(fp_line
+		(start -8.6000 -2.9000)
+		(end 8.6000 -2.9000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "e595ccdf-dc06-48c7-873b-9b305f6ad9e5")
+	)
+	(fp_line
+		(start -8.6000 3.9000)
+		(end 8.6000 3.9000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "a62be995-c02d-4fd1-b5cb-9dd107ed869f")
+	)
+	(fp_line
+		(start -8.6000 -2.9000)
+		(end -8.6000 3.9000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "f882197c-02d5-40a0-a35f-5a27540d6b79")
+	)
+	(fp_line
+		(start 8.6000 -2.9000)
+		(end 8.6000 3.9000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "e9953486-e3a0-48c7-bc46-5b7a11241f54")
+	)
+	(fp_text user "1"
+		(at 0 -4.4 0)
+		(layer "F.Fab")
+		(uuid "4c947a92-bb9d-4e7e-8c49-320406450481")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(embedded_fonts no)
+)

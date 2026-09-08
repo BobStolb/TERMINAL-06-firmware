@@ -9,7 +9,7 @@
 	(property "Reference" "REF**"
 		(at 0 -7.6 0)
 		(layer "F.SilkS")
-		(uuid "b304dd83-4b31-41a9-927a-280cb2503881")
+		(uuid "1975046a-e9bf-4ad4-9861-74ee7ed923fb")
 		(effects
 			(font
 				(size 1 1)
@@ -20,7 +20,7 @@
 	(property "Value" "TS06_KMD1_Button_PanelMount"
 		(at 0 10.6 0)
 		(layer "F.Fab")
-		(uuid "2d876d78-fafe-49a4-9f20-5f48635abacd")
+		(uuid "004cb42e-ef82-448e-a570-29051f8fcb14")
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +31,7 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "4816a0f0-9727-4abb-9cff-a18a92d6479e") (hide yes)
+		(uuid "b66cdd7c-7880-4466-834f-be7779644795") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +42,7 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "e22293e0-e5c7-4c18-aa87-84ad034f711e") (hide yes)
+		(uuid "a7bd4870-4186-473b-ad18-c8165667ff32") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +53,7 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "5b4593d9-dd16-48ea-87cc-0de63d50c035") (hide yes)
+		(uuid "8ff6d971-4166-4036-972b-0a992f74e18d") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -66,7 +66,7 @@
 		(size 8.0 8.0)
 		(drill 8.0)
 		(layers "F&B.Cu" "*.Mask")
-		(uuid "7c3c8e7c-50e0-4e41-8de3-99a900f0e092")
+		(uuid "0d5cbb03-f4f9-4358-85aa-f606a2b42b26")
 	)
 	(fp_circle
 		(center 0 0)
@@ -77,7 +77,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "6b7496b6-d16e-4992-b88b-89a18700c60b")
+		(uuid "dad7a9e1-a440-44b1-8907-e2cb56ea42fe")
 	)
 	(fp_circle
 		(center 0 0)
@@ -88,7 +88,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "fa4ddec7-3998-4656-bd21-c58b65554a5e")
+		(uuid "25541534-7869-4e8a-a0ab-d61c123b929c")
 	)
 	(fp_circle
 		(center 0 0)
@@ -99,26 +99,24 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "85da6439-01e2-4cb9-867c-011043b54250")
+		(uuid "81f14ad5-40dc-4805-98fd-fd6cb1bda100")
 	)
-	(pad "1" thru_hole circle
-		(at -2.5400 8.0000)
-		(size 1.9 1.9)
-		(drill 1.0)
-		(layers "*.Cu" "*.Mask")
-		(uuid "858fe9b8-bdfa-4695-a4b8-511f3e72ea8d")
+	(pad "1" smd rect
+		(at -1.6000 9.5000)
+		(size 2.2 1.5)
+		(layers "B.Cu" "B.Mask")
+		(uuid "7611aa82-2f41-4fd8-a0e0-c182591c2569")
 	)
-	(pad "2" thru_hole circle
-		(at 0.0000 8.0000)
-		(size 1.9 1.9)
-		(drill 1.0)
-		(layers "*.Cu" "*.Mask")
-		(uuid "c1f79832-27d7-4140-b052-62da2152c517")
+	(pad "2" smd rect
+		(at 1.6000 9.5000)
+		(size 2.2 1.5)
+		(layers "B.Cu" "B.Mask")
+		(uuid "d68ad35a-940c-4164-aacf-b1bc99207ab2")
 	)
 	(fp_text user "KMD1-1 button - bushing 7.82 (CAD, calipered)"
 		(at 0 7.0 0)
 		(layer "F.Fab")
-		(uuid "ff44b1e9-6c1b-4ec5-9c91-2118a471846d")
+		(uuid "72cc5f02-99e0-48ee-a915-bd39a6a57d21")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -129,7 +127,7 @@
 	(fp_text user "plunger 6.00 - keep silk clear of the cap"
 		(at 0 8.2 0)
 		(layer "F.Fab")
-		(uuid "bcf57900-42bb-4fa1-93db-2a8abcd61a9f")
+		(uuid "509fbeeb-45d5-4502-b537-5ee3c822c136")
 		(effects
 			(font
 				(size 0.8 0.8)

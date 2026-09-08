@@ -42,6 +42,13 @@ def npth(d, x=0, y=0):
     return (f'\t(pad "" np_thru_hole circle\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {d} {d})\n'
             f'\t\t(drill {d})\n\t\t(layers "F&B.Cu" "*.Mask")\n\t\t{U()}\n\t)')
 
+def spad(n, x, y, w=2.2, h=1.5):
+    """Back-side wire-landing pad. SMD on B.Cu deliberately: this board's front face is
+    the product's face, so nothing punches a hole through it. The switch lugs are behind
+    the panel anyway, so the wire has no reason to cross to the front."""
+    return (f'\t(pad "{n}" smd rect\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {w} {h})\n'
+            f'\t\t(layers "B.Cu" "B.Mask")\n\t\t{U()}\n\t)')
+
 def pad(n, x, y, drill=1.0, size=1.9, shape="circle"):
     return (f'\t(pad "{n}" thru_hole {shape}\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {size} {size})\n'
             f'\t\t(drill {drill})\n\t\t(layers "*.Cu" "*.Mask")\n\t\t{U()}\n\t)')
@@ -75,7 +82,7 @@ def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0):
 # Lugs are modelled but sit behind the body, unreachable from this board (see header).
 b = [npth(8.0)]
 b += [circle(5.6, "F.SilkS"), circle(6.2, "F.CrtYd", 0.05), circle(4.0, "F.Fab", 0.1)]
-b += [pad(i + 1, (i - 1) * 2.54, 8.0) for i in range(3)]
+b += [spad(i + 1, (i - 0.5) * 3.2, 9.5) for i in range(2)]
 b += [fab("MT1 lever - bushing 7.82 (CAD, calipered)", 7.0),
       fab("lugs sit behind body: hand-wire to pads 1-3", 8.2)]
 write("TS06_MT1_Lever_PanelMount",
@@ -91,7 +98,7 @@ write("TS06_MT1_Lever_PanelMount",
 # button now has its own independent value, and it agrees with MT1 exactly.
 b = [npth(8.0)]
 b += [circle(5.6, "F.SilkS"), circle(6.2, "F.CrtYd", 0.05), circle(4.0, "F.Fab", 0.1)]
-b += [pad(i + 1, (i - 1) * 2.54, 8.0) for i in range(2)]
+b += [spad(i + 1, (i - 0.5) * 3.2, 9.5) for i in range(2)]
 b += [fab("KMD1-1 button - bushing 7.82 (CAD, calipered)", 7.0),
       fab("plunger 6.00 - keep silk clear of the cap", 8.2)]
 write("TS06_KMD1_Button_PanelMount",
@@ -118,7 +125,7 @@ for i in range(12):                          # 12 taps = 6 positions x 2 poles
     a = math.radians(15 + 30 * i)
     b.append(line(9.995 * math.cos(a), 9.995 * math.sin(a),
                   10.5 * math.cos(a), 10.5 * math.sin(a), "User.1", 0.1))
-b += [pad(i + 1, -7.62 + i * 2.54, 17.5) for i in range(7)]   # COM + 6 taps, wire-landed
+b += [spad(i + 1, -10.8 + i * 3.6, 17.5) for i in range(7)]   # T1..T6 then COM, wire-landed
 b += [fab("SR25 rotary - bushing 8.62 x 7.00 usable (CAD, calipered)", 15.0),
       fab("body 25.00 = keepout BEHIND panel, not a hole", 16.2),
       fab("nut+washer+recess must fit the 5.00 left of the bushing", 17.4),
@@ -132,3 +139,29 @@ write("TS06_Rotary_SR25_PanelMount",
       "ring for reference only - the lugs sit 11.3mm behind this board and cannot land "
       "on it.",
       "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06", b, -8.4, 20.0)
+
+# ---------------------------------------------------------------- 1206 resistor
+# SMD, hand-solder land pattern, authored on the BACK layers. Through-hole axials were
+# the first choice and were wrong: their leads would punch eight pairs of holes through
+# the product's face. 1206 is still comfortably hand-solderable.
+b = [spad(1, -1.85, 0, 2.0, 1.7), spad(2, 1.85, 0, 2.0, 1.7)]
+b += [line(-1.6, -1.05, 1.6, -1.05, "B.SilkS", 0.1),
+      line(-1.6, 1.05, 1.6, 1.05, "B.SilkS", 0.1)]
+b += [line(-3.2, -1.3, 3.2, -1.3, "B.CrtYd", 0.05), line(-3.2, 1.3, 3.2, 1.3, "B.CrtYd", 0.05),
+      line(-3.2, -1.3, -3.2, 1.3, "B.CrtYd", 0.05), line(3.2, -1.3, 3.2, 1.3, "B.CrtYd", 0.05)]
+write("TS06_R_1206_HandSolder",
+      "1206 chip resistor, hand-solder lands, authored on the back layers. The fascia's "
+      "front is the product face, so no passive puts a hole through it.",
+      "resistor 1206 SMD TERMINAL-06", b, -2.2, 2.2)
+
+# ---------------------------------------------------------------- JST-XH 6 way
+b = [pad(1, -6.25, 0, 1.0, 1.7, "rect")] + [pad(i + 2, -6.25 + (i + 1) * 2.5, 0) for i in range(5)]
+b += [line(-8.15, -2.4, 8.15, -2.4, "F.SilkS"), line(-8.15, 3.4, 8.15, 3.4, "F.SilkS"),
+      line(-8.15, -2.4, -8.15, 3.4, "F.SilkS"), line(8.15, -2.4, 8.15, 3.4, "F.SilkS")]
+b += [line(-8.6, -2.9, 8.6, -2.9, "F.CrtYd", 0.05), line(-8.6, 3.9, 8.6, 3.9, "F.CrtYd", 0.05),
+      line(-8.6, -2.9, -8.6, 3.9, "F.CrtYd", 0.05), line(8.6, -2.9, 8.6, 3.9, "F.CrtYd", 0.05)]
+b += [fab("1", -4.4)]
+write("TS06_JST_XH_6",
+      "JST-XH 6-way vertical header, 2.5 mm pitch. Pin 1 square. Panel cable: "
+      "GND, +5V, A6, A7, D7, D8.",
+      "connector JST XH 6 panel TERMINAL-06", b, -4.6, 5.9)
