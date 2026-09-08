@@ -51,6 +51,18 @@ Firmware note: `GLITCH_ALLOWED` is currently a compile-time flag. This makes it 
 setting with a rate, stored in EEPROM alongside format/brightness/effect/ambient — one
 more item on §5's "still to write" list, not a new mechanism.
 
+## Face decisions, same session
+
+- **No maker's mark and no wordmark on the fascia.** The hexagon-and-breaking-bar in spec
+  §6 was never chosen by the owner — it entered the project through an earlier session's
+  document. Rather than inherit it, the face now carries controls and their names and
+  nothing else. **Identity moves to the enclosure and the packaging**, where it is not
+  competing with a dial. §6's Identity line needs updating to match; the colour palette
+  in it is unaffected.
+- **The gold enable trace ends beneath FIELD, not on it.** Nothing is drawn in the space
+  the lever physically occupies when thrown down — the real lever closes that gap, which
+  is stronger than a picture of one.
+
 ## Consequence for TS06-FASCIA
 
 The face letters the levers **FIELD** and **SUB** — the invariant role, true on all six
@@ -63,10 +75,11 @@ Rotary positions, left to right on the dial arc:
 
 ## Still open
 
-- **Step angle.** Both the ~160° and the 150° figures were judged by eye. The detent ring
-  is a divot **count**, and a count is an integer: 360/12 = exactly 30.00°, 360/11 =
-  32.73°. Count the divots around the full ring, including any hidden by the stop washer.
-  Twelve would also match the twelve outer taps the model already assumes.
+- ~~**Step angle.**~~ **CLOSED 08.09.26 — twelve detents counted, so the step is exactly
+  30.00°** and six positions span 150°. Counted rather than measured, so it is exact, not
+  estimated. It agrees with the twelve outer taps already in the model — the same claim
+  arriving from a second, independent direction. The earlier ~32°/160° figure was an eye
+  estimate of a swept arc and is **withdrawn**.
 - **Bushing stack depth.** Diameters are measured and settled. The open question is
   whether nut + washer + chassis recess fit in the 5.00 mm left after 7.00 mm of usable
   bushing minus 2.0 mm of FR4. A depth question against the printed chassis.

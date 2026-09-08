@@ -102,7 +102,8 @@ write("TS06_KMD1_Button_PanelMount",
 
 # ---------------------------------------------------------------- Rotary, panel-mount
 # All from 3d/SR25.step, calipered: bushing 8.62, usable 7.00, shaft 6.00,
-# body 25.00, lug ring D19.99 at 30deg pitch. Hole 8.8 mm (+0.18 fit clearance).
+# body 25.00, lug ring D19.99 at 30deg pitch (12 detents counted 08.09.26 ->
+# 360/12 = exactly 30.00deg per step, 6 positions spanning 150deg). Hole 8.8 mm (+0.18 fit clearance).
 # Body 25.00 sits BEHIND the fascia -> keepout, not a hole.
 # The 26.94 mm body figure from 28.08.26 is WITHDRAWN: bad caliper technique, since
 # re-measured. It has propagated into spec sections 2/6 and prototype plan P1/P8 and
@@ -121,7 +122,7 @@ b += [pad(i + 1, -7.62 + i * 2.54, 17.5) for i in range(7)]   # COM + 6 taps, wi
 b += [fab("SR25 rotary - bushing 8.62 x 7.00 usable (CAD, calipered)", 15.0),
       fab("body 25.00 = keepout BEHIND panel, not a hole", 16.2),
       fab("nut+washer+recess must fit the 5.00 left of the bushing", 17.4),
-      fab("User.1 lug ring D19.99 30deg: lugs sit 11.3 BEHIND this", -15.5),
+      fab("User.1 lug ring D19.99 30.00deg (12 detents): lugs 11.3 BEHIND", -15.5),
       fab("board - unreachable, hand-wire to pads 1-7", -16.7)]
 write("TS06_Rotary_SR25_PanelMount",
       "SR25-style 6-position 2-pole galette rotary, panel mount. All dimensions from the "
