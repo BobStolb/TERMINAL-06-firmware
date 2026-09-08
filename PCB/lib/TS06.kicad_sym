@@ -1,0 +1,907 @@
+(kicad_symbol_lib
+(version 20260306)
+(generator "kicad_symbol_editor")
+(generator_version "10.0")
+(symbol "R"
+(pin_names
+(offset 0.254)
+)
+(exclude_from_sim no)
+(in_bom yes)
+(on_board yes)
+(property "Reference" "R"
+(at 0 2.54 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Value" "R"
+(at 0 -2.54 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Datasheet" ""
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Description" "Resistor"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(symbol "R_0_1"
+(rectangle
+(start -1.016 -2.54)
+(end 1.016 2.54)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+)
+(symbol "R_1_1"
+(pin passive line
+(at 0 3.81 270)
+(length 1.27)
+(name "~"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 0 -3.81 90)
+(length 1.27)
+(name "~"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+)
+)
+(symbol "SW_Rotary_6P1W"
+(pin_names
+(offset 0.254)
+)
+(exclude_from_sim no)
+(in_bom yes)
+(on_board yes)
+(property "Reference" "SW"
+(at 0 41.91 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Value" "SR25 6P"
+(at 0 -41.91 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Footprint" "TS06:TS06_Rotary_SR25_PanelMount"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Datasheet" ""
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Description" "SR25-style 6-position galette rotary, one pole of two. 12 taps on D19.99 at 30deg; only pole 1 (COM + T1..T6) is wired. Pole 2 is spare."
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(symbol "SW_Rotary_6P1W_0_1"
+(rectangle
+(start -5.08 -38.1)
+(end 5.08 38.1)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 -31.75)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 -19.05)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 -6.35)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 6.35)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 19.05)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 4.318 31.75)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center -4.318 0)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(polyline
+(pts
+(xy -4.318 0)
+(xy 3.556 25.4)
+)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+)
+(symbol "SW_Rotary_6P1W_1_1"
+(pin passive line
+(at 10.16 -31.75 180)
+(length 5.08)
+(name "T1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 10.16 -19.05 180)
+(length 5.08)
+(name "T2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 10.16 -6.35 180)
+(length 5.08)
+(name "T3"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "3"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 10.16 6.35 180)
+(length 5.08)
+(name "T4"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "4"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 10.16 19.05 180)
+(length 5.08)
+(name "T5"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "5"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 10.16 31.75 180)
+(length 5.08)
+(name "T6"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "6"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at -10.16 0 0)
+(length 5.08)
+(name "COM"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "7"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+)
+)
+(symbol "SW_Lever_MT1"
+(pin_names
+(offset 0.254)
+)
+(exclude_from_sim no)
+(in_bom yes)
+(on_board yes)
+(property "Reference" "SW"
+(at 0 5.08 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Value" "MT1"
+(at 0 -5.08 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Footprint" "TS06:TS06_MT1_Lever_PanelMount"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Datasheet" ""
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Description" "MT1/TV1-2 toggle lever wired as SPST - 2 of its 3 lugs used."
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(symbol "SW_Lever_MT1_0_1"
+(circle
+(center -2.54 0)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 2.54 0)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(polyline
+(pts
+(xy -2.286 0.762)
+(xy 2.794 3.302)
+)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+)
+(symbol "SW_Lever_MT1_1_1"
+(pin passive line
+(at -7.62 0 0)
+(length 5.08)
+(name "A"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 0 180)
+(length 5.08)
+(name "B"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+)
+)
+(symbol "SW_Button_KMD1"
+(pin_names
+(offset 0.254)
+)
+(exclude_from_sim no)
+(in_bom yes)
+(on_board yes)
+(property "Reference" "SW"
+(at 0 6.35 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Value" "KMD1"
+(at 0 -3.81 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Footprint" "TS06:TS06_KMD1_Button_PanelMount"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Datasheet" ""
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Description" "KMD1-1 momentary pushbutton, normally open. Shorts to GND; the Nano supplies the pull-up (GyverButton INPUT_PULLUP)."
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(symbol "SW_Button_KMD1_0_1"
+(circle
+(center -2.54 0)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(circle
+(center 2.54 0)
+(radius 0.508)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(polyline
+(pts
+(xy -2.54 1.27)
+(xy 2.54 1.27)
+)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(polyline
+(pts
+(xy 0 1.27)
+(xy 0 3.302)
+)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(polyline
+(pts
+(xy -1.524 3.302)
+(xy 1.524 3.302)
+)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+)
+(symbol "SW_Button_KMD1_1_1"
+(pin passive line
+(at -7.62 0 0)
+(length 5.08)
+(name "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 0 180)
+(length 5.08)
+(name "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+)
+)
+(symbol "Conn_JST_XH_6"
+(pin_names
+(offset 0.254)
+)
+(exclude_from_sim no)
+(in_bom yes)
+(on_board yes)
+(property "Reference" "J"
+(at 0 6.35 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Value" "JST-XH 6"
+(at 0 -16.51 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(property "Footprint" "Connector_JST:JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical"
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Datasheet" ""
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(property "Description" "Panel cable to the main board: GND, +5V, A6, A7, D7, D8. Five controls, six wires."
+(at 0 0 0)
+(effects
+(font
+(size 1.27 1.27)
+)
+(hide yes)
+)
+)
+(symbol "Conn_JST_XH_6_0_1"
+(rectangle
+(start -2.54 -13.97)
+(end 2.54 3.81)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -0.635)
+(end 2.54 -1.905)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -3.175)
+(end 2.54 -4.445)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -5.715)
+(end 2.54 -6.984999999999999)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -8.255)
+(end 2.54 -9.525)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -10.795)
+(end 2.54 -12.065)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+(rectangle
+(start 1.27 -13.334999999999999)
+(end 2.54 -14.604999999999999)
+(stroke
+(width 0.254)
+(type default)
+)
+(fill
+(type none)
+)
+)
+)
+(symbol "Conn_JST_XH_6_1_1"
+(pin passive line
+(at 7.62 -1.27 180)
+(length 5.08)
+(name "GND"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "1"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 -3.81 180)
+(length 5.08)
+(name "+5V"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "2"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 -6.35 180)
+(length 5.08)
+(name "A6"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "3"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 -8.89 180)
+(length 5.08)
+(name "A7"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "4"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 -11.43 180)
+(length 5.08)
+(name "D7"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "5"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+(pin passive line
+(at 7.62 -13.969999999999999 180)
+(length 5.08)
+(name "D8"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+(number "6"
+(effects
+(font
+(size 1.27 1.27)
+)
+)
+)
+)
+)
+)
+)
