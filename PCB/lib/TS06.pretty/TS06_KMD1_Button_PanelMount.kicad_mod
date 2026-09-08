@@ -3,13 +3,13 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "KMD1-1 Soviet pushbutton, panel mount. 8.0mm bushing clearance hole. WARNING: bushing diameter carried over from MT1 by eye, never calipered on this part - see TERMINAL-06-measurements-KMD1.md.")
+	(descr "KMD1-1 Soviet pushbutton, panel mount. 8.0mm bushing clearance hole from the calipered FreeCAD model (3d/KMD1.step): bushing 7.82mm, plunger 6.00mm. Independently sourced - no longer carried over from MT1 by eye.")
 	(tags "KMD1 button panel-mount soviet TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
 		(at 0 -7.6 0)
 		(layer "F.SilkS")
-		(uuid "5c3ca55e-b6a8-410b-a2a1-8de7010c7f2a")
+		(uuid "12515363-2922-4c03-a13d-4f07b60bf9ea")
 		(effects
 			(font
 				(size 1 1)
@@ -20,7 +20,7 @@
 	(property "Value" "TS06_KMD1_Button_PanelMount"
 		(at 0 10.6 0)
 		(layer "F.Fab")
-		(uuid "9780b39f-0d5a-4b38-9468-5c0dce5f74e2")
+		(uuid "f6b313a8-f78d-4e2f-83ee-60cd03dd2b72")
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +31,7 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "9f8a1291-3a69-4ee5-a8f1-0b668611d052") (hide yes)
+		(uuid "aee19270-ecf7-4d2f-8205-efd53d7271c9") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +42,7 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "bfe741cb-b202-4804-9dcd-469087c4362e") (hide yes)
+		(uuid "c33ff0b4-eb0a-4b7c-8a9a-0486748f0097") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +53,7 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "2a4b9479-b48e-4a26-901e-205aa1b80d8a") (hide yes)
+		(uuid "97f6035f-29f1-49e6-aefa-1d9b89b0a978") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -66,7 +66,7 @@
 		(size 8.0 8.0)
 		(drill 8.0)
 		(layers "F&B.Cu" "*.Mask")
-		(uuid "e528b544-6c42-462f-b97a-659be5e3950b")
+		(uuid "8537e953-a81d-4ca2-af49-f29fd94f406f")
 	)
 	(fp_circle
 		(center 0 0)
@@ -77,7 +77,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "57a8ad26-d006-4eec-9450-cf4389d1dd1d")
+		(uuid "d63937a8-4d49-4a25-b99b-5159ae9b7a1d")
 	)
 	(fp_circle
 		(center 0 0)
@@ -88,7 +88,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "ebf315e0-0673-413b-bebf-6332d0241922")
+		(uuid "2e90a088-24f9-4402-aaa9-d6d4bd54477f")
 	)
 	(fp_circle
 		(center 0 0)
@@ -99,26 +99,26 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "08a15fcb-4651-439a-a63d-79fa22249bb6")
+		(uuid "6996099d-6327-4cf0-884a-ee91df049094")
 	)
 	(pad "1" thru_hole circle
 		(at -2.5400 8.0000)
 		(size 1.9 1.9)
 		(drill 1.0)
 		(layers "*.Cu" "*.Mask")
-		(uuid "0c3adf5d-2f5d-4efa-a00a-5a3bd2e58ca4")
+		(uuid "1b9758ea-0174-49ba-bdf2-9ad8add8fe48")
 	)
 	(pad "2" thru_hole circle
 		(at 0.0000 8.0000)
 		(size 1.9 1.9)
 		(drill 1.0)
 		(layers "*.Cu" "*.Mask")
-		(uuid "e6a0a06e-591d-4415-876d-a2610f323244")
+		(uuid "8674b355-06d1-439a-acea-bc5769edba9c")
 	)
-	(fp_text user "KMD1-1 button - bushing ~7.85 EYE-CORROBORATED"
+	(fp_text user "KMD1-1 button - bushing 7.82 (CAD, calipered)"
 		(at 0 7.0 0)
 		(layer "F.Fab")
-		(uuid "af5e9615-e09f-4af8-93ce-385fa8e51fe0")
+		(uuid "1a120f3a-7a98-4491-8067-67d88fa9a369")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -126,10 +126,10 @@
 			)
 		)
 	)
-	(fp_text user "verify with calipers before the batch order"
+	(fp_text user "plunger 6.00 - keep silk clear of the cap"
 		(at 0 8.2 0)
 		(layer "F.Fab")
-		(uuid "5edf05b3-9dce-4086-968a-fc41da6aa159")
+		(uuid "00d7a377-6d6e-4701-bd19-d99dae66acb1")
 		(effects
 			(font
 				(size 0.8 0.8)
