@@ -3365,7 +3365,7 @@
 			)
 		)
 	)
-	(gr_text "1 D8  2 D7  3 GND  4 A7  5 +5V  6 A6"
+	(gr_text "1 +5V  2 GND  3 A6  4 A7  5 D7  6 D8"
 		(at 152 50.9 0)
 		(layer "B.SilkS")
 		(uuid "bc689d7f-d89d-42a2-afa4-d7e3fb2c268f")
