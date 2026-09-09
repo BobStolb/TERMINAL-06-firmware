@@ -644,7 +644,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "TS06-FASCIA.kicad_pro",
+    "filename": "TS06-FASCIA-THT.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -812,8 +812,8 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "TS06-FASCIA.kicad_sch",
-        "name": "Корневой лист",
+        "filename": "TS06-FASCIA-THT.kicad_sch",
+        "name": "TS06-FASCIA-THT",
         "uuid": "d3920db2-8aa4-4b4d-8e8a-771392dad286"
       }
     ],
