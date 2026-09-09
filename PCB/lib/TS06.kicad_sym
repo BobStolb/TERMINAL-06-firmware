@@ -664,7 +664,7 @@
 )
 )
 )
-(symbol "Conn_JST_XH_6"
+(symbol "Conn_JST_PH_6"
 (pin_names
 (offset 0.254)
 )
@@ -714,7 +714,7 @@
 (hide yes)
 )
 )
-(symbol "Conn_JST_XH_6_0_1"
+(symbol "Conn_JST_PH_6_0_1"
 (rectangle
 (start -2.54 -13.97)
 (end 2.54 3.81)
@@ -793,7 +793,7 @@
 )
 )
 )
-(symbol "Conn_JST_XH_6_1_1"
+(symbol "Conn_JST_PH_6_1_1"
 (pin passive line
 (at 7.62 -1.27 180)
 (length 5.08)

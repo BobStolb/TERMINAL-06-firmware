@@ -111,7 +111,7 @@ NM = ["+5V", "GND", "A6", "A7", "D7", "D8"]
 g = [rect(-2.54, -13.97, 2.54, 3.81)]
 g += [rect(1.27, -1.27 - 2.54 * i + 0.635, 2.54, -1.27 - 2.54 * i - 0.635) for i in range(6)]
 pins = [pin("passive", 7.62, -1.27 - 2.54 * i, 180, 5.08, NM[i], str(i + 1)) for i in range(6)]
-SYMS["Conn_JST_XH_6"] = symbol("Conn_JST_XH_6", "J", "PH 6 SMT",
+SYMS["Conn_JST_PH_6"] = symbol("Conn_JST_PH_6", "J", "PH 6 SMT",
     "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back",
     "Panel cable to the main board. Pin order follows the PCB: D8, D7, GND, A7, +5V, A6 - each net on the pin nearest where it arrives from.",
     g, pins, 6.35, -16.51)
@@ -137,7 +137,7 @@ items, insts = [], []
 
 def place(lib, ref, val, x, y, rot=0, fp=None, extra=None):
     npins = {"R": 2, "SW_Rotary_6P1W": 7, "SW_Lever_MT1": 2,
-             "SW_Button_KMD1": 2, "Conn_JST_XH_6": 6}[lib]
+             "SW_Button_KMD1": 2, "Conn_JST_PH_6": 6}[lib]
     fpline = f'{prop("Footprint", fp, x, y, hide=True)}\n' if fp else ""
     ex = ("\n".join(prop(k, v, x, y, hide=True) for k, v in (extra or {}).items()) + "\n") if extra else ""
     pn = "\n".join(f'(pin "{i+1}"\n(uuid "{U()}")\n)' for i in range(npins))
@@ -227,7 +227,7 @@ for x, sw, net, nm in ((201.93, "SW4", "D7", "MINUS"), (227.33, "SW5", "D8", "PL
 
 # --- Connector --------------------------------------------------------------
 JX, JY = 238.76, 80.01
-place("Conn_JST_XH_6", "J1", "PH 6 SMT", JX, JY, fp=FP["J1"])
+place("Conn_JST_PH_6", "J1", "PH 6 THT" if THT else "PH 6 SMT", JX, JY, fp=FP["J1"])
 for i, n in enumerate(NM):
     y = JY + 1.27 + 2.54 * i        # symbol pin i is at symbol-y -(1.27 + 2.54i)
     wire(JX + 7.62, y, JX + 17.78, y)
