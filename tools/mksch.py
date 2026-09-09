@@ -10,12 +10,17 @@ This board has no power source. Every net leaves through J1. So +5V and GND are
 ordinary local labels, not power ports: there is nothing on the panel for a power
 flag to describe, and it keeps ERC honest instead of decorative.
 """
-import os, uuid
+import os, sys, uuid
 
 SV, GV = 20260306, "10.0"
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 LIB  = os.path.join(ROOT, "PCB", "lib", "TS06.kicad_sym")
-SCH  = os.path.join(ROOT, "PCB", "TS06-FASCIA", "TS06-FASCIA.kicad_sch")
+# One netlist, two builds. "--tht" writes the same schematic against the through-hole
+# footprints, so the two boards can never drift apart in what they connect - only in
+# how they are made.
+THT  = "--tht" in sys.argv
+BOARD = "TS06-FASCIA-THT" if THT else "TS06-FASCIA"
+SCH  = os.path.join(ROOT, "PCB", BOARD, BOARD + ".kicad_sch")
 SHEET_UUID = "d3920db2-8aa4-4b4d-8e8a-771392dad286"   # from KiCad's own skeleton save
 
 def U(): return str(uuid.uuid4())
@@ -97,11 +102,12 @@ SYMS["SW_Button_KMD1"] = symbol("SW_Button_KMD1", "SW", "KMD1",
     g, [pin("passive", -7.62, 0, 0, 5.08, "1", "1"),
         pin("passive", 7.62, 0, 180, 5.08, "2", "2")], 6.35, -3.81)
 
-# 6-pin panel connector.
-# Pin order is chosen by the PCB, not by tidiness: each net lands on the J1 pin nearest
-# the direction it arrives from, so no two traces have to cross to reach the connector.
-# D8 comes from SW5 on the far right, A6 from the rotary on the far left.
-NM = ["D8", "D7", "GND", "A7", "+5V", "A6"]
+# 6-pin panel connector. ONE pin order for both builds of this board, so one harness
+# fits either: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8 - power first, then the four MCU
+# pins in their own order. It replaces the order the surface-mount routing happened to
+# want (D8, D7, GND, A7, +5V, A6), which was an artefact of one layout and would have
+# made the two variants need different cables.
+NM = ["+5V", "GND", "A6", "A7", "D7", "D8"]
 g = [rect(-2.54, -13.97, 2.54, 3.81)]
 g += [rect(1.27, -1.27 - 2.54 * i + 0.635, 2.54, -1.27 - 2.54 * i - 0.635) for i in range(6)]
 pins = [pin("passive", 7.62, -1.27 - 2.54 * i, 180, 5.08, NM[i], str(i + 1)) for i in range(6)]
@@ -162,11 +168,19 @@ LX = 88.9                                   # ladder column
 NY = [139.7, 127.0, 114.3, 101.6, 88.9, 76.2]   # T1 (GND) .. T6 (+5V)
 
 # --- A6: rotary + tapped divider -------------------------------------------
-FP = {"SW1": "TS06:TS06_Rotary_SR25_PanelMount",
-      "SW2": "TS06:TS06_MT1_Lever_PanelMount", "SW3": "TS06:TS06_MT1_Lever_PanelMount",
-      "SW4": "TS06:TS06_KMD1_Button_PanelMount", "SW5": "TS06:TS06_KMD1_Button_PanelMount",
-      "J1": "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"}
-for _r in range(1, 9): FP[f"R{_r}"] = "TS06:TS06_R_1206_HandSolder"
+if THT:
+    FP = {"SW1": "TS06:TS06_Rotary_SR25_THT",
+          "SW2": "TS06:TS06_MT1_Lever_THT", "SW3": "TS06:TS06_MT1_Lever_THT",
+          "SW4": "TS06:TS06_KMD1_Button_THT", "SW5": "TS06:TS06_KMD1_Button_THT",
+          "J1": "TS06:TS06_JST_PH_S6B-PH-K-S_Back"}
+    for _r in range(1, 6): FP[f"R{_r}"] = "TS06:TS06_R_Axial_P10.16mm_Front"
+    for _r in range(6, 9): FP[f"R{_r}"] = "TS06:TS06_R_Axial_P10.16mm_Back"
+else:
+    FP = {"SW1": "TS06:TS06_Rotary_SR25_PanelMount",
+          "SW2": "TS06:TS06_MT1_Lever_PanelMount", "SW3": "TS06:TS06_MT1_Lever_PanelMount",
+          "SW4": "TS06:TS06_KMD1_Button_PanelMount", "SW5": "TS06:TS06_KMD1_Button_PanelMount",
+          "J1": "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"}
+    for _r in range(1, 9): FP[f"R{_r}"] = "TS06:TS06_R_1206_HandSolder"
 
 place("SW_Rotary_6P1W", "SW1", "SR25 6-pos", 63.5, 107.95, fp=FP["SW1"])
 for i in range(5):                          # R1..R5, 4.7k 1%, between adjacent nodes

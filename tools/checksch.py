@@ -139,6 +139,17 @@ for sym in kids(root, "symbol"):
         pt = to_sheet(px, py, X, Y, rot)
         if pt in par: members.setdefault(find(pt), []).append(f"{ref}.{num}")
 
+# Same-named local labels are one net in KiCad, so the pieces are merged by name here
+# before anything is printed. --netlist prints the result in a form another tool can
+# read; tools/checkmatch.py uses it to hold the board to the schematic.
+byname = {}
+for r in members:
+    nm = "/".join(sorted(names.get(r, []))) or f"(unnamed-{r})"
+    byname.setdefault(nm, set()).update(members[r])
+if "--netlist" in sys.argv:
+    for nm in sorted(byname):
+        print("#NET\t%s\t%s" % (nm, ",".join(sorted(byname[nm]))))
+
 print("\n--- nets ---")
 for r in sorted(members, key=lambda k: -len(members[k])):
     nm = "/".join(sorted(names.get(r, []))) or "(unnamed)"

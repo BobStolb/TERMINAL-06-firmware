@@ -1,44 +1,37 @@
 #!/usr/bin/env python3
-"""Generate the TS06-FASCIA board: outline, placement, nets and the front artwork.
+"""Generate TS06-FASCIA-THT: the through-hole variant, fully routed.
 
-FRONT FACE RULE: nothing punches a hole through it. The fascia's front is the product
-face, so every wire-landing pad is SMD on B.Cu and every passive is 1206 on B.Cu. The
-only holes are five bushings and four mounting screws. This is also what makes the
-decorative gold safe - it is real copper on F.Cu, and it would short to any through-hole
-pad it crossed.
+THE IDEA: the A6 divider is the one circuit on this instrument worth reading, so it
+comes out from behind the panel and onto the face. Five axial resistors in a row, the
+rotary's seven landing holes beneath them, and the traces between them left BARE - mask
+opened, ENIG gold. Every joint on the board shows a solder fillet on the front, because
+through-hole plating puts one there whichever side the body sits on.
 
-Regenerate with:  python3 tools/mkpcb.py
-Format tokens from a real KiCad 10.0 save: .kicad_pcb version 20260206, gen "pcbnew".
+Everything that is not the ladder stays quiet: R6-R8, the connector and the other
+landing pads mount on the back and route under mask.
 
-THIS PASS IS PLACEMENT AND ARTWORK ONLY - no copper routing. The board carries its
-footprints, its nets, the front artwork and the decorative gold, and nothing else.
+GND is a POUR on B.Cu rather than a routed net. That is what ground planes are for, and
+it takes the net with the most stubs out of the routing problem completely. The back is
+hidden, so a pour costs nothing visually. NOTE: KiCad shows a zone as an outline until
+it is filled - press B in the PCB editor.
 
-The routing exists and is not lost. It lives on branch pcb/fascia-routed (43 tracks,
-7 vias, two layers, audited clean) and verbatim in tools/_fascia_routing.py.disabled.
-Re-enabling it is a paste above the assemble section, not a rewrite.
-
-J1's pin order is now fixed for BOTH builds of this board: 1 +5V, 2 GND, 3 A6, 4 A7,
-5 D7, 6 D8. It used to be whatever this board's routing wanted (D8, D7, GND, A7, +5V,
-A6). The through-hole variant could not route to that order, and two variants of one
-product must not need two different cables, so the pin order stopped being a routing
-convenience and became a specification.
-
-Two conventions worth knowing before editing:
-  * Every footprint is placed at rotation 0. KiCad stores a rotated footprint's pad
-    coordinates in a way that is easy to get subtly wrong when writing the file by
-    hand, so the layout is arranged to avoid needing rotation at all.
-  * Back-side parts are authored directly on B.* layers rather than being "flipped".
-    Since these footprints are ours, we write the geometry we want instead of doing
-    mirror arithmetic and hoping.
+TWO RULES SET THE PLACEMENT OF THE BACK PARTS:
+  * The panel parts have bodies behind the board - 24 to 25 mm across. Nothing can sit
+    inside those circles, so R6-R8 stay in the strip below y 38.5, clear of all of them.
+  * A through-hole pad is copper on BOTH faces. The decorative gold is copper too, so
+    every back part must also miss the artwork on the front. The pads of the back parts
+    have their FRONT mask closed: the face shows the drilled hole, not a gold ring.
+    Only the ladder is opened, and only the ladder shows solder.
 """
 import os, re, math, uuid
 
 VER, GEN, GENV = 20260206, "pcbnew", "10.0"
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 PRETTY = os.path.join(ROOT, "PCB", "lib", "TS06.pretty")
-OUT = os.path.join(ROOT, "PCB", "TS06-FASCIA", "TS06-FASCIA.kicad_pcb")
+OUT = os.path.join(ROOT, "PCB", "TS06-FASCIA-THT", "TS06-FASCIA-THT.kicad_pcb")
 
-W, H, CR = 176.0, 52.0, 1.5                    # board outline
+W, H, CR = 176.0, 52.0, 1.5
+SWY, RY = 50.0, 45.5   # rotary landing holes / the ladder on the face                    # board outline
 CX, CY = 30.0, 26.0                            # rotary centre
 LEV = {"SW2": 95.0, "SW3": 118.0}              # FIELD, SUB
 BTN = {"SW4": 146.0, "SW5": 164.0}             # minus, plus
@@ -108,9 +101,8 @@ arc(CR, H, k, H - k, 0, H - CR, "Edge.Cuts", 0.05)
 def load(name):
     return open(os.path.join(PRETTY, name + ".kicad_mod"), encoding="utf8").read()
 
-def place(fpname, ref, val, x, y, nets=None, back=False):
+def place(fpname, ref, val, x, y, nets=None, back=False, front_mask=True):
     t = load(fpname).rstrip()
-    assert t.startswith("(footprint") and t.endswith(")")
     t = t[:-1].rstrip()
     if back:
         for a, b in (('(layer "F.Cu")', '(layer "B.Cu")'), ('"F.SilkS"', '"B.SilkS"'),
@@ -120,14 +112,11 @@ def place(fpname, ref, val, x, y, nets=None, back=False):
     lay = '(layer "B.Cu")' if back else '(layer "F.Cu")'
     t = t.replace(lay, lay + f'\n\t(uuid "{U()}")\n\t(at {x:.4f} {y:.4f})', 1)
     t = t.replace('(property "Reference" "REF**"', f'(property "Reference" "{ref}"', 1)
+    if not front_mask:                       # solder is behind: no gold ring on the face
+        t = t.replace('(layers "*.Cu" "*.Mask")', '(layers "*.Cu" "B.Mask")')
     t = re.sub(r'\(property "Value" "[^"]*"', f'(property "Value" "{val}"', t, count=1)
     if nets:
         def netify(m):
-            """Insert the net after whatever (layers ...) the pad actually declares.
-            This used to match only '(layers "*.Cu" "*.Mask")', which is what through-hole
-            pads emit - so the moment the landing pads and the connector became SMD with
-            explicit B.Cu layers, every net silently failed to attach and the board looked
-            fine while being entirely unconnected."""
             num = m.group(1)
             if num not in nets: return m.group(0)
             n = nets[num]
@@ -137,36 +126,40 @@ def place(fpname, ref, val, x, y, nets=None, back=False):
         t = re.sub(r'\(pad "(\d+)"[\s\S]*?\n\t\)', netify, t)
     add(t + "\n)")
 
-place("TS06_Rotary_SR25_PanelMount", "SW1", "SR25 6-pos", CX, CY,
+# The rotary and its ladder are on the FACE. Landing holes on 13 mm pitch so a 10.16 mm
+# axial resistor drops into every gap between adjacent taps, in descending voltage order.
+place("TS06_Rotary_SR25_THT", "SW1", "SR25 6-pos", CX, CY,
       {"1": "GND", "2": "TAP2", "3": "TAP3", "4": "TAP4", "5": "TAP5", "6": "+5V", "7": "A6"})
-place("TS06_MT1_Lever_PanelMount", "SW2", "FIELD", LEV["SW2"], CTRL_Y, {"1": "LEVA", "2": "A7"})
-place("TS06_MT1_Lever_PanelMount", "SW3", "SUB",   LEV["SW3"], CTRL_Y, {"1": "LEVB", "2": "A7"})
-place("TS06_KMD1_Button_PanelMount", "SW4", "MINUS", BTN["SW4"], CTRL_Y, {"1": "GND", "2": "D7"})
-place("TS06_KMD1_Button_PanelMount", "SW5", "PLUS",  BTN["SW5"], CTRL_Y, {"1": "GND", "2": "D8"})
-
-# The A6 divider, on the back, below the rotary's 25 mm body keepout.
-# Each resistor sits in the gap between the two switch pads it bridges, in the same
-# descending order. R5 (+5V..TAP5) leftmost, R1 (TAP2..GND) rightmost.
+SWX = [8.0, 21.0, 34.0, 47.0, 60.0, 73.0, 86.0]   # +5V TAP5 TAP4 TAP3 TAP2 GND A6
 LAD = [("R5", "4k7", "+5V", "TAP5"), ("R4", "4k7", "TAP5", "TAP4"),
        ("R3", "4k7", "TAP4", "TAP3"), ("R2", "4k7", "TAP3", "TAP2"),
        ("R1", "4k7", "TAP2", "GND")]
 for i, (ref, val, p1, p2) in enumerate(LAD):
-    place("TS06_R_1206_HandSolder", ref, val, 10.0 + i * 8.0, 48.0,
-          {"1": p1, "2": p2}, back=True)
+    place("TS06_R_Axial_P10.16mm_Front", ref, val, (SWX[i] + SWX[i+1]) / 2, RY,
+          {"1": p1, "2": p2})
 
-# The lever ladder drops into the clear band under the lever bodies, level with each
-# other, so the A7 and GND runs stay straight.
-place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 40.5, {"1": "LEVA", "2": "GND"}, back=True)
-place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 40.5, {"1": "+5V", "2": "A7"}, back=True)
-place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 40.5, {"1": "LEVB", "2": "GND"}, back=True)
-place("TS06_JST_PH_S6B-PH-SM4-TB_Back", "J1", "PH 6", 152.0, 45.4,
-      {"1": "+5V", "2": "GND", "3": "A6", "4": "A7", "5": "D7", "6": "D8"}, back=True)
-add(f'\t(gr_text "1 +5V  2 GND  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 152.0 50.9 0)\n'
+# Everything else stays behind the panel. Their landing holes are drilled through the
+# face, but the front mask stays closed over them, so the face shows a bare hole and no
+# gold. R6-R8 sit in the strip below y 38.5 - the only band this board has that is
+# outside all five body keepouts AND clear of the artwork.
+for ref, val, xx, nets in (("SW2", "FIELD", LEV["SW2"], {"1": "LEVA", "2": "A7"}),
+                           ("SW3", "SUB",   LEV["SW3"], {"1": "LEVB", "2": "A7"})):
+    place("TS06_MT1_Lever_THT", ref, val, xx, CTRL_Y, nets, front_mask=False)
+for ref, val, xx, nets in (("SW4", "MINUS", BTN["SW4"], {"1": "GND", "2": "D7"}),
+                           ("SW5", "PLUS",  BTN["SW5"], {"1": "GND", "2": "D8"})):
+    place("TS06_KMD1_Button_THT", ref, val, xx, CTRL_Y, nets, front_mask=False)
+RX = "TS06_R_Axial_P10.16mm_Back"
+place(RX, "R6", "10k", 95.0, 41.5, {"1": "+5V",  "2": "A7"},  back=True, front_mask=False)
+place(RX, "R8", "10k", 136.0, 39.0, {"1": "LEVB", "2": "GND"}, back=True, front_mask=False)
+place(RX, "R7", "20k", 136.0, 44.0, {"1": "LEVA", "2": "GND"}, back=True, front_mask=False)
+place("TS06_JST_PH_S6B-PH-K-S_Back", "J1", "PH 6 THT", 152.0, 45.5,
+      {"1": "+5V", "2": "GND", "3": "A6", "4": "A7", "5": "D7", "6": "D8"},
+      back=True, front_mask=False)
+add(f'\t(gr_text "1 +5V  2 GND  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 152.0 50.4 0)\n'
     f'\t\t(layer "B.SilkS")\n\t\t(uuid "{U()}")\n\t\t(effects\n\t\t\t(font\n'
     f'\t\t\t\t(size 1.0 1.0)\n\t\t\t\t(thickness 0.15)\n\t\t\t)\n'
     f'\t\t\t(justify mirror)\n\t\t)\n\t)')
 
-# ---------------------------------------------------------------- mounting holes
 for hx, hy in ((4.5, 4.5), (W - 4.5, 4.5), (4.5, H - 4.5), (W - 4.5, H - 4.5)):
     add(f'\t(footprint "MountingHole_2.7mm"\n\t\t(version {VER})\n\t\t(generator "{GEN}")\n'
         f'\t\t(generator_version "{GENV}")\n\t\t(layer "F.Cu")\n\t\t(uuid "{U()}")\n'
@@ -190,8 +183,11 @@ text("MODE", CX, 7.0, "F.SilkS", 1.7, 0.28)
 # lever and button lettering
 text("FIELD", LEV["SW2"], 38.4, "F.SilkS", 1.9, 0.32, bold=True)
 text("SUB",   LEV["SW3"], 38.4, "F.SilkS", 1.9, 0.32, bold=True)
-gold_text("-", BTN["SW4"], 38.6, 3.4, 0.6, bold=True)
-gold_text("+", BTN["SW5"], 38.6, 3.4, 0.6, bold=True)
+# 1.6 lower than on the surface-mount board: the buttons now have landing holes at
+# y 35.5 whose copper reaches the front face, and a 3.4 mm glyph at 38.6 came within
+# 0.4 mm of one. Still reads as the mark under its button.
+gold_text("-", BTN["SW4"], 40.2, 3.4, 0.6, bold=True)
+gold_text("+", BTN["SW5"], 40.2, 3.4, 0.6, bold=True)
 
 # the SUB rule, drawn as a supply. Nothing is drawn where the lever itself sits.
 BX, BR_, BT, BB = 108.0, 128.0, 17.0, 41.0
@@ -206,8 +202,8 @@ for sx, sy, mx, my, ex, ey in (
         (BX + 2.2, BB, BX + q, BB - q, BX, BB - 2.2)):
     arc(sx, sy, mx, my, ex, ey, "F.Cu", 0.45)
     arc(sx, sy, mx, my, ex, ey, "F.Mask", 0.6)
-gold_line(BX, 34.2, LEV["SW2"], 34.2)          # enable, in from FIELD's second throw
-gold_line(LEV["SW2"], 34.2, LEV["SW2"], 32.6)  # ends directly beneath it, no angle
+gold_line(BX, 33.5, LEV["SW2"], 33.5)          # enable, in from FIELD's second throw
+gold_line(LEV["SW2"], 33.5, LEV["SW2"], 32.0)  # ends directly beneath it, no angle
 y3, y5 = py(16.4, SUBLIVE[0]), py(16.4, SUBLIVE[1])
 gold_line(118.0, BT, 118.0, 11.0)              # out of the top face -> position 3
 gold_line(118.0, 11.0, 65.0 + (y3 - 11.0), 11.0)
@@ -221,6 +217,63 @@ circ(CX, CY, 12.5, "User.1")                   # rotary body, behind the panel
 text("BODY 25.00", CX, 40.4, "User.1", 1.0, 0.15)
 for x in list(LEV.values()) + list(BTN.values()):
     circ(x, CTRL_Y, 12.0, "User.1")
+
+# ---------------------------------------------------------------- routing
+# Front, BARE: the ladder only. Copper 0.60 wide, mask opening 0.45, so the mask laps
+# 0.075 onto the edge of every trace and no bare laminate shows around the gold.
+# Back, under mask: six signals on 0.30. GND is not routed at all - it is the pour.
+#
+# Lanes, top to bottom, chosen so nothing crosses:
+#   y 31.5  LEVB going east over SW3's bushing (the only way past SW3's own A7 pad)
+#   y 38.5  A7 stepping from SW2 across to R6
+#   y 42.2  A7 trunk, R6 -> J1
+#   y 44.0  LEVA trunk, SW2 -> R7
+#   y 47.6  +5V trunk, ladder -> R6 -> J1
+#   y 49.3  A6, the rotary common -> J1
+
+def track(pts, net, layer="B.Cu", w=0.3):
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        add(f'\t(segment\n\t\t(start {x1:.3f} {y1:.3f})\n\t\t(end {x2:.3f} {y2:.3f})\n'
+            f'\t\t(width {w})\n\t\t(layer "{layer}")\n\t\t(net {NI[net]})\n'
+            f'\t\t(uuid "{U()}")\n\t)')
+
+def bare(pts, net, w=0.60, opening=0.45):
+    """A real trace on the front with the mask opened over it - copper you can see and
+    solder to. The opening is narrower than the copper on purpose (see gold_line)."""
+    track(pts, net, "F.Cu", w)
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        line(x1, y1, x2, y2, "F.Mask", opening)
+
+# --- the ladder, on the face
+SWX = {"+5V": 8.0, "TAP5": 21.0, "TAP4": 34.0, "TAP3": 47.0, "TAP2": 60.0,
+       "GND": 73.0, "A6": 86.0}
+bare([(SWX["+5V"], SWY), (9.42, RY)], "+5V")             # first rung, off the end pad
+bare([(SWX["GND"], SWY), (71.58, RY)], "GND")            # last rung, off the sixth pad
+for tap, xl, xr in (("TAP5", 19.58, 22.42), ("TAP4", 32.58, 35.42),
+                    ("TAP3", 45.58, 48.42), ("TAP2", 58.58, 61.42)):
+    bare([(xl, RY), (xr, RY)], tap)                      # rung to rung, straight across
+    bare([(SWX[tap], SWY), (SWX[tap], RY)], tap)         # and up to the landing hole
+
+# --- the back
+track([(9.42, RY), (9.42, 47.6), (147.0, 47.6), (147.0, RY)], "+5V")   # ladder top -> J1
+track([(89.92, 47.6), (89.92, 41.5)], "+5V")                           # tee up to R6
+track([(86.0, SWY), (86.0, 49.3), (151.0, 49.3), (151.0, RY)], "A6")   # wiper -> J1
+track([(96.6, 35.5), (96.6, 38.5), (100.08, 38.5), (100.08, 42.2),
+       (153.0, 42.2), (153.0, RY)], "A7")                              # SW2 -> R6 -> J1
+track([(119.6, 35.5), (119.6, 42.2)], "A7")                            # SW3 joins it
+track([(93.4, 35.5), (93.4, 44.0), (130.92, 44.0)], "LEVA")            # SW2 -> R7
+track([(116.4, 35.5), (116.4, 31.5), (130.92, 31.5), (130.92, 39.0)], "LEVB")
+track([(147.6, 35.5), (147.6, 38.5), (155.0, 38.5), (155.0, RY)], "D7")
+track([(165.6, 35.5), (165.6, 38.5), (157.0, 38.5), (157.0, RY)], "D8")
+
+# --- GND: a pour over the whole back face, 0.5 in from the edge
+add('\t(zone\n\t\t(net %d)\n\t\t(net_name "GND")\n\t\t(layers "B.Cu")\n\t\t(uuid "%s")\n'
+    '\t\t(name "GND")\n\t\t(hatch edge 0.5)\n\t\t(connect_pads\n\t\t\t(clearance 0.4)\n\t\t)\n'
+    '\t\t(min_thickness 0.25)\n\t\t(filled_areas_thickness no)\n'
+    '\t\t(fill\n\t\t\t(thermal_gap 0.4)\n\t\t\t(thermal_bridge_width 0.5)\n\t\t)\n'
+    '\t\t(polygon\n\t\t\t(pts\n%s\n\t\t\t)\n\t\t)\n\t)'
+    % (NI["GND"], U(), "\n".join("\t\t\t\t(xy %.2f %.2f)" % pt for pt in
+       ((0.5, 0.5), (W - 0.5, 0.5), (W - 0.5, H - 0.5), (0.5, H - 0.5)))))
 
 # ---------------------------------------------------------------- assemble
 head = [f'(kicad_pcb\n\t(version {VER})\n\t(generator "{GEN}")\n\t(generator_version "{GENV}")',

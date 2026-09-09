@@ -1,0 +1,154 @@
+(footprint "TS06_Rotary_SR25_THT"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SR25-style rotary, panel mount, with THROUGH-HOLE wire landing pads on 13 mm pitch so a 10.16 mm axial resistor sits between each adjacent pair. Bushing hole 8.80 mm from the calipered 8.62 mm bushing; F.Fab circle is the 25.00 mm body keepout behind the panel. Pad order descends +5V, TAP5..TAP2, GND, then COM.")
+	(tags "SR25 rotary galette THT panel-mount TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -8.4 0)
+		(layer "F.Fab")
+		(uuid "c00731c9-b602-456e-9b58-bc5bf7771409")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_Rotary_SR25_THT"
+		(at 0 27.0 0)
+		(layer "F.Fab")
+		(uuid "ad630875-847b-4211-b708-8eeffccf5ca7") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "0c2dfafc-b314-48ae-9157-d3bd182288f5") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "8257c160-d271-4579-942b-32a9eb836e73") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "9bb5eae7-30bf-4ecc-9f26-2daa9f0321e7") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "" np_thru_hole circle
+		(at 0.0000 0.0000)
+		(size 8.8 8.8)
+		(drill 8.8)
+		(layers "F&B.Cu" "*.Mask")
+		(uuid "8b97f935-f7f1-4061-bff2-d5da8229389a")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 6.4 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "375921e7-6d4d-4d97-abea-0aed081c48f3")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 7.0 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "d0ccb3bc-1c2a-47eb-af8e-c0809338b768")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 12.5 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "c88b6328-c6c8-4b1f-8c4a-515a800e3068")
+	)
+	(pad "6" thru_hole circle
+		(at -22.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "eca0efc4-a285-4595-b355-fd825032a2da")
+	)
+	(pad "5" thru_hole circle
+		(at -9.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "fec447d8-c39a-4380-b06c-3881ed885c14")
+	)
+	(pad "4" thru_hole circle
+		(at 4.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8b34babb-9203-4adc-b125-614a0862aa79")
+	)
+	(pad "3" thru_hole circle
+		(at 17.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "6ac2d0f1-9362-4db6-a8fe-cdd1fced98be")
+	)
+	(pad "2" thru_hole circle
+		(at 30.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "796d1dfc-ba04-4ece-8ded-089711664a2f")
+	)
+	(pad "1" thru_hole circle
+		(at 43.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "09929539-dfda-48ae-b44c-82b8fabfef49")
+	)
+	(pad "7" thru_hole circle
+		(at 56.0000 24.0000)
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "12314013-f41e-45ca-a0c4-8cd5fef56f67")
+	)
+	(embedded_fonts no)
+)

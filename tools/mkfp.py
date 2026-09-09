@@ -218,3 +218,76 @@ write("TS06_JST_PH_S6B-PH-SM4-TB_Back",
       "mirrored in X for back-side mounting. Pads 7/8 are the retention tabs and carry "
       "the mechanical load - the signal pads do not. Cable exits toward +Y.",
       "connector JST PH SMT 6way panel TERMINAL-06", b, -6.2, 6.6, hide_val=True)
+
+
+# ============================================================ THROUGH-HOLE VARIANT
+# Footprints for TS06-FASCIA-THT, the board where the ladder is on show. Everything
+# here is through-hole, so every joint puts a solder fillet on the FRONT face whichever
+# side the body sits on - that is the whole point of the variant.
+
+def tpad(n, x, y, drill=1.0, dia=1.9, shape="circle"):
+    return (f'\t(pad "{n}" thru_hole {shape}\n\t\t(at {x:.4f} {y:.4f})\n'
+            f'\t\t(size {dia} {dia})\n\t\t(drill {drill})\n'
+            f'\t\t(layers "*.Cu" "*.Mask")\n\t\t{U()}\n\t)')
+
+# --- axial resistor, 10.16 mm (0.4") lead pitch, mounted on the FRONT
+b = [tpad(1, -5.08, 0, 0.9, 1.8, "rect"), tpad(2, 5.08, 0, 0.9, 1.8)]
+b += [line(-3.2, -1.3, 3.2, -1.3, "F.SilkS"), line(-3.2, 1.3, 3.2, 1.3, "F.SilkS"),
+      line(-3.2, -1.3, -3.2, 1.3, "F.SilkS"), line(3.2, -1.3, 3.2, 1.3, "F.SilkS"),
+      line(-5.08, 0, -3.2, 0, "F.SilkS"), line(3.2, 0, 5.08, 0, "F.SilkS")]
+b += [line(-6.2, -1.7, 6.2, -1.7, "F.CrtYd", 0.05), line(-6.2, 1.7, 6.2, 1.7, "F.CrtYd", 0.05),
+      line(-6.2, -1.7, -6.2, 1.7, "F.CrtYd", 0.05), line(6.2, -1.7, 6.2, 1.7, "F.CrtYd", 0.05)]
+# Two builds of the same part. The front one carries NO designator on the silkscreen:
+# the face is the product, and "R2" printed across a dial word is exactly the fault the
+# last audit caught. Its silk is the body outline alone. The back one keeps its
+# designator, because that face is an assembly drawing and nobody sees it.
+write("TS06_R_Axial_P10.16mm_Front",
+      "Axial resistor, 10.16 mm lead pitch, mounted on the FRONT face. Pad 1 is square. "
+      "This part is meant to be seen: it is one rung of the A6 divider, which the "
+      "through-hole variant puts on show rather than behind the panel. No reference "
+      "designator on the silkscreen - the front of this board is the product.",
+      "resistor axial THT front TERMINAL-06", b, -2.6, 2.6, ref_layer="F.Fab")
+write("TS06_R_Axial_P10.16mm_Back",
+      "Axial resistor, 10.16 mm lead pitch, mounted BEHIND the panel. Pad 1 is square. "
+      "Identical copper to the _Front build; it keeps its reference designator on the "
+      "silkscreen because that face is never seen by the customer.",
+      "resistor axial THT back TERMINAL-06", b, -2.6, 2.6)
+
+# --- rotary landing pads, through-hole, 13 mm pitch, descending order as before
+b = [npth(8.8)]
+b += [circle(6.4, "F.SilkS"), circle(7.0, "F.CrtYd", 0.05), circle(12.50, "F.Fab", 0.1)]
+b += [tpad(n, -22.0 + i * 13.0, 24.0, 1.1, 2.0) for i, n in enumerate([6, 5, 4, 3, 2, 1, 7])]
+write("TS06_Rotary_SR25_THT",
+      "SR25-style rotary, panel mount, with THROUGH-HOLE wire landing pads on 13 mm "
+      "pitch so a 10.16 mm axial resistor sits between each adjacent pair. Bushing hole "
+      "8.80 mm from the calipered 8.62 mm bushing; F.Fab circle is the 25.00 mm body "
+      "keepout behind the panel. Pad order descends +5V, TAP5..TAP2, GND, then COM.",
+      "SR25 rotary galette THT panel-mount TERMINAL-06", b, -8.4, 27.0, hide_val=True,
+      ref_layer="F.Fab")
+
+# --- lever and button, through-hole landing pads
+for nm, dsc in (("MT1_Lever", "MT1/TV1-2 toggle lever"), ("KMD1_Button", "KMD1-1 pushbutton")):
+    b = [npth(8.0)]
+    b += [circle(5.6, "F.SilkS"), circle(6.2, "F.CrtYd", 0.05), circle(4.0, "F.Fab", 0.1)]
+    b += [tpad(i + 1, (i - 0.5) * 3.2, 9.5, 1.1, 2.0) for i in range(2)]
+    write(f"TS06_{nm}_THT",
+          f"{dsc}, panel mount, 8.00 mm bushing hole from the calipered 7.82 mm bushing. "
+          "Through-hole landing pads, so the joint shows on the front face.",
+          f"{nm} THT panel-mount soviet TERMINAL-06", b, -7.6, 12.6, hide_val=True,
+          ref_layer="F.Fab")
+
+# --- JST PH S6B-PH-K-S, side entry, THROUGH-HOLE
+# The cheap variant, and the one already found on Ozon at 140 RUB. Unlike the SMT part
+# it has no retention tabs - the six pins carry the load, which through-hole pins can.
+b = [tpad(1, -5.0, 0, 0.9, 1.7, "rect")] + [tpad(i + 2, -5.0 + (i + 1) * 2.0, 0, 0.9, 1.7)
+                                            for i in range(5)]
+b += [line(-7.95, -2.2, 7.95, -2.2, "B.SilkS"), line(-7.95, 5.4, 7.95, 5.4, "B.SilkS"),
+      line(-7.95, -2.2, -7.95, 5.4, "B.SilkS"), line(7.95, -2.2, 7.95, 5.4, "B.SilkS"),
+      line(-6.6, -3.4, -6.6, -2.2, "B.SilkS")]
+b += [line(-8.4, -3.9, 8.4, -3.9, "B.CrtYd", 0.05), line(-8.4, 5.9, 8.4, 5.9, "B.CrtYd", 0.05),
+      line(-8.4, -3.9, -8.4, 5.9, "B.CrtYd", 0.05), line(8.4, -3.9, 8.4, 5.9, "B.CrtYd", 0.05)]
+write("TS06_JST_PH_S6B-PH-K-S_Back",
+      "JST PH S6B-PH-K-S: 6-way, 2.0 mm pitch, side entry, THROUGH-HOLE, 2 A / 100 V. "
+      "Mounted on the back; its six pins show as solder fillets on the front. No "
+      "retention tabs on this variant - the through-hole pins take the cable load.",
+      "connector JST PH THT 6way panel TERMINAL-06", b, -5.2, 7.6, hide_val=True)

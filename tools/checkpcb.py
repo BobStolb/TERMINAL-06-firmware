@@ -61,10 +61,36 @@ for i in range(len(parts)):
             bad.append(f'COURTYARD OVERLAP  {parts[i]["ref"]} / {parts[j]["ref"]}')
 
 # 3. F.Cu graphics crossing any pad that reaches F.Cu
+# Read each gr_line as a whole block first. A non-greedy [\s\S]*? reaching for the
+# layer token will happily run past the end of its own block into the next one, which
+# made every F.Mask opening over the ladder read as a piece of front copper.
 segs = []
-for m in re.finditer(r'\(gr_line\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)'
-                     r'\n\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)[\s\S]*?\(layer "F\.Cu"\)', src):
-    v = list(map(float, m.groups())); segs.append(v)
+for m in re.finditer(r'\(gr_line\n[\s\S]*?\n\t\)', src):
+    blk = m.group(0)
+    if '(layer "F.Cu")' not in blk: continue
+    v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)'
+                  r'\n\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)', blk)
+    if v: segs.append(list(map(float, v.groups())))
+# Arcs and lettering on F.Cu are copper as well. The box corners of the SUB rule are
+# arcs and the plus and minus glyphs are text, so a check that reads only gr_line sees
+# about half of the front copper. Arcs are sampled; text gets a generous box.
+for m in re.finditer(r'\(gr_arc\n[\s\S]*?\n\t\)', src):
+    blk = m.group(0)
+    if '(layer "F.Cu")' not in blk: continue
+    v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(mid ([\d.-]+) ([\d.-]+)\)\n'
+                  r'\t\t\(end ([\d.-]+) ([\d.-]+)\)\n\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)', blk)
+    if not v: continue
+    ax, ay, mx, my, bx, by, aw = map(float, v.groups())
+    pts = [(ax, ay), (mx, my), (bx, by)]
+    for k in range(len(pts) - 1):
+        segs.append([pts[k][0], pts[k][1], pts[k+1][0], pts[k+1][1], aw])
+
+txts = []
+for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) [\d.-]+\)\n'
+                     r'\t\t\(layer "F\.Cu"\)[\s\S]*?\(size ([\d.]+)', src):
+    t, tx, ty, sz = m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(4))
+    txts.append((tx, ty, max(len(t), 1) * sz * 0.95 + sz * 0.4, sz * 1.5))
+
 fcu_pads = [d for p in parts for d in p["pads"]
             if "*.Cu" in d["layers"] or "F.Cu" in d["layers"] or "F&B" in d["layers"]]
 def seg_pt_dist(x1, y1, x2, y2, px_, py_):
@@ -77,6 +103,15 @@ for x1, y1, x2, y2, w in segs:
         clear = seg_pt_dist(x1, y1, x2, y2, d["x"], d["y"]) - w/2 - max(d["w"], d["h"])/2
         if clear < 0.2:
             bad.append(f'F.Cu ART TOUCHES PAD  {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f}) '
+                       f'clearance {clear:+.2f} mm')
+
+for tx, ty, tw, th in txts:
+    for d in fcu_pads:
+        dx = max(abs(d["x"] - tx) - tw/2, 0.0) - d["w"]/2
+        dy = max(abs(d["y"] - ty) - th/2, 0.0) - d["h"]/2
+        clear = math.hypot(max(dx, 0.0), max(dy, 0.0)) if (dx > 0 or dy > 0) else -1.0
+        if clear < 0.2:
+            bad.append(f'F.Cu LETTERING TOUCHES PAD  {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f}) '
                        f'clearance {clear:+.2f} mm')
 
 # 4. keepout intrusions - nothing on the back inside the rotary body circle

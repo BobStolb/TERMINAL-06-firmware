@@ -53,7 +53,8 @@ for f in re.findall(r'\(footprint "[^"]+"[\s\S]*?\n\)', SRC):
                   else [x for x in ("F.Cu","B.Cu") if x in lay]):
             pads.append({"ref": f"{ref}.{m.group(1)}", "x": ox+float(m.group(3)),
                          "y": oy+float(m.group(4)), "w": float(m.group(5)),
-                         "h": float(m.group(6)), "net": net, "layer": L})
+                         "h": float(m.group(6)), "net": net, "layer": L,
+                         "thru": m.group(2) == "thru_hole"})
 
 tracks = [{"a": (float(m.group(1)), float(m.group(2))), "b": (float(m.group(3)), float(m.group(4))),
            "w": float(m.group(5)), "layer": m.group(6), "net": int(m.group(7))}
@@ -63,9 +64,21 @@ vias = [{"x": float(m.group(1)), "y": float(m.group(2)), "d": float(m.group(3)),
         for m in re.finditer(r'\(via\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n\t\t\(size ([\d.]+)\)'
                              r'[\s\S]{0,80}?\(net (\d+)\)', SRC)]
 netname = {int(m.group(1)): m.group(2) for m in re.finditer(r'^\t\(net (\d+) "([^"]*)"', SRC, re.M)}
-gold = [((float(m.group(1)), float(m.group(2))), (float(m.group(3)), float(m.group(4))), float(m.group(5)))
-        for m in re.finditer(r'\(gr_line\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
-                             r'\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)[\s\S]*?\(layer "F\.Cu"\)', SRC)]
+# Each gr_line is read as a whole block: a non-greedy reach for the layer token runs
+# past the end of its own block and mislabels the next one.
+gold = []
+for m in re.finditer(r'\(gr_line\n[\s\S]*?\n\t\)', SRC):
+    blk = m.group(0)
+    if '(layer "F.Cu")' not in blk: continue
+    v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
+                  r'\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)', blk)
+    if v:
+        gold.append(((float(v.group(1)), float(v.group(2))),
+                     (float(v.group(3)), float(v.group(4))), float(v.group(5))))
+
+# A net that is poured is supplied by the zone, not by tracks. The pour is only claimed
+# to REACH every pad after tools/audit.py flood-fills it; this file just stops asking.
+poured = set(re.findall(r'\(zone\n\t\t\(net \d+\)\n\t\t\(net_name "([^"]*)"', SRC))
 
 # Text on F.Cu is copper too - the dial numerals and the plus/minus glyphs are drawn
 # that way on purpose. A checker that only looks at gr_line would happily route a
@@ -134,13 +147,26 @@ for (tx, ty, tw, th) in goldtext:
             flag(f'VIA/GOLDTEXT  {netname.get(v["net"])} at ({v["x"]:.1f},{v["y"]:.1f})  gap {g:+.2f}')
 
 # ---- connectivity: every netted pad touched by its own net
+# A board with no tracks at all is not "37 faults", it is one fact. Say it once.
+if not tracks and not vias:
+    print(f'{len(pads)} pad-layers - board carries no tracks or vias, '
+          f'so connectivity is not applicable. Clearance results above stand.')
+    for b in dict.fromkeys(bad): print("  " + b)
+    sys.exit(1 if bad else 0)
+# A plated through-hole is one node on both faces: a track landing on either side of it
+# connects it. Only a surface pad has to be met on its own layer.
+seen_pad = set()
 for p in pads:
-    if not p["net"] or p["net"] == "": continue
-    hit = any(t["layer"] == p["layer"] and netname.get(t["net"]) == p["net"]
+    if not p["net"] or p["net"] in poured: continue
+    key = (p["ref"], "" if p["thru"] else p["layer"])
+    if key in seen_pad: continue
+    seen_pad.add(key)
+    hit = any((p["thru"] or t["layer"] == p["layer"]) and netname.get(t["net"]) == p["net"]
               and seg_rect(t["a"], t["b"], p["x"], p["y"], p["w"], p["h"]) <= 0.01
               for t in tracks)
     if not hit:
-        flag(f'UNROUTED  {p["ref"]} net {p["net"]} at ({p["x"]:.1f},{p["y"]:.1f}) on {p["layer"]}')
+        where = "any layer" if p["thru"] else p["layer"]
+        flag(f'UNROUTED  {p["ref"]} net {p["net"]} at ({p["x"]:.1f},{p["y"]:.1f}) on {where}')
 
 print(f'{len(tracks)} tracks, {len(vias)} vias, {len(pads)} pad-layers, clearance target {CLR} mm')
 seen = set()

@@ -19,3 +19,8 @@ fp-info-cache
 
 # VS Code Local History extension
 .history/
+
+# KiCad editor lock and backup files
+*.lck
+*-backups/
+*.kicad_prl

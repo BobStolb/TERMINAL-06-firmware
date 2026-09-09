@@ -9,6 +9,13 @@ ONE connected component through tracks and vias.
 It also checks the things a copper checker never looks at: silkscreen over pads,
 silkscreen over silkscreen, and whether every mask opening is actually smaller than
 the copper it exposes.
+
+A POURED net gets a different test. "GND is a zone" is a claim, not a fact: a pour is
+cut into islands by whatever crosses it, and a pad in a walled-off island is as
+disconnected as an unrouted one. So the zone is rasterised at 0.15 mm - polygon minus
+every other net's pads, tracks, vias and clearance, minus one cell of erosion so a
+channel thinner than the zone's own min_thickness does not count - and flood-filled
+from one pad. Any pad of that net the flood does not reach is reported.
 """
 import re, sys, math
 from collections import defaultdict
@@ -51,13 +58,25 @@ for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) [\d.-]+
                      "box": txtbox(m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(5)))})
 
 tracks = [{"a": (float(g[0]), float(g[1])), "b": (float(g[2]), float(g[3])),
-           "layer": g[5], "net": int(g[6])}
+           "w": float(g[4]), "layer": g[5], "net": int(g[6])}
           for g in re.findall(r'\(segment\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
                               r'\t\t\(width ([\d.]+)\)\n\t\t\(layer "([^"]+)"\)\n\t\t\(net (\d+)\)', SRC)]
-vias = [{"x": float(g[0]), "y": float(g[1]), "net": int(g[3])}
+vias = [{"x": float(g[0]), "y": float(g[1]), "d": float(g[2]), "net": int(g[3])}
         for g in re.findall(r'\(via\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n\t\t\(size ([\d.]+)\)'
                             r'[\s\S]{0,90}?\(net (\d+)\)', SRC)]
 netname = {int(a): b for a, b in re.findall(r'^\t\(net (\d+) "([^"]*)"', SRC, re.M)}
+
+zones = []
+for zm in re.finditer(r'\(zone\n[\s\S]*?\n\t\)', SRC):
+    blk = zm.group(0)
+    nn = re.search(r'\(net_name "([^"]*)"', blk)
+    ly = re.search(r'\(layers? "([^"]+)"\)', blk)
+    cl = re.search(r'\(connect_pads\n\t\t\t\(clearance ([\d.]+)\)', blk)
+    pts = [(float(a), float(b)) for a, b in re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', blk)]
+    if nn and ly and len(pts) >= 3:
+        zones.append({"net": nn.group(1), "layer": ly.group(1),
+                      "clr": float(cl.group(1)) if cl else 0.5, "pts": pts})
+POURED = {z["net"] for z in zones}
 
 # ------------------------------------------------------------------ A. real net connectivity
 def on_pad(p, x, y, tol=0.01):
@@ -74,7 +93,7 @@ if UNROUTED:
     print("NOTE: board carries no tracks or vias - net connectivity not applicable.\n"
           "      Placement, artwork and silkscreen are still checked below.\n")
 for net in sorted({p["net"] for p in pads if p["net"]} | {netname[v["net"]] for v in vias}):
-    if not net or UNROUTED: continue
+    if not net or UNROUTED or net in POURED: continue   # poured nets: section D
     items = []
     for i, p in enumerate(pads):
         if p["net"] == net: items.append(("pad", i))
@@ -159,6 +178,78 @@ for t in alltxt:
         if boxes_hit(t["box"], (p["x"], p["y"], p["w"], p["h"])):
             bad("SILK/PAD", f'"{t["t"]}" ({t["layer"]}) printed over pad {p["id"]} '
                             f'at ({p["x"]:.1f},{p["y"]:.1f})')
+
+# ------------------------------------------------------------------ D. does the pour reach?
+G = 0.15
+for z in zones:
+    import numpy as np
+    poly = z["pts"]
+    x0 = min(p[0] for p in poly); x1 = max(p[0] for p in poly)
+    y0 = min(p[1] for p in poly); y1 = max(p[1] for p in poly)
+    xs = np.arange(x0 + G/2, x1, G); ys = np.arange(y0 + G/2, y1, G)
+    PX, PY = np.meshgrid(xs, ys)
+    ok = np.zeros(PX.shape, bool)
+    for i in range(len(poly)):                       # even-odd, any polygon
+        ax, ay = poly[i]; bx, by = poly[(i+1) % len(poly)]
+        if ay == by: continue
+        ok ^= ((ay > PY) != (by > PY)) & (PX < (bx-ax) * (PY-ay) / (by-ay) + ax)
+
+    def clear_rect(cx, cy, w, h, m):                 # knock a keep-out out of the pour
+        ok[(np.abs(PX-cx) <= w/2 + m) & (np.abs(PY-cy) <= h/2 + m)] = False
+    for p in pads:
+        if z["layer"] not in p["layers"] or p["net"] == z["net"]: continue
+        clear_rect(p["x"], p["y"], p["w"], p["h"], z["clr"])
+    for t in tracks:
+        if t["layer"] != z["layer"] or netname.get(t["net"]) == z["net"]: continue
+        (ax, ay), (bx, by) = t["a"], t["b"]
+        dx, dy = bx-ax, by-ay; L = dx*dx + dy*dy
+        u = 0.0 if L == 0 else np.clip(((PX-ax)*dx + (PY-ay)*dy) / L, 0, 1)
+        ok[np.hypot(PX - (ax + u*dx), PY - (ay + u*dy)) <= t["w"]/2 + z["clr"]] = False
+    for v in vias:
+        if netname.get(v["net"]) == z["net"]: continue
+        ok[np.hypot(PX - v["x"], PY - v["y"]) <= v["d"]/2 + z["clr"]] = False
+
+    # one cell of erosion: copper thinner than about 2G will not fill at min_thickness
+    e = ok.copy()
+    e[1:, :] &= ok[:-1, :]; e[:-1, :] &= ok[1:, :]
+    e[:, 1:] &= ok[:, :-1]; e[:, :-1] &= ok[:, 1:]
+    ok = e
+
+    lab = -np.ones(ok.shape, int)
+    nlab = 0
+    from collections import deque
+    H_, W_ = ok.shape
+    for sy in range(H_):
+        for sx in range(W_):
+            if not ok[sy, sx] or lab[sy, sx] >= 0: continue
+            q = deque([(sy, sx)]); lab[sy, sx] = nlab
+            while q:
+                cy_, cx_ = q.popleft()
+                for ny, nx in ((cy_-1,cx_), (cy_+1,cx_), (cy_,cx_-1), (cy_,cx_+1)):
+                    if 0 <= ny < H_ and 0 <= nx < W_ and ok[ny, nx] and lab[ny, nx] < 0:
+                        lab[ny, nx] = nlab; q.append((ny, nx))
+            nlab += 1
+
+    mine = [p for p in pads if z["layer"] in p["layers"] and p["net"] == z["net"]]
+    reach = {}
+    for p in mine:                                   # a pad joins the pour by its spokes
+        r = max(p["w"], p["h"])/2 + z["clr"] + 4*G
+        sel = (np.abs(PX-p["x"]) <= r) & (np.abs(PY-p["y"]) <= r) & (lab >= 0)
+        reach[p["id"]] = set(np.unique(lab[sel]).tolist())
+    if any(not v for v in reach.values()):
+        for k, v in reach.items():
+            if not v:
+                bad("POUR UNREACHED", f'{z["net"]} pour on {z["layer"]} does not reach {k}')
+    else:
+        common = set.intersection(*reach.values()) if reach else set()
+        if not common and reach:
+            groups = {}
+            for k, v in reach.items(): groups.setdefault(tuple(sorted(v)), []).append(k)
+            bad("POUR SPLIT", f'{z["net"]} pour on {z["layer"]} is islanded: ' +
+                "  ||  ".join(", ".join(sorted(g)) for g in groups.values()))
+    print(f'pour "{z["net"]}" on {z["layer"]}: {nlab} island(s), '
+          f'{100.0*ok.sum()/ok.size:.0f}% of the outline is copper, '
+          f'{len(mine)} pad(s) of the net')
 
 # ------------------------------------------------------------------ report
 print(f'{len(pads)} pad-layers, {len(tracks)} tracks, {len(vias)} vias, '

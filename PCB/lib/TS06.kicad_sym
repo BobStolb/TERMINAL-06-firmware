@@ -797,7 +797,7 @@
 (pin passive line
 (at 7.62 -1.27 180)
 (length 5.08)
-(name "D8"
+(name "+5V"
 (effects
 (font
 (size 1.27 1.27)
@@ -815,7 +815,7 @@
 (pin passive line
 (at 7.62 -3.81 180)
 (length 5.08)
-(name "D7"
+(name "GND"
 (effects
 (font
 (size 1.27 1.27)
@@ -833,7 +833,7 @@
 (pin passive line
 (at 7.62 -6.35 180)
 (length 5.08)
-(name "GND"
+(name "A6"
 (effects
 (font
 (size 1.27 1.27)
@@ -869,7 +869,7 @@
 (pin passive line
 (at 7.62 -11.43 180)
 (length 5.08)
-(name "+5V"
+(name "D7"
 (effects
 (font
 (size 1.27 1.27)
@@ -887,7 +887,7 @@
 (pin passive line
 (at 7.62 -13.969999999999999 180)
 (length 5.08)
-(name "A6"
+(name "D8"
 (effects
 (font
 (size 1.27 1.27)

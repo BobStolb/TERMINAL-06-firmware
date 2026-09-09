@@ -1,15 +1,15 @@
-(footprint "TS06_MT1_Lever_PanelMount"
+(footprint "TS06_KMD1_Button_THT"
 	(version 20260206)
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "MT1/TV1-2 Soviet toggle lever, panel mount. 8.0mm bushing clearance hole (bushing 7.82mm from the calipered FreeCAD model, 3d/MT1.step). Lugs sit behind the body and cannot reach this board, so it carries wire-landing pads rather than lug pads.")
-	(tags "MT1 TV1-2 toggle lever panel-mount soviet TERMINAL-06")
+	(descr "KMD1-1 pushbutton, panel mount, 8.00 mm bushing hole from the calipered 7.82 mm bushing. Through-hole landing pads, so the joint shows on the front face.")
+	(tags "KMD1_Button THT panel-mount soviet TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
 		(at 0 -7.6 0)
 		(layer "F.Fab")
-		(uuid "3d94640a-0dd0-41ed-86f3-725a9708342f")
+		(uuid "355ea522-0590-41e1-9afc-80c88165ed60")
 		(effects
 			(font
 				(size 1 1)
@@ -17,10 +17,10 @@
 			)
 		)
 	)
-	(property "Value" "TS06_MT1_Lever_PanelMount"
-		(at 0 10.6 0)
+	(property "Value" "TS06_KMD1_Button_THT"
+		(at 0 12.6 0)
 		(layer "F.Fab")
-		(uuid "e797672c-eac5-4e04-a21b-889cfbee63f2") (hide yes)
+		(uuid "5d7ec6dd-b073-4b95-8a1a-12df7b708525") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +31,7 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "d95ffe48-60ab-4e6f-9d64-c4b8801ad958") (hide yes)
+		(uuid "3795fbfd-910f-4fa9-886a-e2175f004a18") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +42,7 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "6ceae926-81f3-430d-8533-56bc01dfb521") (hide yes)
+		(uuid "58290052-0808-4923-968c-9ac8fdf739c1") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +53,7 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "54982308-efb4-43ba-a63d-f899c1a17269") (hide yes)
+		(uuid "cb3efc02-cd4f-4c90-8142-0e3bc1408460") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -66,7 +66,7 @@
 		(size 8.0 8.0)
 		(drill 8.0)
 		(layers "F&B.Cu" "*.Mask")
-		(uuid "2c4d1886-9de1-489e-8a5f-89feb9672d45")
+		(uuid "c425e659-5c54-41c6-9d4a-ac35d6548ee5")
 	)
 	(fp_circle
 		(center 0 0)
@@ -77,7 +77,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "9dc221cd-e105-43ec-9f9d-34b394ce2ff6")
+		(uuid "7a133c9a-c652-43de-a656-41a9e4e871d0")
 	)
 	(fp_circle
 		(center 0 0)
@@ -88,7 +88,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "d91d89a8-1c1a-49bc-bfa1-293284e6b048")
+		(uuid "c94476e1-4d90-4722-832b-09afcfddc5a1")
 	)
 	(fp_circle
 		(center 0 0)
@@ -99,19 +99,21 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "e24e3312-de10-454d-8a90-7612a0ce7961")
+		(uuid "7dfa004d-b108-4405-bfe3-c0aab15c7e72")
 	)
-	(pad "1" smd rect
+	(pad "1" thru_hole circle
 		(at -1.6000 9.5000)
-		(size 2.2 1.5)
-		(layers "B.Cu" "B.Mask")
-		(uuid "d68921a6-9c12-4791-b9ae-ab1839700811")
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "43b03fdb-f7c6-4c5b-a8a9-15779a39516a")
 	)
-	(pad "2" smd rect
+	(pad "2" thru_hole circle
 		(at 1.6000 9.5000)
-		(size 2.2 1.5)
-		(layers "B.Cu" "B.Mask")
-		(uuid "f329a244-de79-4afb-a6de-29e7012d439b")
+		(size 2.0 2.0)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "e2eb4f50-8933-472f-a57e-954d6237aa6c")
 	)
 	(embedded_fonts no)
 )

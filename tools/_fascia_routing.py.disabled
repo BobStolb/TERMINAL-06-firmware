@@ -5,6 +5,11 @@ Nothing here is lost. Two ways back:
   git checkout pcb/fascia-routed     - the full routed board, audited clean
   paste this block back into mkpcb.py above the assemble section
 
+CAUTION, added later: J1's pin order changed after this snapshot was taken (it is now
+1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8, the same on both builds). The five tails that
+land on J1 in this block go to the old pins and must be re-aimed before it is pasted
+back. Everything upstream of the connector is unaffected.
+
 It routed 43 tracks and 7 vias across two layers and passed clearance at 0.2 mm and
 single-component connectivity on all 12 nets. It is kept verbatim so re-enabling it
 is a paste, not a rewrite.
