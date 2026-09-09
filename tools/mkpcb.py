@@ -72,13 +72,16 @@ def text(s, x, y, layer, size=1.6, thick=0.25, just="", rot=0, bold=False):
         f'\t\t\t\t(thickness {thick}){b}\n\t\t\t){j}\n\t\t)\n\t)')
 
 def gold_line(x1, y1, x2, y2, w=0.45):
-    """Exposed copper: a trace on F.Cu plus a matching mask opening over it."""
-    line(x1, y1, x2, y2, "F.Cu", w)
-    line(x1, y1, x2, y2, "F.Mask", w + 0.15)
+    """Exposed copper. w is the width you SEE - the opening. The copper underneath is
+    made wider so the mask laps onto its edge; the other way round leaves a sliver of
+    bare laminate showing around every gold feature, which on a black board reads as a
+    pale outline rather than a clean edge."""
+    line(x1, y1, x2, y2, "F.Cu", w + 0.15)
+    line(x1, y1, x2, y2, "F.Mask", w)
 
 def gold_text(s, x, y, size=1.6, thick=0.25, just="", bold=False):
-    text(s, x, y, "F.Cu", size, thick, just, bold=bold)
-    text(s, x, y, "F.Mask", size, thick + 0.12, just, bold=bold)
+    text(s, x, y, "F.Cu", size, thick + 0.12, just, bold=bold)
+    text(s, x, y, "F.Mask", size, thick, just, bold=bold)
 
 # ---------------------------------------------------------------- outline
 line(CR, 0, W - CR, 0, "Edge.Cuts", 0.05)
@@ -148,7 +151,7 @@ place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 40.5, {"1": "+5V", "2": "A7"
 place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 40.5, {"1": "LEVB", "2": "GND"}, back=True)
 place("TS06_JST_PH_S6B-PH-SM4-TB_Back", "J1", "PH 6", 152.0, 45.4,
       {"1": "D8", "2": "D7", "3": "GND", "4": "A7", "5": "+5V", "6": "A6"}, back=True)
-add(f'\t(gr_text "1 D8  2 D7  3 GND  4 A7  5 +5V  6 A6"\n\t\t(at 152.0 38.6 0)\n'
+add(f'\t(gr_text "1 D8  2 D7  3 GND  4 A7  5 +5V  6 A6"\n\t\t(at 152.0 50.9 0)\n'
     f'\t\t(layer "B.SilkS")\n\t\t(uuid "{U()}")\n\t\t(effects\n\t\t\t(font\n'
     f'\t\t\t\t(size 1.0 1.0)\n\t\t\t\t(thickness 0.15)\n\t\t\t)\n'
     f'\t\t\t(justify mirror)\n\t\t)\n\t)')
@@ -170,9 +173,9 @@ arc(px(13.9, 0), py(13.9, 0), px(13.9, 2.5), py(13.9, 2.5), px(13.9, 5), py(13.9
 for i in range(N_POS):
     line(px(11.6, i), py(11.6, i), px(13.9, i), py(13.9, i), "F.SilkS", 0.3)
     gold_text(str(i + 1), px(16.4, i), py(16.4, i), 1.5, 0.25)
-    line(px(18.3, i), py(18.3, i), 50.6, py(16.4, i), "F.SilkS", 0.1)
+    line(px(16.4, i) + 1.6, py(16.4, i), 50.6, py(16.4, i), "F.SilkS", 0.1)
     text(LABEL[i], 52.0, py(16.4, i), "F.SilkS", 1.7, 0.26, "left")
-text("MODE", 6.5, 6.0, "F.SilkS", 1.4, 0.22, "left")
+text("MODE", CX, 7.0, "F.SilkS", 1.7, 0.28)
 
 # lever and button lettering
 text("FIELD", LEV["SW2"], 38.4, "F.SilkS", 1.9, 0.32, bold=True)

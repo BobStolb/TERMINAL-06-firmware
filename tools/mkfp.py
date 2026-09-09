@@ -65,11 +65,12 @@ def fab(s, y, size=0.8):
             f'\t\t(effects\n\t\t\t(font\n\t\t\t\t(size {size} {size})\n\t\t\t\t(thickness 0.12)\n'
             f'\t\t\t)\n\t\t)\n\t)')
 
-def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0, hide_val=False):
+def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0, hide_val=False,
+          ref_layer="F.SilkS"):
     parts = [f'(footprint "{name}"', f'\t(version {VER})', f'\t(generator "{GEN}")',
              f'\t(generator_version "{GENV}")', '\t(layer "F.Cu")', f'\t(descr "{descr}")',
              f'\t(tags "{tags}")', '\t(attr through_hole)',
-             txt("Reference", "REF**", ref_y, "F.SilkS"),
+             txt("Reference", "REF**", ref_y, ref_layer),
              txt("Value", name, val_y, "F.Fab", hide=hide_val),
              txt("Footprint", "", 0, "F.Fab", hide=True),
              txt("Datasheet", "", 0, "F.Fab", hide=True),
@@ -95,7 +96,7 @@ write("TS06_MT1_Lever_PanelMount",
       "(bushing 7.82mm from the calipered FreeCAD model, 3d/MT1.step). Lugs sit "
       "behind the body and cannot reach this board, so it carries wire-landing "
       "pads rather than lug pads.",
-      "MT1 TV1-2 toggle lever panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True)
+      "MT1 TV1-2 toggle lever panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True, ref_layer="F.Fab")
 
 # ---------------------------------------------------------------- KMD1 button
 # Bushing 7.82 mm from 3d/KMD1.step (cylinder R 3.910 at z 12.40); plunger 6.00 mm
@@ -108,7 +109,7 @@ write("TS06_KMD1_Button_PanelMount",
       "KMD1-1 Soviet pushbutton, panel mount. 8.0mm bushing clearance hole from the "
       "calipered FreeCAD model (3d/KMD1.step): bushing 7.82mm, plunger 6.00mm. "
       "Independently sourced - no longer carried over from MT1 by eye.",
-      "KMD1 button panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True)
+      "KMD1 button panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True, ref_layer="F.Fab")
 
 # ---------------------------------------------------------------- Rotary, panel-mount
 # All from 3d/SR25.step, calipered: bushing 8.62, usable 7.00, shaft 6.00,
@@ -142,7 +143,7 @@ write("TS06_Rotary_SR25_PanelMount",
       "on D10.90. F.Fab circle is the body keepout BEHIND the panel. User.1 shows the lug "
       "ring for reference only - the lugs sit 11.3mm behind this board and cannot land "
       "on it.",
-      "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06", b, -8.4, 20.0, hide_val=True)
+      "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06", b, -8.4, 20.0, hide_val=True, ref_layer="F.Fab")
 
 # ---------------------------------------------------------------- 1206 resistor
 # SMD, hand-solder land pattern, authored on the BACK layers. Through-hole axials were
