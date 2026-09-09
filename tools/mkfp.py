@@ -128,7 +128,13 @@ for i in range(12):                          # 12 taps = 6 positions x 2 poles
     a = math.radians(15 + 30 * i)
     b.append(line(9.995 * math.cos(a), 9.995 * math.sin(a),
                   10.5 * math.cos(a), 10.5 * math.sin(a), "User.1", 0.1))
-b += [spad(i + 1, -10.8 + i * 3.6, 17.5) for i in range(7)]   # T1..T6 then COM, wire-landed
+# Landing pads at 8 mm pitch and in DESCENDING voltage order (+5V leftmost, GND, then
+# COM on the right nearest the connector). Two reasons, both about routing rather than
+# looks: the wide pitch leaves room to sit a 1206 between every adjacent pair, and the
+# descending order means each resistor's pad 1 (its higher node) faces left toward the
+# switch pad it belongs to. The ladder then routes as ten short diagonals that cannot
+# cross each other. Ascending order forces every one of them to cross its neighbour.
+b += [spad(n, -24.0 + i * 8.0, 17.5) for i, n in enumerate([6, 5, 4, 3, 2, 1, 7])]
 write("TS06_Rotary_SR25_PanelMount",
       "SR25-style 6-position 2-pole galette rotary, panel mount. All dimensions from the "
       "calipered FreeCAD model 3d/SR25.step: bushing 8.62mm x 7.00mm usable (hole 8.8mm), "

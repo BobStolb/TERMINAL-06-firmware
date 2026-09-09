@@ -9,7 +9,7 @@
 	(property "Reference" "REF**"
 		(at 0 -7.6 0)
 		(layer "F.SilkS")
-		(uuid "b175c583-eccd-4ca3-ad43-bc06ed1d0a74")
+		(uuid "19f66441-c926-496c-b14b-7095bfe9f600")
 		(effects
 			(font
 				(size 1 1)
@@ -20,7 +20,7 @@
 	(property "Value" "TS06_KMD1_Button_PanelMount"
 		(at 0 10.6 0)
 		(layer "F.Fab")
-		(uuid "13a7d86a-cb28-4f5a-a12a-4faa5caf9862") (hide yes)
+		(uuid "93de7ed8-2a21-4ccd-8fe7-6c92b6ed80dc") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +31,7 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "6cf975c4-fd0e-4045-8292-ad783fe68dde") (hide yes)
+		(uuid "9457be7f-1c3a-4e04-8f50-e9300464601a") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +42,7 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "19adebb3-f2f6-4215-96ea-98db47a4cf25") (hide yes)
+		(uuid "0bbc5c2c-5347-4faf-95f0-08045efe9dfd") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +53,7 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "c2c92c85-5da9-4263-8b42-fee28bc3de2d") (hide yes)
+		(uuid "d450024e-7a8c-4801-9eb6-5bb78b3cb5db") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -66,7 +66,7 @@
 		(size 8.0 8.0)
 		(drill 8.0)
 		(layers "F&B.Cu" "*.Mask")
-		(uuid "01e92424-abe0-44b3-b6b3-e196835e6432")
+		(uuid "1ca5564e-9b4c-480c-80e8-ec4949780195")
 	)
 	(fp_circle
 		(center 0 0)
@@ -77,7 +77,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "a8ec3c65-b1ac-4678-9c8b-276e0902c1d8")
+		(uuid "3eb63d74-954e-4e33-93fd-077d3b6b1d29")
 	)
 	(fp_circle
 		(center 0 0)
@@ -88,7 +88,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "1c31de33-8c17-40f2-97c7-e19f7ce61bc4")
+		(uuid "4c9e08f1-bd17-4e09-b80e-d34610648eec")
 	)
 	(fp_circle
 		(center 0 0)
@@ -99,19 +99,19 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "dda16caa-0a1a-42e6-9ba5-3d679e14d86c")
+		(uuid "5822d66f-a034-4190-befb-f96a914f97b1")
 	)
 	(pad "1" smd rect
 		(at -1.6000 9.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "023d3ce5-b624-4c66-a13f-ee7e7760cd5e")
+		(uuid "7495307e-39fa-401b-a30f-7582b9ee4f8d")
 	)
 	(pad "2" smd rect
 		(at 1.6000 9.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "0523677a-15dd-4e5d-8972-5cbdd0c645cb")
+		(uuid "b29c4e43-6a0b-43bc-a70c-18f4cfccc153")
 	)
 	(embedded_fonts no)
 )

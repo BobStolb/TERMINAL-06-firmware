@@ -132,16 +132,20 @@ place("TS06_KMD1_Button_PanelMount", "SW4", "MINUS", BTN["SW4"], CTRL_Y, {"1": "
 place("TS06_KMD1_Button_PanelMount", "SW5", "PLUS",  BTN["SW5"], CTRL_Y, {"1": "GND", "2": "D8"})
 
 # The A6 divider, on the back, below the rotary's 25 mm body keepout.
-LAD = [("R1", "4k7", "TAP2", "GND"), ("R2", "4k7", "TAP3", "TAP2"),
-       ("R3", "4k7", "TAP4", "TAP3"), ("R4", "4k7", "TAP5", "TAP4"),
-       ("R5", "4k7", "+5V", "TAP5")]
+# Each resistor sits in the gap between the two switch pads it bridges, in the same
+# descending order. R5 (+5V..TAP5) leftmost, R1 (TAP2..GND) rightmost.
+LAD = [("R5", "4k7", "+5V", "TAP5"), ("R4", "4k7", "TAP5", "TAP4"),
+       ("R3", "4k7", "TAP4", "TAP3"), ("R2", "4k7", "TAP3", "TAP2"),
+       ("R1", "4k7", "TAP2", "GND")]
 for i, (ref, val, p1, p2) in enumerate(LAD):
-    place("TS06_R_1206_HandSolder", ref, val, 18.0 + i * 8.5, 48.0,
+    place("TS06_R_1206_HandSolder", ref, val, 10.0 + i * 8.0, 48.0,
           {"1": p1, "2": p2}, back=True)
 
-place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 8.5, {"1": "+5V", "2": "A7"}, back=True)
-place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 44.0, {"1": "LEVA", "2": "GND"}, back=True)
-place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 44.0, {"1": "LEVB", "2": "GND"}, back=True)
+# The lever ladder drops into the clear band under the lever bodies, level with each
+# other, so the A7 and GND runs stay straight.
+place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 40.5, {"1": "LEVA", "2": "GND"}, back=True)
+place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 40.5, {"1": "+5V", "2": "A7"}, back=True)
+place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 40.5, {"1": "LEVB", "2": "GND"}, back=True)
 place("TS06_JST_PH_S6B-PH-SM4-TB_Back", "J1", "PH 6", 152.0, 45.4,
       {"1": "GND", "2": "+5V", "3": "A6", "4": "A7", "5": "D7", "6": "D8"}, back=True)
 add(f'\t(gr_text "1 GND  2 +5V  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 152.0 38.6 0)\n'
