@@ -67,8 +67,14 @@ def pt_seg(p, a, b):
     t = 0 if L == 0 else max(0, min(1, ((p[0]-a[0])*dx + (p[1]-a[1])*dy)/L))
     return math.hypot(p[0]-(a[0]+t*dx), p[1]-(a[1]+t*dy))
 
+# An unrouted board splits every net by definition. Reporting that as a dozen faults
+# buries the findings that matter, so say it once and move on.
+UNROUTED = not tracks and not vias
+if UNROUTED:
+    print("NOTE: board carries no tracks or vias - net connectivity not applicable.\n"
+          "      Placement, artwork and silkscreen are still checked below.\n")
 for net in sorted({p["net"] for p in pads if p["net"]} | {netname[v["net"]] for v in vias}):
-    if not net: continue
+    if not net or UNROUTED: continue
     items = []
     for i, p in enumerate(pads):
         if p["net"] == net: items.append(("pad", i))
