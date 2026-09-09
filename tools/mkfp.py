@@ -58,12 +58,12 @@ def fab(s, y, size=0.8):
             f'\t\t(effects\n\t\t\t(font\n\t\t\t\t(size {size} {size})\n\t\t\t\t(thickness 0.12)\n'
             f'\t\t\t)\n\t\t)\n\t)')
 
-def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0):
+def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0, hide_val=False):
     parts = [f'(footprint "{name}"', f'\t(version {VER})', f'\t(generator "{GEN}")',
              f'\t(generator_version "{GENV}")', '\t(layer "F.Cu")', f'\t(descr "{descr}")',
              f'\t(tags "{tags}")', '\t(attr through_hole)',
              txt("Reference", "REF**", ref_y, "F.SilkS"),
-             txt("Value", name, val_y, "F.Fab"),
+             txt("Value", name, val_y, "F.Fab", hide=hide_val),
              txt("Footprint", "", 0, "F.Fab", hide=True),
              txt("Datasheet", "", 0, "F.Fab", hide=True),
              txt("Description", "", 0, "F.Fab", hide=True)]
@@ -83,14 +83,12 @@ def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0):
 b = [npth(8.0)]
 b += [circle(5.6, "F.SilkS"), circle(6.2, "F.CrtYd", 0.05), circle(4.0, "F.Fab", 0.1)]
 b += [spad(i + 1, (i - 0.5) * 3.2, 9.5) for i in range(2)]
-b += [fab("MT1 lever - bushing 7.82 (CAD, calipered)", 7.0),
-      fab("lugs sit behind body: hand-wire to pads 1-3", 8.2)]
 write("TS06_MT1_Lever_PanelMount",
       "MT1/TV1-2 Soviet toggle lever, panel mount. 8.0mm bushing clearance hole "
       "(bushing 7.82mm from the calipered FreeCAD model, 3d/MT1.step). Lugs sit "
       "behind the body and cannot reach this board, so it carries wire-landing "
       "pads rather than lug pads.",
-      "MT1 TV1-2 toggle lever panel-mount soviet TERMINAL-06", b, -7.6, 10.6)
+      "MT1 TV1-2 toggle lever panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True)
 
 # ---------------------------------------------------------------- KMD1 button
 # Bushing 7.82 mm from 3d/KMD1.step (cylinder R 3.910 at z 12.40); plunger 6.00 mm
@@ -99,13 +97,11 @@ write("TS06_MT1_Lever_PanelMount",
 b = [npth(8.0)]
 b += [circle(5.6, "F.SilkS"), circle(6.2, "F.CrtYd", 0.05), circle(4.0, "F.Fab", 0.1)]
 b += [spad(i + 1, (i - 0.5) * 3.2, 9.5) for i in range(2)]
-b += [fab("KMD1-1 button - bushing 7.82 (CAD, calipered)", 7.0),
-      fab("plunger 6.00 - keep silk clear of the cap", 8.2)]
 write("TS06_KMD1_Button_PanelMount",
       "KMD1-1 Soviet pushbutton, panel mount. 8.0mm bushing clearance hole from the "
       "calipered FreeCAD model (3d/KMD1.step): bushing 7.82mm, plunger 6.00mm. "
       "Independently sourced - no longer carried over from MT1 by eye.",
-      "KMD1 button panel-mount soviet TERMINAL-06", b, -7.6, 10.6)
+      "KMD1 button panel-mount soviet TERMINAL-06", b, -7.6, 10.6, hide_val=True)
 
 # ---------------------------------------------------------------- Rotary, panel-mount
 # All from 3d/SR25.step, calipered: bushing 8.62, usable 7.00, shaft 6.00,
@@ -126,11 +122,6 @@ for i in range(12):                          # 12 taps = 6 positions x 2 poles
     b.append(line(9.995 * math.cos(a), 9.995 * math.sin(a),
                   10.5 * math.cos(a), 10.5 * math.sin(a), "User.1", 0.1))
 b += [spad(i + 1, -10.8 + i * 3.6, 17.5) for i in range(7)]   # T1..T6 then COM, wire-landed
-b += [fab("SR25 rotary - bushing 8.62 x 7.00 usable (CAD, calipered)", 15.0),
-      fab("body 25.00 = keepout BEHIND panel, not a hole", 16.2),
-      fab("nut+washer+recess must fit the 5.00 left of the bushing", 17.4),
-      fab("User.1 lug ring D19.99 30.00deg (12 detents): lugs 11.3 BEHIND", -15.5),
-      fab("board - unreachable, hand-wire to pads 1-7", -16.7)]
 write("TS06_Rotary_SR25_PanelMount",
       "SR25-style 6-position 2-pole galette rotary, panel mount. All dimensions from the "
       "calipered FreeCAD model 3d/SR25.step: bushing 8.62mm x 7.00mm usable (hole 8.8mm), "
@@ -138,7 +129,7 @@ write("TS06_Rotary_SR25_PanelMount",
       "on D10.90. F.Fab circle is the body keepout BEHIND the panel. User.1 shows the lug "
       "ring for reference only - the lugs sit 11.3mm behind this board and cannot land "
       "on it.",
-      "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06", b, -8.4, 20.0)
+      "SR25 rotary galette 6-position panel-mount soviet TERMINAL-06", b, -8.4, 20.0, hide_val=True)
 
 # ---------------------------------------------------------------- 1206 resistor
 # SMD, hand-solder land pattern, authored on the BACK layers. Through-hole axials were
@@ -154,14 +145,22 @@ write("TS06_R_1206_HandSolder",
       "front is the product face, so no passive puts a hole through it.",
       "resistor 1206 SMD TERMINAL-06", b, -2.2, 2.2)
 
-# ---------------------------------------------------------------- JST-XH 6 way
-b = [pad(1, -6.25, 0, 1.0, 1.7, "rect")] + [pad(i + 2, -6.25 + (i + 1) * 2.5, 0) for i in range(5)]
-b += [line(-8.15, -2.4, 8.15, -2.4, "F.SilkS"), line(-8.15, 3.4, 8.15, 3.4, "F.SilkS"),
-      line(-8.15, -2.4, -8.15, 3.4, "F.SilkS"), line(8.15, -2.4, 8.15, 3.4, "F.SilkS")]
-b += [line(-8.6, -2.9, 8.6, -2.9, "F.CrtYd", 0.05), line(-8.6, 3.9, 8.6, 3.9, "F.CrtYd", 0.05),
-      line(-8.6, -2.9, -8.6, 3.9, "F.CrtYd", 0.05), line(8.6, -2.9, 8.6, 3.9, "F.CrtYd", 0.05)]
-b += [fab("1", -4.4)]
-write("TS06_JST_XH_6",
-      "JST-XH 6-way vertical header, 2.5 mm pitch. Pin 1 square. Panel cable: "
-      "GND, +5V, A6, A7, D7, D8.",
-      "connector JST XH 6 panel TERMINAL-06", b, -4.6, 5.9)
+# ---------------------------------------------------------------- cable solder pads
+# Six SMD lands on the back, cable soldered directly. A JST-XH is through-hole only, so
+# keeping it here would have put six holes through the face - the one thing this board
+# is not allowed to do. The XH connector keeps its job at the MAIN BOARD end, where the
+# cable still unplugs for service; only the fascia end is permanent, and the fascia is
+# not a serviceable part.
+# Strain relief is the chassis's job: nothing here resists a pulled cable.
+b = [spad(i + 1, -7.5 + i * 3.0, 0, 3.2, 1.8) for i in range(6)]
+b += [line(-9.6, -1.6, -9.6, 1.6, "B.SilkS", 0.12),
+      line(-9.6, -1.6, -8.2, 0, "B.SilkS", 0.12),
+      line(-9.6, 1.6, -8.2, 0, "B.SilkS", 0.12)]
+b += [line(-9.9, -2.6, 9.9, -2.6, "B.CrtYd", 0.05), line(-9.9, 2.6, 9.9, 2.6, "B.CrtYd", 0.05),
+      line(-9.9, -2.6, -9.9, 2.6, "B.CrtYd", 0.05), line(9.9, -2.6, 9.9, 2.6, "B.CrtYd", 0.05)]
+write("TS06_CablePads_6",
+      "Six back-side solder lands for the panel cable: 1 GND, 2 +5V, 3 A6, 4 A7, "
+      "5 D7, 6 D8. Pad 1 marked by a silk arrow. Direct-solder rather than a "
+      "connector, because JST-XH is through-hole and this board puts no hole through "
+      "its front face. Strain relief is provided by the chassis, not the board.",
+      "cable pads panel solder TERMINAL-06", b, -3.4, 3.4)

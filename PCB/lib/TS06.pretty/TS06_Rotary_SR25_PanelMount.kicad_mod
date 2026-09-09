@@ -9,7 +9,7 @@
 	(property "Reference" "REF**"
 		(at 0 -8.4 0)
 		(layer "F.SilkS")
-		(uuid "c47069a4-f9b0-4576-bf19-307a2ff669a0")
+		(uuid "7a96ca27-7b6d-4fcd-bfb8-c0c988c2a5ea")
 		(effects
 			(font
 				(size 1 1)
@@ -20,7 +20,7 @@
 	(property "Value" "TS06_Rotary_SR25_PanelMount"
 		(at 0 20.0 0)
 		(layer "F.Fab")
-		(uuid "f242ac9c-f1d8-4166-ab97-9ef76fcff5e8")
+		(uuid "2616f0d9-1bfb-47a0-8805-62915bac06dc") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -31,7 +31,7 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "32284d83-df17-44e2-b90d-6c0ee2e04000") (hide yes)
+		(uuid "602d09e7-8765-4f0c-93db-2f7c22126df4") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +42,7 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "22be6aea-a389-45b4-81ac-fe5f65d26481") (hide yes)
+		(uuid "bada476e-1e70-4548-bc4f-410defbd48b3") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +53,7 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "243d8e00-926d-4797-927a-6897f618a3d1") (hide yes)
+		(uuid "ab0228dd-1688-43fb-b2b0-430d99b2576f") (hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -66,7 +66,7 @@
 		(size 8.8 8.8)
 		(drill 8.8)
 		(layers "F&B.Cu" "*.Mask")
-		(uuid "e5bf3105-e0c0-4729-b328-d7268af51c50")
+		(uuid "2d108edf-3818-47ff-afc8-5cd30aaa5c7b")
 	)
 	(fp_circle
 		(center 0 0)
@@ -77,7 +77,7 @@
 		)
 		(fill no)
 		(layer "F.SilkS")
-		(uuid "d50ead67-caa0-47eb-b6ad-599f7d9d4369")
+		(uuid "be3fe3d6-f588-4011-8399-1b50f6f405c2")
 	)
 	(fp_circle
 		(center 0 0)
@@ -88,7 +88,7 @@
 		)
 		(fill no)
 		(layer "F.CrtYd")
-		(uuid "c491e8b0-65d9-4ae9-bfd0-771d8b773c1c")
+		(uuid "2c3734a2-099d-4465-93a8-be94439f304a")
 	)
 	(fp_circle
 		(center 0 0)
@@ -99,7 +99,7 @@
 		)
 		(fill no)
 		(layer "F.Fab")
-		(uuid "187c4a93-f843-40f0-983b-f5520237783a")
+		(uuid "7e0d8a81-5854-4e06-b7bd-f7b25045c8c9")
 	)
 	(fp_circle
 		(center 0 0)
@@ -110,7 +110,7 @@
 		)
 		(fill no)
 		(layer "User.1")
-		(uuid "1e281d8b-24cd-4d66-b2be-90e1a79a62c6")
+		(uuid "b018415a-84cb-46a7-9fb0-9901fb9cca0f")
 	)
 	(fp_line
 		(start 9.6544 2.5869)
@@ -120,7 +120,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "c391e486-5736-409b-9e2b-53a329af0689")
+		(uuid "bc0cac61-d855-497b-b5fd-f7806cc98948")
 	)
 	(fp_line
 		(start 7.0675 7.0675)
@@ -130,7 +130,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "89da2c87-dc1b-49eb-ae7c-3b5142b9cdf8")
+		(uuid "d00d7e65-c355-499f-90e6-ed73a2caa6e3")
 	)
 	(fp_line
 		(start 2.5869 9.6544)
@@ -140,7 +140,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "6719d357-8df7-44e2-98ca-25fc7c0a60e3")
+		(uuid "e1ae8d59-68dd-472a-8119-aa10fc3c9cca")
 	)
 	(fp_line
 		(start -2.5869 9.6544)
@@ -150,7 +150,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "c69cf611-6691-48d4-b919-fde2d64cf36c")
+		(uuid "950c40fe-ff1d-4973-8c25-2e04d212f06d")
 	)
 	(fp_line
 		(start -7.0675 7.0675)
@@ -160,7 +160,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "0c56b52f-ec59-4f78-9976-4e9b3ecaf55d")
+		(uuid "3ff3784b-0a00-41ef-8e99-68e49955d03c")
 	)
 	(fp_line
 		(start -9.6544 2.5869)
@@ -170,7 +170,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "ddf2989e-04b5-4709-a7ca-1836fb535665")
+		(uuid "3e86d99c-9b68-4aee-bbab-812269a9efc8")
 	)
 	(fp_line
 		(start -9.6544 -2.5869)
@@ -180,7 +180,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "6909f02a-cabc-49b4-b8ef-54e0e18ec846")
+		(uuid "44d30391-c559-4004-844e-8f1a2e66ac41")
 	)
 	(fp_line
 		(start -7.0675 -7.0675)
@@ -190,7 +190,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "9548e083-7cce-47e2-9f40-08e2fb9d41dc")
+		(uuid "4da6285f-b319-4517-ab4d-f8bb98a3482b")
 	)
 	(fp_line
 		(start -2.5869 -9.6544)
@@ -200,7 +200,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "76cf14b7-2fee-4adf-bcaf-98cb945ba57f")
+		(uuid "2337ca36-292e-4144-9791-d5026e25db27")
 	)
 	(fp_line
 		(start 2.5869 -9.6544)
@@ -210,7 +210,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "2384db39-e065-4006-af27-8f19dc4e0e4c")
+		(uuid "45458810-1e72-4772-a000-ddf65c68d60f")
 	)
 	(fp_line
 		(start 7.0675 -7.0675)
@@ -220,7 +220,7 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "cee5a2c1-b9f7-411a-b667-28aeb1e045a9")
+		(uuid "5e6fc358-94e5-449e-a6ec-eafa080c1ec3")
 	)
 	(fp_line
 		(start 9.6544 -2.5869)
@@ -230,104 +230,49 @@
 			(type solid)
 		)
 		(layer "User.1")
-		(uuid "776250e5-8080-4433-b858-62a0b737f8df")
+		(uuid "d7e52296-3c53-4fc8-9817-cbcb464af4c5")
 	)
 	(pad "1" smd rect
 		(at -10.8000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "3d14a160-3c25-46de-a41c-06d6288cee1d")
+		(uuid "27e9dccf-f9c7-4826-a919-7c0ce1c48bce")
 	)
 	(pad "2" smd rect
 		(at -7.2000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "9a9d1e24-43d1-4ba0-9b0c-9418eb630130")
+		(uuid "55003f85-0a79-4ffe-a257-2aeeb24d6e4a")
 	)
 	(pad "3" smd rect
 		(at -3.6000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "28ef85e8-3319-4186-9adf-6881a778fd9e")
+		(uuid "28a1bda5-3a56-4a51-8efe-8fe255639a19")
 	)
 	(pad "4" smd rect
 		(at 0.0000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "65a5443a-8e63-4eed-a381-427dddf13974")
+		(uuid "dd9ba19a-cff9-4ad8-ac81-6c27048ac2df")
 	)
 	(pad "5" smd rect
 		(at 3.6000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "b4b0c6e2-65a3-41ed-bb49-d55ad3da24c9")
+		(uuid "989c0170-856b-426d-9fbf-75fb8f1b79c0")
 	)
 	(pad "6" smd rect
 		(at 7.2000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "1d7bff7f-9d4d-42f1-a538-b3fc29b9955c")
+		(uuid "fb9b07c1-655d-4077-9152-eaebeb70495d")
 	)
 	(pad "7" smd rect
 		(at 10.8000 17.5000)
 		(size 2.2 1.5)
 		(layers "B.Cu" "B.Mask")
-		(uuid "caa4aeb4-2ceb-4889-ae72-6078028546ff")
-	)
-	(fp_text user "SR25 rotary - bushing 8.62 x 7.00 usable (CAD, calipered)"
-		(at 0 15.0 0)
-		(layer "F.Fab")
-		(uuid "6d493837-0db6-436e-a635-9f6a575b74df")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(fp_text user "body 25.00 = keepout BEHIND panel, not a hole"
-		(at 0 16.2 0)
-		(layer "F.Fab")
-		(uuid "2ae2b047-7cbe-4625-9c24-7cddb53eb5dd")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(fp_text user "nut+washer+recess must fit the 5.00 left of the bushing"
-		(at 0 17.4 0)
-		(layer "F.Fab")
-		(uuid "177817ca-3f8a-4b40-8189-3fe10736ceae")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(fp_text user "User.1 lug ring D19.99 30.00deg (12 detents): lugs 11.3 BEHIND"
-		(at 0 -15.5 0)
-		(layer "F.Fab")
-		(uuid "f804bdaf-ed63-4287-a473-8eeae694d058")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(fp_text user "board - unreachable, hand-wire to pads 1-7"
-		(at 0 -16.7 0)
-		(layer "F.Fab")
-		(uuid "98803ce2-0177-4533-acf1-5ff0b5fe50c7")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
+		(uuid "d11f81b2-3184-4ed8-a5c4-50369af930b4")
 	)
 	(embedded_fonts no)
 )

@@ -103,6 +103,7 @@ def place(fpname, ref, val, x, y, nets=None, back=False):
         for a, b in (('(layer "F.Cu")', '(layer "B.Cu")'), ('"F.SilkS"', '"B.SilkS"'),
                      ('"F.Fab"', '"B.Fab"'), ('"F.CrtYd"', '"B.CrtYd"')):
             t = t.replace(a, b)
+        t = t.replace("\n\t\t\t)\n\t\t)", "\n\t\t\t)\n\t\t\t(justify mirror)\n\t\t)")
     lay = '(layer "B.Cu")' if back else '(layer "F.Cu")'
     t = t.replace(lay, lay + f'\n\t(uuid "{U()}")\n\t(at {x:.4f} {y:.4f})', 1)
     t = t.replace('(property "Reference" "REF**"', f'(property "Reference" "{ref}"', 1)
@@ -125,18 +126,22 @@ place("TS06_KMD1_Button_PanelMount", "SW4", "MINUS", BTN["SW4"], CTRL_Y, {"1": "
 place("TS06_KMD1_Button_PanelMount", "SW5", "PLUS",  BTN["SW5"], CTRL_Y, {"1": "GND", "2": "D8"})
 
 # The A6 divider, on the back, below the rotary's 25 mm body keepout.
-LAD = [("R1", "4.7k 1%", "TAP2", "GND"), ("R2", "4.7k 1%", "TAP3", "TAP2"),
-       ("R3", "4.7k 1%", "TAP4", "TAP3"), ("R4", "4.7k 1%", "TAP5", "TAP4"),
-       ("R5", "4.7k 1%", "+5V", "TAP5")]
+LAD = [("R1", "4k7", "TAP2", "GND"), ("R2", "4k7", "TAP3", "TAP2"),
+       ("R3", "4k7", "TAP4", "TAP3"), ("R4", "4k7", "TAP5", "TAP4"),
+       ("R5", "4k7", "+5V", "TAP5")]
 for i, (ref, val, p1, p2) in enumerate(LAD):
-    place("TS06_R_1206_HandSolder", ref, val, 20.0 + i * 6.5, 48.0,
+    place("TS06_R_1206_HandSolder", ref, val, 18.0 + i * 8.5, 48.0,
           {"1": p1, "2": p2}, back=True)
 
 place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 8.5, {"1": "+5V", "2": "A7"}, back=True)
 place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 44.0, {"1": "LEVA", "2": "GND"}, back=True)
 place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 44.0, {"1": "LEVB", "2": "GND"}, back=True)
-place("TS06_JST_XH_6", "J1", "JST-XH 6", 158.0, 45.5,
+place("TS06_CablePads_6", "J1", "CABLE 6", 158.0, 45.0,
       {"1": "GND", "2": "+5V", "3": "A6", "4": "A7", "5": "D7", "6": "D8"}, back=True)
+add(f'\t(gr_text "1 GND  2 +5V  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 158.0 49.6 0)\n'
+    f'\t\t(layer "B.SilkS")\n\t\t(uuid "{U()}")\n\t\t(effects\n\t\t\t(font\n'
+    f'\t\t\t\t(size 1.0 1.0)\n\t\t\t\t(thickness 0.15)\n\t\t\t)\n'
+    f'\t\t\t(justify mirror)\n\t\t)\n\t)')
 
 # ---------------------------------------------------------------- mounting holes
 for hx, hy in ((4.5, 4.5), (W - 4.5, 4.5), (4.5, H - 4.5), (W - 4.5, H - 4.5)):
@@ -190,7 +195,7 @@ gold_line(71.0 + (45.0 - y5), 45.0, 71.0, y5)
 
 # keepouts, documentation only
 circ(CX, CY, 12.5, "User.1")                   # rotary body, behind the panel
-text("ROTARY BODY 25.00 KEEPOUT - BACK SIDE", CX, 41.0, "User.1", 1.0, 0.15)
+text("BODY 25.00", CX, 40.4, "User.1", 1.0, 0.15)
 for x in list(LEV.values()) + list(BTN.values()):
     circ(x, CTRL_Y, 12.0, "User.1")
 
