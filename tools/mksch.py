@@ -58,7 +58,7 @@ def symbol(name, ref, val, fp, descr, graphics, pins, ref_y=2.54, val_y=-2.54):
 SYMS = {}
 
 SYMS["R"] = symbol("R", "R", "R",
-    "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal",
+    "TS06:TS06_R_1206_HandSolder",
     "Resistor",
     [rect(-1.016, -2.54, 1.016, 2.54)],
     [pin("passive", 0, 3.81, 270, 1.27, "~", "1"),
@@ -98,13 +98,16 @@ SYMS["SW_Button_KMD1"] = symbol("SW_Button_KMD1", "SW", "KMD1",
         pin("passive", 7.62, 0, 180, 5.08, "2", "2")], 6.35, -3.81)
 
 # 6-pin panel connector.
-NM = ["GND", "+5V", "A6", "A7", "D7", "D8"]
+# Pin order is chosen by the PCB, not by tidiness: each net lands on the J1 pin nearest
+# the direction it arrives from, so no two traces have to cross to reach the connector.
+# D8 comes from SW5 on the far right, A6 from the rotary on the far left.
+NM = ["D8", "D7", "GND", "A7", "+5V", "A6"]
 g = [rect(-2.54, -13.97, 2.54, 3.81)]
 g += [rect(1.27, -1.27 - 2.54 * i + 0.635, 2.54, -1.27 - 2.54 * i - 0.635) for i in range(6)]
 pins = [pin("passive", 7.62, -1.27 - 2.54 * i, 180, 5.08, NM[i], str(i + 1)) for i in range(6)]
-SYMS["Conn_JST_XH_6"] = symbol("Conn_JST_XH_6", "J", "JST-XH 6",
-    "Connector_JST:JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical",
-    "Panel cable to the main board: GND, +5V, A6, A7, D7, D8. Five controls, six wires.",
+SYMS["Conn_JST_XH_6"] = symbol("Conn_JST_XH_6", "J", "PH 6 SMT",
+    "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back",
+    "Panel cable to the main board. Pin order follows the PCB: D8, D7, GND, A7, +5V, A6 - each net on the pin nearest where it arrives from.",
     g, pins, 6.35, -16.51)
 
 def qualify(txt, name):
@@ -159,23 +162,31 @@ LX = 88.9                                   # ladder column
 NY = [139.7, 127.0, 114.3, 101.6, 88.9, 76.2]   # T1 (GND) .. T6 (+5V)
 
 # --- A6: rotary + tapped divider -------------------------------------------
-place("SW_Rotary_6P1W", "SW1", "SR25 6-pos", 63.5, 107.95)
+FP = {"SW1": "TS06:TS06_Rotary_SR25_PanelMount",
+      "SW2": "TS06:TS06_MT1_Lever_PanelMount", "SW3": "TS06:TS06_MT1_Lever_PanelMount",
+      "SW4": "TS06:TS06_KMD1_Button_PanelMount", "SW5": "TS06:TS06_KMD1_Button_PanelMount",
+      "J1": "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"}
+for _r in range(1, 9): FP[f"R{_r}"] = "TS06:TS06_R_1206_HandSolder"
+
+place("SW_Rotary_6P1W", "SW1", "SR25 6-pos", 63.5, 107.95, fp=FP["SW1"])
 for i in range(5):                          # R1..R5, 4.7k 1%, between adjacent nodes
     cy = (NY[i] + NY[i + 1]) / 2
-    place("R", f"R{i+1}", "4.7k 1%", LX, cy)
+    place("R", f"R{i+1}", "4.7k 1%", LX, cy, fp=FP[f"R{i+1}"])
     wire(LX, NY[i], LX, cy + 3.81)
     wire(LX, cy - 3.81, LX, NY[i + 1])
 for i, y in enumerate(NY):                  # taps out to the switch
     wire(73.66, y, LX, y)
     if 0 < i < 5:
         junc(LX, y)
+for _t in range(1, 5):
+    label(f"TAP{_t+1}", 81.0, NY[_t], 0, "left bottom")
 wire(53.34, 107.95, 45.72, 107.95); label("A6", 45.72, 107.95, 180, "right bottom")
 wire(LX, NY[0], LX, 146.05); label("GND", LX, 146.05, 270, "left bottom")
 wire(LX, NY[5], LX, 69.85);  label("+5V", LX, 69.85, 90, "left bottom")
 
 # --- A7: two levers, binary weighted ---------------------------------------
 AX, AY = 152.4, 107.95
-place("R", "R6", "10k", AX, 95.25)          # pull-up
+place("R", "R6", "10k", AX, 95.25, fp=FP["R6"])          # pull-up
 wire(AX, AY, AX, 99.06); wire(AX, 91.44, AX, 83.82)
 label("+5V", AX, 83.82, 90, "left bottom")
 wire(139.7, AY, 175.26, AY); junc(AX, AY)
@@ -184,23 +195,25 @@ SWC, RC = 118.11, 130.81          # lever centre, resistor centre
 SW_HALF, R_HALF = 7.62, 3.81      # pin reach from centre - different parts, different reach
 for x, sw, rn, rv, nm in ((139.7, "SW2", "R7", "20k", "LEVER A"),
                           (165.1, "SW3", "R8", "10k", "LEVER B")):
-    place("SW_Lever_MT1", sw, nm, x, SWC, 90)
-    place("R", rn, rv, x, RC)
+    place("SW_Lever_MT1", sw, nm, x, SWC, 90, fp=FP[sw])
+    place("R", rn, rv, x, RC, fp=FP[rn])
     wire(x, AY, x, SWC - SW_HALF)                 # A7 node down to the lever
     wire(x, SWC + SW_HALF, x, RC - R_HALF)        # lever down to its resistor
+    label("LEVA" if sw == "SW2" else "LEVB", x, (SWC + SW_HALF + RC - R_HALF) / 2,
+          0, "left bottom")
     wire(x, RC + R_HALF, x, 139.7)                # resistor down to ground
     label("GND", x, 139.7, 270, "left bottom")
 junc(165.1, AY)
 
 # --- Buttons ----------------------------------------------------------------
 for x, sw, net, nm in ((201.93, "SW4", "D7", "MINUS"), (227.33, "SW5", "D8", "PLUS")):
-    place("SW_Button_KMD1", sw, nm, x, 107.95, 90)
+    place("SW_Button_KMD1", sw, nm, x, 107.95, 90, fp=FP[sw])
     wire(x, 100.33, x, 93.98); label(net, x, 93.98, 90, "left bottom")
     wire(x, 115.57, x, 121.92); label("GND", x, 121.92, 270, "left bottom")
 
 # --- Connector --------------------------------------------------------------
 JX, JY = 238.76, 80.01
-place("Conn_JST_XH_6", "J1", "JST-XH 6", JX, JY)
+place("Conn_JST_XH_6", "J1", "PH 6 SMT", JX, JY, fp=FP["J1"])
 for i, n in enumerate(NM):
     y = JY + 1.27 + 2.54 * i        # symbol pin i is at symbol-y -(1.27 + 2.54i)
     wire(JX + 7.62, y, JX + 17.78, y)

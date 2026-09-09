@@ -25,7 +25,7 @@
 )
 )
 )
-(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal"
+(property "Footprint" "TS06:TS06_R_1206_HandSolder"
 (at 0 0 0)
 (effects
 (font
@@ -679,7 +679,7 @@
 )
 )
 )
-(property "Value" "JST-XH 6"
+(property "Value" "PH 6 SMT"
 (at 0 -16.51 0)
 (effects
 (font
@@ -687,7 +687,7 @@
 )
 )
 )
-(property "Footprint" "Connector_JST:JST_XH_B6B-XH-A_1x06_P2.50mm_Vertical"
+(property "Footprint" "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"
 (at 0 0 0)
 (effects
 (font
@@ -705,7 +705,7 @@
 (hide yes)
 )
 )
-(property "Description" "Panel cable to the main board: GND, +5V, A6, A7, D7, D8. Five controls, six wires."
+(property "Description" "Panel cable to the main board. Pin order follows the PCB: D8, D7, GND, A7, +5V, A6 - each net on the pin nearest where it arrives from."
 (at 0 0 0)
 (effects
 (font
@@ -797,7 +797,7 @@
 (pin passive line
 (at 7.62 -1.27 180)
 (length 5.08)
-(name "GND"
+(name "D8"
 (effects
 (font
 (size 1.27 1.27)
@@ -815,7 +815,7 @@
 (pin passive line
 (at 7.62 -3.81 180)
 (length 5.08)
-(name "+5V"
+(name "D7"
 (effects
 (font
 (size 1.27 1.27)
@@ -833,7 +833,7 @@
 (pin passive line
 (at 7.62 -6.35 180)
 (length 5.08)
-(name "A6"
+(name "GND"
 (effects
 (font
 (size 1.27 1.27)
@@ -869,7 +869,7 @@
 (pin passive line
 (at 7.62 -11.43 180)
 (length 5.08)
-(name "D7"
+(name "+5V"
 (effects
 (font
 (size 1.27 1.27)
@@ -887,7 +887,7 @@
 (pin passive line
 (at 7.62 -13.969999999999999 180)
 (length 5.08)
-(name "D8"
+(name "A6"
 (effects
 (font
 (size 1.27 1.27)

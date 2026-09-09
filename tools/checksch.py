@@ -122,6 +122,13 @@ for p in allpts:
 names, members = {}, {}
 for l in kids(root, "label"):
     a = nums(kid(l, "at")); pt = (round(a[0],3), round(a[1],3))
+    if pt not in par:
+        # A label is normally dropped on the MIDDLE of a wire, not its endpoint.
+        # KiCad attaches it to that wire; this checker used to ignore it and then
+        # report a perfectly well-named net as unnamed.
+        for sg in segs:
+            if on_seg(pt, sg) or pt in sg:
+                par[pt] = pt; union(pt, sg[0]); break
     if pt in par: names.setdefault(find(pt), set()).add(l[1])
 for sym in kids(root, "symbol"):
     lid = kid(sym, "lib_id")

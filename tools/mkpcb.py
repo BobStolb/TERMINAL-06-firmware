@@ -147,8 +147,8 @@ place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 40.5, {"1": "LEVA", "2": "GND
 place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 40.5, {"1": "+5V", "2": "A7"}, back=True)
 place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 40.5, {"1": "LEVB", "2": "GND"}, back=True)
 place("TS06_JST_PH_S6B-PH-SM4-TB_Back", "J1", "PH 6", 152.0, 45.4,
-      {"1": "GND", "2": "+5V", "3": "A6", "4": "A7", "5": "D7", "6": "D8"}, back=True)
-add(f'\t(gr_text "1 GND  2 +5V  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 152.0 38.6 0)\n'
+      {"1": "D8", "2": "D7", "3": "GND", "4": "A7", "5": "+5V", "6": "A6"}, back=True)
+add(f'\t(gr_text "1 D8  2 D7  3 GND  4 A7  5 +5V  6 A6"\n\t\t(at 152.0 38.6 0)\n'
     f'\t\t(layer "B.SilkS")\n\t\t(uuid "{U()}")\n\t\t(effects\n\t\t\t(font\n'
     f'\t\t\t\t(size 1.0 1.0)\n\t\t\t\t(thickness 0.15)\n\t\t\t)\n'
     f'\t\t\t(justify mirror)\n\t\t)\n\t)')
@@ -208,6 +208,87 @@ circ(CX, CY, 12.5, "User.1")                   # rotary body, behind the panel
 text("BODY 25.00", CX, 40.4, "User.1", 1.0, 0.15)
 for x in list(LEV.values()) + list(BTN.values()):
     circ(x, CTRL_Y, 12.0, "User.1")
+
+# ---------------------------------------------------------------- routing
+# Two layers, on purpose. The front of this board is copper too, and a trace there is
+# INVISIBLE: solder mask is opaque, so only the deliberate mask openings show gold. That
+# makes F.Cu a free routing layer for anything that keeps clear of the decorative
+# copper. Vias are tented and all sit at y > 45, in the band the chassis recess covers.
+#
+# Division of labour:
+#   B.Cu  - the ladder, every local hop, and the GND bus along the bottom edge
+#   F.Cu  - the three long hauls (+5V, A6) that would otherwise have to fight the GND
+#           bus and each other through a 13 mm band already full of pads
+#   A7 stays on B.Cu: it only spans the middle of the board and has a clean lane at 38.6
+
+def track(pts, net, layer="B.Cu", w=0.3):
+    for (x1, y1), (x2, y2) in zip(pts, pts[1:]):
+        add(f'\t(segment\n\t\t(start {x1:.3f} {y1:.3f})\n\t\t(end {x2:.3f} {y2:.3f})\n'
+            f'\t\t(width {w})\n\t\t(layer "{layer}")\n\t\t(net {NI[net]})\n'
+            f'\t\t(uuid "{U()}")\n\t)')
+
+def via(x, y, net):
+    add(f'\t(via\n\t\t(at {x:.3f} {y:.3f})\n\t\t(size 0.8)\n\t\t(drill 0.4)\n'
+        f'\t\t(layers "F.Cu" "B.Cu")\n\t\t(net {NI[net]})\n\t\t(uuid "{U()}")\n\t)')
+
+SWY, RY = 43.5, 48.0          # rotary landing pads / ladder resistors
+BUS = 51.2                    # GND bus, below everything
+
+# --- the ladder: ten short diagonals, none crossing (see the placement note above)
+track([(6.0, SWY), (8.15, RY)], "+5V")
+for tap, (a, sw, b) in {
+        "TAP5": (11.85, 14.0, 16.15), "TAP4": (19.85, 22.0, 24.15),
+        "TAP3": (27.85, 30.0, 32.15), "TAP2": (35.85, 38.0, 40.15)}.items():
+    track([(a, RY), (sw, SWY)], tap)
+    track([(sw, SWY), (b, RY)], tap)
+track([(43.85, RY), (46.0, SWY)], "GND")
+
+# --- GND: one bus along the bottom, everything stubs down to it
+track([(46.0, SWY), (46.0, BUS), (169.0, BUS)], "GND", w=0.5)
+track([(96.85, 40.5), (96.85, BUS)], "GND")
+track([(119.85, 40.5), (119.85, BUS)], "GND")
+# The two button grounds cannot drop straight to the bus: A7's lane at 38.6 spans
+# x 96.6..151 and both of them sit inside it. So they collect ABOVE the button pads
+# instead and come down the right-hand edge, clear of A7, D7 and D8 alike.
+track([(144.4, 35.5), (144.4, 33.5), (169.0, 33.5), (169.0, BUS)], "GND")
+track([(162.4, 35.5), (162.4, 33.5)], "GND")
+track([(153.0, 42.55), (153.0, BUS)], "GND")
+
+# --- +5V: front lane at y=50, the full width of the board
+track([(6.0, SWY), (6.0, 50.0)], "+5V")
+via(6.0, 50.0, "+5V")
+track([(6.0, 50.0), (104.65, 50.0)], "+5V", "F.Cu", 0.4)
+via(104.65, 50.0, "+5V")
+track([(104.65, 50.0), (104.65, 40.5)], "+5V")
+track([(104.65, 50.0), (149.0, 50.0)], "+5V", "F.Cu", 0.4)
+via(149.0, 50.0, "+5V")
+track([(149.0, 50.0), (149.0, 42.55)], "+5V")
+
+# --- A6: front lane at y=47.2, rotary wiper to the connector
+track([(54.0, SWY), (56.0, 45.5)], "A6")
+via(56.0, 45.5, "A6")
+track([(56.0, 45.5), (58.0, 47.2), (147.0, 47.2)], "A6", "F.Cu")
+via(147.0, 47.2, "A6")
+track([(147.0, 47.2), (147.0, 42.55)], "A6")
+
+# --- A7: back lane at 38.6, between the switch pads and the lever resistors
+track([(96.6, 35.5), (96.6, 38.6), (151.0, 38.6), (151.0, 42.55)], "A7")
+track([(119.6, 38.6), (119.6, 35.5)], "A7")
+track([(108.35, 38.6), (108.35, 40.5)], "A7")
+
+# --- levers. LEVB has to cross the A7 lane, so it hops to the front for 2.3 mm.
+# The hop lands inside the SUB box outline, where the front is empty copper anyway.
+track([(93.4, 35.5), (93.15, 40.5)], "LEVA")
+track([(116.4, 35.5), (116.3, 37.3)], "LEVB")
+via(116.3, 37.3, "LEVB")
+track([(116.3, 37.3), (116.3, 39.6)], "LEVB", "F.Cu")
+via(116.3, 39.6, "LEVB")
+track([(116.3, 39.6), (116.15, 40.5)], "LEVB")
+
+# --- buttons. D7 passes over A7's drop point, so it runs in a lane above it and lands
+# on the pin further right; D8 approaches from the right and lands right of that again.
+track([(147.6, 35.5), (147.6, 36.9), (155.0, 36.9), (155.0, 42.55)], "D7")
+track([(165.6, 35.5), (165.6, 37.5), (157.0, 37.5), (157.0, 42.55)], "D8")
 
 # ---------------------------------------------------------------- assemble
 head = [f'(kicad_pcb\n\t(version {VER})\n\t(generator "{GEN}")\n\t(generator_version "{GENV}")',
