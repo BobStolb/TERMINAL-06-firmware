@@ -21,11 +21,63 @@ PAD = 6.0
 
 MASK, SILK, GOLD, CU, ZONE, HOLE = "#0d0f10", "#e8e6e0", "#d8b25e", "#8a6a3a", "#5c4526", "#000"
 
+def extract_blocks(src, tag):
+    """Every top-level (tag ...) block, paren-depth counted rather than a
+    fixed-shape regex. A non-greedy \\n\\t) boundary works for a bare
+    unfilled zone, but a real KiCad fill embeds filled_polygon sub-blocks
+    with their own nested closes, so the first \\n\\t) found is usually deep
+    inside the fill data - silently truncating the block.
+    """
+    out = []
+    key = '(' + tag
+    i = 0
+    while True:
+        i = src.find(key, i)
+        if i < 0:
+            break
+        nxt = i + len(key)
+        if key[-1] != '"' and nxt < len(src) and src[nxt] not in ' \n':
+            i = nxt
+            continue
+        depth, j, in_str, esc = 0, i, False, False
+        while j < len(src):
+            ch = src[j]
+            if in_str:
+                if esc: esc = False
+                elif ch == '\\': esc = True
+                elif ch == '"': in_str = False
+            elif ch == '"': in_str = True
+            elif ch == '(': depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    j += 1
+                    break
+            j += 1
+        out.append(src[i:j])
+        i = j
+    return out
+
 def blocks(kind):
-    return [m.group(0) for m in re.finditer(r'\(%s\n[\s\S]*?\n\t\)' % kind, SRC)]
+    return extract_blocks(SRC, kind)
 
 def fpblocks():
-    return [m.group(0) for m in re.finditer(r'\(footprint "[^"]+"[\s\S]*?\n\)', SRC)]
+    """(footprint ...) blocks, re-indented to the column-0 convention the
+    field regexes elsewhere in this file are written against - this repo's
+    own generators outdent footprints to column 0, real KiCad indents them
+    normally as a child of kicad_pcb (one tab deeper throughout)."""
+    out = []
+    for block in extract_blocks(SRC, 'footprint "'):
+        i = SRC.find(block)
+        line_start = SRC.rfind('\n', 0, i) + 1
+        base_indent = i - line_start
+        if base_indent > 0:
+            cut = '\t' * base_indent
+            lines = block.split('\n')
+            block = '\n'.join([lines[0]] + [ln[base_indent:] if ln.startswith(cut) else ln
+                                             for ln in lines[1:]])
+        out.append(block)
+    return out
 
 def num(pat, blk, n=1):
     m = re.search(pat, blk)
@@ -42,7 +94,7 @@ def arc_path(ax, ay, mx, my, bx, by):
     uy = ((ax*ax+ay*ay)*(bx-mx) + (mx*mx+my*my)*(ax-bx) + (bx*bx+by*by)*(mx-ax)) / d
     r = math.hypot(ax-ux, ay-uy)
     cross = (mx-ax)*(by-ay) - (my-ay)*(bx-ax)
-    return f'M{ax},{ay} A{r},{r} 0 0,{0 if cross > 0 else 1} {bx},{by}'
+    return f'M{ax},{ay} A{r},{r} 0 0,{1 if cross > 0 else 0} {bx},{by}'
 
 def collect(side):
     """side is 'F' or 'B'. Returns dicts of svg fragments per visual role."""
@@ -95,7 +147,13 @@ def collect(side):
         stroke(cu, f'M{v[0]},{v[1]} L{v[2]},{v[3]}', w, CU)
     for b in blocks("zone"):
         if ('"%s.Cu"' % side) not in b: continue
-        pts = re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', b)
+        # the zone's own boundary is (polygon (pts ...)) - a filled zone also
+        # carries (filled_polygon ...) blocks (KiCad's own computed result);
+        # "\(polygon\n" does not match "filled_polygon" (the literal char
+        # right after "(" differs), so this stays scoped to the simple
+        # boundary even when real fill data is present.
+        outline = re.search(r'\(polygon\n[\s\S]*?\n\t\t\)', b)
+        pts = re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', outline.group(0) if outline else "")
         d = "M" + " L".join(f"{a},{c}" for a, c in pts) + " Z"
         cu.d.insert(0, f'<path d="{d}" fill="{ZONE}" opacity="0.55"/>')
     # footprints

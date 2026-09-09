@@ -716,7 +716,7 @@
 (hide yes)
 )
 )
-(property "Description" "Panel cable to the main board. Pin order follows the PCB: D8, D7, GND, A7, +5V, A6 - each net on the pin nearest where it arrives from."
+(property "Description" "Panel cable to the main board. Pin order is fixed for both builds: +5V, GND, A6, A7, D7, D8 - power first, then the four MCU pins in their own order."
 (at 0 0 0)
 (effects
 (font

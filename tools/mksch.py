@@ -113,7 +113,7 @@ g += [rect(1.27, -1.27 - 2.54 * i + 0.635, 2.54, -1.27 - 2.54 * i - 0.635) for i
 pins = [pin("passive", 7.62, -1.27 - 2.54 * i, 180, 5.08, NM[i], str(i + 1)) for i in range(6)]
 SYMS["Conn_JST_PH_6"] = symbol("Conn_JST_PH_6", "J", "PH 6 SMT",
     "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back",
-    "Panel cable to the main board. Pin order follows the PCB: D8, D7, GND, A7, +5V, A6 - each net on the pin nearest where it arrives from.",
+    "Panel cable to the main board. Pin order is fixed for both builds: +5V, GND, A6, A7, D7, D8 - power first, then the four MCU pins in their own order.",
     g, pins, 6.35, -16.51)
 
 def qualify(txt, name):

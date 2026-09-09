@@ -20,6 +20,63 @@ from one pad. Any pad of that net the flood does not reach is reported.
 import re, sys, math
 from collections import defaultdict
 
+def extract_blocks(src, tag):
+    """Every top-level (tag ...) block, paren-depth counted rather than a
+    fixed-shape regex. A non-greedy \\n\\t) boundary (the old approach) works
+    for a bare unfilled zone, but a real KiCad fill embeds filled_polygon
+    sub-blocks with their own nested closes, so the first \\n\\t) it finds is
+    usually deep inside the fill data, not the end of the zone - silently
+    truncating the block and pulling boundary points from the wrong place.
+    """
+    out = []
+    key = '(' + tag
+    i = 0
+    while True:
+        i = src.find(key, i)
+        if i < 0:
+            break
+        nxt = i + len(key)
+        if key[-1] != '"' and nxt < len(src) and src[nxt] not in ' \n':
+            i = nxt
+            continue
+        depth, j, in_str, esc = 0, i, False, False
+        while j < len(src):
+            ch = src[j]
+            if in_str:
+                if esc: esc = False
+                elif ch == '\\': esc = True
+                elif ch == '"': in_str = False
+            elif ch == '"': in_str = True
+            elif ch == '(': depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    j += 1
+                    break
+            j += 1
+        out.append(src[i:j])
+        i = j
+    return out
+
+def extract_footprints(src):
+    """Every top-level (footprint ...) block, re-indented to the column-0
+    convention the field regexes below are written against - this repo's own
+    generators outdent footprints to column 0, real KiCad indents them
+    normally as a child of kicad_pcb (one tab deeper throughout).
+    """
+    out = []
+    for block in extract_blocks(src, 'footprint "'):
+        i = src.find(block)
+        line_start = src.rfind('\n', 0, i) + 1
+        base_indent = i - line_start
+        if base_indent > 0:
+            cut = '\t' * base_indent
+            lines = block.split('\n')
+            block = '\n'.join([lines[0]] + [ln[base_indent:] if ln.startswith(cut) else ln
+                                             for ln in lines[1:]])
+        out.append(block)
+    return out
+
 SRC = open(sys.argv[1], encoding="utf8").read()
 issues = []
 def bad(cat, msg): issues.append((cat, msg))
@@ -29,7 +86,7 @@ def txtbox(t, x, y, sz):
     return (x, y, max(len(t),1)*sz*0.78 + sz*0.3, sz*1.35)
 
 pads, silk, refs = [], [], []
-for f in re.findall(r'\(footprint "[^"]+"[\s\S]*?\n\)', SRC):
+for f in extract_footprints(SRC):
     ref = (re.search(r'\(property "Reference" "([^"]+)"', f) or [None,"?"])[1]
     at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
     if not at: continue
@@ -37,7 +94,7 @@ for f in re.findall(r'\(footprint "[^"]+"[\s\S]*?\n\)', SRC):
     for m in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
                          r'\t\t\(size ([\d.]+) ([\d.]+)\)([\s\S]{0,320}?)\n\t\)', f):
         b = m.group(7)
-        net = (re.search(r'\(net \d+ "([^"]*)"', b) or [None,None])[1]
+        net = (re.search(r'\(net (?:\d+ )?"([^"]*)"', b) or [None,None])[1]
         lay = (re.search(r'\(layers ([^)]*)\)', b) or [None,""])[1]
         L = ["F.Cu","B.Cu"] if ("*.Cu" in lay or "F&B" in lay) else \
             [x for x in ("F.Cu","B.Cu") if x in lay]
@@ -57,22 +114,35 @@ for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) [\d.-]+
         silk.append({"t": m.group(1), "layer": m.group(4),
                      "box": txtbox(m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(5)))})
 
-tracks = [{"a": (float(g[0]), float(g[1])), "b": (float(g[2]), float(g[3])),
-           "w": float(g[4]), "layer": g[5], "net": int(g[6])}
-          for g in re.findall(r'\(segment\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
-                              r'\t\t\(width ([\d.]+)\)\n\t\t\(layer "([^"]+)"\)\n\t\t\(net (\d+)\)', SRC)]
-vias = [{"x": float(g[0]), "y": float(g[1]), "d": float(g[2]), "net": int(g[3])}
-        for g in re.findall(r'\(via\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n\t\t\(size ([\d.]+)\)'
-                            r'[\s\S]{0,90}?\(net (\d+)\)', SRC)]
+# A segment/via's (net ...) field is either just a code, resolved through the
+# net table, or - on every save this KiCad setup has actually produced - the
+# bare name with no code at all. "net" ends up holding a net NAME string
+# either way, so nothing downstream has to care which form the file was in.
 netname = {int(a): b for a, b in re.findall(r'^\t\(net (\d+) "([^"]*)"', SRC, re.M)}
+def _net_of(code, name):
+    return name if name else netname.get(int(code) if code else -1)
+
+tracks = [{"a": (float(g[0]), float(g[1])), "b": (float(g[2]), float(g[3])),
+           "w": float(g[4]), "layer": g[5], "net": _net_of(g[6], g[7])}
+          for g in re.findall(r'\(segment\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
+                              r'\t\t\(width ([\d.]+)\)\n\t\t\(layer "([^"]+)"\)\n\t\t\(net (?:(\d+)|"([^"]*)")\)', SRC)]
+vias = [{"x": float(g[0]), "y": float(g[1]), "d": float(g[2]), "net": _net_of(g[3], g[4])}
+        for g in re.findall(r'\(via\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n\t\t\(size ([\d.]+)\)'
+                            r'[\s\S]{0,90}?\(net (?:(\d+)|"([^"]*)")\)', SRC)]
 
 zones = []
-for zm in re.finditer(r'\(zone\n[\s\S]*?\n\t\)', SRC):
-    blk = zm.group(0)
-    nn = re.search(r'\(net_name "([^"]*)"', blk)
+for blk in extract_blocks(SRC, 'zone'):
+    nn = re.search(r'\(net_name "([^"]*)"', blk) or re.search(r'\(net \d* ?"([^"]*)"\)', blk)
     ly = re.search(r'\(layers? "([^"]+)"\)', blk)
     cl = re.search(r'\(connect_pads\n\t\t\t\(clearance ([\d.]+)\)', blk)
-    pts = [(float(a), float(b)) for a, b in re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', blk)]
+    # the zone's own boundary is (polygon (pts ...)) - a filled zone also carries
+    # (filled_polygon ...) blocks (KiCad's own computed result, not needed here,
+    # and NOT what "\(polygon\n" matches - filled_polygon fails that literal
+    # immediately after the "("), so this stays scoped to the true outline even
+    # when real fill data is present.
+    outline = re.search(r'\(polygon\n[\s\S]*?\n\t\t\)', blk)
+    pts = [(float(a), float(b)) for a, b in
+           re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', outline.group(0) if outline else "")]
     if nn and ly and len(pts) >= 3:
         zones.append({"net": nn.group(1), "layer": ly.group(1),
                       "clr": float(cl.group(1)) if cl else 0.5, "pts": pts})
@@ -92,15 +162,15 @@ UNROUTED = not tracks and not vias
 if UNROUTED:
     print("NOTE: board carries no tracks or vias - net connectivity not applicable.\n"
           "      Placement, artwork and silkscreen are still checked below.\n")
-for net in sorted({p["net"] for p in pads if p["net"]} | {netname[v["net"]] for v in vias}):
+for net in sorted({p["net"] for p in pads if p["net"]} | {v["net"] for v in vias}):
     if not net or UNROUTED or net in POURED: continue   # poured nets: section D
     items = []
     for i, p in enumerate(pads):
         if p["net"] == net: items.append(("pad", i))
     for i, t in enumerate(tracks):
-        if netname.get(t["net"]) == net: items.append(("trk", i))
+        if t["net"] == net: items.append(("trk", i))
     for i, v in enumerate(vias):
-        if netname.get(v["net"]) == net: items.append(("via", i))
+        if v["net"] == net: items.append(("via", i))
     par = {k: k for k in items}
     def find(x):
         while par[x] != x: par[x] = par[par[x]]; x = par[x]
@@ -200,13 +270,13 @@ for z in zones:
         if z["layer"] not in p["layers"] or p["net"] == z["net"]: continue
         clear_rect(p["x"], p["y"], p["w"], p["h"], z["clr"])
     for t in tracks:
-        if t["layer"] != z["layer"] or netname.get(t["net"]) == z["net"]: continue
+        if t["layer"] != z["layer"] or t["net"] == z["net"]: continue
         (ax, ay), (bx, by) = t["a"], t["b"]
         dx, dy = bx-ax, by-ay; L = dx*dx + dy*dy
         u = 0.0 if L == 0 else np.clip(((PX-ax)*dx + (PY-ay)*dy) / L, 0, 1)
         ok[np.hypot(PX - (ax + u*dx), PY - (ay + u*dy)) <= t["w"]/2 + z["clr"]] = False
     for v in vias:
-        if netname.get(v["net"]) == z["net"]: continue
+        if v["net"] == z["net"]: continue
         ok[np.hypot(PX - v["x"], PY - v["y"]) <= v["d"]/2 + z["clr"]] = False
 
     # one cell of erosion: copper thinner than about 2G will not fill at min_thickness
