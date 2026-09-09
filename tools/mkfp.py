@@ -49,6 +49,13 @@ def spad(n, x, y, w=2.2, h=1.5):
     return (f'\t(pad "{n}" smd rect\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {w} {h})\n'
             f'\t\t(layers "B.Cu" "B.Mask")\n\t\t{U()}\n\t)')
 
+def rrpad(n, x, y, w, h, paste=True):
+    """SMD roundrect land on the back, with paste. Used for the JST connector, whose
+    geometry is not ours to invent - see the note on its footprint below."""
+    lay = '"B.Cu" "B.Mask" "B.Paste"' if paste else '"B.Cu" "B.Mask"'
+    return (f'\t(pad "{n}" smd roundrect\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {w} {h})\n'
+            f'\t\t(layers {lay})\n\t\t(roundrect_rratio 0.25)\n\t\t{U()}\n\t)')
+
 def pad(n, x, y, drill=1.0, size=1.9, shape="circle"):
     return (f'\t(pad "{n}" thru_hole {shape}\n\t\t(at {x:.4f} {y:.4f})\n\t\t(size {size} {size})\n'
             f'\t\t(drill {drill})\n\t\t(layers "*.Cu" "*.Mask")\n\t\t{U()}\n\t)')
@@ -164,3 +171,43 @@ write("TS06_CablePads_6",
       "connector, because JST-XH is through-hole and this board puts no hole through "
       "its front face. Strain relief is provided by the chassis, not the board.",
       "cable pads panel solder TERMINAL-06", b, -3.4, 3.4)
+
+# ------------------------------------------------- JST PH S6B-PH-SM4-TB, side entry SMT
+# Land pattern taken from KiCad's own Connector_JST library, which draws it from JST's
+# manufacturer drawing. NOT invented here, and not scaled off a marketplace photo.
+#
+# Cross-checked against JST's published PH dimension table before use: the library body
+# width is 15.9 mm, and JST gives B = A + 5.9 with A = 2.0 x (n-1); at n=6 that is
+# 10.0 + 5.9 = 15.9. Their table's endpoints agree too (n=2 -> 7.9, n=16 -> 35.95).
+# Two independent sources, same number.
+#
+# MIRRORED IN X from the library original, because this part mounts on the BACK. That
+# puts pin 1 at +5 rather than -5, so the numbering runs right to left in board
+# coordinates. A single-row connector is symmetric, so this is a valid part orientation,
+# not a workaround - but the pin-1 marker matters, so it is mirrored with everything else.
+#
+# The two MP pads are the metal retention tabs. They are what actually holds the
+# connector down; the signal pads are not structural. Never omit them.
+PH_PADS = [("1", 5.0), ("2", 3.0), ("3", 1.0), ("4", -1.0), ("5", -3.0), ("6", -5.0)]
+b = [rrpad(n, x, -2.85, 1.0, 3.5) for n, x in PH_PADS]
+b += [rrpad("MP", 7.35, 2.9, 1.5, 3.4), rrpad("MP", -7.35, 2.9, 1.5, 3.4)]
+for x1, y1, x2, y2 in [(7.95,-3.2,7.15,-3.2), (7.15,-3.2,7.15,-1.6), (7.15,-1.6,-7.15,-1.6),
+                       (-7.15,-1.6,-7.15,-3.2), (-7.15,-3.2,-7.95,-3.2),
+                       (7.95,4.4,-7.95,4.4), (7.95,-3.2,7.95,4.4), (-7.95,-3.2,-7.95,4.4),
+                       (5.5,-1.6,5.0,-0.892893), (5.0,-0.892893,4.5,-1.6)]:
+    b.append(line(x1, y1, x2, y2, "B.Fab", 0.1))
+for x1, y1, x2, y2 in [(8.06,0.94,8.06,-3.31), (8.06,-3.31,7.04,-3.31), (7.04,-3.31,7.04,-1.71),
+                       (7.04,-1.71,5.76,-1.71), (5.76,-1.71,5.76,-4.6),
+                       (-8.06,0.94,-8.06,-3.31), (-8.06,-3.31,-7.04,-3.31),
+                       (-7.04,-3.31,-7.04,-1.71), (-7.04,-1.71,-5.76,-1.71),
+                       (6.34,4.51,-6.34,4.51)]:
+    b.append(line(x1, y1, x2, y2, "B.SilkS", 0.12))
+for x1, y1, x2, y2 in [(-8.6,-5.1,-8.6,5.1), (-8.6,5.1,8.6,5.1),
+                       (8.6,5.1,8.6,-5.1), (8.6,-5.1,-8.6,-5.1)]:
+    b.append(line(x1, y1, x2, y2, "B.CrtYd", 0.05))
+write("TS06_JST_PH_S6B-PH-SM4-TB_Back",
+      "JST PH S6B-PH-SM4-TB: 6-way, 2.0 mm pitch, side entry, surface mount, 2 A / 100 V. "
+      "Land pattern from KiCad's Connector_JST library (JST manufacturer drawing), "
+      "mirrored in X for back-side mounting. Pads 7/8 are the retention tabs and carry "
+      "the mechanical load - the signal pads do not. Cable exits toward +Y.",
+      "connector JST PH SMT 6way panel TERMINAL-06", b, -6.2, 6.6, hide_val=True)

@@ -110,11 +110,17 @@ def place(fpname, ref, val, x, y, nets=None, back=False):
     t = re.sub(r'\(property "Value" "[^"]*"', f'(property "Value" "{val}"', t, count=1)
     if nets:
         def netify(m):
+            """Insert the net after whatever (layers ...) the pad actually declares.
+            This used to match only '(layers "*.Cu" "*.Mask")', which is what through-hole
+            pads emit - so the moment the landing pads and the connector became SMD with
+            explicit B.Cu layers, every net silently failed to attach and the board looked
+            fine while being entirely unconnected."""
             num = m.group(1)
             if num not in nets: return m.group(0)
             n = nets[num]
-            return m.group(0).replace('(layers "*.Cu" "*.Mask")',
-                f'(layers "*.Cu" "*.Mask")\n\t\t(net {NI[n]} "{n}")', 1)
+            return re.sub(r'\(layers [^)]*\)',
+                          lambda L: L.group(0) + f'\n\t\t(net {NI[n]} "{n}")',
+                          m.group(0), count=1)
         t = re.sub(r'\(pad "(\d+)"[\s\S]*?\n\t\)', netify, t)
     add(t + "\n)")
 
@@ -136,9 +142,9 @@ for i, (ref, val, p1, p2) in enumerate(LAD):
 place("TS06_R_1206_HandSolder", "R6", "10k", 106.5, 8.5, {"1": "+5V", "2": "A7"}, back=True)
 place("TS06_R_1206_HandSolder", "R7", "20k", 95.0, 44.0, {"1": "LEVA", "2": "GND"}, back=True)
 place("TS06_R_1206_HandSolder", "R8", "10k", 118.0, 44.0, {"1": "LEVB", "2": "GND"}, back=True)
-place("TS06_CablePads_6", "J1", "CABLE 6", 158.0, 45.0,
+place("TS06_JST_PH_S6B-PH-SM4-TB_Back", "J1", "PH 6", 152.0, 45.4,
       {"1": "GND", "2": "+5V", "3": "A6", "4": "A7", "5": "D7", "6": "D8"}, back=True)
-add(f'\t(gr_text "1 GND  2 +5V  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 158.0 49.6 0)\n'
+add(f'\t(gr_text "1 GND  2 +5V  3 A6  4 A7  5 D7  6 D8"\n\t\t(at 152.0 38.6 0)\n'
     f'\t\t(layer "B.SilkS")\n\t\t(uuid "{U()}")\n\t\t(effects\n\t\t\t(font\n'
     f'\t\t\t\t(size 1.0 1.0)\n\t\t\t\t(thickness 0.15)\n\t\t\t)\n'
     f'\t\t\t(justify mirror)\n\t\t)\n\t)')
