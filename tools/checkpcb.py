@@ -53,7 +53,31 @@ def extract_footprints(src):
     return out
 
 src = open(sys.argv[1], encoding="utf8").read()
-W, H = 176.0, 52.0
+
+def board_extent(src):
+    """Board width/height from whatever Edge.Cuts geometry is actually in the file -
+    gr_rect, gr_line, or gr_arc - rather than a fixed number. Every generator in this
+    repo places the board's own origin at (0,0), so the furthest X/Y over all Edge.Cuts
+    points is the board's W/H. Falls back to the fascia's known 176x52 only if the file
+    has no Edge.Cuts geometry at all (shouldn't happen for a real board)."""
+    xs, ys = [], []
+    for m in re.finditer(r'\(gr_rect\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(end ([\d.-]+) ([\d.-]+)\)'
+                         r'[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, x2, y2 = map(float, m.groups())
+        xs += [x1, x2]; ys += [y1, y2]
+    for m in re.finditer(r'\(gr_line\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(end ([\d.-]+) ([\d.-]+)\)'
+                         r'[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, x2, y2 = map(float, m.groups())
+        xs += [x1, x2]; ys += [y1, y2]
+    for m in re.finditer(r'\(gr_arc\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(mid ([\d.-]+) ([\d.-]+)\)\n'
+                         r'\t*\(end ([\d.-]+) ([\d.-]+)\)[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, mx, my, x2, y2 = map(float, m.groups())
+        xs += [x1, mx, x2]; ys += [y1, my, y2]
+    if not xs:
+        return 176.0, 52.0
+    return max(xs), max(ys)
+
+W, H = board_extent(src)
 bad = []
 
 fps = extract_footprints(src)

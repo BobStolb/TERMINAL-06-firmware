@@ -1,0 +1,139 @@
+(footprint "TS06_R_Axial_EdgeToEdge"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial resistor, mounted crosswise on a 6.5 mm board. Real body length is ~6 mm; pad pitch is 5.2 mm, slightly narrower than the body, with leads bent in a touch from each end so the copper pads stay legally on the board (a 6.0 mm pitch put the pad copper itself past the board edge, not just the courtyard - checked and fixed, not just eyeballed). The body's silkscreen outline is drawn at its real ~6 mm length and slightly overhangs the pads at each end - normal for this mounting style. This is the short-in-Y orientation, opposite of TS06_R_Axial_P10.16mm_Vertical, used where board LENGTH matters more than width.")
+	(tags "resistor axial THT edge-to-edge TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -2.2 0)
+		(layer "F.Fab")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e01")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_R_Axial_EdgeToEdge"
+		(at 0 2.2 0)
+		(layer "F.Fab")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e03") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e04") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e05") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -2.6000 0.0000)
+		(size 1.0 1.0)
+		(drill 0.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e06")
+	)
+	(pad "2" thru_hole circle
+		(at 2.6000 0.0000)
+		(size 1.0 1.0)
+		(drill 0.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e07")
+	)
+	(fp_line
+		(start -3.0 -1.2)
+		(end 3.0 -1.2)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e08")
+	)
+	(fp_line
+		(start -3.0 1.2)
+		(end 3.0 1.2)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e09")
+	)
+	(fp_line
+		(start -3.2 -1.5)
+		(end 3.2 -1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e0a")
+	)
+	(fp_line
+		(start -3.2 1.5)
+		(end 3.2 1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e0b")
+	)
+	(fp_line
+		(start -3.2 -1.5)
+		(end -3.2 1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e0c")
+	)
+	(fp_line
+		(start 3.2 -1.5)
+		(end 3.2 1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "5e5a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5e0d")
+	)
+	(embedded_fonts no)
+)

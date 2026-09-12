@@ -1,0 +1,179 @@
+(footprint "TS06_R_Axial_P10.16mm_Vertical"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial resistor, 10.16 mm lead pitch, pads pre-rotated 90 deg in the footprint's own local frame (pad 1 at 0,-5.08, pad 2 at 0,+5.08) so it can be placed at rotation 0 like every other footprint in this repo - this project deliberately never uses the placement rotation token (see mkpcb.py's header note), and this project's own placement checker regex only matches a bare two-argument (at x y). Same part as TS06_R_Axial_P10.16mm_Front, just spun 90 deg at authoring time instead of at placement time.")
+	(tags "resistor axial THT vertical TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at -2.6 0 0)
+		(layer "F.Fab")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c01")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_R_Axial_P10.16mm_Vertical"
+		(at 2.6 0 0)
+		(layer "F.Fab")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c03") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c04") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c05") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0.0000 -5.0800)
+		(size 1.8 1.8)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c06")
+	)
+	(pad "2" thru_hole circle
+		(at 0.0000 5.0800)
+		(size 1.8 1.8)
+		(drill 0.9)
+		(layers "*.Cu" "*.Mask")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c07")
+	)
+	(fp_line
+		(start -1.3000 -3.2000)
+		(end -1.3000 3.2000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c08")
+	)
+	(fp_line
+		(start 1.3000 -3.2000)
+		(end 1.3000 3.2000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c09")
+	)
+	(fp_line
+		(start -1.3000 -3.2000)
+		(end 1.3000 -3.2000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0a")
+	)
+	(fp_line
+		(start -1.3000 3.2000)
+		(end 1.3000 3.2000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0b")
+	)
+	(fp_line
+		(start 0.0000 -5.0800)
+		(end 0.0000 -3.2000)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0c")
+	)
+	(fp_line
+		(start 0.0000 3.2000)
+		(end 0.0000 5.0800)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0d")
+	)
+	(fp_line
+		(start -1.7000 -6.2000)
+		(end 1.7000 -6.2000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0e")
+	)
+	(fp_line
+		(start -1.7000 6.2000)
+		(end 1.7000 6.2000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c0f")
+	)
+	(fp_line
+		(start -1.7000 -6.2000)
+		(end -1.7000 6.2000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c10")
+	)
+	(fp_line
+		(start 1.7000 -6.2000)
+		(end 1.7000 6.2000)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "3e3a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5c11")
+	)
+	(embedded_fonts no)
+)

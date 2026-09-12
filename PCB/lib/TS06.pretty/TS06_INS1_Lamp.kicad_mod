@@ -1,0 +1,130 @@
+(footprint "TS06_INS1_Lamp"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame.")
+	(tags "neon INS1 colon THT wire-landing TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -4.2 0)
+		(layer "F.Fab")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a01")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TS06_INS1_Lamp"
+		(at 0 4.2 0)
+		(layer "F.Fab")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a03") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a04") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a05") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0.0000 -2.5000)
+		(size 2.2 2.2)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a06")
+	)
+	(pad "2" thru_hole circle
+		(at 0.0000 2.5000)
+		(size 2.2 2.2)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a07")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 0 3.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a08")
+	)
+	(fp_line
+		(start -3.6 -4.0)
+		(end 3.6 -4.0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a09")
+	)
+	(fp_line
+		(start -3.6 4.0)
+		(end 3.6 4.0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a0a")
+	)
+	(fp_line
+		(start -3.6 -4.0)
+		(end -3.6 4.0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a0b")
+	)
+	(fp_line
+		(start 3.6 -4.0)
+		(end 3.6 4.0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a0c")
+	)
+	(embedded_fonts no)
+)

@@ -112,10 +112,17 @@ def _net_of(code, name):
 tracks = [{"a": (float(m.group(1)), float(m.group(2))), "b": (float(m.group(3)), float(m.group(4))),
            "w": float(m.group(5)), "layer": m.group(6), "net": _net_of(m.group(7), m.group(8))}
           for m in re.finditer(r'\(segment\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)\n'
-                               r'\t\t\(width ([\d.]+)\)\n\t\t\(layer "([^"]+)"\)\n\t\t\(net (?:(\d+)|"([^"]*)")\)', SRC)]
+                               # (net ...) covers all three shapes seen in the wild: a bare
+                               # code (net 3), a bare name (net "A6"), or - this repo's own
+                               # generator convention, not anticipated here until a
+                               # generator actually emitted tracks - both together,
+                               # (net 1 "HV185"). Same tolerant shape the pad regex above
+                               # already uses; segments/vias just hadn't needed it yet.
+                               r'\t\t\(width ([\d.]+)\)\n\t\t\(layer "([^"]+)"\)\n'
+                               r'\t\t\(net (\d+)?\s*(?:"([^"]*)")?\)', SRC)]
 vias = [{"x": float(m.group(1)), "y": float(m.group(2)), "d": float(m.group(3)), "net": _net_of(m.group(4), m.group(5))}
         for m in re.finditer(r'\(via\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n\t\t\(size ([\d.]+)\)'
-                             r'[\s\S]{0,80}?\(net (?:(\d+)|"([^"]*)")\)', SRC)]
+                             r'[\s\S]{0,80}?\(net (\d+)?\s*(?:"([^"]*)")?\)', SRC)]
 # Each gr_line is read as a whole block: a non-greedy reach for the layer token runs
 # past the end of its own block and mislabels the next one.
 gold = []
