@@ -174,3 +174,31 @@ owned. TS06-TUBE is ~1 425 ₽/unit of Group D that does not have to be spent.
 **Decision rule: print a brow, test-fit it against a real tube, and see whether the case
 alone gives the reveal.** Do not order copper to fix a plastic problem. Revisit only if
 the test-fit fails.
+
+## TS06-MAIN — one board for the whole clock (in progress, 17.09.26)
+
+The three-board electrical stack (inherited AlexGyver board + TS06-SEC + TS06-COLON) is
+being replaced by **one board carrying every tube, every driver, the Nano, the RTC and the
+185 V converter**, in two builds like the fascia: **TS06-MAIN** (surface-mount wherever a
+part exists in that form) and **TS06-MAIN-THT**. The brief is
+`../Claude outputs/TS06-MAIN-handoff.md`; SEC and COLON are superseded by it and stay in
+the repo as the worked examples they are.
+
+**Decisions taken by the owner on 17.09.26**, answering the brief's open questions:
+
+| Question | Decision |
+|---|---|
+| Power input | **12 V on the same 5.5 × 2.1 mm barrel jack the stock board uses, not 5 V**: the stock converter is an energy-limited stage good for ≈1 W and the full clock needs ≈3.5 W (see `../TERMINAL-06-measurements-PCB-GYVER-NETLIST.md`). A switching 5 V regulator (R-78E05 class) feeds the logic. The Nano's USB stays reachable through a case opening, at the bottom edge as on the stock board, for reflashing and for a PC time-set link; USB alone runs the logic with the tubes dark. |
+| MCU | Arduino Nano on headers in **both** builds. |
+| RTC | Bare DS3231SN with a CR2032 holder in the SMD build; the owner's **DS3231 mini module** (pins − NC C D +, the same header the stock board carries) on a 5-way header in the THT build. |
+| Tube positions | The reviewed coordinates, Gyver pitch included, unchanged. The board is sized for itself; the fascia is not a width constraint. |
+| Anode chain | One fixed series resistor per digit tube (the stock board has a single shared 10 kΩ) plus DNP bleed footprints on all six. |
+| Optos | Six TLP627 singles, one beside each tube. |
+| "m" LED | HL3 on the free D12 through its resistor, so always-on versus 12-hour-only is a firmware choice. |
+| Backlight | Eight amber LEDs, the ИН-15 pair included. |
+| Layers | Two. Vias budgeted, not hunted. |
+
+**Phase 0, the capture, is done from the fabrication data** rather than the bench:
+`tools/tracegyver.py` traces every net of the inherited board from its Gerbers and writes
+the result up in `../TERMINAL-06-measurements-PCB-GYVER-NETLIST.md`. What the bench still
+has to supply is listed in `../knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`.

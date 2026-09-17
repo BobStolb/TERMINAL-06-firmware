@@ -1,0 +1,197 @@
+# TERMINAL-06 — bench gates for TS06-MAIN
+
+**Created 17.09.26.** The brief (`Claude outputs/TS06-MAIN-handoff.md` §6) listed seven
+unknowns that had to be measured before a combined main board could be ordered. Four of
+them turned out to be answerable from the inherited board's own fabrication data, and
+that is now done — `tools/tracegyver.py` reads every net of the AlexGyver board off its
+Gerbers, and `TERMINAL-06-measurements-PCB-GYVER-NETLIST.md` writes the result up. **What
+follows is only what the bench still has to supply**, in the order the design needs it,
+each with the procedure, the instrument and what the number decides.
+
+Fill the blanks in this file. One evening covers all of it; nothing here needs a scope.
+
+## What is NOT needed any more
+
+| Brief item | Status | Why |
+|---|---|---|
+| 6.1 converter topology and values | **closed from the Gerbers + silkscreen** | D9 → 100 Ω → IRF840 gate, 220 µH from +5 V, HER106, 4.7 µF 350 V, one shared 10 kΩ anode resistor to four TLP627 collectors, and a 470 kΩ trimmer used as a variable bleed from HV+ to GND. No feedback of any kind. See the netlist sheet. |
+| 6.2 ИН-12 hole → function | **closed** | Anode = socket pad 7, NC = pad 8, and the ten cathode digits per pad follow from the copper, the К155ИД1 datasheet pinout, the ИН-12А datasheet cathode order and the bench-confirmed `digitMask` for `BOARD_TYPE 0` — all four agree, ten of ten. |
+| 6.5 ИН-12 anode resistor values | **closed, as a null** | The stock board has no per-tube anode resistor; it has one shared 10 kΩ, and the rail is set by the converter's energy limit. TS06-MAIN designs its own per-tube value from gate 2 below. |
+| 6.7 mounting | **design choice** | No case model exists in `3d/`; the board defines its holes and the case follows. |
+
+## Safety, every gate that has HV on
+
+185 V DC behind a 4.7 µF reservoir that stays charged after power-off. Meter on a
+600 V DC range before it touches anything. **Power off, clip the black lead to GND,
+power on, then touch only the red probe.** Never hold both leads. After power-off, bleed
+the reservoir through ~100 kΩ for 10 s and verify < 10 V before touching the HV side.
+GND on the stock driver board: the `GND` pad of the 2-pin power input, or the − lead of
+the 470 µF electrolytic beside it. HV+: the + lead of the 4.7 µF 350 V cap, top-left of
+the driver board, or the cathode (banded end) of the HER106.
+
+---
+
+## Gate 1 — the stock stage as it actually runs (P3, never done)
+
+**Why.** TS06-MAIN's converter is a redesign of this stage, and its design point (rail,
+current, input power) needs a measured baseline, not the model in the netlist sheet.
+
+**Setup.** A stock board pair as it runs today: four ИН-12 lit, backlight as usual,
+`DUTY 190` in the firmware (note the actual value if it was ever changed).
+
+| # | Measure | How | Value |
+|---|---|---|---|
+| 1.1 | Rail, tubes lit | Red probe on HV+ (4.7 µF + lead), as above | ______ V |
+| 1.2 | Rail, backlight off | Same, with the backlight lever cut | ______ V |
+| 1.3 | Input current at 5 V | Meter in series with the 5 V feed, 10 A range, or a USB meter if it is USB-fed. Tubes lit, backlight on | ______ mA |
+| 1.4 | Input current, backlight off | Same | ______ mA |
+| 1.5 | Trimmer setting | Board **dead and bled**. Resistance between HV+ and GND after the meter settles (the cap charges from the meter for a few seconds). The trimmer is the only DC path, so this reads its setting | ______ kΩ |
+| 1.6 | Trimmer position | Which way is it turned, roughly (photo is fine) | ______ |
+| 1.7 | IRF840 temperature after 10 min | Finger, carefully, on the tab — warm / hot / untouchable | ______ |
+
+**Do not run the driver board with the tube board unplugged.** Without the tube load the
+stage's ~1 W has nowhere to go but the trimmer, and at 470 kΩ the rail would try for
+several hundred volts against a 350 V capacitor.
+
+**Decides:** the converter's input budget and the 12 V supply rating; whether the design
+model (≈1.0 W deliverable at 5 V, ≈5.8 W at 12 V) is right.
+
+## Gate 2 — sustaining voltage of each tube type, static
+
+**Why.** Every anode resistor on TS06-MAIN is (rail − V_sustain) / I, and V_sustain is
+the one number the datasheets disagree on (105 V or 160 V for the ИН-17). One rig
+answers gates 2, 3 and 4 in the same sitting.
+
+**Rig (J-NEON style).** Take HV+ from the running stock board with a clip lead through a
+series resistor to the anode of the tube under test, and a clip lead from GND to one
+cathode lead. The resistor sets the test current; use 2 W parts:
+
+| Tube | Series R | Test current | Cathode lead to GND |
+|---|---|---|---|
+| ИН-12А | 22 kΩ 2 W | ≈2 mA | one digit cathode (pad 6 = "0" is the easy one) |
+| ИН-17 | 39 kΩ 2 W | ≈1.5 mA | one lead, per gate 3 |
+| ИН-15А / ИН-15Б | 15 kΩ 2 W | ≈3 mA | one glyph, per gate 4 |
+
+Measure DC volts **across the tube**, anode to the lit cathode. Do it with the stock
+board's four tubes still lit so its rail is loaded normally (gate 1.1 tells you the rail).
+
+| # | Tube | V across tube | Rail at the time | Value |
+|---|---|---|---|---|
+| 2.1 | ИН-12А, tube 1 | ______ V | ______ V | I = (rail − V)/22k = ______ mA |
+| 2.2 | ИН-12А, a second tube | ______ V | ______ V | |
+| 2.3 | ИН-17 | ______ V | ______ V | |
+| 2.4 | ИН-15А | ______ V | ______ V | |
+| 2.5 | ИН-15Б | ______ V | ______ V | |
+
+**Decides:** the ИН-12 anode resistor (6k8 class expected at 1/6 duty), the ИН-17's
+12 kΩ, and whether 8k2 for the ИН-15s gives the current the spec assumed (at 8k2 and a
+140 V sustain it is 5.5 mA, which is a lot for that tube — the number says whether to go
+to 12k or 15k).
+
+## Gate 3 — ИН-17 lead order, on the rig, one lead at a time
+
+**Why.** The footprint `TS06_IN17_Socket` carries the lead order from a public library
+(judge2005), never from a lit tube, and surplus markings lie. Four tubes soldered in the
+wrong order is not recoverable on a wire-ended part. The ТУ also asks for each cathode
+to be burned in at 1.5–2 mA for 1–2 min before soldering — this gate does that too.
+
+**Orientation.** Look at the **digit face, digits upright, leads pointing away from
+you.** The missing (cut-short) 12th lead leaves a gap on the **right, just below
+centre**. The footprint expects, going **counter-clockwise from that gap** — up the right
+side, over the top to the left, down the left side, along the bottom back to the gap:
+
+    A (anode, just above the gap), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 (just below the gap)
+
+**When you turn the tube round to reach the leads, everything mirrors:** from the back
+the gap is on the left and the same order runs clockwise. Mark the anode lead with a dab
+of paint before you turn it round.
+
+Move the GND clip from lead to lead; note the digit that lights:
+
+| Lead, counter-clockwise from the gap | expected | lit digit |
+|---|---|---|
+| 1st (just above the gap) | anode | — |
+| 2nd | 0 | ____ |
+| 3rd | 1 | ____ |
+| 4th | 2 | ____ |
+| 5th | 3 | ____ |
+| 6th | 4 | ____ |
+| 7th | 5 | ____ |
+| 8th | 6 | ____ |
+| 9th | 7 | ____ |
+| 10th | 8 | ____ |
+| 11th (just below the gap) | 9 | ____ |
+
+Do two tubes. If either differs from "expected", the footprint's pad names change, not
+the board's wiring.
+
+## Gate 4 — ИН-15 pinouts, same rig
+
+**Why.** SEC took the maps below from tec.org.ru and rudatasheet.ru, which agree with
+each other, calibrated against the inherited board's anode position. Nobody has lit one.
+
+**Orientation.** Same stadium as the ИН-12, same pad numbers: viewed from the digit face
+with the glyphs upright, pads run **clockwise from the upper-left corner**: 1 upper-left,
+2 top, 3 upper-right, 4 right-upper, 5 right, 6 right-lower, **7 lower-right = anode**,
+8 bottom (no pin on any of these tubes), 9 lower-left, 10 left-lower, 11 left, 12
+left-upper. (For reference, the ИН-12А on the same stadium reads, pad → cathode:
+6→0, 5→9, 4→8, 3→7, 2→6, 1→5, 12→4, 11→3, 10→2, 9→1.)
+
+| Pad | ИН-15Б expected | lit | ИН-15А expected | lit |
+|---|---|---|---|---|
+| 1 | V | ____ | M | ____ |
+| 2 | H | ____ | m | ____ |
+| 3 | Hz | ____ | + | ____ |
+| 4 | — (NC) | ____ | − | ____ |
+| 5 | F | ____ | P | ____ |
+| 6 | W | ____ | µ | ____ |
+| 7 | anode | — | anode | — |
+| 8 | — | ____ | — | ____ |
+| 9 | A | ____ | n | ____ |
+| 10 | Ω | ____ | % | ____ |
+| 11 | — (NC) | ____ | π | ____ |
+| 12 | S | ____ | K | ____ |
+
+**Decides:** the 18 cathode nets of the AM/PM section. "A" on the Б and "P" on the А are
+the two that matter most; the rest only affect the idle animation.
+
+## Gate 5 — ИН-17 pip projection
+
+Caliper: from the plane the leads exit (the glass base) to the tip of the exhaust pip.
+The footprint has no pip hole because the ТУ keeps the joint 8 mm from the glass, so the
+tube stands ≥ 6.4 mm off the board.
+
+| Tube | Pip projection | Value |
+|---|---|---|
+| 5.1 | ______ mm | must be < 6.4 mm, or the footprint gets a hole |
+| 5.2 | second tube | ______ mm |
+
+## Gate 6 — the RTC mini module you have
+
+The stock driver board carries the same 5-pin header, labelled `− NC C D +`, and that is
+what the THT build will carry. Confirm on your module:
+
+| # | Check | Value |
+|---|---|---|
+| 6.1 | Pin labels on the module's silkscreen, in order | ______ ______ ______ ______ ______ |
+| 6.2 | Battery type printed on the holder (CR1220? CR2032? LIR2032?) | ______ |
+| 6.3 | Any resistor + diode between VCC and the battery + (a charging circuit — the ZS-042 defect)? | yes / no |
+
+## Gate 7 — the 12 V supply
+
+| # | Check | Value |
+|---|---|---|
+| 7.1 | The adapter you intend to ship: volts / amps / plug size (5.5 × 2.1 mm centre-positive assumed) | ______ |
+| 7.2 | Is the stock board fed by a barrel jack today, and through what — the Nano's USB, or the 2-pin `5V/GND` pads? | ______ |
+
+Gate 1.3 plus the LED and logic budget sizes the adapter; ≥ 1 A at 12 V is the working
+assumption.
+
+---
+
+## Where the answers go
+
+Gates 1–2 → `TERMINAL-06-measurements-PCB-GYVER-NETLIST.md` (the design point) and the
+anode resistor values in `tools/mksch_main.py`. Gate 3 → `TS06_IN17_Socket` pad names if
+they change. Gate 4 → the ИН-15 pad maps in `tools/mksch_main.py`. Gate 5 → the ИН-17
+footprint. Gates 6–7 → the THT build's RTC header and the power entry footprint.
