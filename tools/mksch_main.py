@@ -20,7 +20,8 @@ import os, re, sys, uuid
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ts06main as N
 
-SV, GV = 20260306, "10.0"
+SV, GV = 20260306, "10.0"                   # the schematic file format
+LV = 20251024                               # the symbol LIBRARY format, what KiCad 10 itself writes: it refuses a newer claim
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 LIBNAME = "TS06M"
 LIB = os.path.join(ROOT, "PCB", "lib", LIBNAME + ".kicad_sym")
@@ -322,7 +323,7 @@ for gname, text in GROUPS:
 # ---------------------------------------------------------------- write
 os.makedirs(os.path.dirname(SCH), exist_ok=True)
 with open(LIB, "w", encoding="utf8", newline="\n") as fh:
-    fh.write(f'(kicad_symbol_lib\n(version {SV})\n(generator "kicad_symbol_editor")\n(generator_version "{GV}")\n'
+    fh.write(f'(kicad_symbol_lib\n(version {LV})\n(generator "kicad_symbol_editor")\n(generator_version "{GV}")\n'
              + "\n".join(SYMS.values()) + "\n)\n")
 print("wrote", os.path.relpath(LIB, ROOT))
 lib_sch = "\n".join(qualify(t, n) for n, t in SYMS.items())

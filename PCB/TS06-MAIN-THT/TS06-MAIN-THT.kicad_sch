@@ -6992,7 +6992,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 118.11 123.19 0)
 (hide yes)
 (effects
@@ -7088,7 +7088,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 135.89 123.19 0)
 (hide yes)
 (effects
@@ -7184,7 +7184,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 153.67 123.19 0)
 (hide yes)
 (effects
@@ -7280,7 +7280,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 171.45 123.19 0)
 (hide yes)
 (effects
@@ -7376,7 +7376,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 189.23 123.19 0)
 (hide yes)
 (effects
@@ -7472,7 +7472,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 207.01 123.19 0)
 (hide yes)
 (effects
@@ -7568,7 +7568,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 224.79 123.19 0)
 (hide yes)
 (effects
@@ -7664,7 +7664,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 242.57 123.19 0)
 (hide yes)
 (effects
@@ -7760,7 +7760,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 260.35 123.19 0)
 (hide yes)
 (effects
@@ -7856,7 +7856,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 278.13 123.19 0)
 (hide yes)
 (effects
@@ -7952,7 +7952,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 295.91 123.19 0)
 (hide yes)
 (effects
@@ -8048,7 +8048,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 313.69 123.19 0)
 (hide yes)
 (effects
@@ -12144,7 +12144,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 29.21 367.03 0)
 (hide yes)
 (effects
@@ -12240,7 +12240,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 46.99 367.03 0)
 (hide yes)
 (effects
@@ -12336,7 +12336,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 64.77 367.03 0)
 (hide yes)
 (effects
@@ -12432,7 +12432,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 82.55 367.03 0)
 (hide yes)
 (effects
@@ -12528,7 +12528,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 100.33 367.03 0)
 (hide yes)
 (effects
@@ -12624,7 +12624,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 118.11 367.03 0)
 (hide yes)
 (effects
@@ -12720,7 +12720,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 135.89 367.03 0)
 (hide yes)
 (effects
@@ -12816,7 +12816,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 153.67 367.03 0)
 (hide yes)
 (effects
@@ -12912,7 +12912,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 171.45 367.03 0)
 (hide yes)
 (effects
@@ -13008,7 +13008,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 189.23 367.03 0)
 (hide yes)
 (effects
@@ -13104,7 +13104,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 207.01 367.03 0)
 (hide yes)
 (effects
@@ -13200,7 +13200,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 224.79 367.03 0)
 (hide yes)
 (effects
@@ -13296,7 +13296,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 242.57 367.03 0)
 (hide yes)
 (effects
@@ -13392,7 +13392,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 260.35 367.03 0)
 (hide yes)
 (effects
@@ -13488,7 +13488,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 278.13 367.03 0)
 (hide yes)
 (effects
@@ -13584,7 +13584,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 295.91 367.03 0)
 (hide yes)
 (effects
@@ -13680,7 +13680,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 313.69 367.03 0)
 (hide yes)
 (effects
@@ -13776,7 +13776,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 331.47 367.03 0)
 (hide yes)
 (effects
@@ -13872,7 +13872,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 349.25 367.03 0)
 (hide yes)
 (effects
@@ -13968,7 +13968,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 367.03 367.03 0)
 (hide yes)
 (effects
@@ -14064,7 +14064,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 384.81 367.03 0)
 (hide yes)
 (effects
@@ -14160,7 +14160,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 402.59 367.03 0)
 (hide yes)
 (effects
@@ -14256,7 +14256,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 420.37 367.03 0)
 (hide yes)
 (effects
@@ -14352,7 +14352,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 438.15 367.03 0)
 (hide yes)
 (effects
@@ -15526,7 +15526,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 64.77 440.69 0)
 (hide yes)
 (effects
@@ -15622,7 +15622,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 82.55 440.69 0)
 (hide yes)
 (effects
@@ -15718,7 +15718,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 100.33 440.69 0)
 (hide yes)
 (effects
@@ -15814,7 +15814,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 118.11 440.69 0)
 (hide yes)
 (effects
@@ -15910,7 +15910,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 135.89 440.69 0)
 (hide yes)
 (effects
@@ -16006,7 +16006,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 153.67 440.69 0)
 (hide yes)
 (effects
@@ -16102,7 +16102,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 171.45 440.69 0)
 (hide yes)
 (effects
@@ -16198,7 +16198,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 189.23 440.69 0)
 (hide yes)
 (effects
@@ -16294,7 +16294,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 207.01 440.69 0)
 (hide yes)
 (effects
@@ -16390,7 +16390,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 224.79 440.69 0)
 (hide yes)
 (effects
@@ -16486,7 +16486,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 242.57 440.69 0)
 (hide yes)
 (effects
@@ -16582,7 +16582,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 260.35 440.69 0)
 (hide yes)
 (effects
@@ -16678,7 +16678,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 278.13 440.69 0)
 (hide yes)
 (effects
@@ -16774,7 +16774,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 295.91 440.69 0)
 (hide yes)
 (effects
@@ -16870,7 +16870,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 313.69 440.69 0)
 (hide yes)
 (effects
@@ -16966,7 +16966,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 331.47 440.69 0)
 (hide yes)
 (effects
@@ -17062,7 +17062,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 349.25 440.69 0)
 (hide yes)
 (effects
@@ -17158,7 +17158,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 367.03 440.69 0)
 (hide yes)
 (effects
@@ -17254,7 +17254,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 384.81 440.69 0)
 (hide yes)
 (effects
@@ -17350,7 +17350,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 402.59 440.69 0)
 (hide yes)
 (effects
@@ -17446,7 +17446,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 420.37 440.69 0)
 (hide yes)
 (effects
@@ -17542,7 +17542,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 438.15 440.69 0)
 (hide yes)
 (effects
@@ -21542,7 +21542,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 29.21 547.37 0)
 (hide yes)
 (effects
@@ -21638,7 +21638,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 46.99 547.37 0)
 (hide yes)
 (effects
@@ -21734,7 +21734,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_P12.7mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L9.9mm_P5.08mm_Vertical_Back"
 (at 64.77 547.37 0)
 (hide yes)
 (effects
@@ -23017,7 +23017,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 349.25 600.71 0)
 (hide yes)
 (effects
@@ -23113,7 +23113,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 367.03 600.71 0)
 (hide yes)
 (effects
@@ -23209,7 +23209,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 384.81 600.71 0)
 (hide yes)
 (effects
@@ -23305,7 +23305,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 402.59 600.71 0)
 (hide yes)
 (effects
@@ -23401,7 +23401,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 420.37 600.71 0)
 (hide yes)
 (effects
@@ -23497,7 +23497,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 438.15 600.71 0)
 (hide yes)
 (effects
@@ -23593,7 +23593,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 455.93 600.71 0)
 (hide yes)
 (effects
@@ -23689,7 +23689,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 473.71 600.71 0)
 (hide yes)
 (effects
@@ -23785,7 +23785,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 491.49 600.71 0)
 (hide yes)
 (effects
@@ -23881,7 +23881,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P10.16mm_Back"
+(property "Footprint" "TS06:TS06_R_Axial_L6.3mm_P2.54mm_Vertical_Back"
 (at 509.27 600.71 0)
 (hide yes)
 (effects

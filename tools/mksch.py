@@ -12,7 +12,8 @@ flag to describe, and it keeps ERC honest instead of decorative.
 """
 import os, sys, uuid
 
-SV, GV = 20260306, "10.0"
+SV, GV = 20260306, "10.0"                   # the schematic file format
+LV = 20251024                               # the symbol LIBRARY format, what KiCad 10 itself writes: it refuses a newer claim
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 LIB  = os.path.join(ROOT, "PCB", "lib", "TS06.kicad_sym")
 # One netlist, two builds. "--tht" writes the same schematic against the through-hole
@@ -129,7 +130,7 @@ def qualify(txt, name):
 SYMS_SCH = {n: qualify(t, n) for n, t in SYMS.items()}
 
 open(LIB, "w", encoding="utf8").write(
-    f'(kicad_symbol_lib\n(version {SV})\n(generator "kicad_symbol_editor")\n'
+    f'(kicad_symbol_lib\n(version {LV})\n(generator "kicad_symbol_editor")\n'
     f'(generator_version "{GV}")\n' + "\n".join(SYMS.values()) + "\n)\n")
 print("wrote", os.path.relpath(LIB, ROOT))
 
