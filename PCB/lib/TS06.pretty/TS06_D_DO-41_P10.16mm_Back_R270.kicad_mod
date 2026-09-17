@@ -1,0 +1,205 @@
+(footprint "TS06_D_DO-41_P10.16mm_Back_R270"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial diode, 10.16 mm pitch (KiCad D_DO-41_SOD81_P10.16mm_Horizontal), centred; pad 1 cathode (square), the band. For HER106, the 185 V rectifier. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 270 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "diode axial THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -7.25 0)
+		(layer "B.Fab")
+		(uuid "df8c4f38-1c93-5555-a2d9-a6eb2d2b889b")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_D_DO-41_P10.16mm_Back_R270"
+		(at 0 7.25 0)
+		(layer "B.Fab")
+		(uuid "395866db-6675-5aec-92d3-4977c0573061") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "8beb4b64-5efc-5056-bf63-d08dab1ec37a") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "7e2c09a0-3200-5452-96fc-e6ba3f3a730b") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "5175e216-f7bb-5896-a96f-5e802d98fe03") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 0 5.08)
+		(size 2.2 2.2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "77930044-5e45-536a-97e0-01f73847a81d")
+	)
+	(pad "2" thru_hole circle
+		(at 0 -5.08)
+		(size 2.2 2.2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "0896f3fb-5037-5602-9204-9c1faf591571")
+	)
+	(fp_line
+		(start 1.6 6.45)
+		(end 1.6 -6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "2c8ff543-28b7-5a6c-9670-6c34c4be0f69")
+	)
+	(fp_line
+		(start 1.6 -6.45)
+		(end -1.6 -6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "51001a47-ddab-52c1-b62b-178f7524404a")
+	)
+	(fp_line
+		(start -1.6 -6.45)
+		(end -1.6 6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f3140608-7dff-594e-8ec3-685131b72035")
+	)
+	(fp_line
+		(start -1.6 6.45)
+		(end 1.6 6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "24d51112-38ae-51c3-b74b-7bb22e8d93fc")
+	)
+	(fp_line
+		(start 1.35 2.6)
+		(end 1.35 -2.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "56443ad2-2fde-5da0-8835-904824fb8d81")
+	)
+	(fp_line
+		(start 1.35 -2.6)
+		(end -1.35 -2.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "5fa659c8-03b6-56a5-a0ae-6aba9c24a8c3")
+	)
+	(fp_line
+		(start -1.35 -2.6)
+		(end -1.35 2.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "a1aa581a-1e28-5477-83d5-4b017260101a")
+	)
+	(fp_line
+		(start -1.35 2.6)
+		(end 1.35 2.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b4fca719-691f-59fe-84ad-4fe187e86e5a")
+	)
+	(fp_line
+		(start 1.35 1.9)
+		(end -1.35 1.9)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "14072de8-6df8-5a8c-b99a-2d237cfd3a91")
+	)
+	(fp_line
+		(start 0 5.08)
+		(end 0 2.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "248504f4-494a-5f83-8426-887384ef6b7e")
+	)
+	(fp_line
+		(start 0 -2.6)
+		(end 0 -5.08)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "c267ef4e-3eb2-5239-b292-dedb8b90ff55")
+	)
+	(fp_line
+		(start 1.65 1.9)
+		(end -1.65 1.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "c2c9e83e-28d8-5b00-bd67-d31d6e2ccf5f")
+	)
+	(embedded_fonts no)
+)

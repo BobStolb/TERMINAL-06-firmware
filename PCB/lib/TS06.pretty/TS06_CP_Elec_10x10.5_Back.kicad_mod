@@ -1,0 +1,195 @@
+(footprint "TS06_CP_Elec_10x10.5_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SMD aluminium electrolytic, CP_Elec_10x10.5 (KiCad CP_Elec_10x10.5), centred; pad 1 positive, the silk + marks it. For the 4.7u 400V reservoir. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "capacitor electrolytic SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -6.3 0)
+		(layer "B.Fab")
+		(uuid "1a7d7ab9-e598-5a54-9b75-b974d7490a82")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_CP_Elec_10x10.5_Back"
+		(at 0 6.3 0)
+		(layer "B.Fab")
+		(uuid "cd89492a-ee89-5178-9edd-a7e3ab698166") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "651f1b12-f810-53c6-8be1-ec192f289b30") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "315b3f9c-018b-54c1-b653-49ae33798168") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "ed44804b-459b-54f4-8c36-36581b002e94") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 4.2 0)
+		(size 4.4 2.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "f58986f9-57a2-59ef-bf17-9fd909469508")
+	)
+	(pad "2" smd roundrect
+		(at -4.2 0)
+		(size 4.4 2.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "e5fcb470-3174-55f4-b246-5b97d35781ed")
+	)
+	(fp_line
+		(start 6.65 -5.5)
+		(end -6.65 -5.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "9f9c1dc1-b0a1-50f0-b18d-55f72f4a6c6e")
+	)
+	(fp_line
+		(start -6.65 -5.5)
+		(end -6.65 5.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "2c107b01-b55e-50e7-b6ec-4fd25439d7a4")
+	)
+	(fp_line
+		(start -6.65 5.5)
+		(end 6.65 5.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "ffaf2915-eb7f-5e66-8196-f4aaad9170d9")
+	)
+	(fp_line
+		(start 6.65 5.5)
+		(end 6.65 -5.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "3d4a45f6-748d-5c60-a51f-6add8fab0ebd")
+	)
+	(fp_line
+		(start 5.15 -5.15)
+		(end -5.15 -5.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "89ae9505-2400-5a1d-91cf-7a81a7b5b380")
+	)
+	(fp_line
+		(start -5.15 -5.15)
+		(end -5.15 5.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "a38b7d1a-69e6-5b9e-9141-e2757b18609c")
+	)
+	(fp_line
+		(start -5.15 5.15)
+		(end 5.15 5.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "eaefd10f-a4f7-58fd-bc15-cfd65c4f5ffb")
+	)
+	(fp_line
+		(start 5.15 5.15)
+		(end 5.15 -5.15)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "8b731094-9cda-5c4a-946d-f21cc8f9355e")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4.95 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "494ec079-38d8-5b3b-8416-897d468e3f05")
+	)
+	(fp_line
+		(start 5.95 -4.55)
+		(end 5.95 -3.55)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "81430b9d-4c01-541c-8f69-9b32f807225f")
+	)
+	(fp_line
+		(start 6.45 -4.05)
+		(end 5.45 -4.05)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "3f69d870-fb71-5ad9-81a3-ad12600d1b65")
+	)
+	(embedded_fonts no)
+)

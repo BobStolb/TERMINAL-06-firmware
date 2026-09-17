@@ -1,0 +1,184 @@
+(footprint "TS06_R_Axial_P12.7mm_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial resistor, 12.70 mm pitch, 0.5 W body (KiCad R_Axial_DIN0411_L9.9mm_D3.6mm_P12.70mm_Horizontal), pin field centred. Anode series resistors, colon ballasts, the bleeder. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "resistor axial 12.7 THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -2.85 0)
+		(layer "B.Fab")
+		(uuid "315112cb-bcff-54a8-aa0d-8558232c7b63")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_R_Axial_P12.7mm_Back"
+		(at 0 2.85 0)
+		(layer "B.Fab")
+		(uuid "460db13c-3f11-5c75-ab0f-f3762fb64b49") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "900972ef-fbcf-54aa-9e27-fbcd7db645ba") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "75270961-f7d1-5b61-8f5e-ef88ed53f53f") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "705fb68f-6539-59de-933d-cafdca0d9077") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 6.35 0)
+		(size 2 2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2c972128-4a50-53bc-9517-a3809722d91a")
+	)
+	(pad "2" thru_hole circle
+		(at -6.35 0)
+		(size 2 2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "6ff020c4-2f5d-5e55-80aa-f10b1b5815cd")
+	)
+	(fp_line
+		(start 7.4 -2.05)
+		(end -7.4 -2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "2eada944-1ee5-51f6-9b77-586ec737515d")
+	)
+	(fp_line
+		(start -7.4 -2.05)
+		(end -7.4 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "023c7216-8a11-5b58-a56f-4a5cc7692419")
+	)
+	(fp_line
+		(start -7.4 2.05)
+		(end 7.4 2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "a022ed9d-c86a-5d77-8d02-34cf1fd619ce")
+	)
+	(fp_line
+		(start 7.4 2.05)
+		(end 7.4 -2.05)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "e947eccd-bb4f-585c-8348-d7574dd46003")
+	)
+	(fp_line
+		(start 4.95 -1.8)
+		(end -4.95 -1.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7d749d3c-2f23-50fc-81dd-d75c5c93f723")
+	)
+	(fp_line
+		(start -4.95 -1.8)
+		(end -4.95 1.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7ff33eea-8716-5810-9676-116bb3b9ac78")
+	)
+	(fp_line
+		(start -4.95 1.8)
+		(end 4.95 1.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0ad6cfb3-c35b-5a7a-a1d4-9b8b449d5002")
+	)
+	(fp_line
+		(start 4.95 1.8)
+		(end 4.95 -1.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "6c4b5e66-c4e4-5c09-ace8-a1420e6588eb")
+	)
+	(fp_line
+		(start 6.35 0)
+		(end 4.95 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "c171e2ae-0640-5f1f-ac9d-df64a726fbfd")
+	)
+	(fp_line
+		(start -4.95 0)
+		(end -6.35 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "bec2a48a-5412-55e7-b82e-da7f268fe005")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,217 @@
+(footprint "TS06_DIP-8_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "DIP-8, 7.62 mm row spacing (KiCad DIP-8_W7.62mm), pin field centred; pin 1 top-left in the library's front view, the silk bar marks it. For TC4420 (1/8 VDD, 2 IN, 4/5 GND, 6/7 OUT) and LM393. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "DIP-8 THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -6.13 0)
+		(layer "B.Fab")
+		(uuid "a1eefbe2-4b11-5415-b4cc-06f5825f8365")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_DIP-8_Back"
+		(at 0 6.13 0)
+		(layer "B.Fab")
+		(uuid "a5d864c1-a9d4-5fcd-acdc-2a14c0c6bfc4") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "4bf24118-1ab6-5acb-a62c-3d1102fdce95") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "0878e661-e7a3-55b9-9423-ae41a4b690cd") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "be50e35e-5e61-523b-a351-b5e9d2207cd5") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 3.81 -3.81)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "49a02b6b-71a4-58b4-9a19-5431eebd2d86")
+	)
+	(pad "8" thru_hole circle
+		(at -3.81 -3.81)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "33a6d034-0fa4-5b2e-af32-fd91b7779318")
+	)
+	(pad "2" thru_hole circle
+		(at 3.81 -1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "6ec35410-aeed-5267-9ed5-73dbcd464626")
+	)
+	(pad "7" thru_hole circle
+		(at -3.81 -1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "b058c83f-818a-5b4d-8035-1bcfb025a656")
+	)
+	(pad "3" thru_hole circle
+		(at 3.81 1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "23bb5e00-a5c9-5fd3-8bfd-655819530fc8")
+	)
+	(pad "6" thru_hole circle
+		(at -3.81 1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "add1c43a-b13a-5e6a-817e-2401af525f27")
+	)
+	(pad "4" thru_hole circle
+		(at 3.81 3.81)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "ad6cb231-1865-5f8e-9116-6d0f72db92cf")
+	)
+	(pad "5" thru_hole circle
+		(at -3.81 3.81)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "12f2f5ac-c51c-5ce6-a0ea-bb33fc177cbb")
+	)
+	(fp_line
+		(start 4.86 -5.33)
+		(end -4.86 -5.33)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f50e617c-e789-5234-9365-8c9a76171b69")
+	)
+	(fp_line
+		(start -4.86 -5.33)
+		(end -4.86 5.33)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "fa2dde1e-9fc9-5014-b353-446351a43f89")
+	)
+	(fp_line
+		(start -4.86 5.33)
+		(end 4.86 5.33)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "b79dafd5-a48c-538f-a673-8067283fdaf8")
+	)
+	(fp_line
+		(start 4.86 5.33)
+		(end 4.86 -5.33)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0d0c73ec-9eae-5d2d-a2ef-28da04f56f6e")
+	)
+	(fp_line
+		(start 3.175 -5.08)
+		(end -3.175 -5.08)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "bd087d97-9817-57da-9bf8-d2e3c21fdc27")
+	)
+	(fp_line
+		(start -3.175 -5.08)
+		(end -3.175 5.08)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "9d581390-8a17-5049-bef7-6d09f6846ad4")
+	)
+	(fp_line
+		(start -3.175 5.08)
+		(end 3.175 5.08)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "4df5bcdf-b547-57ab-8f05-8fa723c9d59d")
+	)
+	(fp_line
+		(start 3.175 5.08)
+		(end 3.175 -5.08)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "683f02ba-2c22-52d9-b550-1a4e81f30f2e")
+	)
+	(fp_line
+		(start 4.61 -5.11)
+		(end 3.01 -5.11)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "7235600c-da84-5f96-a493-3fe2d15246ca")
+	)
+	(embedded_fonts no)
+)

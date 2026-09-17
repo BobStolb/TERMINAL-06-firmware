@@ -1,0 +1,127 @@
+(footprint "TS06_CP_Radial_D6.3mm_P2.50mm_Back_R180"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Radial electrolytic, 2.50 mm pitch (KiCad CP_Radial_D6.3mm_P2.50mm), centred; pad 1 positive (square), the silk + marks it. For 100u 25V and 10u 50V. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 180 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "capacitor electrolytic THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -4.1 0)
+		(layer "B.Fab")
+		(uuid "7d7e404c-6c28-54eb-8975-1ba1788bd0b0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_CP_Radial_D6.3mm_P2.50mm_Back_R180"
+		(at 0 4.1 0)
+		(layer "B.Fab")
+		(uuid "025497ff-e23d-5384-be4c-8b91ca561284") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "1e22c34b-752e-5ecf-9272-99ef601b4f4d") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "93260683-2ea8-5d98-a382-67f985587fea") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "efb85344-28b8-5838-898a-446d666fe357") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -1.25 0)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "36a6e41c-d1fe-52ba-996c-170a15500b67")
+	)
+	(pad "2" thru_hole circle
+		(at 1.25 0)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "386b112f-d8fa-5ef1-a678-0ea6b2879906")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 3.3 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.CrtYd")
+		(uuid "cff6db5a-3e8e-5448-ae0c-e304fc79c6db")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 3.15 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "9be20032-cdac-5058-bd47-e1bd968b8f80")
+	)
+	(fp_line
+		(start -2.7 2.1)
+		(end -1.7 2.1)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "478b5a45-84bb-53f0-9baf-d28c1b797543")
+	)
+	(fp_line
+		(start -2.2 2.6)
+		(end -2.2 1.6)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "e964c8d4-8bf0-5dc5-be0d-2490c90a08d5")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,184 @@
+(footprint "TS06_D_SMA_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SMA / DO-214AC diode (KiCad D_SMA), centred; pad 1 cathode, the band. For US1J (185 V rectifier) and SS34 (input protection). Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "diode SMA SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -4.3 0)
+		(layer "B.Fab")
+		(uuid "ac8d09fa-a9ae-57af-86a5-b99329b8e7be")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_D_SMA_Back_R90"
+		(at 0 4.3 0)
+		(layer "B.Fab")
+		(uuid "46567b45-9d8e-56b5-bfee-25c7f0a5fa53") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "01598cda-474e-58db-ac46-89f503226d4a") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "221417ff-41d1-58aa-aa71-3a3bc010f590") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "649db902-a386-52d0-b1ac-92ebb15531ce") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 0 -2)
+		(size 1.8 2.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "24e6c1b8-de43-5a58-ae14-0780f0653875")
+	)
+	(pad "2" smd roundrect
+		(at 0 2)
+		(size 1.8 2.5)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "f3fd1206-3c17-5a76-bb2e-bd16fa4b0336")
+	)
+	(fp_line
+		(start -1.75 -3.5)
+		(end -1.75 3.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "e51088ac-a73f-5041-bafa-8ce8acc1e72c")
+	)
+	(fp_line
+		(start -1.75 3.5)
+		(end 1.75 3.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "5a6eaf84-089e-5a64-bd5c-15f0336e030d")
+	)
+	(fp_line
+		(start 1.75 3.5)
+		(end 1.75 -3.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f7e8b14e-f202-5ae1-a8eb-717f33cc8a34")
+	)
+	(fp_line
+		(start 1.75 -3.5)
+		(end -1.75 -3.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "3c2d0d55-400f-5178-94a7-68807e08e385")
+	)
+	(fp_line
+		(start -1.4 -2.3)
+		(end -1.4 2.3)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7bd1f469-9d45-523e-8661-96920a00e7b9")
+	)
+	(fp_line
+		(start -1.4 2.3)
+		(end 1.4 2.3)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "1e2010f5-3337-57d7-ac57-7b4c1b68466b")
+	)
+	(fp_line
+		(start 1.4 2.3)
+		(end 1.4 -2.3)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ced98bfd-9b74-5530-bbe1-aaea7adfd7a8")
+	)
+	(fp_line
+		(start 1.4 -2.3)
+		(end -1.4 -2.3)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "85e98291-c57c-5b9f-928a-017cde2a2221")
+	)
+	(fp_line
+		(start -1.4 -1.6)
+		(end 1.4 -1.6)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ac7e63f7-09ea-5127-8fc7-37fd41922a5e")
+	)
+	(fp_line
+		(start -1.55 -3.4)
+		(end 1.55 -3.4)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "b10c8105-f899-5230-adad-a9d7a12241b3")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,181 @@
+(footprint "TS06_R78E_SIP3_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Recom R-78E5.0-1.0 switching regulator, SIP-3 (KiCad Converter_DCDC_RECOM_R-78E-0.5_THT), centred: 1 Vin (square), 2 GND, 3 Vout; the body stands toward -y. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "regulator R-78E SIP-3 THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -6.91 0)
+		(layer "B.Fab")
+		(uuid "e141e83b-eb1a-515d-8539-98c2bd2aeb6c")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_R78E_SIP3_Back_R90"
+		(at 0 6.8 0)
+		(layer "B.Fab")
+		(uuid "e635da5c-33e6-513d-9e31-1f7616f1842c") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "979522a6-bf62-5dbc-9cd6-4077ecf14b40") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "9d98ef7c-7f6f-5d5b-8eb5-ccf0e5105fb1") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "8af8c5be-ffd4-5c5b-aa67-69adea058c08") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 -2.54)
+		(size 2.3 1.5)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5bb0c285-485e-5f8d-a987-ec4f21f5fedd")
+	)
+	(pad "2" thru_hole oval
+		(at 0 0)
+		(size 2.3 1.5)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "803adbe0-7768-5627-8326-392fad69bab5")
+	)
+	(pad "3" thru_hole oval
+		(at 0 2.54)
+		(size 2.3 1.5)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "ba9f0ffb-709a-5edb-a0ca-6c48b51f3abd")
+	)
+	(fp_line
+		(start -6.75 -6.11)
+		(end -6.75 6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "b145e11b-7508-50df-bdb8-5316afb72ac8")
+	)
+	(fp_line
+		(start -6.75 6)
+		(end 2.25 6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "68e45bf6-5fd0-576a-b22a-0dcffe00b0a0")
+	)
+	(fp_line
+		(start 2.25 6)
+		(end 2.25 -6.11)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "5d63b27f-a826-5fcb-a7d6-4ce7bcf14fa8")
+	)
+	(fp_line
+		(start 2.25 -6.11)
+		(end -6.75 -6.11)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "baf75c09-b921-50ca-b1f4-bf121a79fb4f")
+	)
+	(fp_line
+		(start -6.5 -5.8)
+		(end -6.5 5.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "300aab79-6c1a-5b36-9b2b-2984abf6444a")
+	)
+	(fp_line
+		(start -6.5 5.8)
+		(end 2 5.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0eefd1de-d946-5107-8b7e-b4bc99ea5d8f")
+	)
+	(fp_line
+		(start 2 5.8)
+		(end 2 -5.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b3c13722-2f51-5273-843b-f7a2d8dd3b00")
+	)
+	(fp_line
+		(start 2 -5.8)
+		(end -6.5 -5.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "1e4e47f5-2642-5928-ba4a-f03ef27ce8ab")
+	)
+	(fp_line
+		(start 2.5 -3.5)
+		(end 2.5 -1.6)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "2f8aa0af-3a51-5b79-abad-d15ad1e26b69")
+	)
+	(embedded_fonts no)
+)

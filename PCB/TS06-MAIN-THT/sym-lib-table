@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "TS06")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06.kicad_sym")(options "")(descr "TERMINAL-06 project symbols"))
+  (lib (name "TS06M")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06M.kicad_sym")(options "")(descr "TS06-MAIN symbols"))
+)

@@ -1,0 +1,164 @@
+(footprint "TS06_C_Disc_P5.00mm_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Radial ceramic capacitor, 5.00 mm pitch (KiCad C_Disc_D5.0mm_W2.5mm_P5.00mm), pin field centred. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "capacitor disc THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -4.35 0)
+		(layer "B.Fab")
+		(uuid "e2d3b61a-aee1-5fa6-8921-8f8a867def26")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_C_Disc_P5.00mm_Back_R90"
+		(at 0 4.35 0)
+		(layer "B.Fab")
+		(uuid "ae4b68da-bcd6-5f53-a65d-50d45a42ee2d") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "8688b85c-d84f-520f-80e1-bdc8bedc9323") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "6d4aee1a-a9b8-599f-9bee-32dc200131fd") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "bdc51644-8302-5b97-9a2b-5efed80471e3") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 -2.5)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2a5f9a19-9a9e-571f-9e2b-ba75a0ca5c6e")
+	)
+	(pad "2" thru_hole circle
+		(at 0 2.5)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "78d01ea2-a357-5a23-9c47-49ec8354e16c")
+	)
+	(fp_line
+		(start -1.5 -3.55)
+		(end -1.5 3.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "689625e2-a1d0-553b-ad17-ab0be5f65728")
+	)
+	(fp_line
+		(start -1.5 3.55)
+		(end 1.5 3.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "930f0e4f-290e-56c6-8b14-7a7ae76602e3")
+	)
+	(fp_line
+		(start 1.5 3.55)
+		(end 1.5 -3.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "06d62021-3fe4-5cbc-8624-b700f13ca18d")
+	)
+	(fp_line
+		(start 1.5 -3.55)
+		(end -1.5 -3.55)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "226256a6-1239-571f-bbac-a37e400ac641")
+	)
+	(fp_line
+		(start -1.25 -2.5)
+		(end -1.25 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "67b27024-2e20-540f-b1d0-b4dbbb089c12")
+	)
+	(fp_line
+		(start -1.25 2.5)
+		(end 1.25 2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "09856d32-5fbc-557d-b1cf-bd4df3beacf1")
+	)
+	(fp_line
+		(start 1.25 2.5)
+		(end 1.25 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ed53cb25-e07e-54e9-8bc4-541e369069ab")
+	)
+	(fp_line
+		(start 1.25 -2.5)
+		(end -1.25 -2.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "999323ad-4059-5e09-8994-2c30ca92f9c7")
+	)
+	(embedded_fonts no)
+)

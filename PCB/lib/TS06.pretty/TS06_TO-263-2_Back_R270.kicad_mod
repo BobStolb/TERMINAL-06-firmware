@@ -1,0 +1,181 @@
+(footprint "TS06_TO-263-2_Back_R270"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "D2PAK / TO-263-2 (KiCad TO-263-2), the tab pad on the +x side: 1 gate, 2 drain (tab), 3 source. For IRF840S. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 270 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "TO-263 D2PAK MOSFET SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -7.25 0)
+		(layer "B.Fab")
+		(uuid "f43b99bd-c123-53fc-b4db-69b63a655bd0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_TO-263-2_Back_R270"
+		(at 0 11 0)
+		(layer "B.Fab")
+		(uuid "ce472a63-930c-5cb7-af78-a309bef536e2") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "f8dbfd63-426a-5911-9a35-e03acf602529") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "c94bcddf-af13-5039-85f3-1dd92e34650f") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "d257d4f0-6c89-592c-a519-cb9dd52dfa9f") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 2.54 7.65)
+		(size 1.1 4.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "8497f94c-e278-5629-822c-f17393d79f98")
+	)
+	(pad "2" smd roundrect
+		(at 0 -1.5)
+		(size 10.8 9.4)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.05)
+		(uuid "45ec582a-e576-5e3d-883e-0271b4be40bb")
+	)
+	(pad "3" smd roundrect
+		(at -2.54 7.65)
+		(size 1.1 4.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "3cf3aaee-3cad-57f1-bc03-60434e83819b")
+	)
+	(fp_line
+		(start 5.65 10.2)
+		(end 5.65 -6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "3c97a52d-4114-582d-8e02-02cc3d3c1c14")
+	)
+	(fp_line
+		(start 5.65 -6.45)
+		(end -5.65 -6.45)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "660fba30-3877-5e8a-b717-331d33824f1e")
+	)
+	(fp_line
+		(start -5.65 -6.45)
+		(end -5.65 10.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f2517f95-19be-5ee4-a6fc-bb47cfafa022")
+	)
+	(fp_line
+		(start -5.65 10.2)
+		(end 5.65 10.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "e6b31a57-b097-56c0-b7ae-384e8f1bd11e")
+	)
+	(fp_line
+		(start 4.95 3.2)
+		(end 4.95 -6.2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ce4a2d48-831b-583f-8d33-e0599b864164")
+	)
+	(fp_line
+		(start 4.95 -6.2)
+		(end -4.95 -6.2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "d6af1383-e7d9-59f7-85e2-17d43aea135c")
+	)
+	(fp_line
+		(start -4.95 -6.2)
+		(end -4.95 3.2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "63ffcf05-cfc5-52b5-90e2-ce4332145d2e")
+	)
+	(fp_line
+		(start -4.95 3.2)
+		(end 4.95 3.2)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "55ffc09f-d2ee-51ea-a164-b7ea40621c25")
+	)
+	(fp_line
+		(start 3.4 10)
+		(end 3.4 8)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "7f1500cf-acc5-523b-894e-b399bd06bb86")
+	)
+	(embedded_fonts no)
+)

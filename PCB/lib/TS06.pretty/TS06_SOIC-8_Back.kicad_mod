@@ -1,0 +1,216 @@
+(footprint "TS06_SOIC-8_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SOIC-8 3.9 x 4.9 mm (KiCad SOIC-8_3.9x4.9mm_P1.27mm), pin field centred, pin 1 top-left in the front view (silk bar). For TC4420 and LM393. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "SOIC SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -3.5 0)
+		(layer "B.Fab")
+		(uuid "f3706205-80dd-5a0c-bac2-0fe0d85f0086")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_SOIC-8_Back"
+		(at 0 3.5 0)
+		(layer "B.Fab")
+		(uuid "36c1d78a-d8a0-5edf-b76a-4c4b1b9ea857") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "ae06fc3d-11c0-57c1-b4a7-4af10e7a76fa") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "68d3bebd-168c-50be-b76c-075307ba36f2") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "5d4d39a3-2b69-5c3e-9ce8-954b7c4fa9b9") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 2.475 -1.905)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "c80b6558-de15-5369-b116-92be44be918a")
+	)
+	(pad "2" smd roundrect
+		(at 2.475 -0.635)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "970501a5-5635-5f16-aebe-f3efe41f6699")
+	)
+	(pad "3" smd roundrect
+		(at 2.475 0.635)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "17e01dc0-925d-5942-a3bb-73054cfbce41")
+	)
+	(pad "4" smd roundrect
+		(at 2.475 1.905)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "5dd8d365-ba73-5d56-83f8-2cc4a9a3d113")
+	)
+	(pad "8" smd roundrect
+		(at -2.475 -1.905)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "902000e8-380c-5036-9143-7e1bdd9d1c97")
+	)
+	(pad "7" smd roundrect
+		(at -2.475 -0.635)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "d4c78824-0f1d-54bc-9d3f-061096ffb531")
+	)
+	(pad "6" smd roundrect
+		(at -2.475 0.635)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "ca5fa20f-a415-52cc-ab91-9bbeba145af5")
+	)
+	(pad "5" smd roundrect
+		(at -2.475 1.905)
+		(size 1.95 0.6)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "7a571b43-c405-5528-a81e-47b516783edd")
+	)
+	(fp_line
+		(start 3.7 -2.7)
+		(end -3.7 -2.7)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "d1749c87-533a-52d3-9c29-05c02d7217c4")
+	)
+	(fp_line
+		(start -3.7 -2.7)
+		(end -3.7 2.7)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "c44f8ebc-7d12-5c70-93d4-6fdca86dbb2b")
+	)
+	(fp_line
+		(start -3.7 2.7)
+		(end 3.7 2.7)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "812b580e-c9f1-51de-80d8-3482d944601f")
+	)
+	(fp_line
+		(start 3.7 2.7)
+		(end 3.7 -2.7)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f1564c61-c556-5929-9805-436368a1c584")
+	)
+	(fp_line
+		(start 1.95 -2.45)
+		(end -1.95 -2.45)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f6b33490-bf3d-5567-a34e-4fdd00b54a42")
+	)
+	(fp_line
+		(start -1.95 -2.45)
+		(end -1.95 2.45)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "568627d5-c6cc-5ebf-a922-a992eeb52a5f")
+	)
+	(fp_line
+		(start -1.95 2.45)
+		(end 1.95 2.45)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "298776b3-9758-5d3e-a81e-f994b7e69912")
+	)
+	(fp_line
+		(start 1.95 2.45)
+		(end 1.95 -2.45)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "95f5059f-e2f0-523f-a7d7-c1a96a64f75c")
+	)
+	(fp_line
+		(start 3.45 -2.805)
+		(end 2.15 -2.805)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "4ba3f49a-ecdd-53b8-a0ea-7ffa66d8ef3e")
+	)
+	(embedded_fonts no)
+)

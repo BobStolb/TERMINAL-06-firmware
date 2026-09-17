@@ -1,0 +1,195 @@
+(footprint "TS06_PinHeader_1x05_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "1x05 2.54 mm header (KiCad PinHeader_1x05_P2.54mm_Vertical), centred; pin 1 square. The DS3231 mini module plugs on here: 1 -, 2 NC, 3 C, 4 D, 5 +. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "header 1x05 THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -7.65 0)
+		(layer "B.Fab")
+		(uuid "7a580730-1482-5309-837b-1662d022698f")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_PinHeader_1x05_Back"
+		(at 0 7.65 0)
+		(layer "B.Fab")
+		(uuid "e0fc9b04-f671-5d37-b514-ad49057c5079") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "af652cf8-950b-57ed-a7a1-b9a3022a3494") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "22197409-d901-5d69-8506-4d81f60d5fb2") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "5c29884d-5dce-5588-acbd-cffeb3c43645") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 -5.08)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "22533750-d8f7-5317-a367-30ebefeafa99")
+	)
+	(pad "2" thru_hole circle
+		(at 0 -2.54)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "95c4fb1f-e5d8-577c-9685-89b83ee78405")
+	)
+	(pad "3" thru_hole circle
+		(at 0 0)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a85e999d-d842-5ed0-9699-ac783678f32b")
+	)
+	(pad "4" thru_hole circle
+		(at 0 2.54)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "97bfcdb1-5584-5165-84e9-7bbe3f91eac3")
+	)
+	(pad "5" thru_hole circle
+		(at 0 5.08)
+		(size 1.7 1.7)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "456cf20b-c732-5b22-a9b1-bbcbc111ce8b")
+	)
+	(fp_line
+		(start 1.77 -6.85)
+		(end -1.77 -6.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "108e6fb8-6718-5ab2-8193-0f7094605b85")
+	)
+	(fp_line
+		(start -1.77 -6.85)
+		(end -1.77 6.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0499995d-551a-5f4c-8690-78c38ca61cf0")
+	)
+	(fp_line
+		(start -1.77 6.85)
+		(end 1.77 6.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "fc1d250e-662b-5e45-966d-c58a33ea07ce")
+	)
+	(fp_line
+		(start 1.77 6.85)
+		(end 1.77 -6.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0d3b67ab-702d-5b1a-ac16-d3a44c8e4fb5")
+	)
+	(fp_line
+		(start 1.27 -6.35)
+		(end -1.27 -6.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "71746141-1458-53b2-ab3e-d85de8190cea")
+	)
+	(fp_line
+		(start -1.27 -6.35)
+		(end -1.27 6.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "54ba6b45-63eb-5600-8698-88fd8fd5e228")
+	)
+	(fp_line
+		(start -1.27 6.35)
+		(end 1.27 6.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "6e5c7b9a-3bc0-542f-a08a-b24a611dc41a")
+	)
+	(fp_line
+		(start 1.27 6.35)
+		(end 1.27 -6.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f4a2aab3-bbdc-527e-867a-0ffba63d10e7")
+	)
+	(fp_line
+		(start 1.9 -6.9)
+		(end 1.9 -4.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "661f215d-b3e2-54c5-b83e-858ac6ceefde")
+	)
+	(embedded_fonts no)
+)

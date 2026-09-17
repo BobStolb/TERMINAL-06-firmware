@@ -1,0 +1,127 @@
+(footprint "TS06_CP_Radial_D8.0mm_P3.50mm_Back_R270"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Radial electrolytic, 3.50 mm pitch (KiCad CP_Radial_D8.0mm_P3.50mm), centred; pad 1 positive (square), the silk + marks it. For the 4.7u 400V reservoir. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 270 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "capacitor electrolytic THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -4.95 0)
+		(layer "B.Fab")
+		(uuid "e17de639-012b-5f60-8f29-45e2ddd80e7b")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_CP_Radial_D8.0mm_P3.50mm_Back_R270"
+		(at 0 4.95 0)
+		(layer "B.Fab")
+		(uuid "b1082ccc-df99-5b4d-936e-f37d6e6f083b") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "7d1bb18e-b1a5-5c8b-b0ae-7235e11a723c") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "50335f96-8094-5265-bae2-895f1f437757") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "009ed865-a8be-5b97-ac0b-32e172650d4f") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 0 1.75)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "8b143728-8159-5104-8bce-71e479bf3f58")
+	)
+	(pad "2" thru_hole circle
+		(at 0 -1.75)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "ffe28552-6c00-5dc3-aa02-da80c7389870")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4.15 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.CrtYd")
+		(uuid "13424784-5b58-5599-aad4-7ce3e3c5e4f4")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 4 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "d86d95c2-df3c-5211-9fe0-7b97997a97c6")
+	)
+	(fp_line
+		(start 2.95 3.55)
+		(end 2.95 2.55)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "77404f81-7459-5f6e-9131-64356d41a955")
+	)
+	(fp_line
+		(start 3.45 3.05)
+		(end 2.45 3.05)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "97807df3-31f7-597b-8832-323fdc7cd3a5")
+	)
+	(embedded_fonts no)
+)

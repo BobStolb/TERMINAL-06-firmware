@@ -1,0 +1,205 @@
+(footprint "TS06_D_DO-201_P15.24mm_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial diode, 15.24 mm pitch (KiCad D_DO-201AD_P15.24mm_Horizontal), centred; pad 1 cathode (square), the band. For 1N5822, reverse-polarity protection. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "diode axial THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -3.65 0)
+		(layer "B.Fab")
+		(uuid "757175aa-8f91-55bc-bc19-540efde722eb")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_D_DO-201_P15.24mm_Back"
+		(at 0 3.65 0)
+		(layer "B.Fab")
+		(uuid "dd2896b0-384a-5de7-91fb-3febc8375b70") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "2aa120fd-f1ea-5f28-875b-ccb9b747eefd") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "162405b8-67a0-5bb3-97ee-b63e7fd16e6a") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "ebc9d7c5-6aca-5564-acaf-49e367d5fe3c") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 7.62 0)
+		(size 3.2 3.2)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "032a2637-688b-5d4e-8b92-c572e1eb9500")
+	)
+	(pad "2" thru_hole circle
+		(at -7.62 0)
+		(size 3.2 3.2)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "cdf24d56-8be0-50bc-bc2c-217f40470db1")
+	)
+	(fp_line
+		(start 9.5 -2.85)
+		(end -9.5 -2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0d124342-c34b-5da3-a3fe-c5d2cce60532")
+	)
+	(fp_line
+		(start -9.5 -2.85)
+		(end -9.5 2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "ae672160-b393-5228-ac12-77420a6daa94")
+	)
+	(fp_line
+		(start -9.5 2.85)
+		(end 9.5 2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "df8e7f86-14fe-5e36-98a2-146852347039")
+	)
+	(fp_line
+		(start 9.5 2.85)
+		(end 9.5 -2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "adc1ee3c-ab18-5670-b5c0-60a58e34d451")
+	)
+	(fp_line
+		(start 4.8 -2.65)
+		(end -4.8 -2.65)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "4adb7a82-1fa1-5c18-b666-185850bb6a6b")
+	)
+	(fp_line
+		(start -4.8 -2.65)
+		(end -4.8 2.65)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "d75ec655-65c4-579f-b10f-1be3c7ee35f9")
+	)
+	(fp_line
+		(start -4.8 2.65)
+		(end 4.8 2.65)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "205bd7c6-6ad0-552f-b71b-ef65140333ae")
+	)
+	(fp_line
+		(start 4.8 2.65)
+		(end 4.8 -2.65)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "627d2b09-c67e-5606-9f04-0a567b3891a7")
+	)
+	(fp_line
+		(start 4.1 -2.65)
+		(end 4.1 2.65)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "972e314a-86b1-5212-a51e-c5ce94402ed3")
+	)
+	(fp_line
+		(start 7.62 0)
+		(end 4.8 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0900fe6d-2b3b-56d3-9452-bbc904b30981")
+	)
+	(fp_line
+		(start -4.8 0)
+		(end -7.62 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f6dd16c3-ef8f-5b96-91b1-e52308845ab6")
+	)
+	(fp_line
+		(start 4.1 -2.95)
+		(end 4.1 2.95)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "9b3baaab-2888-5c9f-9c85-ad455ae4c6ac")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,162 @@
+(footprint "TS06_L_12x12mm_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "12 x 12 mm shielded power inductor (KiCad L_12x12mm_H8mm), centred. 220 uH, Isat 1.8 A or better (Bourns SRR1280-221 class). Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "inductor 12x12 SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -7.4 0)
+		(layer "B.Fab")
+		(uuid "11efff70-55a9-5976-82e6-dd9bc9c8a972")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_L_12x12mm_Back"
+		(at 0 7.4 0)
+		(layer "B.Fab")
+		(uuid "f0c52407-18a8-5557-9a82-ec6bf1b96f1e") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "ece91768-7642-5820-8a59-2205c73452e4") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "4d5bda1e-dbe3-56c5-add2-60b96469fe59") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "b9e7dc60-0ac2-5525-b378-c68603f9cd7d") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd rect
+		(at 4.95 0)
+		(size 2.9 5.4)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "328c3b13-a622-5855-b9df-730f2dce5e44")
+	)
+	(pad "2" smd rect
+		(at -4.95 0)
+		(size 2.9 5.4)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "a9f19615-01fc-58fc-a3dd-4e1ccd63e690")
+	)
+	(fp_line
+		(start 6.86 -6.6)
+		(end -6.86 -6.6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "74e80c8c-9021-551e-97d3-827b78d54912")
+	)
+	(fp_line
+		(start -6.86 -6.6)
+		(end -6.86 6.6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "e0049f2d-6a88-551f-87ef-5445f0f9953f")
+	)
+	(fp_line
+		(start -6.86 6.6)
+		(end 6.86 6.6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "15368fa7-60e3-59a9-bf72-d91b829e4d91")
+	)
+	(fp_line
+		(start 6.86 6.6)
+		(end 6.86 -6.6)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "15740898-154f-5b27-bae0-35316a0ede55")
+	)
+	(fp_line
+		(start 6 -6)
+		(end -6 -6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "71b038b6-643f-54de-a43b-d2f23e123dc5")
+	)
+	(fp_line
+		(start -6 -6)
+		(end -6 6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "1aa52c63-3c55-51ec-a179-94b7637839a2")
+	)
+	(fp_line
+		(start -6 6)
+		(end 6 6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "35f03474-89b1-5022-bd3a-af6f870fec68")
+	)
+	(fp_line
+		(start 6 6)
+		(end 6 -6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7f273b78-6efa-5f23-b1e6-b13103e8f529")
+	)
+	(embedded_fonts no)
+)

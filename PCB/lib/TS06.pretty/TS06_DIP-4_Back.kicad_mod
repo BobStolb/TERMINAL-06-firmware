@@ -1,0 +1,189 @@
+(footprint "TS06_DIP-4_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "DIP-4, 7.62 mm row spacing (KiCad DIP-4_W7.62mm), pin field centred; pin 1 top-left in the library's front view, the silk bar marks it. For TLP627: 1 LED anode, 2 LED cathode, 3 emitter, 4 collector. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "DIP-4 THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -3.59 0)
+		(layer "B.Fab")
+		(uuid "ec8a14ee-5146-5c4c-8385-46a4ccbc4521")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_DIP-4_Back"
+		(at 0 3.59 0)
+		(layer "B.Fab")
+		(uuid "4144dd76-1dae-5cf5-9c38-ef40507d35bc") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "862c1835-0fc5-5d11-8900-e9c7846d46cf") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "45f4f79e-3355-55e2-83b8-4024191a57c0") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "88aeee90-45ef-5f75-ba48-a32201e6efb7") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 3.81 -1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "12821ab6-9f25-546b-b6bf-9738d7b94b2a")
+	)
+	(pad "4" thru_hole circle
+		(at -3.81 -1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "65a484cc-4ee2-57cb-9f9e-6586defc7c66")
+	)
+	(pad "2" thru_hole circle
+		(at 3.81 1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "0c2b6c97-2b3c-5c38-bc8e-cf30221c10e6")
+	)
+	(pad "3" thru_hole circle
+		(at -3.81 1.27)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "f6721c02-0d10-59f7-b6fe-f97f2ea3f8e5")
+	)
+	(fp_line
+		(start 4.86 -2.79)
+		(end -4.86 -2.79)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "f0b73fb2-26ac-5fd1-8987-a686b0e873a7")
+	)
+	(fp_line
+		(start -4.86 -2.79)
+		(end -4.86 2.79)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "99f16d5c-0f8d-59e1-8231-d29ba144d9ff")
+	)
+	(fp_line
+		(start -4.86 2.79)
+		(end 4.86 2.79)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "ada42aba-8ba4-59bd-8193-9a59eb8afc67")
+	)
+	(fp_line
+		(start 4.86 2.79)
+		(end 4.86 -2.79)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "a8e5f17f-0979-5998-8e6c-7acabb0207a2")
+	)
+	(fp_line
+		(start 3.175 -2.54)
+		(end -3.175 -2.54)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "80a19467-1b5f-5164-929e-a16debecfb9f")
+	)
+	(fp_line
+		(start -3.175 -2.54)
+		(end -3.175 2.54)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "35679e7e-a6e3-5a45-ad51-4f26f5f2c539")
+	)
+	(fp_line
+		(start -3.175 2.54)
+		(end 3.175 2.54)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "2f6e82c9-9c46-5ef4-8bd6-07be386cc5e2")
+	)
+	(fp_line
+		(start 3.175 2.54)
+		(end 3.175 -2.54)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "fe678069-c5bb-5be6-aff9-0112ec9f9398")
+	)
+	(fp_line
+		(start 4.61 -2.57)
+		(end 3.01 -2.57)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "4dc51e3e-a430-52ab-91a3-b19994f0aeee")
+	)
+	(embedded_fonts no)
+)

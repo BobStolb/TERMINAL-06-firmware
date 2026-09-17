@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "TS06")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06.pretty")(options "")(descr "TERMINAL-06 project footprints"))
+)

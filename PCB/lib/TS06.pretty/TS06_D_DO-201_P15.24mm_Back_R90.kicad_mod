@@ -1,0 +1,205 @@
+(footprint "TS06_D_DO-201_P15.24mm_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Axial diode, 15.24 mm pitch (KiCad D_DO-201AD_P15.24mm_Horizontal), centred; pad 1 cathode (square), the band. For 1N5822, reverse-polarity protection. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "diode axial THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -10.3 0)
+		(layer "B.Fab")
+		(uuid "375d7270-3e27-506a-a846-b7f2ced5a97a")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_D_DO-201_P15.24mm_Back_R90"
+		(at 0 10.3 0)
+		(layer "B.Fab")
+		(uuid "5e7f67f8-a245-5efb-8250-c468b8112565") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "9f770da9-7450-50b3-b98e-90dfd5f28039") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "7766483a-86f0-5d95-86aa-9bc8172ad38a") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "494fcb5c-295e-55f3-833e-2eb5f0372b66") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 0 -7.62)
+		(size 3.2 3.2)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "79b10cc0-154b-5958-adce-3202b1f84660")
+	)
+	(pad "2" thru_hole circle
+		(at 0 7.62)
+		(size 3.2 3.2)
+		(drill 1.6)
+		(layers "*.Cu" "*.Mask")
+		(uuid "223e653e-48f4-5081-9819-fcaff423c063")
+	)
+	(fp_line
+		(start -2.85 -9.5)
+		(end -2.85 9.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "a61b09ac-b0f1-5185-97d0-4d0669457d66")
+	)
+	(fp_line
+		(start -2.85 9.5)
+		(end 2.85 9.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "9951d4aa-c61c-57bf-90d4-d3183d0b02a0")
+	)
+	(fp_line
+		(start 2.85 9.5)
+		(end 2.85 -9.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "e47cf0fc-181f-580e-88de-debd4cc1c52d")
+	)
+	(fp_line
+		(start 2.85 -9.5)
+		(end -2.85 -9.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "6652b249-6f01-50a9-a52b-7b5e2256322a")
+	)
+	(fp_line
+		(start -2.65 -4.8)
+		(end -2.65 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "fea21c7a-44e0-5dc9-815a-b4cfa4611806")
+	)
+	(fp_line
+		(start -2.65 4.8)
+		(end 2.65 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b00a2be3-45d2-5d39-98ea-5a6a1eeab9ef")
+	)
+	(fp_line
+		(start 2.65 4.8)
+		(end 2.65 -4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ea3d9d3e-90a8-588c-97c2-74f2f268bc17")
+	)
+	(fp_line
+		(start 2.65 -4.8)
+		(end -2.65 -4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "93ace27d-efe2-52c1-883f-b6cf7ac53da6")
+	)
+	(fp_line
+		(start -2.65 -4.1)
+		(end 2.65 -4.1)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "e01db49f-1b09-50e3-9273-c65a01671054")
+	)
+	(fp_line
+		(start 0 -7.62)
+		(end 0 -4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b4cde9d5-68ee-59ce-8ac4-ff7d25ba2077")
+	)
+	(fp_line
+		(start 0 4.8)
+		(end 0 7.62)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "fb8dcc80-a054-5583-b3e3-79a45100ef12")
+	)
+	(fp_line
+		(start -2.95 -4.1)
+		(end 2.95 -4.1)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "afdc1366-fadb-56bc-aa90-f5e0ef43c06e")
+	)
+	(embedded_fonts no)
+)

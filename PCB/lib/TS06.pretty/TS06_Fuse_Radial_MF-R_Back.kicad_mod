@@ -1,0 +1,164 @@
+(footprint "TS06_Fuse_Radial_MF-R_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Radial PTC resettable fuse, Bourns MF-R lead pattern (KiCad Fuse_Bourns_MF-RHT300 holes), centred. MF-R110 or similar, 1.1 A hold. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "fuse PTC THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -3.7 0)
+		(layer "B.Fab")
+		(uuid "5d76090f-ed21-5985-abab-d956b81cda69")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_Fuse_Radial_MF-R_Back"
+		(at 0 3.7 0)
+		(layer "B.Fab")
+		(uuid "b4965cba-6e8e-50fb-a1f3-02a5f17dbef7") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "4a6a3ed0-87ee-52de-9d1a-b64c57d3e561") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "30cb7cc5-e8cf-5e78-a9a6-01a4249a007c") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "08e5f14b-8b38-552a-a472-c7da0091f3bb") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 2.55 -0.6)
+		(size 2.01 2.01)
+		(drill 1.01)
+		(layers "*.Cu" "*.Mask")
+		(uuid "165d9936-5c1e-5bc2-bf0c-b6afa2d723f5")
+	)
+	(pad "2" thru_hole circle
+		(at -2.55 0.6)
+		(size 2.01 2.01)
+		(drill 1.01)
+		(layers "*.Cu" "*.Mask")
+		(uuid "7e80ed99-ddb1-5e0b-b01f-b3b20afd6573")
+	)
+	(fp_line
+		(start 4 -2.9)
+		(end -4 -2.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "dfb9c717-4b3f-5fe1-a5d9-f80cdfad69c5")
+	)
+	(fp_line
+		(start -4 -2.9)
+		(end -4 2.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0d564be3-8750-5cbe-a996-9014687db06c")
+	)
+	(fp_line
+		(start -4 2.9)
+		(end 4 2.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "d25fdd47-3ae5-559a-8175-1095b68721e9")
+	)
+	(fp_line
+		(start 4 2.9)
+		(end 4 -2.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "298e9126-50ec-5808-a6f3-280939f2725b")
+	)
+	(fp_line
+		(start 3.7 -1.5)
+		(end -3.7 -1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "309ddd9f-4190-590a-a029-4bb33099136a")
+	)
+	(fp_line
+		(start -3.7 -1.5)
+		(end -3.7 1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b1b12dda-67a9-5af8-a36f-ce5c52b6a73b")
+	)
+	(fp_line
+		(start -3.7 1.5)
+		(end 3.7 1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ed091720-1cc9-53c5-a7ec-0b3a563c1520")
+	)
+	(fp_line
+		(start 3.7 1.5)
+		(end 3.7 -1.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "cbbc64f2-e529-5268-a81f-95020a4ad0ed")
+	)
+	(embedded_fonts no)
+)

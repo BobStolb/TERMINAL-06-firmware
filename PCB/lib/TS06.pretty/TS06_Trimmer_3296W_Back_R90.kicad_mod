@@ -1,0 +1,181 @@
+(footprint "TS06_Trimmer_3296W_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Bourns 3296W 25-turn trimmer (KiCad Potentiometer_Bourns_3296W_Vertical), centred; pin 1 square, pin 2 the wiper. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "trimmer 3296W THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -5.82 0)
+		(layer "B.Fab")
+		(uuid "7745d241-af0b-52fc-b429-f30a2a79a3dd")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_Trimmer_3296W_Back_R90"
+		(at 0 5.82 0)
+		(layer "B.Fab")
+		(uuid "db6774d5-ec98-5dee-adc3-f72b7cd4de78") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "79f72f6e-3f8e-5da5-a508-f8421ffe5e20") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "cf0d47a5-5540-5b29-b2ea-bc94f1be43a9") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "c2126b9a-63ed-546b-a8ea-c9d3b3245f17") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 2.54)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "25979287-0d3f-5d2d-a661-f6e7d53669e8")
+	)
+	(pad "2" thru_hole circle
+		(at 0 0)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "39937593-3d43-599a-b273-728b7e063a9f")
+	)
+	(pad "3" thru_hole circle
+		(at 0 -2.54)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "c7b2a0c2-4b6d-53fa-b696-68afe720c6c1")
+	)
+	(fp_line
+		(start -2.67 -5.02)
+		(end -2.67 5.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "3fa01e06-4dae-50c4-aa4d-468ce4e01d20")
+	)
+	(fp_line
+		(start -2.67 5.02)
+		(end 2.67 5.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "0bfa49e9-c849-5226-bfc2-c84ec8e21c5e")
+	)
+	(fp_line
+		(start 2.67 5.02)
+		(end 2.67 -5.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "d6d1123f-dfbb-54b9-bab9-db1a6e3a0584")
+	)
+	(fp_line
+		(start 2.67 -5.02)
+		(end -2.67 -5.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "14cf3dbe-3d95-56e6-8146-78eba36ad9d0")
+	)
+	(fp_line
+		(start -2.4 -4.8)
+		(end -2.4 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b7d49a68-d725-59c8-9b7d-39c6a965121d")
+	)
+	(fp_line
+		(start -2.4 4.8)
+		(end 2.4 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "df09535f-c54c-5365-a2b8-319a29aed1e7")
+	)
+	(fp_line
+		(start 2.4 4.8)
+		(end 2.4 -4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "4163da99-7fc1-544e-9e00-59a5dac54410")
+	)
+	(fp_line
+		(start 2.4 -4.8)
+		(end -2.4 -4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f65e2761-5745-5fdf-bfd4-4ff87ca8c7dd")
+	)
+	(fp_line
+		(start -2.9 3.4)
+		(end -2.9 4.8)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "1694c9cc-9a8f-573a-a4e4-ad307a2e26eb")
+	)
+	(embedded_fonts no)
+)

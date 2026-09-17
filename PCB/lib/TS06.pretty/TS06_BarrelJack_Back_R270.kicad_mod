@@ -1,0 +1,193 @@
+(footprint "TS06_BarrelJack_Back_R270"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "DC barrel jack 5.5 x 2.1 mm, horizontal (KiCad BarrelJack_Horizontal), centred between pins 1 and 2: 1 centre pin (square), 2 sleeve, 3 the sleeve's break contact. The plug enters from -x in the library's front view (the thick Fab line is the mouth); after mirroring it enters from +x. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 270 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "connector barrel jack DC THT back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -5.8 0)
+		(layer "B.Fab")
+		(uuid "1894cfc9-64dd-583c-9b29-00426fb95925")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_BarrelJack_Back_R270"
+		(at 0 11.8 0)
+		(layer "B.Fab")
+		(uuid "3ee648f2-7538-57ba-8e70-1a285e27badc") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "fa484fbb-e692-5575-b487-e8bc62661ed5") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "08a8fada-2537-5486-96b9-4be571903079") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "b049fce4-d7fc-518c-bef7-5f96444caca4") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0 -3)
+		(size 3.5 3.5)
+		(drill oval 3 1)
+		(layers "*.Cu" "*.Mask")
+		(uuid "73283d8f-d381-5efd-ba63-a617d4f78087")
+	)
+	(pad "2" thru_hole roundrect
+		(at 0 3)
+		(size 3.5 3)
+		(drill oval 3 1)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "cc5c5a94-6b20-59b7-96b3-11f91b84c4ff")
+	)
+	(pad "3" thru_hole roundrect
+		(at -4.7 0)
+		(size 3.5 3.5)
+		(drill oval 1 3)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "2101f1e4-537a-5edd-9cdb-14c2c79c1b02")
+	)
+	(fp_line
+		(start 4.75 11)
+		(end 4.75 -5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "9b74eab5-0c01-5c26-a9b4-f51052343b64")
+	)
+	(fp_line
+		(start 4.75 -5)
+		(end -6.75 -5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "95c03c40-6443-5702-a2d3-d13ff8f2c81d")
+	)
+	(fp_line
+		(start -6.75 -5)
+		(end -6.75 11)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "eee3d732-ebf9-547a-9964-6b484686e5cb")
+	)
+	(fp_line
+		(start -6.75 11)
+		(end 4.75 11)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "1498e8e4-7f41-5bd8-8ad4-571683aaa1cb")
+	)
+	(fp_line
+		(start 4.5 10.5)
+		(end 4.5 -4.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ea1483ca-b35d-5715-9710-64846d2ec3e7")
+	)
+	(fp_line
+		(start 4.5 -4.5)
+		(end -4.5 -4.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "5646f5aa-590b-588f-9500-d070fd54a1d7")
+	)
+	(fp_line
+		(start -4.5 -4.5)
+		(end -4.5 10.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "11a8758f-7add-5b6f-97a4-4f004a17dcd7")
+	)
+	(fp_line
+		(start -4.5 10.5)
+		(end 4.5 10.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0bf0277b-0b43-509d-8d11-7702ef1b2e3e")
+	)
+	(fp_line
+		(start 4.5 10.5)
+		(end -4.5 10.5)
+		(stroke
+			(width 0.3)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0d821b03-6e60-5e49-b589-2f9ec3493e55")
+	)
+	(fp_line
+		(start 4.9 -3.5)
+		(end 4.9 -5.2)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "a3b60889-abcd-5463-bc5a-8e2e4c011423")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,179 @@
+(footprint "TS06_BatteryHolder_3034_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Keystone 3034 SMD holder for a 20 mm coin cell (KiCad BatteryHolder_Keystone_3034_1x20mm), centred: the two side tabs are pad 1, positive; the centre disc pad 2, negative. CR2032 for the DS3231. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "battery holder CR2032 SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -12.67 0)
+		(layer "B.Fab")
+		(uuid "c7e68b5b-6cc4-5736-a71b-c7c5ec0bdb00")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_BatteryHolder_3034_Back_R90"
+		(at 0 12.67 0)
+		(layer "B.Fab")
+		(uuid "5765208c-0bdf-5cb1-a733-f8f239baabbf") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "fd09c7e5-506d-51dd-9ea1-83ccf8a06a37") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "63704480-e68d-581b-b566-e535a092d9bb") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "abde50e9-ad1a-5d55-973b-496d9cf01597") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd rect
+		(at 0 -10.985)
+		(size 5.08 1.27)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "92bc4664-73a5-5234-848a-0bafbf9141d1")
+	)
+	(pad "1" smd rect
+		(at 0 10.985)
+		(size 5.08 1.27)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "90b30924-e436-55dd-ab63-b4abcd44dca4")
+	)
+	(pad "2" smd circle
+		(at 0 0)
+		(size 17.8 17.8)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(uuid "a03181b6-ae9b-5c55-ac28-965f81f944eb")
+	)
+	(fp_line
+		(start -7.64 -11.87)
+		(end -7.64 11.87)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "5a05a5d9-a98f-5b45-ac6b-c721c9fe215d")
+	)
+	(fp_line
+		(start -7.64 11.87)
+		(end 7.64 11.87)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "ec6f6b56-4459-56f5-b503-119afe6264a3")
+	)
+	(fp_line
+		(start 7.64 11.87)
+		(end 7.64 -11.87)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "21478d8c-929d-5f29-b07b-ef3a0e6bbe67")
+	)
+	(fp_line
+		(start 7.64 -11.87)
+		(end -7.64 -11.87)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "9f04d06b-2241-5874-8d0e-90d6267ee0fb")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 10 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.Fab")
+		(uuid "64f3d20f-fda0-550a-ad38-6ce922f4a375")
+	)
+	(fp_line
+		(start -2.6 -11.6)
+		(end -2.6 11.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "83c37853-d717-5b2f-9605-4b41712e458a")
+	)
+	(fp_line
+		(start -2.6 11.6)
+		(end 2.6 11.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "54df30c1-04f9-5c60-82b9-1cb0967e7ebf")
+	)
+	(fp_line
+		(start 2.6 11.6)
+		(end 2.6 -11.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "068be6e8-7b3f-5c58-8e4a-4f7410ee2761")
+	)
+	(fp_line
+		(start 2.6 -11.6)
+		(end -2.6 -11.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "d586a046-3798-5f68-ad9e-2dc6ebf6f2a3")
+	)
+	(embedded_fonts no)
+)
