@@ -1,12 +1,14 @@
 # TERMINAL-06 — custom PCBs
 
-Two boards go to Rezonit for this run. A third is deliberately deferred.
+Two boards go to Rezonit for this run: the fascia and the main board, each in one of its two builds. A third is deliberately deferred.
 
 | Board | Size | Stack | Status |
 |---|---|---|---|
 | **TS06-FASCIA** | 176 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | Routed. The control panel AND the printed product face. One board, not two. Surface-mount build: no solder visible from the front. Height compressed from the original 52mm 2026-09 - see below. |
 | **TS06-FASCIA-THT** | 176 × 52 mm | same stack, ENIG | Second build of the same board, routed. Through-hole, with the A6 divider ON the face. Pick one to fabricate; they are alternatives, not a pair. Not yet height-compressed (the SMD build was chosen for fabrication). |
-| **TS06-SEC** | 67 × 55 mm | 1.6 mm, matte black | Surface-mount build routed; every checker and KiCad's own DRC clean. Seconds (2× ИН-17) and AM/PM (2× ИН-15) on one board, the colon board plugs into it. Through-hole build not yet drawn — see below. |
+| **TS06-MAIN** / **TS06-MAIN-THT** | 176 × 96 mm | 1.6 mm, matte black | **The whole clock on one board**, two builds, one outline, one netlist. Placed and checked; routing in progress — see below. Replaces the inherited AlexGyver board, SEC and COLON. |
+| ~~TS06-SEC~~ | 67 × 55 mm | 1.6 mm, matte black | **Superseded 17.09.26 by TS06-MAIN.** Surface-mount build routed and clean (1159 tracks, 79 vias); kept as the worked example of a hard placement and of the router. |
+| ~~TS06-COLON~~ | 6.5 mm strip | — | **Superseded 17.09.26 by TS06-MAIN**, which carries the two ИНС-1 at the same measured positions. Placement only. |
 | ~~TS06-TUBE~~ | — | — | **Deferred 08.09.26.** See below. |
 
 ## The two builds of the fascia
@@ -175,30 +177,63 @@ owned. TS06-TUBE is ~1 425 ₽/unit of Group D that does not have to be spent.
 alone gives the reveal.** Do not order copper to fix a plastic problem. Revisit only if
 the test-fit fails.
 
-## TS06-MAIN — one board for the whole clock (in progress, 17.09.26)
+## TS06-MAIN — one board for the whole clock (17.09.26)
 
 The three-board electrical stack (inherited AlexGyver board + TS06-SEC + TS06-COLON) is
-being replaced by **one board carrying every tube, every driver, the Nano, the RTC and the
-185 V converter**, in two builds like the fascia: **TS06-MAIN** (surface-mount wherever a
-part exists in that form) and **TS06-MAIN-THT**. The brief is
-`../Claude outputs/TS06-MAIN-handoff.md`; SEC and COLON are superseded by it and stay in
-the repo as the worked examples they are.
+replaced by **one board carrying every tube, every driver, the Nano, the RTC and the 185 V
+converter**, in two builds like the fascia: **TS06-MAIN** (surface-mount wherever a part
+exists in that form) and **TS06-MAIN-THT**. Same outline, same netlist, same connectors;
+one gets fabricated. The brief is `../Claude outputs/TS06-MAIN-handoff.md`.
 
 **Decisions taken by the owner on 17.09.26**, answering the brief's open questions:
 
 | Question | Decision |
 |---|---|
-| Power input | **12 V on the same 5.5 × 2.1 mm barrel jack the stock board uses, not 5 V**: the stock converter is an energy-limited stage good for ≈1 W and the full clock needs ≈3.5 W (see `../TERMINAL-06-measurements-PCB-GYVER-NETLIST.md`). A switching 5 V regulator (R-78E05 class) feeds the logic. The Nano's USB stays reachable through a case opening, at the bottom edge as on the stock board, for reflashing and for a PC time-set link; USB alone runs the logic with the tubes dark. |
+| Power input | **12 V on the same 5.5 × 2.1 mm barrel jack the stock board uses, not 5 V**: the stock converter is an energy-limited stage good for ≈1 W and the full clock needs ≈3.5 W (see `../TERMINAL-06-measurements-PCB-GYVER-NETLIST.md`). An R-78E5.0-1.0 switching regulator feeds the 5 V rail. The Nano's USB is reachable through the left edge, for reflashing and for a PC time-set link; USB alone runs the logic with the tubes dark. |
 | MCU | Arduino Nano on headers in **both** builds. |
-| RTC | Bare DS3231SN with a CR2032 holder in the SMD build; the owner's **DS3231 mini module** (pins − NC C D +, the same header the stock board carries) on a 5-way header in the THT build. |
-| Tube positions | The reviewed coordinates, Gyver pitch included, unchanged. The board is sized for itself; the fascia is not a width constraint. |
-| Anode chain | One fixed series resistor per digit tube (the stock board has a single shared 10 kΩ) plus DNP bleed footprints on all six. |
-| Optos | Six TLP627 singles, one beside each tube. |
-| "m" LED | HL3 on the free D12 through its resistor, so always-on versus 12-hour-only is a firmware choice. |
+| RTC | Bare DS3231SN with a CR2032 holder in the SMD build; the owner's **DS3231 mini module** (pins − NC C D +, the same header the stock board carries) on a 5-way header in the THT build. The one place the two netlists differ. |
+| Tube positions | The reviewed coordinates, Gyver pitch included, unchanged. The board is sized for itself; the fascia is not a width constraint (it happens to be 176 mm too). |
+| Anode chain | One series resistor per digit tube (the stock board has a single shared 10 kΩ) plus DNP bleed footprints on all six. 6k8 for the ИН-12s is a design value until bench gate 2. |
+| Optos | Six TLP627 singles. |
+| "m" LED | HL9 on the free D12 through its resistor, so always-on versus 12-hour-only is a firmware choice. |
 | Backlight | Eight amber LEDs, the ИН-15 pair included. |
 | Layers | Two. Vias budgeted, not hunted. |
 
-**Phase 0, the capture, is done from the fabrication data** rather than the bench:
-`tools/tracegyver.py` traces every net of the inherited board from its Gerbers and writes
-the result up in `../TERMINAL-06-measurements-PCB-GYVER-NETLIST.md`. What the bench still
-has to supply is listed in `../knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`.
+**How it is built.** `tools/ts06main.py` is the netlist both builds share — every part,
+pin and net, with the display chain, the AM/PM section and the colon carried over from the
+inherited copper and SEC, and the converter redesigned: 12 V in, the same 220 µH / 31 kHz
+boost clocked from D9, but through a TC4420 driver, with an LM393 watching the rail through
+a 1.5 M / 20.5 k divider and holding the driver off whenever the rail is above the set-point
+(152–252 V on the trimmer). `tools/mksch_main.py` draws it as a labelled netlist grouped by
+function into `lib/TS06M.kicad_sym`; `tools/mkfp_main.py` adds the footprints (every land
+pattern read out of KiCad 10's own libraries, back-mounted and pre-rotated as this repo does
+it); `tools/mkpcb_main.py` places and, with `--route`, routes either build; `tools/bom_main.py`
+writes each build's `bom.md`.
+
+**Where things are.** The board is vertical in the plane the inherited tube board
+occupied, tubes on the front, everything else on the back. World coordinates are the FreeCAD
+assembly's; board local (x, y) = (world X, 100 − world Y), so the board runs from world Y 100
+down to 4 — the extra height is below the tubes, behind the fascia, where the through-hole
+build needs it. Three bands on the back: the logic band above the tube rings (Nano across the
+top left with its USB 2.4 mm proud of the left edge, the converter, the two ИН-17 anode
+switches, the AM/PM small parts above the ИН-15 rings), the tube band (bleed pairs inside the
+ИН-12 rings, ИН-15 cathode switches inside their rings), and the power band below the LEDs
+(the four ИН-12 anode switches under their tubes, the 12 V jack at the left edge, the
+converter's control loop, the fascia cable at the bottom edge, the decoder, the RTC, the two
+expanders under the ИН-15s).
+
+**Checked.** Both placements pass `checkpcb.py` except three intended items — the Nano's USB
+connector proud of the edge, and the two colon lamps' courtyards touching the M10 glass
+courtyard by 0.3 mm at their measured positions — and `checkcopper.py --hv` finds no bare
+pad pair inside the high-voltage clearance. Both schematics pass `checksch.py` with no
+dangling pin, KiCad 10 loads them, and **KiCad's own netlist export agrees with the netlist
+module net for net** (141 nets in the SMD build). `3d/Clock.FCStd` now carries the board
+(`3d/TS06-MAIN.step`, KiCad's export) in the tube plane with the two inherited halves and
+the colon board switched off.
+
+**Routing** is running as this is written; its numbers, `audit.py`, `checkmatch.py` and
+KiCad's DRC go here when it lands.
+
+**The bench still owes** the items in `../knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`:
+the stock stage's operating point, the sustaining voltages, the ИН-17 lead order, the ИН-15
+pinouts, the pip projection, the mini module's battery, the adapter.
