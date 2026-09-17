@@ -1,0 +1,169 @@
+TERMINAL-06 — building a 3D component library
+
+Purpose: a parametric library of the physical parts so enclosure revisions are a boolean operation instead of a re-measurement. Open-source toolchain, STEP as the interchange format, git as the history.
+
+0. What you are modelling (and what you are not)
+
+You are not making replicas. You are making fit solids. Every part in the library carries two solids:
+
+Solid	Contains	Used for
+BODY	Simplified real geometry — envelope, bushing, base, leads	Renders, sanity, section views
+KEEPOUT	Worst case swept volume: body ⊕ lever swing ⊕ plunger travel ⊕ tool access ⊕ finger access	The boolean the enclosure is cut with
+
+Clearance lives in KEEPOUT, never in the enclosure. When you find out the МТ1 lever fouls the brow, you fix it in one file and every downstream part updates.
+
+The third thing each part carries is a published hole diameter. The fascia sketch should reference INS_MT1.HOLE_D, not a number you typed from memory.
+
+1. Toolchain
+Tool	Role	Why this one
+FreeCAD 1.0+	Primary CAD. Part Design, Sketcher, Spreadsheet, Assembly WB	Real B-rep solids, native STEP in and out, parametric, toposcopy improved in 1.0
+KiCad 8/9 + StepUp	Export TS06-FASCIA and the tube board as STEP	Makes the PCB the single source of truth for hole X/Y. You already have Gerbers; hole positions should never be typed twice
+OpenSCAD	Optional, for parts that are pure numbers (neon holder, J-LEAD comb, print jigs)	Plain text → diffs cleanly in git, trivially parametric
+Blender 4.x	Listing renders only	Import via FreeCAD → glTF/OBJ. Do not model dimensioned parts here
+Inkscape	Trace scanned silhouettes → SVG → FreeCAD sketch	For irregular metal bodies (КМД1-1 box, lever mounting plate)
+git + git-lfs	History	.FCStd is a zip; LFS it. Commit measurement tables as plain text so they diff
+
+Skip photogrammetry. Meshroom on a nixie tube is the worst case in the discipline: transparent envelope, specular metal cathodes, no texture, and no scale reference. You get an unusable mesh after an hour. Calipers take four minutes and are more accurate.
+
+2. Conventions — decide once, before the first part
+Origin rules
+
+These matter more than modelling skill. Get them right and placing a part in an assembly is one drag, no arithmetic.
+
+Panel-mount parts (levers, buttons): origin at the centre of the mounting hole, on the front face of the panel. +Z points out of the panel toward the user. +Y up. The bushing straddles the origin — hardware in front, body behind.
+Socketed board-mount parts (IN-12): the tube's own origin is on the tube axis at the pin-exit shoulder — the plane where glass meets the pin comb, i.e. where it seats into a socket. That's intrinsic to the tube and doesn't move if the board layout does. The socket is a separate part, origin on the tube axis at the PCB top surface; its height is what actually places the tube above the board. Digit-centre-above-PCB is therefore always socket.seat_h + tube.pin_exit_to_digit, never a number either part owns by itself — don't let it drift back into being "the tube's height." +Z along the viewing direction.
+Wire-ended parts (IN-17, ИНС-1): origin at the seating plane your jig defines, not at the glass. The J-LEAD comb sets the real Z — so model the jig and let it own the datum, and the tube references it. The samples on the mat came with a loose moulded spacer that slides along the leads rather than a fused base — that's not a socket, it's close kin to the J-LEAD comb the build plan already calls for. Worth photographing it dimensioned on its own; it may save you designing the jig from scratch.
+Naming
+TS06-LIB-IN12.FCStd
+TS06-LIB-SOCKET.FCStd
+TS06-LIB-IN17.FCStd
+TS06-LIB-INS1.FCStd
+TS06-LIB-MT1.FCStd
+TS06-LIB-KMD1.FCStd
+TS06-LIB-ROTARY.FCStd
+TS06-LIB-DCJACK.FCStd
+Spreadsheet-driven
+
+Every part document opens with a dims spreadsheet. Alias every measured number: env_w, env_h, pin_pcd, bush_d, bush_len, body_l, swing_deg, clear_r, panel_t. Nothing typed into a sketch dimension box. When you re-measure a better sample, you edit one cell.
+
+Also alias the derived values you want published: HOLE_D = bush_d + fit_clear.
+
+3. Measuring
+
+Ground rules for Soviet stock:
+
+Digital calipers at 0.01 mm. Measure three samples minimum, record min / mean / max. Design against max + clearance. Your own spec already flags batch variance in envelope tint — dimensional spread is the same story.
+Never clamp glass. Set the jaws slightly open and slide the part until it just drags.
+Threads: pitch gauge plus major diameter. Record as M12×0.75, not "about 12".
+Flatbed scanner trick — part flat on the glass, black card draped over it, 600 dpi, steel rule in frame. You get a 1:1 silhouette. Verify against the rule, trace in Inkscape, import the SVG as a FreeCAD sketch and dimension over it. Best method there is for the КМД1-1's stamped box and the toggle's mounting plate.
+Photograph alternative: maximum working distance plus zoom, ruler in the same plane as the feature. Your cutting-mat shots are good documentation but too close for tracing — perspective on the near corner will cost you a millimetre.
+Per-part capture sheets
+
+IN-12 (ИН-12А) — tube-intrinsic only. Nothing here should depend on how it's mounted.
+
+Envelope W × H × D at widest point; corner radius
+Tip-off pip: location and projection (this is what hits a trench wall)
+Pin count, pin circle / grid pitch, pin diameter, free pin length
+Pin-exit shoulder to digit centre — measured from where glass meets the pin comb, i.e. the tube's own seating reference. This is the number that used to be miscast as "seated height above PCB"; it isn't that, because the socket owns the other half of the stack-up (below)
+Depth from front glass to the digit plane — matters for parallax under the 12° rake
+Getter flash location (photographs badly if it lands in the trench opening)
+
+Tube socket — not yet in the library; add it before the trench floor is trustworthy.
+
+PCB top face to the seat where the tube's pin-exit shoulder lands (seat_h) — this is the other half of digit-centre-above-PCB
+Pin/pin-hole pattern, matched to the tube's pin circle — same alias source, don't re-measure it independently and risk the two drifting apart
+Outer body diameter and height — this is what actually occupies the trench floor and needs its own keepout; the tube keepout alone understates the footprint
+Retention style (friction socket vs. soldered pins) — affects whether the tube can be pulled for service without touching the board, worth noting in docs/measurements.md even though it doesn't drive a dimension
+Digit centre height above the PCB is socket.seat_h + tube.pin_exit_to_digit — a derived value, computed in the assembly document, not typed into either part's spreadsheet
+
+IN-17 (seconds)
+
+Glass max diameter, overall length, base disc diameter and thickness — n/a, no base; see lead spacer below instead
+Two glass-only diameter passes so far: 19.30 mm and 17.50 mm, at different points along the body (confirmed jaws-on-glass, not on the lead spacer). Single sample each — needs min/mean/max before either is a dims.* alias
+Lead count, lead circle diameter, lead diameter, free lead length — rough visual count off zoomed photos: ~6–8 leads, low confidence, count by hand once fanned out. Worth reconciling against a full 0–9 cathode set if this is meant to share the K155ID1 bus
+Digit centre height above the base seat → reword: above the J-LEAD jig's seating plane once that jig exists
+Front glass to digit plane — not yet visible in any shot with a ruler in frame
+Loose lead spacer — dimension it as its own small part. If its slide positions are usable as-is, it may substitute for designing J-LEAD from scratch; if not, at minimum it tells you the target lead spacing directly instead of guessing it
+
+ИНС-1 (colon neon) — asymmetric ends, not a simple wire-both-sides part. One end is a fine flexible lead; the other terminates in a metal ferrule/cap rather than a second bare lead, and the viewing surface is a rounded glass dome past the cap end. Worth confirming which end actually carries the mounting connection before committing to a wire-ended-both-sides model — this may need a hybrid origin, cap-referenced rather than lead-referenced, closer in spirit to a subminiature lamp base than to a two-lead neon.
+
+Glass diameter and length, lead diameter and free length — first two readings in hand: envelope diameter 6.97 mm (confident, jaws pinched tight on bare glass); overall span ~22.7 mm (low confidence — caliper was photographed upside-down, worth re-shooting right-side-up before trusting the digit)
+Metal cap: diameter, length, and how it's actually retained (crimped, soldered, cemented) — new field, not in the original sheet, added because the cap turned out to be real rather than assumed away
+Glow-point position along the axis — the holder registers on the glow, not the envelope centre. Two tubes with identical glass can glow 1.5 mm apart
+
+МТ1 / ТВ1-2 lever — four clean caliper reads in hand, two more need a re-shoot right-side-up. See TERMINAL-06-measurements-MT1.md for the full table.
+
+Bushing thread major diameter and pitch — not directly measured; rough visual estimate off a face-on reference photo against the mat grid puts it around 8–9 mm, placeholder only
+Bushing usable length — this caps your fascia + any dress plate stack
+Anti-rotation flat: width across, angular position relative to the lugs — not yet measured
+Body box L × W × H behind the panel (your spec says 30 mm depth; verify per sample) — two candidates in hand (10.43 mm, 11.92 mm), endpoints not fully confirmed
+Solder lug projection and how far lugs extend past the body — not yet measured
+Front hardware stack height: nut + lockwasher + any dress nut — two ambiguous caliper reads exist for this area but the photos were upside-down; not trustworthy yet
+Lever swing: length from pivot to tip, and full throw angle. Model as a revolved cone or a union of the two extreme positions. Under a 12° rake the up position sweeps toward the brow — this is a real collision, not a theoretical one. Not yet measured — none of the current photos capture the lever at its throw extremes
+
+КМД1-1 button — measured differentially against МТ1: only what's unique to this part was captured this round. See TERMINAL-06-measurements-KMD1.md for the full table.
+
+Bushing thread and usable length — not re-measured; carried over from МТ1 on the assumption the bushing hardware is shared between the two parts. That's a real assumption, not a confirmed fact — both parts look like they use the same thread/nut/washer stack in the reference photos, but nothing has actually put a caliper on this part's bushing yet. Flag it before it becomes load-bearing
+Body box behind the panel — two new readings unique to this part: 13.75 mm and 16.91 mm, best-guess candidates for body box length/width, not yet assigned to L vs. W with confidence
+Plunger free height and pressed height → travel goes in KEEPOUT — confirmed the front element is a plunger/button cap, not a lever (visible in reference photos) — but travel itself not yet measured
+Lug orientation relative to the anti-rotation feature. The body is a rectangular box wider than the bushing, so its rotation is not free — record the orientation you intend and model it that way
+Three solder terminals visible along one edge of the body — new confirmed detail, not in the original field list
+
+SR25-style rotary switch (6-position selector) — the part arrived; real caliper readings now replace the Ozon listing numbers below. The listing's own two variants (25 mm / 19 mm body) turned out not to match the physical part particularly well — see TERMINAL-06-measurements-ROTARY.md for the full readout. This is the "datasheet is a hypothesis" warning from Section 7 playing out exactly as written; treat the old listing-derived numbers as superseded, not as a second data point to average against.
+
+Body/wafer diameter: 26.94 mm, measured. Neither listing variant (25 mm, 19 mm) — closer to the 25 mm one but 1.94 mm over it, which is not caliper noise
+Bracket/mounting ear width: 8.59 mm, measured — best-guess identity, jaws were on the metal bracket arm near the bushing, not yet confirmed which exact feature this is
+A tighter feature near the front wafer (possibly stop-screw head, possibly a bracket tab): ~5.8 mm, low confidence — this one's digit read is uncertain, worth a re-shoot right-side-up
+A cross-section near the pin comb, shaft end of the switch: 12.10 mm, clean read — best guess is wafer-stack depth along the shaft axis, not yet confirmed
+Shaft diameter, bushing thread size, bushing usable length, position count, pole count — still not directly measured; the listing's 6 mm shaft figure is now similarly suspect given the body diameter mismatch and shouldn't be trusted without its own caliper pass
+Panel-mount origin rule already covers this part — same convention as МТ1 and КМД1-1, no new modelling question here
+4. FreeCAD build recipe (per part)
+New document. Add a spreadsheet named dims, alias everything from the capture sheet.
+New Body. Sketch on an origin plane or a datum plane — never on a face of an existing feature. Face-attached sketches are what break when you change a dimension. FreeCAD 1.0 is better here but not immune.
+Revolve / pad the BODY. Simplify aggressively:
+No modelled threads. A plain cylinder at major diameter. Cosmetic thread only if a render needs it, in a separate body you can suppress
+No knurling
+Skip chamfers under ~0.3 mm Threads and knurls destroy rebuild time and bloat STEP files for zero fit information.
+Second Body named KEEPOUT, same document, red at 60 % transparency:
+Body silhouette + radial clearance
+Lever swing cone / plunger travel
+Tool access. A nut driver on a 13 mm bushing nut needs roughly 17–19 mm across flats plus wall — model the socket OD as a cylinder from the panel face forward. This is the classic panel-mount failure: five controls that individually fit and collectively cannot be tightened
+Finger access on anything the customer operates
+Export both to lib/step/.
+Assembly document: App::Link each part in, attach to the fascia face by LCS.
+Enclosure document: boolean-subtract the union of all KEEPOUT solids, then Part → Check Geometry, then take a section along the digit centreline and check it against the numbers already committed in the spec (trench 166 × 21, floor 32 mm back, digit centreline 17 mm down, brow y 9.5–22 / z 74.5–79).
+5. Verify before spending money
+Fascia proxy: print 176 × 52 × 1.6 mm in PETG with the exact hole pattern and fit the real switches. Two hours of print time against a 15-board Rezonit order in black mask with a surcharge and a long lead time.
+Trench coupon: one tube position, full rake, real IN-12 seated in its actual socket — not floated at an assumed height. A tube held loose at "roughly where it'll sit" confirms nothing about the real digit centreline, since that number is a socket + tube stack-up, not a tube property. Confirms the 17 mm centreline and the brow clearance at a 10° viewing angle before you commit ten hours of chassis print.
+Interference check in the FreeCAD assembly, then a visual pass at the listing camera angle.
+6. Repo layout
+terminal06-cad/
+  lib/            one .FCStd per component
+  lib/step/       exported STEP, the interchange format
+  pcb/            KiCad → StepUp → STEP (fascia, tube board, SEC)
+  asm/            assembly documents
+  print/          3MF/STL exports — outputs only, never inputs
+  jigs/           J-LEAD comb, neon holder (OpenSCAD)
+  docs/
+    measurements.md    the capture sheets, as plain text tables
+
+.gitattributes: LFS on *.FCStd, *.step, *.3mf, *.stl. Tag the repo when a PCB is ordered — fascia-rev-A — so the library state that produced those boards is recoverable.
+
+7. Pitfalls
+Datasheet dimensions are a starting hypothesis, not a measurement. 1984 stock from Meshok is not held to the drawing.
+Never use STL between your own tools. It is a lossy export format. STEP in, STEP out.
+Don't put clearance in the enclosure. It belongs in KEEPOUT, in the part file.
+Don't attach sketches to faces. Datum planes only.
+Glass gets max-of-sample + 0.4 mm, minimum.
+One part per file. The temptation to build the whole clock in one document ends in a 40-second rebuild and a dependency graph you cannot reason about.
+Open flag on the photographed parts
+
+The spec currently fixes the fascia at ⌀12.2 mm for 12 mm anti-vandal buttons and ⌀13.2 mm for the levers. The button in these photos is a КМД1-1, which is not that part — different bushing, and a stamped rectangular body rather than a round barrel.
+
+Three things to settle before the fascia goes to Rezonit:
+
+Re-derive HOLE_D for both controls from measured bushings, plus the anti-rotation flat geometry.
+Body depth behind the panel against the 12° rake — the wedge gives you depth at the bottom of the face and takes it away at the top.
+Lug and body footprint on a 176 × 52 mm board. SET at X = 22 and ADJ at X = 154 put a rectangular body close to the board edge; the levers at 64 / 88 / 112 sit on a 24 mm pitch, which is where the nut-driver keepout earns its place.
+
+Modelling those two parts first, from the samples in front of you, answers all three.

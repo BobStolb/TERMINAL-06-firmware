@@ -1,0 +1,970 @@
+NAL-06-spec.md
+
+
+# TERMINAL-06 — six-digit nixie clock, production spec (Rev D.4)
+ 
+Ten AlexGyver NixieClock v2 boards → a six-digit instrument: 4× ИН-12А (HH:MM),
+2× ИН-17 (SS), one two-lamp ИНС-1 colon, one ИН-15Б/ИН-15А pair that shows AM/PM
+and idle-cycles through its full symbol set, a fixed amber LED "m" beneath it,
+six-position rotary selector, two МТ1 levers, two КМД-1 buttons.
+ 
+Deliverables: `terminal-06.html` (dossier), `TERMINAL-06-parts-list.xlsx` (sourced
+BOM, live formulas), firmware source at
+[github.com/BobStolb/TERMINAL-06-firmware](https://github.com/BobStolb/TERMINAL-06-firmware)
+(**display layer only — see §5**).
+ 
+**Rev C changes:** control scheme replaced entirely (rotary + 2 levers + 2 buttons,
+all software-read); one colon instead of two; input architecture moved to A6/A7
+resistor ladders; no hardware power or backlight cut; costing refreshed.
+ 
+---
+ 
+## Rev D.4 (09.09.26) — a second build of the fascia, and J1's pin order becomes a specification
+ 
+**1. TS06-FASCIA-THT — the through-hole build, fully routed.** The same board: same
+outline, same artwork, same netlist, same connector. It is built with through-hole parts
+instead of surface-mount ones, and it is routed — 34 tracks, no vias. The two builds
+answer one question differently: *where is the solder?*
+ 
+- **TS06-FASCIA** (surface-mount) hides every joint on the back face. The customer sees
+  black mask, white silkscreen and the decorative gold, and no solder anywhere.
+- **TS06-FASCIA-THT** puts the **A6 divider on the face**: five axial resistors sit above
+  the rotary's seven landing holes, and the copper between them is left **bare** — mask
+  opened, ENIG gold, a solder fillet at every joint. The divider reads as a circuit
+  rather than as decoration. Every other part stays behind the panel **with its front
+  mask closed**, so those holes show a bare drilled hole and no gold ring.
+They are **alternatives, not a pair.** One of them gets fabricated. Nothing else in the
+product changes either way — same cable, same firmware, same enclosure.
+ 
+**2. Two rules the through-hole build made explicit.** Both are now written into the
+generator, and both constrain any future revision of this board:
+ 
+- **A plated through-hole is copper on BOTH faces.** A part mounted behind the panel
+  still has to clear the decorative gold on the front. This is the same class of fault
+  Rev D.3's KiCad work caught, arriving from the other side.
+- **The panel parts have bodies behind the board.** Nothing can sit inside those
+  envelopes, which puts every back-mounted passive in the strip below y 38.5 — the only
+  band on this board clear of all five control bodies.
+**3. J1's pin order is fixed at 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8, on both builds.**
+It used to be whatever the surface-mount routing happened to prefer (D8, D7, GND, A7,
++5V, A6), which was an artefact of one layout. The through-hole board cannot route to
+that order, and **two builds of one product must not need two different cables**, so the
+pin order stopped being a layout convenience and became a specification. The legend is
+printed on the back silkscreen of both boards.
+ 
+**4. CORRECTED — the panel connector is JST-PH (2.0 mm), not JST-XH (2.5 mm).** The
+footprint, the parts already being ordered (`S6B-PH-SM4-TB` at the board, `PHR-6`
+housings and `SPH-002T-P0.5` contacts at the cable) and the physical part have been PH
+since the connector was chosen. Only this document and the schematic symbol still said
+XH. Both are corrected. **XS1–XS4 on TS06-SEC are unaffected** — those are separate
+connectors and stay as §4 specifies them.
+ 
+**5. The board files are checked by five tools before KiCad ever opens them** —
+placement, copper clearance, per-net connectivity, ground-pour fill, and, new this
+revision, **schematic-against-board**. That last one was written after the J1
+disagreement above, because every other check can pass while the two files disagree
+about *what* they are connecting. `PCB/README.md` in the firmware repo says how to run
+them; `tools/render.py` draws either board to SVG, front face and back face, so it can
+be looked at without opening KiCad.
+ 
+**Nothing in this revision changes a value, a threshold, or a part** beyond the
+connector's family name. The netlist, the ladder, the control scheme and the artwork are
+exactly as Rev D.3 left them.
+ 
+---
+ 
+## Rev D.3 (08.09.26) — three measurements corrected, control scheme revised, identity moved off the fascia
+ 
+All of this came out of designing **TS06-FASCIA** in KiCad. Four changes, two of them
+reversals of things this document has been asserting confidently.
+ 
+**1. The parametric FreeCAD models in `3d/` are now the authoritative dimension
+source.** The owner built them and re-calipered every dimension after the first
+measuring pass used bad technique. Where a model and an older hand reading disagree,
+**the model wins**. Dimensions in this revision were read straight out of the STEP
+B-reps rather than transcribed.
+ 
+**2. WITHDRAWN — the rotary body is 25.00 mm, not 26.94 mm.** The 28.08.26 "headline
+finding" that the measured body matched neither Ozon listing variant was a technique
+error. Re-measured, it is a real **25.00 mm**, which means the listing was right about
+that dimension after all. Every downstream statement built on 26.94 mm is corrected in
+this revision (§2, §6's panel table, §8). **The lesson the old finding taught is not
+withdrawn** — a listing figure still is not a measurement — but the specific reversal is
+worth keeping visible: *a bad measurement is not more trustworthy than a datasheet just
+because you took it yourself.*
+ 
+**3. CLOSED — the step angle is exactly 30.00°, and six positions span 150°.** Not
+measured: **counted**. The detent ring carries **twelve divots**, and a count is an
+integer, so 360 ÷ 12 = 30.00° exactly. This also agrees with the twelve outer taps
+already documented on the pin ring — the same claim arriving from a second, independent
+direction. The earlier ~32°/~160° figure was an eye estimate of a swept arc and is
+withdrawn. **The dial artwork can now be drawn from an exact number rather than a good
+guess.**
+ 
+**4. Control scheme rev B — two changes to §1**, both applied below.
+ 
+- **INFO and FORMAT/DATE swap places.** §1 already identified positions 1 and 5 as the
+  two screens that ignore every input — "safe parking positions where a knock does
+  nothing" — but rev A left one of them stranded in the middle of the arc. Putting both
+  on **end stops** means the knob cannot be knocked past either end into a live editing
+  screen, because past either end there is nothing. Costs one row of the A6 threshold
+  table; the tap voltages do not move, only the screen each maps to.
+- **Lever B (SUB) gains the glitch rate on position 3.** Rev A read it on one screen out
+  of six, which is hard to letter honestly and reads as broken hardware. It now also
+  picks Transition ↔ Glitch on Display, **read only while Lever A points at Effects**.
+  The point is not the extra feature — it is that SUB now obeys a **rule** rather than an
+  exception: *SUB is read only when FIELD is thrown to its second position*, true on both
+  screens that use it. A rule is learned once; an exception has to be printed.
+**5. The fascia carries no maker's mark and no wordmark.** §6's "hexagon bisected by a
+breaking bar, 06 inside" was never a decision the owner made — it entered this project
+through an earlier session's document, and nobody could account for where the hexagon
+came from. Rather than inherit it, **the face now carries controls and their names and
+nothing else**, and identity moves to the enclosure and the packaging where it is not
+competing with a dial for the same eye. The colour palette in §6 is unaffected.
+ 
+**6. КМД-1's bushing is independently sourced at last.** `3d/KMD1.step` gives it as
+**7.82 mm**, and `3d/MT1.step` gives МТ1 the same 7.82 mm. This closes the
+"carried over from МТ1 by eye" gap open since 27.08.26 — the button now has its own
+value, and the two agree exactly. Both fascia holes stay 8.0 mm.
+ 
+**7. TS06-TUBE is deferred, not cancelled** — see §3b.
+ 
+---
+ 
+**Rev C.1 (25.08.26):** control-panel hardware sourcing started — see §2, §6 and
+§8. Key finding: Soviet ПГ/ПГК galette switches carry an adjustable position-
+limiting washer (seller-confirmed: *"число положений можно уменьшить перестановкой
+шайбы"* — position count can be reduced by repositioning a washer), so "SR26" does
+not need to be a literal, exact-6-position part number. Any ≥6-position ПГ/ПГ2/ПГ3/
+ПГК galette switch works, limited down on the bench. 11 switches, 11 КМД1 buttons
+and 10 МТ1 levers secured from seller Vladi59 (Meshok, id 520937) for 3 650 ₽ — see
+the sellers register for line items. Still short of the full ten-unit batch (needs
+20 switches, 20 buttons, 20 levers) — see §8.
+ 
+**Rev C.2 (26.08.26) — prototype status.** Hardware in hand: the stock AlexGyver
+board is **built and working on four ИН-12А**; ИН-17 pair, ИНС-1 and spares of every
+tube type are ready; МТ1 levers and КМД1 buttons are on the bench. Not yet present:
+colon lamps fitted, case, seconds module, **rotary switch** (in transit from
+Севастополь). Consequence for sequencing: the rotary gates only the fascia artwork
+and the A6 half of the firmware — it gates **nothing** on the display side, and
+TS06-SEC is fully specifiable without it. The prototype therefore runs display-first,
+with the switch's transit time overlapping the seconds-module bench work rather than
+following it. Step-by-step ordering, gates, parts and tools:
+**`claude/TERMINAL-06-prototype-plan.md`**.
+Open discrepancy raised by that plan: §4 here calls XS3 a **6-pin** JST-XH
+(GND, +5 V, BACKL, DOT, SEC_A0, SEC_A1) while `terminal-06.html` still lists J3 as
+**5-pin** from before the colon moved onto the module — resolved in Rev D, see
+below.
+ 
+**Rev C.3 (26.08.26) — AM/PM indicator added.** Checked against three independent
+tube datasheets before committing anything (rudatasheet.ru's transcription is the
+most precise of the three): ИН-15А and ИН-15Б are real, and share the ИН-12А's
+PL31-series socket and size class, but neither one displays the word "AM" or "PM" —
+they're Soviet multimeter symbol tubes, one glyph lit at a time, same as a digit
+tube shows one numeral at a time. What actually works, and still uses one of each
+tube: ИН-15Б's lone 'A' (Ampere) cathode for AM, ИН-15А's lone 'Р' (reads as Latin
+P) cathode for PM, mutually exclusive, mounted on TS06-SEC. This spent the board's
+last free pin (D12) and grew the SEC logic connector from 6 to 7 pins. ИН-15Б is
+not yet in the sellers register, unlike ИН-15А.
+ 
+**Rev C.4 (26.08.26) — "m" indicator added.** Checked whether a smaller, letter-
+shaped tube exists below ИН-15's size class before proposing anything: across the
+whole Soviet/German symbol- and character-tube family (ИН-12, ИН-14, ИН-15, ИН-16,
+ИН-17, ИН-18, the Z570/573/5730 series), nothing displays a letter and mounts with
+its envelope horizontal — ИН-16 is the size floor at 13 mm character height, built
+for wristwatch clocks, but numerals only. No such part exists to source. Reused
+what's already on the boat instead: a plain ИНС-1 (identical part to the colon,
+already sourced) behind a small printed "m"-shaped stencil, wired permanently
+across the HV rail. **Superseded by Rev D below**, which reconsiders the lamp
+itself, not the idea.
+ 
+**Rev D (26.08.26) — full symbol cycling, GPIO expansion, "m" indicator moved off
+HV.** Three changes landing together because they share one root cause: Rev C.3
+spent the board's last free pin (D12) on a two-transistor trick that only ever
+supported 2 mutually-exclusive states, which meant no future switched indicator
+was possible without a redesign. That redesign: two MCP23017 I²C GPIO expanders
+(one per ИН-15 tube) now drive an individually-switched low-side transistor per
+cathode — all 18 across both tubes, not just the 2 that spell AM/PM — riding the
+Nano's existing I²C bus (already used for the DS3231) at zero additional pin cost.
+D12 is free again. This unlocks the control-scheme change that came with it:
+position 1 (Normal) of the rotary now idle-cycles the ИН-15 pair through its full
+symbol set as an ambient animation, on top of still showing the correct A/P glyph
+— see §1 and the new subsection of §3 for what's decided and what's still a
+firmware question. Separately, reconsidered the "m" indicator's lamp: since the
+letterform lives entirely in the printed stencil in front of it, it never needed
+to be an HV neon tube — swapped to a plain amber LED, dropping ИНС-1 count back to
+**2 per unit** (colon only) and removing the third lamp Rev C.4 added. XS3 (the SEC
+logic connector) grows from 7 to 8 pins as AMPM_SEL is retired in favour of a flat
+SDA/SCL bus that won't need to grow again for any future switched indicator — this
+also finally resolves the long-standing XS3-vs-`terminal-06.html` "J3" pin-count
+discrepancy flagged since Rev C.2, since that dossier (and its local build-side
+copy) are rewritten to match in this same pass. Cost impact is real and verified
+against the regenerated BOM, not hand-derived: Group C jumps 619 ₽/unit →
+1 497 ₽/unit, full cost 9 200 ₽ → 10 078 ₽ ≈ $122/unit — see §7. The 27 000 ₽
+retail recommendation is unchanged; margin is thinner but still healthy.
+ 
+**Rev D.2 (27.08.26) — rotary sourcing moved to Ozon; P0 retired; Etsy logistics
+deferred; one open conflict flagged.** Three changes from the prototype-side chat:
+ 
+1. **Rotary switch sourcing changed from the Vladi59 (Sevastopol) surplus lot to
+   Ozon, new/known stock.** The Vladi59 galette switches were mixed-condition
+   surplus needing a per-unit bench check (detent angle, pole count, shorting) —
+   see §2 and §6, unchanged in principle, but no longer gated on that specific lot.
+   Specific Ozon listing/price is not yet chosen. The МТ1 levers and КМД1 buttons
+   already secured from Vladi59 are unaffected by this change.
+2. **Etsy payout/logistics verification (§7's "verify before building ten") is
+   deferred to its own discussion** rather than treated as a 20-minute prototype
+   checklist item — pricing, payout routing and a possible non-Etsy storefront are
+   tangled together and deserve more than a checkbox. Still tracked as unresolved,
+   just not a prototype-blocking task.
+3. **Open conflict, not yet resolved — flag before building it:** §3's "m"
+   indicator is currently specified as **unconditionally always-on** whenever the
+   clock is powered, independent of 12h/24h format. A parallel discussion this same
+   day concluded the "m" lamp should track **12-hour format specifically** (dark in
+   24h mode, since there's no "AM"/"PM" being spelled out to attach an "M" to,
+   lit whenever the ИН-15 pair is showing a real A/P glyph) — derivable for free as
+   OR of the two glyph-select lines that mean AM and PM, no extra I²C channel. These
+   two answers disagree and only one should ship. Worth resolving before HL3's
+   wiring is finalised — it's a one-line firmware/wiring decision either way, not a
+   redesign, but it is a real behavioural difference a customer would notice.
+**Measurement update (27.08.26, evening):** three new capture sheets landed —
+`TERMINAL-06-measurements-MT1.md`, `-KMD1.md`, `-ROTARY.md` — with the first real
+caliper readings on the control-panel parts. **МТ1's bushing thread diameter is now
+measured directly, and КМД1-1's matching dimension has been eye-corroborated against
+it** (see §6's MEASURE BEFORE ORDERING PANELS table) — both close enough for one
+prototype fascia. *(Rev D.3: both are now independently sourced from the FreeCAD
+models at 7.82 mm; the eye-corroboration gap is closed.)* The rotary sheet raised a
+separate open question worth flagging here: the Ozon listing shows **two body-
+diameter variants (25 mm / 19 mm)**, not yet resolved which was ordered, and its
+terminal ring reads denser than a native 6-position part.
+ 
+**~~Measurement update (28.08.26) — rotary arrived; listing variants both wrong.~~
+WITHDRAWN, Rev D.3.** This entry recorded a measured body/wafer diameter of
+**26.94 mm** and concluded the listing was wrong about that dimension. **It was a
+technique error.** Re-measured into the parametric model, the body is a real
+**25.00 mm** — matching the listing's larger variant. Kept visible rather than
+deleted, because the reversal is the useful part: a measurement you took yourself is
+not automatically better than the datasheet you distrusted.
+ 
+**Second update, same day: shaft diameter and position count confirmed by hand.**
+Shaft diameter is a genuine 6 mm — a listing figure that held up, and the model
+agrees. Position count is **6**. Pin layout on the underside is also documented: two
+concentric rings, an inner ring with 2 pins on opposite sides (the wiper/common for
+each pole) and an outer ring with 12 pins (6 taps × 2 poles) — consistent with the
+2-wafer construction already confirmed visually. **Spec §2's A6 ladder only needs one
+pole** (one common + 6 taps); the second pole is spare. *(Rev D.3: the arc figure
+originally recorded here, "~160°, ~32°/step", is **withdrawn**. Twelve detents were
+counted on the physical switch, so the step is exactly 30.00° and six positions span
+150°.)*
+ 
+**Also 28.08.26: ИН-15Б — a handful secured on Meshok for prototype purposes.**
+Enough for one unit; the ten-unit-batch depth question is real but separate and
+deferred — see §8.
+ 
+**Firmware update (28.08.26, evening) — real source recovered and pushed to
+GitHub; one spec claim corrected.** The firmware described in §5 previously existed
+only as a zip file inside a separate chat session. The user uploaded the zip's actual
+source files; they now live in a real, version-controlled repo:
+**[github.com/BobStolb/TERMINAL-06-firmware](https://github.com/BobStolb/TERMINAL-06-firmware)**
+(initial commit `7063270`), including the `secCathodeMap` bench jig split into its
+own sketch folder and a precompiled `.hex`. Direct inspection of that source against
+this document's §5 "Done and verified" list turned up one confirmed error:
+**`DOT_BRIGHT`/`DOT_BRIGHT_N` in the actual shipped/tested code are still 35/15 —
+the original LED-era values — not 170/90 as this spec previously claimed was
+already done.** Corrected below; see §5.
+ 
+**Update, same day, later: `libraries/` populated.** The repo's `libraries/`
+placeholder now holds the two real Arduino library dependencies the sketch's
+`#include`s actually require — **GyverButton** and **RTClib**. A few other libraries
+from AlexGyver's original project (EEPROMex, GyverHacks, GyverTimer) were found
+alongside these in the source folder but correctly left out — nothing in the pushed
+sketch files `#include`s them.
+ 
+**P2 finding (01.09.26) — BOARD_TYPE corrected; ghosting investigated.** Bench-testing
+P2 on the real four-tube board turned up two separate things:
+ 
+1. **`BOARD_TYPE` was wrong — closed.** The firmware shipped with `#define
+   BOARD_TYPE 1`. The actual physical board is **`BOARD_TYPE 0`**. Wrong digit-to-cathode
+   and digit-to-anode mapping was the direct cause of the wrong/scrambled digits seen
+   during early bench testing.
+2. **Ghosting** — investigated at length across 01.09–06.09, through four superseded
+   mechanisms (opto storage tail, floating anode node, deionization, opto leakage)
+   before the real cause was found. **See §5a-pre.**
+---
+ 
+## 1. Control scheme — rev B (Rev D.3, 08.09.26)
+ 
+**The rotary picks the screen.** A lever answers one question and only when that
+question is relevant to the current screen — otherwise it is not read. Buttons are
+always − / + on whatever the levers point at.
+ 
+| # | Rotary | Lever A — FIELD | Lever B — SUB | Buttons |
+|---|---|---|---|---|
+| 1 | Normal | not read | not read | not read — display just runs, ИН-15 pair idle-cycles (Rev D, see §3) |
+| 2 | Set Time | Hour ↔ Minute | not read | adjusts selected field |
+| 3 | Display | Brightness ↔ Effects | Transition ↔ Glitch *(read only when FIELD = Effects)* | adjusts the selected setting; glitch runs **off** at the bottom of its range |
+| 4 | Ambient | Colon ↔ Backlight | not read | cycles that item's styles |
+| 5 | Format / Date | Format ↔ Date | Day-Month ↔ Year *(read only when FIELD = Date)* | Format: either flips 12h/24h. Date: adjusts SUB's selection |
+| 6 | Info | not read | not read | not read — read-only glance screen |
+ 
+**Positions 1 and 6 are both parking screens, and both are now end stops.** Every
+input is ignored on either one, on purpose, and because they sit at the two extremes
+of the 150° arc the knob cannot be knocked *past* either of them into a screen that
+changes a setting — past either end there is nothing. This is the rev B swap: rev A
+had INFO at position 5, stranded between two live editing screens.
+ 
+**SUB has exactly one rule, and it holds on both screens that use it:**
+ 
+> **Lever B is read only when Lever A is thrown to its second position.**
+ 
+Effects on Display, Date on Format/Date. No special case, nothing to letter as an
+exception. The fascia draws this as a supply rather than a caption — see §6.
+ 
+**Position 5 is the only screen holding two different *kinds* of setting** — a binary
+toggle and a multi-field value — which is what originally justified a second lever.
+Position 3 now uses the same structure for a different reason: brightness, transition
+style and glitch rate are three settings, and two levers plus two buttons address
+three settings only if one lever nests under the other.
+ 
+**Rev D addition to position 1:** while parked on Normal, the ИН-15 pair idle-cycles
+through some or all of both tubes' 18 glyphs as an ambient animation, in the same
+spirit as the existing anti-poisoning sweep and glitch effect — between glimpses it
+still shows the correct A or P. Exact cadence and trigger is a firmware decision, not
+fixed here — see the AM/PM subsection of §3.
+ 
+**No hardware power switch.** Both levers are software inputs. Defensible (desk
+clocks are always-on) but decide it deliberately and say "always-on, no switch" in
+the listing.
+ 
+## 2. Input wiring — costs no real GPIO
+ 
+A6/A7 on the Nano's TQFP-32 ATmega328P are ADC inputs with no digital driver and no
+pull-up. They can never do anything else, which is exactly why ladders suit them.
+ 
+**A6 — rotary, tapped divider.** Five 4.7 kΩ 1% in series across +5 V, wiper
+picks a node. String 23.5 kΩ, 213 µA, worst source Z 5.64 kΩ (ADC wants <10 k).
+ 
+| pos | screen | V | ADC | gap |
+|---|---|---|---|---|
+| 1 | Normal | 0.00 | 0 | — |
+| 2 | Set Time | 1.00 | 205 | 205 |
+| 3 | Display | 2.00 | 409 | 204 |
+| 4 | Ambient | 3.00 | 614 | 205 |
+| 5 | Format / Date | 4.00 | 818 | 204 |
+| 6 | Info | 5.00 | 1023 | 205 |
+ 
+1% parts shift a tap ~2 codes. Hundredfold margin. **The 1% tolerance is not there for
+accuracy — the gaps are enormous. It is there so one firmware threshold table fits all
+ten units without calibrating each clock by hand.**
+ 
+*(Rev D.3: the screen column reflects the rev B swap. The voltages did not move; only
+which screen each tap maps to. Firmware cost is one row of the threshold table.)*
+ 
+**"SR26" is a working name, not a fixed part number**, and as of Rev D.2 not tied to a
+specific seller. **Rev D.3 — the part is in hand and fully characterised from the
+parametric model in `3d/SR25.FCStd`, every dimension re-calipered:**
+ 
+| Feature | Value |
+|---|---|
+| Body / wafer ⌀ | **25.00 mm** *(supersedes the withdrawn 26.94 mm)* |
+| Bushing ⌀ | **8.62 mm**, **7.00 mm usable** |
+| Shaft ⌀ | **6.00 mm** |
+| Outer tap ring | **12 pins on ⌀ 19.99 mm**, at 15° + n×30° |
+| Inner wiper commons | **2 pins on ⌀ ~10.90 mm**, at 0° and 180° |
+| Lug ⌀ | **1.00 mm**, 10 mm free length |
+| **Detents** | **12 counted → step is exactly 30.00°; 6 positions span 150°** |
+ 
+No washer trick is needed — it is a native 6-position part. Only one pole (one common
++ 6 taps) is wired; the second is spare.
+**A7 — two МТ1 levers, binary-weighted.** 10 k pull-up; 20 k and 10 k to ground.
+States at ADC 1023 / 682 / 512 / 409, worst gap 103 codes. **Both levers switch to
+ground, never to the rail** — a closed switch then clamps the pin through a low
+resistance, the state most immune to what a metre of cable picks up running past a
+converter chopping 185 V at 31 kHz.
+ 
+**Three things the ladders need:**
+1. 100 nF from A6 and A7 to ground **at the board end** — holds the last value when
+   a non-shorting rotary floats its wiper, and filters what the cable picks up. **At
+   the board end specifically:** put them on the fascia and the whole cable still hangs
+   off the ADC pin unfiltered. With 5.64 kΩ of source impedance the cap forms a 564 µs
+   low-pass — slow against noise, fast against a hand turning a knob.
+2. Five consecutive identical readings at ~10 ms before acting. The rotary is the
+   master mode selector; one spurious sample must never jump into Set Time.
+3. Contact-clean both levers as a documented refurb step regardless of the rotary's
+   source — oxidised wipers shift the divider, the failure that appears in month
+   three. Worth doing on the rotary too.
+**Panel cable — one 6-pin JST-PH (2.0 mm), pin order fixed:**
+ 
+| J1 pin | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| Net | +5 V | GND | A6 | A7 | D7 (−) | D8 (+) |
+ 
+No power path, no LED rail. Ladder resistors on the fascia at the switches; caps at the
+board end. *(Rev D.4: **PH, not XH** — the footprint and the parts on order have always
+been PH 2.0 mm; only this document said otherwise. The pin order is now a specification
+rather than a routing artefact, and is identical on both builds of the fascia, so one
+cable fits either. It is printed on the back silkscreen.)* Board-side part
+`S6B-PH-K-S` (through-hole) or `S6B-PH-SM4-TB` (surface-mount); cable side `PHR-6`
+housing with `SPH-002T-P0.5` contacts.
+ 
+**Landing points on the main board:** signals to the **S1 / S2 tactile pads**
+(D7, D8) with stock buttons unpopulated; +5 V and GND from the **unpopulated RTC
+footprint**. Both plated, labelled, identical on every board. Confirm with a meter —
+silkscreen is not evidence. **The buttons need no pull-ups on the fascia** — the
+ATmega supplies its own and the firmware already enables them.
+ 
+**Full pin map:** D2 seconds-tens anode · D3–D6 HHMM anodes · D7 button − ·
+D8 button + · D9 HV oscillator · D10 colon (MPSA42 base) · D11 backlight PWM ·
+D12 free · D13 seconds-units anode · A0–A3 К155ИД1 BCD · A4/A5 I²C (DS3231 RTC +
+two MCP23017 expanders, Rev D) · A6 rotary · A7 levers · D0/D1 serial.
+**D10 and D11 are the board's only fixed jobs outside the digit multiplex.**
+ 
+**No I/O expander for the panel controls.** It would solve a shortage that does
+not exist there: five controls cost two real GPIO plus two pins that could never
+drive anything else. Six resistors and two caps, ~30 ₽, still beats putting the
+panel behind an I²C transaction. **This verdict is specifically about reading the
+rotary and levers — it does not apply to switching HV cathodes, which is a
+genuinely different problem and exactly why Rev D reaches for an expander there
+(see §3).**
+ 
+## 3. Display and colon
+ 
+**One colon, between HH and MM only.** No MM:SS separator — the ИН-12 envelope is
+~22 × 24 mm against the ИН-17's 15 × 20 mm, so the size step already states the
+group break. It also lands on the main board's existing centre indicator pad.
+ 
+**Each lamp gets its own 220 kΩ ballast. Never shared.** A neon has negative
+resistance once struck: the first lamp to fire drags the shared node to its
+sustaining voltage, below the other's striking voltage, and the second dot never
+lights.
+ 
+```
+185 V ──┬── 220k ── ИНС-1 upper ──┐
+        └── 220k ── ИНС-1 lower ──┤
+                                   ├── MPSA42 collector
+D10 ── 10k ── MPSA42 base          │
+              MPSA42 emitter ──────┴── GND
+```
+ 
+Low-side switch, not an opto: grounds are common so isolation buys nothing, and a
+TLP627 Darlington's turn-off would smear D10's 31 kHz PWM fade. **300 V rating is
+mandatory** — with it off the full rail stands across it. 2N5551 (160 V) works on
+the bench and fails in a customer's house.
+ 
+Select the two lamps as a **matched pair** on a bench rig. A brightness mismatch
+between the two dots of one colon is the most visible defect on the product.
+ 
+Backlight: six amber 595 nm LEDs on D11 PWM, diffused, behind 2 mm printed shield
+rings. Amber only — blue/white fights the tube glow.
+ 
+### AM/PM and idle symbol cycling (Rev C.3, expanded Rev D)
+ 
+Two symbol tubes, same size class and socket family as the ИН-12А, mounted on
+TS06-SEC alongside the seconds tubes. Verified against rudatasheet.ru, eandc.ru and
+two tube-collector references: ИН-15А and ИН-15Б do **not** display the words
+"AM"/"PM" — they're Soviet multimeter symbol tubes, one glyph lit at a time.
+ 
+- **ИН-15А** — μ, −, +, %, n, m, M, K, Р, П (metric prefixes, 10 glyphs)
+- **ИН-15Б** — A, W, F, Hz, H, V, S, Ω (electrical units, 8 glyphs)
+The **'A'** (Ampere) on ИН-15Б means AM, the **'Р'** (reads as Latin P) on ИН-15А
+means PM. **Rev D wires every cathode on both tubes** — all 18 — because the brief now
+includes an idle-time animation that cycles through the whole symbol set.
+ 
+**Why this needed a redesign, not just more wire.** A single Nano pin can only ever
+select between 2 states without help. Eighteen independently selectable cathodes need
+eighteen independently selectable control lines, and there were zero free Nano pins
+left after Rev C.3.
+ 
+**Circuit — one low-side switch per cathode, driven from two MCP23017 I²C GPIO
+expanders instead of Nano pins directly.**
+ 
+```
+                    +--- A0/A1/A2 -> GND          (U3, addr 0x20)
+Nano A4/A5 (I2C) ---+
+                    +--- A0 -> +5V, A1/A2 -> GND  (U4, addr 0x21)
+ 
+U3 GPA0..GPA7        -> 8x  [10k base R -> MPSA42 -> ИН-15Б cathode]  (VT2-VT9)
+U4 GPA0..GPA7+GPB0-1 -> 10x [10k base R -> MPSA42 -> ИН-15А cathode]  (VT10-VT19)
+```
+ 
+Each MPSA42 is the same 300 V low-side switch used everywhere else — off-state sees
+close to the full 185 V rail, so the 300 V rating is still mandatory, still no
+substituting 2N5551.
+ 
+**Why two chips, and why that's still free on the Nano.** ИН-15Б's 8 cathodes plus
+ИН-15А's 10 don't fit in one MCP23017's 16 lines, so it's one chip per tube. Neither
+collides with the DS3231's fixed address (0x68). Both ride the SAME two wires — SDA
+and SCL, already brought out for the RTC — so going from 2 switched cathodes to 18
+cost **zero** additional Nano pins.
+ 
+**The anode resistor is still one per tube, not one per cathode.** R38/R39 (8.2 kΩ)
+limit the shared anode current regardless of which single cathode is grounded — only
+one cathode per tube is ever lit at once.
+ 
+**Placement — trailing, after the seconds tubes:** `[HH]:[MM]  [SS]  [A/P]` reads in
+AM/PM order for the American buyers this feature targets. Give the pair its own gap
+and a slightly recessed mount.
+ 
+**Still open:**
+1. **ИН-15Б** — a handful secured for one prototype unit; the *ten-unit-batch depth*
+   question is a separate, later sourcing task, tracked in §8. ИН-15А is sourced
+   (Begrant 35 ₽ ×283, yg-radio 30 ₽ ×25).
+2. **Does idle cycling ever compromise AM/PM legibility?** Two honest paths, both
+   firmware decisions: (a) cycle only after N seconds of no input, snapping back to
+   the correct glyph at the first sign of activity, or (b) accept the trade, since the
+   real time-of-day reference is the digit tubes.
+3. Two MCP23017s per unit are a real BOM addition (~440 ₽/unit before spares). See §7.
+4. XS3 grows from 7 pins to 8: AMPM_SEL retired, replaced with SDA + SCL. This also
+   resolves the long-standing XS3-vs-`terminal-06.html` "J3" pin-count discrepancy.
+5. Brightness/dimming parity at night is still unsolved for both AM/PM and the
+   idle-cycling glyphs.
+6. If using an MCP23017 already in hand rather than fresh stock, check it against a
+   known-good part first — counterfeit/relabelled expander ICs are a known problem on
+   grey-market listings, and this is going into ten units.
+### "m" indicator (Rev C.4, lamp swapped Rev D)
+ 
+The AM/PM pair reads as "A" or "P" alone, which is legible but terser than "AM"/"PM".
+Rev C.4 added a fixed "m" glyph beneath the pair using a printed stencil. **Rev D
+reconsiders the lamp, not the idea.** The stencil carries the letterform entirely, so
+the lamp never needed to be a neon on the 185 V rail: **a plain 5 mm amber LED does
+the same job for less money, less routing, and zero HV exposure.**
+ 
+- Drops ИНС-1 count back to **2 per unit** (colon only).
+- Removes the 220 kΩ HV ballast; replaces it with an ordinary 220 Ω 0.25 W at 5 V.
+- Removes the lamp from the HV rail altogether.
+- Keeps the same amber colour as the backlight LEDs rather than the neon's orange-red,
+  so it reads as one light family with the backlight — a genuine, minor aesthetic trade.
+**Wiring.** HL3 and R26 (220 Ω) in series across +5 V and GND, **specified as always
+on whenever the clock is powered**. **Rev D.2 flags this as disputed** — see the header
+note. If the 12h-mode-conditional answer wins instead, HL3 moves onto a transistor
+gated by a diode-OR of whichever two expander lines mean "showing A" and "showing P".
+ 
+**Mounting.** A small printed stencil (PETG) in front of the lamp, recessed under or
+beside the A/P pair.
+ 
+## 3b. Digit tube board (TS06-TUBE) — DEFERRED, Rev D.3
+ 
+**Status: deferred 08.09.26, not cancelled.** Three reasons were ever offered for
+fabricating a custom ИН-12 tube board. Only one survives, and it is not electrical:
+ 
+1. ~~**The four ИН-12 anode bleed resistors have nowhere else to live.**~~
+   **Withdrawn 06.09.26** — the ghosting root cause was empty multiplex slots (§5a-pre),
+   not the anode drivers. The four ИН-12 bleeds are not required.
+2. ~~**The socket pin pattern differs / sockets need different holes.**~~ **Never a
+   real reason.** The footprint is fully known from the inherited board's own fab data —
+   see `TERMINAL-06-measurements-PCB-IN12BOARD.md`, which extracts it exactly from the
+   Gerbers: **12 plated holes ⌀1.194 mm on a stadium (not a circle), 11.48 × 17.98 mm,
+   plus one unplated ⌀5.00 mm centre hole.** The tube defines that pattern, so any
+   socket that fits the tube fits those holes.
+3. **Deck geometry — the only live reason.** Tube pitch (**23.36 / 27.42 / 23.36 mm**,
+   all four centres on one line), deck height, forward offset and rake are all fixed by
+   someone else's layout. See §6's "Brow reveal".
+**Against it:** ten main boards are already owned, therefore ten tube halves are
+already owned. TS06-TUBE is ~1 425 ₽/unit of Group D that does not have to be spent.
+ 
+**Decision rule: print a brow, test-fit it against a real tube, and see whether the
+case alone gives the reveal.** Do not order copper to fix a plastic problem. Revisit
+only if the test-fit fails.
+ 
+**Board count, Rev D.3: the Rezonit order is two boards** — TS06-SEC and TS06-FASCIA.
+*(Rev D.4: still two. The fascia now exists in two builds, but they are alternatives —
+one of them is fabricated, not both.)*
+ 
+## 4. Seconds and colon module (TS06-SEC)
+ 
+46 × 34 mm, 1.6 mm, matte black. Mount at the same 14.5 mm standoff as the tube
+board so both tube planes are level. This board carries the AM/PM pair (V9
+ИН-15Б, V10 ИН-15А), both MCP23017 GPIO expanders (U3, U4) and their eighteen
+switching transistors, the colon driver, and the "m" indicator LED (HL3).
+ 
+**It also carries the two TLP627 optocouplers for the ИН-17 anodes (D2, D13)** — the
+main board has only four opto channels and they serve the ИН-12s. The ИН-15 pair has
+**no** optocouplers: it is not in the multiplex at all, and is cathode-switched by the
+expanders against a shared anode resistor per tube.
+ 
+Anode resistor at 185 V, 1/6 duty: **12 kΩ start** (6.6 mA peak / 1.10 mA avg);
+15 k soft, 10 k bright, 8.2 k floor. 0.5 W for voltage rating, not power. The stock
+board has **no** per-tube anode resistor — fine with four matched ИН-12s, fatal
+with an ИН-17 (sustains ~105 V vs ~140 V and hogs current).
+ 
+**1 MΩ 0.5 W anode bleed per ИН-17** for ghost suppression, retained on its original
+merit. **Do not confuse this with the 12 kΩ-class anode *series* resistor above** —
+different part, different job; the series resistor limits current and is not a
+ghosting fix.
+ 
+*(Rev D.3 note: the 01.09.26 caveat that the main board's ИН-12 anode drivers might
+need the same class of fix was **withdrawn 06.09.26** — see §5a-pre. The bleed
+footprints elsewhere drop to DNP insurance.)*
+ 
+Connectors: XS1 2-pin JST-VH (HV) · XS2 10-way IDC (cathodes) · XS3 **8-pin**
+JST-XH (GND, +5V, BACKL, DOT, SEC_A0, SEC_A1, SDA, SCL) · XS4 2-pin JST-XH (colon
+leads). Three keyed families so 5 V cannot be plugged into 185 V at 11 pm.
+*(Rev D.4: these four are unaffected by the fascia connector's correction to PH —
+XS1–XS4 are on the SEC module and stay as written.)*
+ 
+**Cathode routing:** ИН-17 cathode for digit N → the same К155ИД1 output the ИН-12s
+use for digit N, so one `digitMask` covers all six tubes. Measure the digit→pin
+table once with `secCathodeMap`. Never from a datasheet — surplus markings lie.
+ 
+## 5a-pre. GHOSTING ROOT CAUSE — empty multiplex slots (06.09.26)
+ 
+The ИН-12 ghosting that blocked P2 was **not** an anode-driver fault. The ISR writes a
+digit to the shared cathode bus inside the same guard that turns a slot's anode on;
+with `NUM_INDI 6` but no SEC module fitted, slots 4 and 5 put a digit on the bus with
+**no anode driven anywhere on the board**, and the real tubes' decaying anodes light
+it. Stock AlexGyver firmware cannot create this — it rotates through exactly as many
+slots as it has tubes.
+ 
+**Consequences:**
+ 
+- **§4's caveat about the main board's anode drivers is withdrawn.** The ИН-12 anode
+  drivers are fine. The **1 MΩ bleed remains specified for the ИН-17s** on its original
+  merit; the four ИН-12 bleeds are **not required**.
+- **TS06-TUBE loses its bleed-footprint justification entirely** (§3b).
+- **The anode-driver study's hardware options (MPSA92 restage, HV shift registers) are
+  not needed for this product.** They remain the right direction for a future design
+  that wants high refresh with certainty.
+**Proper firmware fix, better than the `MUX_SLOTS` hack:** the ISR should never leave a
+digit on the cathode bus without a driven anode. When the changeover guard fails it
+should write a blanking code (К155ИД1 inputs 10–15 select no cathode). With that, the
+rotation is safe at any `NUM_INDI` regardless of which slots are populated.
+ 
+## 5a. Display timing
+ 
+**The camera-banding requirement is dropped by owner decision.** Visible ghosting is a
+product defect; 60 fps video flicker is not.
+ 
+**Shipped display timing:** Timer2 prescaler **8** (AlexGyver's original), 26-tick slot,
+**`INDI_BRIGHT 21`**, `NUM_INDI 6`. Gives 640 µs of dead time, 50 Hz frame, 13.5 %
+per-tube duty — measured clean, with unlit cathodes fully dark. Stock's `INDI_BRIGHT 24`
+is **not** sufficient at six tubes; three brightness steps is the entire cost of six
+pristine tubes. Prescaler 8 also drops ISR load from a measured 33.5 % CPU to roughly
+4 %, which is headroom the MCP23017 driver at P6a will want.
+ 
+**Worth re-opening once the SEC module is fitted:** if empty slots were the dominant
+ghost source all along, a much higher refresh may be clean with all six tubes present.
+Not a promise — re-run the sweep before accepting the 50 Hz frame as final.
+ 
+## 5. Firmware status — control scheme NOT implemented
+ 
+The firmware source is the **display-layer port only**: 4→6 tubes, ISR rewrite,
+anti-poisoning and glitch extension, and the superseded rev B control scheme
+(2 buttons + 1 lever). Flashing it gives a working six-digit clock with the *old*
+controls.
+ 
+**"Six tubes" here means only the anode-multiplexed digit tubes (4× ИН-12А +
+2× ИН-17), not the finished instrument's full glass count.** The colon (2× ИНС-1) and
+the AM/PM pair (2× ИН-15) were deliberately kept off this multiplex — the colon is a
+direct low-side switch on D10, and the AM/PM pair is switched through two MCP23017 I²C
+expanders on A4/A5, with zero involvement from the digit-multiplex ISR.
+ 
+Done and verified:
+- 4→6 tubes, D2 and D13 anode drivers
+- Buzzer removed (`tone()` and the multiplex share `__vector_7`)
+- Anti-poisoning and glitch across six tubes; seconds excluded from effects
+- **BOARD_TYPE corrected, 01.09.26** — the shipped `#define BOARD_TYPE 1` was wrong
+  for this physical board; it's actually `0`.
+- **Ghosting root-caused and cleared** — see §5a-pre and §5a.
+**Correction (28.08.26): `DOT_BRIGHT` was never actually retuned.** Direct inspection
+shows `#define DOT_BRIGHT 35` / `#define DOT_BRIGHT_N 15` — the original LED-era values.
+The 170/90 figure is an unverified target, to be confirmed on the bench at P6.
+ 
+Still to write: A6 mode state machine with the agreement filter; A7 lever decode;
+six per-screen render/edit handlers; date and temperature reads (DS3231 already has
+both, stock firmware never uses them); EEPROM for format/brightness/effect/ambient;
+AM/PM derived from the RTC hour; the `DOT_BRIGHT`/`DOT_BRIGHT_N` neon retune; an I²C
+driver for the two MCP23017 expanders; the idle-cycling state machine for the ИН-15
+pair; whichever answer the "m" always-on-vs-12h-mode question gets.
+ 
+**Rev D.3 adds two items, both small:**
+- **The A6 threshold table maps position 5 → Format/Date and position 6 → Info**
+  (the rev B swap). One row, no mechanism change.
+- **`GLITCH_ALLOWED` becomes a runtime setting with a rate**, stored in EEPROM
+  alongside format/brightness/effect/ambient, and reachable from position 3 via
+  SUB. It is currently a compile-time flag. One more EEPROM item, not a new mechanism.
+Waits on hardware because ladder thresholds must be measured on a real panel with real
+wire lengths, not calculated.
+ 
+## 6. Enclosure
+ 
+176 × 96 × 78 mm wedge, front raked 12°, top deck overhanging a recessed tube
+trench. Printed: chassis (matte black PETG, 0.20/4 walls/20% gyroid, no supports),
+brow (safety orange, 0.16), base plate, colon holder (press-fit sockets for the two
+ИНС-1s with a lead channel), and the "m" stencil. One filament batch for all ten units.
+ 
+### Brow reveal — why the case "hides the tubes"
+ 
+**The brow was sized to clear the digit, not the envelope.** `TERMINAL-06-concept-plates.md`
+set the brow geometry (y 9.5–22) so that a 10° viewing angle still clears the **full digit**
+— assumed 18 mm, since measured at **18.63 mm**. But the ИН-12 envelope is **28.70 mm** on
+its wide axis. **So roughly 10 mm of glass — the top dome, the getter flash, the shoulder —
+sits above the feature the clearance criterion was ever written against, and the overhanging
+top deck takes exactly that band.**
+ 
+That is the whole of the "case hides the tubes too much" complaint, stated geometrically:
+the trench does not hide the *numbers*, it hides the *glass*.
+ 
+**Three levers on the tube deck:** raise it; move it forward toward the 12° raked front;
+or rake the tube deck itself. The third is the highest-value — the ИН-12 is an end-view
+tube, so tilting it toward the viewer improves digit legibility *and* presents more
+envelope profile at once.
+ 
+**All three are constrained by the inherited board's tube pitch (23.36 / 27.42 / 23.36 mm)
+and mounting.** Whether that constraint is worth 1 425 ₽/unit to remove is now a **case**
+decision, settled by a printed brow test-fit — see §3b.
+ 
+**Sequencing note:** none of this can be finalised before the socket capture sheet exists
+(`TS06-LIB-SOCKET`) — seat height above the PCB, the tip-off pip's projection, and the
+front-glass-to-digit-plane parallax depth under the 12° rake are all still uncaptured.
+ 
+### TS06-FASCIA — 176 × 52 mm, 2.0 mm FR4, matte black mask, white silk, ENIG
+ 
+Recessed into the chassis so bushing torque lands on plastic.
+ 
+**Controls need no additional board — this one is it.** The rotary, both МТ1 levers and
+both КМД1 buttons are **panel-mount hardware with solder lugs, not PCB-mount parts.**
+**Rev D.3 confirms this geometrically from the models:** on every one of them the lugs
+sit *behind* the body, which itself sits behind the panel. On the rotary that is
+**≥11.3 mm behind the fascia's rear face, pointing away.** Nothing can be board-mounted;
+every control is hand-wired to landing pads.
+ 
+TS06-FASCIA earns its place for three reasons: it is the **printed product face**; it is
+**structural**; and it **anchors the ladder** at defined pads rather than in free air,
+where the spec already fears drift by month three. Panel-to-board is **one 6-pin JST-PH**
+(§2 has the pin order).
+ 
+Layout left→right = **pick the screen, pick the field, adjust the value**: rotary left
+(six labelled positions arced around the shaft), levers centre, buttons right.
+ 
+**Lettering, Rev D.3.** Rotary positions are lettered with their six fixed names:
+`NORMAL · SET TIME · DISPLAY · AMBIENT · FORMAT/DATE · INFO`, on a **150° fan at exactly
+30.00° per step**. The levers are lettered **FIELD** and **SUB** — their invariant role,
+true on all six screens — because their per-screen meanings change and cannot be printed
+honestly. Buttons are **−** and **+**.
+ 
+**§1's SUB rule is drawn, not captioned.** A gold ENIG trace ends directly beneath FIELD,
+at the point its second throw reaches, and runs from there into a box enclosing SUB; two
+more leave that box for positions 3 and 5. Nothing reaches SUB except through that point.
+The real lever closes the gap, so the rule is stated as geometry and completed by
+hardware. Nothing is drawn in the space the lever physically occupies.
+ 
+**Bushing stack — open.** The rotary bushing is 7.00 mm usable and the fascia is 2.0 mm
+recessed into the chassis, so nut, washer and recess depth must all fit in the remaining
+**5.00 mm**. A depth question against the printed chassis, not a diameter question.
+ 
+**Worth the PCB?** Not as a wiring loom — solder lugs, not PCB pins, six conductors total.
+**The rotary settles it:** six labelled positions is the most information-dense thing on
+the product and exactly what FDM cannot print. Without a dial the rotary is a mystery
+knob. ~1 050 ₽/unit = 3.9% of retail for the most-photographed surface.
+ 
+### Two builds of the fascia — pick one (Rev D.4)
+ 
+Same outline, same artwork, same netlist, same connector, same firmware. They differ in
+one decision: **where the solder is.**
+ 
+| | TS06-FASCIA | TS06-FASCIA-THT |
+|---|---|---|
+| Parts | surface-mount, all on the back face | through-hole |
+| The A6 divider | behind the panel, invisible | **on the face**, five axial resistors above the rotary's seven landing holes |
+| Copper between them | under mask | **bare** — mask opened, ENIG gold, a solder fillet at every joint |
+| Everything else | behind the panel | behind the panel, **front mask closed** — a bare drilled hole, no gold ring |
+| Routing | shelved (placement and artwork only) | **routed: 34 tracks, no vias.** Ladder on F.Cu under opened mask; six signals on B.Cu under mask; GND is a pour over the whole back face |
+ 
+**The through-hole build is not the cheap option, it is the other aesthetic.** The
+surface-mount board says *sealed instrument*; the through-hole board says *this is the
+divider that reads the knob, and here is the solder*. Both are honest; they photograph
+differently, and #2 in the listing is the dead-on front shot.
+ 
+**Two rules the through-hole build makes explicit, true of any future revision:**
+ 
+1. **A plated through-hole is copper on both faces.** A part mounted behind the panel
+   still has to clear the decorative gold in front of it.
+2. **The panel parts have bodies behind the board.** Nothing sits inside those
+   envelopes, which confines every back-mounted passive to the strip below y 38.5 — the
+   only band on this board clear of all five.
+Board files, generators and the five checkers live in the firmware repo under `PCB/` and
+`tools/`; `PCB/README.md` explains them. `tools/render.py` draws either board to SVG,
+front face and back face.
+ 
+### MEASURE BEFORE ORDERING PANELS
+ 
+**Rev D.3: every dimension in this table now comes from the calipered parametric models
+in `3d/`, except the detent count, which was counted by hand on the physical switch.**
+ 
+| Measurement | Value | Source |
+|---|---|---|
+| Rotary body / wafer ⌀ | **25.00 mm** | CAD. **Supersedes the withdrawn 26.94 mm.** |
+| Rotary shaft ⌀ | **6.00 mm** | CAD; agrees with the listing |
+| Rotary bushing ⌀ | **8.62 mm** → 8.80 mm hole | CAD |
+| Rotary bushing usable length | **7.00 mm** | CAD. Drives the 5.00 mm stack question above. |
+| **Rotary detent count / step angle** | **12 detents → exactly 30.00°/step, 150° span** | **Counted by hand.** Supersedes the withdrawn ~32°/~160° estimate. |
+| Rotary lug ring | **12 taps on ⌀19.99 mm at 30°; 2 wiper commons on ⌀10.90 mm; lug ⌀1.00 mm** | CAD |
+| Rotary overall height | 31.30 mm above the lug plane (18.30 mm excluding shaft) | CAD. The listing's 23.5 mm matches neither. |
+| МТ1 bushing ⌀ | **7.82 mm** → 8.00 mm hole | CAD; agrees with the 7.85 mm hand reading |
+| КМД-1 bushing ⌀ | **7.82 mm** → 8.00 mm hole | CAD. **Independently sourced at last** — no longer carried over from МТ1 by eye. |
+| КМД-1 plunger ⌀ | **6.00 mm** | CAD |
+| МТ1 lever throw angle | not derived on paper | test-fit against the printed brow |
+| КМД-1 plunger travel | ____ | |
+ 
+**Identity:** VOID #0A0B0C · GRAPHITE #24272B · SIGNAL #F25610 · CATHODE #FF9E36 ·
+BONE #DCD8D0. No franchise logos, names or marks anywhere — product, packaging, copy,
+or photo props.
+ 
+**Rev D.3 — the mark moves off the fascia.** Previous revisions specified "a hexagon
+bisected by a breaking bar, 06 inside" on the panel. That mark was never a decision the
+owner made; it entered the project through an earlier session's document and nobody
+could account for the hexagon. **The fascia now carries controls and their names and
+nothing else — no insignia, no wordmark.** Identity belongs on the enclosure and the
+packaging, where it is not competing with a dial for the same eye. **The mark itself is
+undesigned and open**; the palette above is unaffected.
+ 
+## 7. Cost and price (₽, Aug 2026, ~82.8 ₽/$)
+ 
+| Group | Batch | Per unit |
+|---|---|---|
+| A Nixie glass and Soviet parts | 22 710 | 2 271 |
+| B Controls and panel hardware | 10 000 | 1 000 |
+| C Seconds, colon, AM/PM, idle cycling and "m" | 14 966 | 1 497 |
+| D Custom PCBs | 14 250 | 1 425 |
+| E Enclosure | 6 050 | 605 |
+| F Power and I/O | 8 310 | 831 |
+| G Consumables and packaging | 7 490 | 749 |
+| **Cash outlay** | **83 776** | **8 378** |
+| + main boards owned | 17 000 | 1 700 |
+| **Full cost per unit** | | **10 078 ₽ ≈ $122** |
+ 
+Group C has grown three times: 385 → 577 → 619 → **1 497 ₽/unit (Rev D)**. Going from
+2 switched cathodes to 18 costs sixteen more MPSA42 switches, sixteen more base
+resistors and a second MCP23017 — about **878 ₽/unit** more than Rev C.4, verified
+against the regenerated `TERMINAL-06-parts-list.xlsx` after a clean LibreOffice recalc.
+ 
+**Group B is not yet re-priced for the Ozon rotary.** **Group D is now optimistic in
+the other direction, Rev D.3** — with TS06-TUBE deferred (§3b) the Rezonit order is two
+boards, not three, so 1 425 ₽/unit is a ceiling rather than an estimate. Re-cost before
+ordering. *(Rev D.4: the two fascia builds cost the same to fabricate — same outline,
+same layer count, same finish. The difference is assembly labour, and it is small either
+way: five axial resistors on the face against eight surface-mount parts on the back.)*
+ 
+| Retail | ≈USD | left after fees+shipping | per hour (2.5 h) |
+|---|---|---|---|
+| 20 000 | $242 | 6 222 | 2 489 |
+| 24 000 | $290 | 9 782 | 3 913 |
+| **27 000** | **$326** | **12 452** | **4 981** |
+| 32 000 | $386 | 16 902 | 6 761 |
+ 
+**List at 27 000 ₽, free shipping. Units 1–3 at 23 000 ₽ (founder price, buying
+reviews). Never below 20 000 ₽.** Matched spare tube at 2 000 ₽.
+ 
+Market: Etsy nixie clocks ~$108–$1 069, dense middle $130–260 for four-tube wooden
+builds.
+ 
+> **Etsy payout/logistics verification is deferred (Rev D.2)** — Etsy suspended payouts
+> to Russia-based sellers in 2022 and it has not been quietly reversed; confirming
+> registration, listing and *actual payment* is still necessary before committing to a
+> ten-unit run. Ozon / Avito / an own site remain the fallback.
+ 
+## 8. Sourcing
+ 
+| Supplier | What | Watch |
+|---|---|---|
+| **Meshok** | ИН-12А, ИН-17, ИНС-1 (**2 per unit — colon only**), spare К155ИД1 | One lot, one seller, whole run at once. Reject cloudy glass. |
+| **Meshok — ИН-15 pair** | ИН-15А (Begrant 35 ₽ ×283, yg-radio 30 ₽ ×25) + **ИН-15Б (a handful secured)** | Enough Б for one unit; ten-unit-batch depth is a separate task. |
+| **Ozon — rotary switch** | Six-position rotary selector | **In hand and fully characterised, Rev D.3.** Body ⌀ 25.00 mm, bushing ⌀ 8.62 × 7.00 usable, shaft ⌀ 6.00 mm, **12 detents → 30.00°/step**, 12 taps on ⌀19.99 + 2 wiper commons. Nothing outstanding. |
+| **Meshok — Vladi59 (id 520937)** | КМД1 buttons, МТ1 levers only | 11 buttons / 10 levers secured against a 20-of-each batch need. **Whether the original 3 650 ₽ cart was ever paid is worth a quick check.** |
+| **Ozon** | PSUs, filament, fasteners, connectors, wire, packaging | Only trap: two PETG spools from different batches. |
+| **Amperkot** | Optos, MPSA42 (18/unit), MCP23017 ×2/unit, ladder resistors, caps, LEDs, headers, spare Nano/DS3231 | **Does not make PCBs.** Get a fresh quote — the passives order has grown with every revision. |
+| **Panel connector, Rev D.4** | **JST-PH 2.0 mm, 6-way.** Board side `S6B-PH-K-S` (through-hole build) or `S6B-PH-SM4-TB` (surface-mount build); cable side `PHR-6` housings + `SPH-002T-P0.5` contacts | **Not XH.** A PH-capable crimper is needed (IWS-3220 class) — an SN-01BM/SN-28B is for XH and will not close a PH contact properly. |
+| **Rezonit** | TS06-SEC (1.6 mm), TS06-FASCIA (2.0 mm) — **one of the two fascia builds, not both (§6).** **TS06-TUBE deferred, Rev D.3 — see §3b.** | Black mask = surcharge + longer lead. **ENIG, not HASL** — the gold artwork depends on it. Order 15 each. SEC can be ordered as soon as P4–P6 measure out; **FASCIA's measurements are now all closed** except the bushing stack depth, which is a chassis test-fit and does not block the hole pattern. |
+ 
+Buy ИН-12А, **not Б** — the decimal point is redundant with a neon colon.
+ 
+**Every ZS-042 DS3231 module needs a fix:** it has a charging circuit for a
+rechargeable LIR2032. Fit a plain CR2032 with that intact and you trickle-charge a
+non-rechargeable cell inside a sealed product. Remove the charging resistor or its
+diode. Revisions differ — check, don't assume. The same "check, don't assume" applies
+to the ZS-042's SDA/SCL pull-ups before adding a second set for the MCP23017s.
+ 
+Margin lines: ИН-12А ×48 (22 650 ₽, a third of the batch); fascia PCB (ask Rezonit
+for 15 *and* 25); control hardware — **11 of 20 buttons, 10 of 20 levers secured**;
+test every button/lever once in hand; ИНС-1 (over-buy is the pairing pool); ИН-15Б —
+ten-unit-batch depth still open; **MCP23017 ×2/unit** — zero secured, price is an
+unverified estimate.
+ 
+## 9. Build (~2 h 20 min hands-on/unit)
+ 
+Jigs: **J-LEAD** (ИН-17 lead comb) · **J-HARN** (pre-cut cathode wires) ·
+**J-MAP** (measured digit→pin table) · **J-NEON** (bench rig for pairing ИНС-1s) ·
+**J-LADDER** (known-good fascia + serial sketch printing A6/A7 codes).
+ 
+Print → inserts → **refurbish switchgear (contact cleaner)** → fascia → **verify
+panel on J-LADDER** → SEC module → flash and sweep → cathode harness → mate (HV,
+cathodes, logic, power off) → set HV 185 ± 8 V, trim brightness, tune colon →
+mechanical assembly (gloves) → 24 h burn-in → serialise, photograph, pack.
+ 
+## 10. QC — every unit
+ 
+HV 185 ± 8 V warm · full cathode sweep, all 60 strike · ghost check on `88:8888`,
+**on the main HH:MM tubes as well as the seconds pair** · ИН-17 within one perceptual
+step of ИН-12 at 2 m · **both colon dots strike together and match** · **AM/PM pair
+strikes reliably and only ever shows one glyph at a time per tube** · **idle cycling
+runs through the ИН-15 symbol set without a stuck or skipped glyph** · **"m" LED lit
+per whichever behaviour Rev D.2 settles on** · all six rotary positions land within a
+few ADC codes with no transient mode change while rotating · **position 6 reads Info
+and position 5 reads Format/Date (rev B)** · four lever states decode · both buttons
+register · drift < 2 s over 24 h · cosmetic, dial square to detents · serial inked,
+QC card signed.
+ 
+*(Rev D.4, if the through-hole fascia is the one built: add a visual pass on the five
+exposed ladder joints — they are a finished surface on this build, not just a
+connection.)*
+ 
+Build log per unit: serial, tube batch, HV, anode resistor, colon ballast, trim,
+**the six rotary ADC readings**, drift, date.
+ 
+## 11. Batch plan
+ 
+Week 0 measure + prototype (caliper the switchgear, unit 1 end to end, cathode map,
+resistors, real ladder thresholds, revise and order PCBs) · Week 1 order + print ·
+Week 2 control firmware against a real panel · Week 3 station build, ten of each
+operation · Week 4 burn-in, shoot, list.
+ 
+**Week 0 is running — see `claude/TERMINAL-06-prototype-plan.md`.** Display work and
+rotary work run in parallel rather than in series. **P2's ghosting is root-caused and
+cleared (§5a-pre), so P3 onward is unblocked.**
+ 
+**Three things that will bite:** tube supply (one purchase, one seller, +20%);
+the cathode harness (mistakes invisible until HV); **ordering panels before
+measuring** (a respin costs 15 000 ₽ and a week, ten wrong panels cost the run).
+ 
+## 12. Listing
+ 
+Title: `Nixie Tube Clock 6 Digit with Seconds | IN-12 & IN-17 Cyberpunk Industrial
+Desk Clock | Rotary Selector, Neon Colon, Amber Backlight | Limited Run of 10`
+ 
+Tags: nixie tube clock, nixie clock, 6 digit nixie, in12 nixie clock, cyberpunk
+decor, industrial decor, retro futuristic, desk clock, gift for engineer, glowing
+clock, gamer desk setup, mecha decor, handmade clock
+ 
+Ten photo slots; #2 is the dead-on front with the dial legible (the rotary *is* the
+differentiator) and #10 is a 15–25 s video: power-on sweep → seconds ticking →
+rotary clicking through the screens → the ИН-15 pair idle-cycling → one transition
+effect.
+ 
+Once the AM/PM pair, idle cycling and "m" indicator are built, they're worth more
+than a line in the description — "shows AM/PM" is exactly the kind of concrete,
+checkable claim that reads as engineering rather than marketing.
+ 
+---
+ 
+**Safety.** 185 V DC behind a reservoir cap that stays charged after power-off.
+Bleed before touching the tube side. One hand in your pocket.
+ 
+**Attribution.** Firmware forked from AlexGyver's NixieClock v2.5
+(github.com/AlexGyver/NixieClock_v2). Keep the credit in the source.
+ 
+**Related documents.** `claude/TERMINAL-06-prototype-plan.md` (P-series ordering and
+gates) · `TERMINAL-06-control-scheme-revB.md` (the rev B decision record, now folded
+into §1 here) · `TERMINAL-06-measurements-ROTARY.md` · `TERMINAL-06-measurements-PCB-IN12BOARD.md`
+(the inherited board's Gerber-derived geometry) · `claude/TERMINAL-06-anode-driver-study.md`
+(superseded as a fix path, retained for future designs) · **`PCB/README.md` in the
+firmware repo** (the two fascia builds, the fixed J1 pin order, and the five checkers).

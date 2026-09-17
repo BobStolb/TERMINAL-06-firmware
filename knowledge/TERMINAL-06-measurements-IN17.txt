@@ -1,0 +1,314 @@
+# TERMINAL-06 — measurement capture: IN-17
+ 
+Second entry in the Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`),
+following the same format as `TERMINAL-06-measurements-IN12.md`.
+ 
+Sample: 1 of your IN-17 tubes, Vogel digital caliper, 0.01 mm resolution.
+ 
+**Rev 2 — 1 Sep 2026.** Catalogue and ТУ figures added from four external sources, one of
+which is wrong and is recorded as wrong. A new gating question is raised at the top of the
+sheet by `claude/QUADRANT-wrist-feasibility.md`, which cannot proceed without it.
+ 
+**Rev 5 — 9 Sep 2026. Row 13 is CLOSED by a factory outline drawing, and it closes rows 3, 5 (pattern), 7 and 17 with it. The envelope is FLATTENED, not round. Rows 1-2 are re-labelled, not deleted. TERMINAL-06's face width changed as a direct result.**
+ 
+**Rev 4 — 5 Sep 2026, later. A deliberate web sweep for the missing rows. Headline: rows 5–7 are
+not published anywhere, so the caliper is the only source — plus four new facts and three source
+disagreements, all below.**
+ 
+**Rev 3 — 5 Sep 2026. The gating question is closed, and this sheet now feeds a second product.**
+It is answered, the answer is **end-view**, and the sheet had gone stale carrying it as open. Two
+consequences below. This sheet is now the gate on `claude/QUADRANT-D-spec.md` — see §11.1 there.
+ 
+---
+ 
+## ✅ Row 13, CLOSED in Rev 5: the envelope is FLATTENED
+ 
+A factory outline drawing surfaced on 9 Sep 2026 — four views: cathode order, base lead
+circle, side elevation, end elevation. It settles the question Rev 2 raised and Rev 4 could
+not answer from vendor listings.
+ 
+**The envelope is a round Ø20 stem that flattens toward the display end.** It is not a
+cylinder and it is not a flat rectangular tube. The three unequal numbers the vendors quote
+are all real:
+ 
+| Axis | Value | What it is |
+|---|---|---|
+| Along the axis | **22 mm** | glass only, base to dome. Leads are a further 35 |
+| Across, major | **20 mm** | the stem. `Ø20` on the drawing |
+| Across, minor | **14 mm** | the face, at the flattened display end |
+ 
+End-view, confirmed in Rev 3, is unchanged. What is new is that the face you look into is a
+**narrow lens, 14 across**, while the stem behind it is the full Ø20.
+ 
+### Rows 1-2 re-labelled, not deleted
+ 
+Rev 2 guessed that the two readings might be the major axis and an off-axis chord of one
+oval section. **That guess was right.**
+ 
+- Row 1, **19.30 mm** — the major axis. Reads 0.7 low against the drawing's Ø20, which is
+  ordinary tolerance on a hand-worked envelope.
+- Row 2, **17.50 mm** — **not an axis at all.** An intermediate chord, taken part way down
+  the flatten where the section is neither 20 nor 14. It is a real reading of a real place on
+  the glass, and it is not a dimension of anything.
+ 
+**Neither reading is the face.** The face was never calipered — the photo meant to show it had
+the jaws off the glass. That is why row 2 fitted nothing.
+ 
+### What it cost, and the rule that follows
+ 
+For two days TERMINAL-06 was drawn with the ИН-17 face at **17.58 × 19.20, portrait** — both
+numbers taken from rows 1-2 and used as though they were the width and height of one
+rectangle. They are two chords of a curved surface. The row closed at 208 instead of 204.3.
+ 
+> **Rule, added to this sheet:** two caliper readings on a curved body are two chords until
+> proved otherwise. Do not pair them into a width × height. Row 13's orthogonal-pair
+> procedure exists precisely to prove otherwise, and it was skipped.
+ 
+## Rev 5: three more rows the drawing closes
+ 
+| Row | Was | Now | Confidence |
+|---|---|---|---|
+| 3 — overall glass length | ~18–22 mm, photo placeholder | **22 mm** | Catalogue — drawing and soviet-tubes agree exactly |
+| 5 — lead exit pattern | not captured | **circle, 12 leads around a central exhaust pip** | Catalogue — pattern only. **Pitch and circle Ø are still not dimensioned** |
+| 7 — free lead length | not captured | **35 mm** | Catalogue — the drawing dimensions it directly |
+| 17 — orientation key | two conventions, disagreed | **cut-short lead**, marked «Вывод обрезан» at position 12 | Catalogue — **still check the bench batch** |
+ 
+**Row 5 is only half closed.** The drawing gives the *pattern*, which is what
+`claude/QUADRANT-D-spec.md` §5.1's routability bound was assumed on — that assumption now has
+a source. It does **not** give the lead pitch or the circle diameter, so the 48-hole footprint
+still cannot be drawn. Rows 5 (pitch) and 6 remain the top blocker.
+ 
+**Row 16 may also be on this drawing.** One view lays out digits 0–9 in a line with lead
+numbers 2–11 beneath, which reads as the cathode stacking order — the `cathodeMask` data.
+**Do not act on that reading yet.** It is a low-resolution scan, the cost of getting it wrong
+is four tubes soldered in the wrong order, and one `secCathodeMap` session settles it for
+certain. Recorded here so the drawing is re-read when that session happens.
+ 
+## Rev 5: what this changed downstream, same day
+ 
+`claude/TERMINAL-06-concept-plates.md`, Rev F:
+ 
+- ИН-17 face **14 × 20**, was 17.58 × 19.20. Digit **9.00** against ИН-12's 18.63, so the
+  seconds read at **48%** the height of the hours on **half** the glass area. That is now a
+  stated design consequence with two ways out, not an accident.
+- The seconds pair is spaced off the **Ø20 stems**, not the 14 faces. A 3 mm face gap would
+  put the stems 17 apart and they would touch. Pair centres are **20.5** — stem plus 0.5 —
+  which shows at the front as a 6.5 mm gap.
+- Overall face **204.3**, was 208 in the draft and 237 in Rev E.
+ 
+This is the second time this sheet has moved TERMINAL-06's overall width. It is the sheet
+that most needs the caliper pass.
+ 
+---
+ 
+## ✅ Gating question, CLOSED in Rev 3: end-view
+ 
+Rev 2 asked which axis the digits are viewed down, and said the answer decided whether the
+QUADRANT wristwatch was a ~17 mm product or a ~30 mm brick.
+ 
+> **Answered 2 Sep 2026, by looking at the tube: end-view.** You can only look into one end, and
+> it is the ~20 mm face. The long axis runs back into the case.
+ 
+Two things follow, and Rev 2 got one of them wrong:
+ 
+1. **The ИН-17 wristwatch is withdrawn.** Rev 2's branch B, as expected — 22 mm of tube
+   perpendicular to a watch face is a ~30 mm case.
+2. **Rev 2 said "QUADRANT dies". It did not.** The concept moved to a **desk miniature**
+   (`claude/QUADRANT-D-spec.md`), where end-view is not a defect but the whole idea: four barrels
+   pointing at you, each a little window with a number burning at the bottom of it. **Do not read
+   Rev 2's banner as a live warning — it is history.**
+**Row 9 is re-datumed, not deleted.** Rev 2 said the parallax number was "only meaningful if the
+gating question resolves to side-view". That was wrong. For an end-view tube it is still the number
+that matters — it is just measured **from the viewed end face to the digit plane**, not from a flat
+side. It sets how deep the digit sits inside QUADRANT-D's recessed window and what the collar has
+to clear.
+ 
+---
+ 
+## ⚠ Rev 4: the lead geometry is not on the internet. Stop looking for it.
+ 
+Rows 5–7 — lead pitch, lead diameter, free length, exit pattern — block `claude/QUADRANT-D-spec.md`
+(§11.1) and therefore its PCB order. **They were searched for properly and they do not exist in
+public.** Sources checked, all of which give electricals and none of which give lead geometry:
+ 
+| Source | What it has | Lead geometry? |
+|---|---|---|
+| Dieter's archive, `IN-17_01/02/03.pdf` (original ТУ scans + translation) | full electrical table, 12-pin assignment, handling limits | **no drawing** |
+| rudatasheet.ru | mass 7 g, digit 9 mm, "glass, miniature", full pin table | no |
+| tec.org.ru | pulsed current and скважность, «бесцокольное с гибкими выводами» | no |
+| eandc.ru | ТУ electricals, mass, 12 leads | no |
+| swissnixie.com | "about 15 × 20 mm", 9 mm digit, 39 kΩ suggested | no |
+| soviet-tubes.com | 22 × 20 × 14 mm, 9 × 5.5 mm digit | envelope only |
+| neonixie.com | "one of the smallest ever made", ~8 mm digit, sold with a plastic base | no |
+| A commercial ИН-17 clock kit's own assembly manual | trim leads to 15–20 mm, tack two opposite leads first | **no spacing given** |
+ 
+**Conclusion to act on:** the caliper pass is not a shortcut being skipped, it is the only path to
+these numbers. **Twenty minutes with the tube beats another hour of searching.**
+ 
+**The bound the sweep does give, which is enough to keep drawing against.** Twelve leads inside a
+~14–17.5 mm minor envelope put lead-to-lead spacing at roughly **2.5–3 mm** on any plausible
+pattern — an ~11 mm circle gives 2.9 mm, two rows of six give ~2.5 mm. So one tube's lead cluster is
+**≈11–13 mm across**. At QUADRANT-D's 26 mm horizontal pitch that leaves a **~14 mm channel between
+adjacent clusters**, enough to fan ten cathodes out of each. **The board is routable at the assumed
+pitch.** That is a bound, not a measurement, and it is what `claude/QUADRANT-D-spec.md` §5.1 is
+drawn on.
+ 
+## Rev 4: the orientation key — two conventions are documented, and they disagree
+ 
+- A commercial ИН-17 kit's assembly manual: **the anode lead is marked with a white bar**, and it
+  goes into the hole marked on the silkscreen.
+- tec.org.ru's catalogue entry: one lead is **«вывод обрезан (ключ)»** — physically cut short as an
+  index.
+Both cannot be true of one batch. **Look at the ten tubes on the bench and record which convention
+they use** — it decides the silkscreen, and it decides whether J-QLEAD needs a keyway or a marked
+slot. Four tubes soldered in rotated is not a recoverable mistake on a wire-ended part.
+ 
+## Rev 4: handling limits, from the ТУ and from a kit that ships
+ 
+Not dimensions, but they constrain the jig and the build step, so they live here:
+ 
+- **Solder no closer than 8 mm from the glass. Bend no closer than 3 mm.** (ТУ scan.)
+- Trim leads to **~15–20 mm** before insertion; flush after soldering. (Kit manual.)
+- Straighten each lead with long-nose pliers before insertion; **tack two opposite leads first** to
+  hold the tube square, then do the rest from the far side. (Kit manual.)
+- **Burn each cathode in at 1.5–2 mA for 1–2 minutes before final soldering.** (ТУ scan.)
+## Resolved: it's a lead spacer, not a base
+ 
+The cream part slides along the leads rather than being fused to the glass — confirmed.
+That's not a socket or a factory base; it's close kin to the **J-LEAD comb** already
+planned in the build spec for holding IN-17 leads at final spacing while soldering. The
+spec's "wire-ended, no socket" line stands as written. Worth dimensioning the spacer on
+its own — its slide positions may double as a reference for the J-LEAD jig design, or at
+minimum tell you the target lead spacing directly.
+ 
+**Rev 3: QUADRANT-D raises the stakes on this.** Its build jig **J-QLEAD** has to hold four tubes
+coplanar with all 48 leads at final spacing at once, and rows 10–12 below are the only data that
+jig can be designed from.
+ 
+The 19.30 mm reading was taken glass-only (confirmed). The 17.50 mm reading, by photo
+composition, also looks like jaws-on-glass at a different point along the body, not on
+the spacer — treating both as clean glass diameters, at two different axial positions.
+ 
+**Rev 2 note:** the external listings below give the envelope as *three unequal numbers*
+(≈22 × 20 × 14), i.e. a flattened rather than round envelope. If that is right, the 19.30 and
+17.50 readings may not be two axial positions on a round body at all — they may be the major
+axis and an off-axis chord of the *same* oval cross-section. Row 13 is added to settle it.
+ 
+## All dimensions to date
+ 
+| # | Dimension | Value | Method | `dims.*` alias | Confidence | Status |
+|---|---|---|---|---|---|---|
+| 1 | Envelope, major axis (stem) | **19.30 mm** | Caliper, 0.01 mm | `env_major` | Medium — single sample | **Re-labelled Rev 5.** Drawing says Ø20; 19.30 is glass tolerance |
+| 2 | ~~Envelope diameter, point B~~ | ~~17.50 mm~~ | Caliper, 0.01 mm | — | **Void — Rev 5** | **Not a dimension.** An intermediate chord part way down the flatten |
+| 2b | **Envelope, minor axis (the face)** | **14 mm** | Factory outline drawing | `env_minor` | Catalogue — **never calipered** | New Rev 5. The face you look into. Sets TERMINAL-06's row width |
+| 3 | Overall glass length | **22 mm** | Outline drawing + soviet-tubes | `env_len` | Catalogue — two sources agree exactly | **Closed Rev 5.** Was a photo placeholder |
+| 4 | Lead count | **12** | External ТУ data (eandc / rudatasheet) | — | Medium — catalogue, not counted | 11 used (0–9 + anode), pin 12 n/c |
+| 5 | **Lead pitch / circle** | pattern **circle, 12 round a central pip**; pitch — | Outline drawing (pattern only) | — | **Still QUADRANT-D's top blocker** | Rev 5 closed the pattern. The pitch and circle Ø are the footprint and are still open |
+| 6 | **Lead diameter** | — | — | — | **Not captured — top blocker** | Sets the drill size on a 48-hole board |
+| 7 | Free lead length | **35 mm** | Factory outline drawing | `lead_free` | Catalogue — **closed Rev 5** | Trim to 15–20 before insertion per the kit manual. Standoff is a build choice, not a limit |
+| 8 | Digit centre height above jig plane | — | — | — | Not captured | Needs a J-LEAD/J-QLEAD-equivalent jig to exist first |
+| 9 | **Viewed end face → digit plane** | — | — | — | Not captured — **re-datumed in Rev 3** | Parallax. Measured from the end you look into. Sets QUADRANT-D's window depth and the collar's clearance |
+| 10 | Lead spacer — outer size | — | — | — | Not captured | Separate small part, not the tube. **J-QLEAD input** |
+| 11 | Lead spacer — hole/lead pitch | — | — | — | Not captured | Shares alias with row 5 once both exist |
+| 12 | Lead spacer — slide range | — | — | — | Not captured | **J-QLEAD input** |
+| 13 | Cross-section: round or oval? | **FLATTENED — Ø20 stem → 14 face** | Factory outline drawing | `env_major` / `env_minor` | Catalogue — **CLOSED Rev 5** | Rows 1–2 re-labelled as Rev 2 predicted. QUADRANT-D's window aperture is set by **14**, not 19.3 — §§5.1 and 11.1 need re-reading against this |
+| 14 | Digit height | **9 mm** | External ТУ data | — | Medium — catalogue | Consistent across four sources; 8 mm quoted by two vendors |
+| 15 | Mass | **7 g** | External ТУ data | — | Medium — catalogue | ×4 = 28 g of glass in a QUADRANT-D |
+| 16 | **Cathode stacking order (`cathodeMask`)** | — | `secCathodeMap` bench sketch | — | **Not captured — new in Rev 3** | Not a dimension, but it lives with this tube's data. Blocks the cathode-order flip on **both** products, and the ИН-12 mask *looks almost right* on ИН-17, which is worse than looking wrong |
+| 17 | Orientation key convention | **cut-short lead at position 12** | Outline drawing «Вывод обрезан» | — | Catalogue — **confirm on the batch** | Rev 5: the drawing backs tec.org.ru over the kit manual's white bar. Still look at your ten tubes before the silkscreen is cut |
+| 18 | **Sustaining voltage, measured** | — | meter across a lit tube at 1.5 mA | — | **Not captured — new in Rev 4** | 105 V or 160 V — the sources disagree and the anode resistor depends on it |
+ 
+Rows 1–2 are real calipers, glass-only, one sample each — still need the min/mean/max
+pass before either becomes a load-bearing `dims.*` value. Row 3 is a photo-estimate
+placeholder only. Rows 4, 14 and 15 are catalogue values, good enough to design against but
+not to machine against. Rows 5–13 and 16 are open.
+ 
+**Why row 3 isn't in the `dims.*` column:** reading a diagonally-laid tube against a
+flat mat grid in a photo carries far more error than a caliper laid straight along the
+axis. It's good enough to block in a first FreeCAD sketch and nothing past that.
+ 
+## External figures, gathered 1 Sep 2026
+ 
+Catalogue and datasheet numbers, recorded so the caliper work has something to check against.
+**None of these replaces a measurement**; they are a sanity range.
+ 
+| Source | Envelope | Digit | Electrical / other |
+|---|---|---|---|
+| soviet-tubes.com | **22 × 20 × 14 mm** | 9 × 5.5 mm | 170 V supply, 1.5 mA, >100 cd/m², >7 500 h |
+| swissnixie.com | **≈15 × 20 mm** | 9 mm | 170 V strike, 105 V maintain, 1.8 mA/segment, 39 kΩ anode R |
+| eandc.ru (ТУ data) | not given | **9 mm** | ≥200 V supply, ≤170 V strike, ≥105 V run, 1.5–2 mA, mass 7 g, 12 leads |
+| rudatasheet.ru | not given | 9 mm | ≥9 000 h minimum life |
+| tube-tester.com datasheet scan | not given | — | ≤170 V strike, 120–170 V operating, 1.5 mA, **max overcurrent 4 mA**; recommends burning in each cathode at 1.5–2 mA for 1–2 min before soldering |
+| **Factory outline drawing**, 9 Sep 2026 | **22 long, Ø20 stem, 14 face**; leads 35 | 9 mm | 12 leads on a circle round a central pip; «Вывод обрезан» key at 12. **The only source that is a drawing.** |
+| **gra-afch.com — DISCARD** | ~~45 × 13 mm~~ | ~~13 mm~~ | **Wrong part.** Those are IN-14/IN-8 figures on an IN-17 page. Do not use that vendor's dimension fields for any tube. |
+ 
+Consolidated envelope, **closed Rev 5 by the outline drawing**: **22 long × 20 stem × 14 face**, digits
+9 mm, 12 flexible leads, 7 g. Our own 19.30 mm sits neatly on the "wide" figure, which is the
+first external corroboration this sheet has had.
+ 
+The **4 mA maximum overcurrent** figure is new and load-bearing: it rules out anode
+multiplexing at 25 % duty for any 4-tube product, since that needs ~6 mA peak. Static drive
+only. Recorded here because it changes a circuit decision, not just a dimension.
+ 
+### Rev 4: a second source that looks like a contradiction and is not
+ 
+tec.org.ru lists **ток в импульсе 3,5…7 мА** — pulsed current well above the 4 mA ceiling above —
+alongside **минимальная длительность импульса 80 мкс** and **максимальная скважность 25**.
+ 
+**Read the condition before reading the number.** Скважность 25 means the on-time is 1/25 of the
+period — a **~4 % duty cycle**. The 7 mA allowance is granted at 4 % duty, not at the **25 % duty**
+(скважность 4) a four-tube anode multiplex actually runs at. The two sources agree: **4 mA is the DC
+ceiling, 7 mA is a 4 %-duty pulse ceiling, and a four-tube multiplex fits neither.** Static drive
+stands, now on two independent sources instead of one.
+ 
+### Rev 4: three source disagreements, recorded not resolved
+ 
+| Parameter | Value A | Value B | Does it change a decision? |
+|---|---|---|---|
+| Sustaining voltage | **≥105 V** (rudatasheet, swissnixie, ТУ scan) | **>160 V** (tec.org.ru) | **Yes.** QUADRANT-D's 56 kΩ anode resistor is (185 − 105) / 1.43 mA. At 160 V it would be badly wrong. Settle it with a meter across a lit tube — five minutes |
+| Minimum life | **≥7 500 h** (soviet-tubes) / **≥9 000 h** (rudatasheet) | **1 000 h** (tec.org.ru) | Not today, but the whole 100 %-duty risk assessment (`QUADRANT-D-spec.md` §11.2) sits on the higher figure |
+| Digit height | **9 mm** (four sources) | **~8 mm** (neonixie) | No — 1 mm does not move the window aperture past its tolerance |
+ 
+### Rev 3 — two more electrical figures that turned into product decisions
+ 
+- **≥200 V supply (eandc ТУ) against a 185 V shop rail.** QUADRANT-D runs the same 185 V as
+  TERMINAL-06 for consistency, with the trimmer free to go to 200 V if a batch strikes reluctantly.
+  That headroom only exists because its cathode driver was specified at **300 V (HV5630)** rather
+  than the 220 V part originally proposed. **The tube's supply line is what sized the driver.**
+- **7 500–9 000 h minimum life** is unremarkable at TERMINAL-06's 1/6 multiplex duty and is
+  **ten to twelve months** on QUADRANT-D's static, 100 %-duty drive. It is now a commercial risk
+  with its own mitigation list (`claude/QUADRANT-D-spec.md` §11.2), and this row is where the
+  number came from.
+## Still needed
+ 
+**In the order QUADRANT-D needs them** — rows 5–7 are the half-hour that unblocks a PCB order:
+ 
+1. **Lead pitch, diameter, free length, and exit pattern** (circle / comb / two rows) — confirm
+   by hand, not photo-count. **This is the board footprint. Nothing can be ordered without it.**
+2. **Row 13** — two orthogonal caliper readings at one axial position. Settles round vs oval,
+   retro-labels rows 1–2, and sets the window aperture.
+3. **Overall length**, real caliper reading laid flat along the tube's own axis (visual
+   estimate above is a placeholder only).
+4. **Row 9, from the end face** — how deep the digit sits behind the glass you look through.
+5. **Lead spacer, dimensioned as its own small part** — outer size, hole/lead pitch, slide
+   range along the leads. This is the J-QLEAD jig's data.
+6. **Row 16, `cathodeMask`** — one `secCathodeMap` session, serves both products.
+7. Two more full samples for the two diameters already in hand, per the min/mean/max rule.
+8. **Digit centre height above the eventual jig seating plane** — needed before the SEC module's
+   geometry (currently IN-17 centres at 136 / 152 mm per the concept plates) is anything more
+   than a drawn assumption.
+9. **From QUADRANT-W:** buy six ИН-19 (40 ₽, Begrant) and run this same sheet on them in the
+   same session. If their shortest axis is under ~11 mm they replace ИН-16 in the wristwatch and
+   the whole thickness problem goes away.
+## Next
+ 
+Wire-ended, no socket, confirmed — this follows the beginner guide's Session 3 pattern
+directly: model the lead spacer (or a proper J-LEAD comb) as the part that owns the
+datum, and let the tube reference it. No two-part socket treatment needed here, unlike
+IN-12.
+ 
+**Rev 3 status:** this sheet feeds two products and is the **gate on one of them**. TERMINAL-06
+needs rows 8–9 and 16. `claude/QUADRANT-D-spec.md` needs rows 5–7 first, then 13, 3, 9, 10–12 and
+16. The QUADRANT set is cheaper to capture and blocks a whole product line, so take it first —
+and rows 5–7 before anything else on the list.
+ 

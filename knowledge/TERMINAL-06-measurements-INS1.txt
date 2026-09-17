@@ -1,0 +1,50 @@
+# TERMINAL-06 — measurement capture: ИНС-1
+ 
+Third entry in the Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`),
+same format as the IN-12 and IN-17 sheets.
+ 
+Sample: 1 of your pulled ИНС-1 tubes, Vogel digital caliper, 0.01 mm resolution.
+ 
+## Worth flagging before the table
+ 
+This isn't a symmetric wire-ended part like ИНС-1 was assumed to be in the original
+capture sheet. One end is a fine flexible lead; the other terminates in a **metal
+ferrule/cap**, with a rounded glass dome — the actual glow surface — sitting past the cap.
+That's a different construction from "two bare leads," closer to a subminiature lamp base
+on one side. Worth confirming before modelling starts:
+ 
+- **Which end is the real mounting/electrical reference?** If the cap is what gets
+  soldered or clipped into the holder, the part's origin should follow the cap, not a
+  jig-defined lead plane the way ИНС-1 is currently grouped with IN-17 in the library
+  guide's origin rules.
+- **How is the cap retained** — crimped, soldered, cemented to the glass? Affects whether
+  it's safe to treat as rigid/intrinsic to the tube (it almost certainly is) versus
+  something that could shift like IN-17's lead spacer turned out to be.
+## All dimensions to date
+ 
+| # | Dimension | Value | Method | `dims.*` alias | Confidence | Status |
+|---|---|---|---|---|---|---|
+| 1 | Envelope diameter | **6.97 mm** | Caliper, 0.01 mm | `env_d` | Medium-high — single sample | Jaws pinched tight on bare glass, clear read |
+| 2 | Overall span (endpoints unclear) | **~22.7 mm** | Caliper, 0.01 mm | — | **Low — needs re-shoot** | Display was photographed upside-down; digit read isn't confident. Also unclear whether this includes the wire lead, the cap, or both |
+| 3 | Metal cap — diameter | — | — | — | Not captured | |
+| 4 | Metal cap — length | — | — | — | Not captured | |
+| 5 | Glass dome — radius/height past the cap | — | — | — | Not captured | The actual glow surface |
+| 6 | Wire lead — diameter | — | — | — | Not captured | |
+| 7 | Wire lead — free length | — | — | — | Not captured | |
+| 8 | Glow-point position along axis | — | — | — | Not captured | Per the library guide: the holder registers on the glow, not the envelope centre — samples can vary up to ~1.5 mm on this alone |
+ 
+## Still needed
+ 
+- **Re-shoot reading #2 right-side-up.** An upside-down 7-segment LCD is genuinely
+  ambiguous past the "roughly 20-something mm" level — not worth carrying forward as a
+  `dims.*` candidate until it's confirmed.
+- **Confirm the cap-vs-lead mounting question** above — decides the origin convention for
+  the whole part.
+- Cap and dome dimensions, wire lead dimensions, glow-point position — all open.
+- One more full sample minimum on the envelope diameter before it clears min/mean/max.
+## Next
+ 
+Once the mounting-reference question is settled, this either stays grouped with IN-17 as
+a wire-ended/jig-referenced part, or it gets its own origin rule — cap-referenced,
+somewhere between the socketed-part and wire-ended conventions already in the guide.
+ 

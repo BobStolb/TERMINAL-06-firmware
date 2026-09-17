@@ -91,16 +91,18 @@ for f in extract_footprints(SRC):
     at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
     if not at: continue
     ox, oy = float(at.group(1)), float(at.group(2))
-    for m in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
+    for m in re.finditer(r'\(pad "([^"]*)" (\w+) (\w+)\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
                          r'\t\t\(size ([\d.]+) ([\d.]+)\)([\s\S]{0,320}?)\n\t\)', f):
-        b = m.group(7)
+        b = m.group(8)
         net = (re.search(r'\(net (?:\d+ )?"([^"]*)"', b) or [None,None])[1]
         lay = (re.search(r'\(layers ([^)]*)\)', b) or [None,""])[1]
         L = ["F.Cu","B.Cu"] if ("*.Cu" in lay or "F&B" in lay) else \
             [x for x in ("F.Cu","B.Cu") if x in lay]
-        pads.append({"id": f"{ref}.{m.group(1)}", "x": ox+float(m.group(3)),
-                     "y": oy+float(m.group(4)), "w": float(m.group(5)),
-                     "h": float(m.group(6)), "net": net, "layers": L, "kind": m.group(2)})
+        w, h = float(m.group(6)), float(m.group(7))
+        pads.append({"id": f"{ref}.{m.group(1)}", "x": ox+float(m.group(4)),
+                     "y": oy+float(m.group(5)), "w": w, "h": h, "net": net, "layers": L,
+                     "kind": m.group(2),
+                     "round": m.group(3) == "circle" or (m.group(3) == "oval" and w == h)})
     for pm in re.finditer(r'\(property "(Reference|Value)" "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+)[^)]*\)\n'
                           r'\t\t\(layer "([^"]+)"\)([\s\S]{0,200}?)\n\t\)', f):
         if "(hide yes)" in pm.group(6) or not pm.group(2): continue
@@ -134,7 +136,7 @@ zones = []
 for blk in extract_blocks(SRC, 'zone'):
     nn = re.search(r'\(net_name "([^"]*)"', blk) or re.search(r'\(net \d* ?"([^"]*)"\)', blk)
     ly = re.search(r'\(layers? "([^"]+)"\)', blk)
-    cl = re.search(r'\(connect_pads\n\t\t\t\(clearance ([\d.]+)\)', blk)
+    cl = re.search(r'\(connect_pads(?: \w+)?\n\t\t\t\(clearance ([\d.]+)\)', blk)   # optional mode: yes, thru_hole_only
     # the zone's own boundary is (polygon (pts ...)) - a filled zone also carries
     # (filled_polygon ...) blocks (KiCad's own computed result, not needed here,
     # and NOT what "\(polygon\n" matches - filled_polygon fails that literal
@@ -155,6 +157,26 @@ def pt_seg(p, a, b):
     dx, dy = b[0]-a[0], b[1]-a[1]; L = dx*dx+dy*dy
     t = 0 if L == 0 else max(0, min(1, ((p[0]-a[0])*dx + (p[1]-a[1])*dy)/L))
     return math.hypot(p[0]-(a[0]+t*dx), p[1]-(a[1]+t*dy))
+def touches(A, B):
+    """Do two copper items of one net join? Items are ("pad"|"trk"|"via", index)."""
+    if A[0] == "trk" and B[0] == "trk":
+        s, t = tracks[A[1]], tracks[B[1]]
+        return s["layer"] == t["layer"] and min(pt_seg(s["a"], t["a"], t["b"]), pt_seg(s["b"], t["a"], t["b"]),
+                                                pt_seg(t["a"], s["a"], s["b"]), pt_seg(t["b"], s["a"], s["b"])) < 0.01
+    if "trk" in (A[0], B[0]) and "pad" in (A[0], B[0]):
+        s, p = (tracks[A[1]], pads[B[1]]) if A[0] == "trk" else (tracks[B[1]], pads[A[1]])
+        return s["layer"] in p["layers"] and (on_pad(p, *s["a"]) or on_pad(p, *s["b"]))
+    if A[0] == "via" and B[0] == "via":
+        # two vias join only where their copper does; "any two vias of a net" hid splits
+        u, v = vias[A[1]], vias[B[1]]
+        return math.hypot(u["x"]-v["x"], u["y"]-v["y"]) < (u["d"]+v["d"])/2
+    if "via" in (A[0], B[0]):
+        v = vias[A[1] if A[0]=="via" else B[1]]
+        o = B if A[0]=="via" else A
+        if o[0] == "trk":
+            return pt_seg((v["x"],v["y"]), tracks[o[1]]["a"], tracks[o[1]]["b"]) < 0.01
+        return on_pad(pads[o[1]], v["x"], v["y"])
+    return False
 
 # An unrouted board splits every net by definition. Reporting that as a dozen faults
 # buries the findings that matter, so say it once and move on.
@@ -178,28 +200,7 @@ for net in sorted({p["net"] for p in pads if p["net"]} | {v["net"] for v in vias
     def uni(a, b): par[find(a)] = find(b)
     for A in items:
         for B in items:
-            if A >= B: continue
-            hit = False
-            if A[0] == "trk" and B[0] == "trk":
-                s, t = tracks[A[1]], tracks[B[1]]
-                if s["layer"] == t["layer"]:
-                    hit = min(pt_seg(s["a"], t["a"], t["b"]), pt_seg(s["b"], t["a"], t["b"]),
-                              pt_seg(t["a"], s["a"], s["b"]), pt_seg(t["b"], s["a"], s["b"])) < 0.01
-            elif A[0] == "trk" and B[0] == "pad":
-                s, p = tracks[A[1]], pads[B[1]]
-                hit = s["layer"] in p["layers"] and (on_pad(p, *s["a"]) or on_pad(p, *s["b"]))
-            elif A[0] == "pad" and B[0] == "trk":
-                s, p = tracks[B[1]], pads[A[1]]
-                hit = s["layer"] in p["layers"] and (on_pad(p, *s["a"]) or on_pad(p, *s["b"]))
-            elif "via" in (A[0], B[0]):
-                v = vias[A[1] if A[0]=="via" else B[1]]
-                o = B if A[0]=="via" else A
-                if o[0] == "trk":
-                    s = tracks[o[1]]; hit = pt_seg((v["x"],v["y"]), s["a"], s["b"]) < 0.01
-                elif o[0] == "pad":
-                    hit = on_pad(pads[o[1]], v["x"], v["y"])
-                else: hit = True
-            if hit: uni(A, B)
+            if A < B and touches(A, B): uni(A, B)
     comps = defaultdict(list)
     for it in items: comps[find(it)].append(it)
     if len(comps) > 1:
@@ -251,6 +252,7 @@ for t in alltxt:
 
 # ------------------------------------------------------------------ D. does the pour reach?
 G = 0.15
+islands = []
 for z in zones:
     import numpy as np
     poly = z["pts"]
@@ -268,7 +270,13 @@ for z in zones:
         ok[(np.abs(PX-cx) <= w/2 + m) & (np.abs(PY-cy) <= h/2 + m)] = False
     for p in pads:
         if z["layer"] not in p["layers"] or p["net"] == z["net"]: continue
-        clear_rect(p["x"], p["y"], p["w"], p["h"], z["clr"])
+        if p["round"]:
+            # a round pad keeps its clearance as a circle. Knocked out as its bounding square,
+            # a ring of tube pins closed the channels between neighbours that KiCad's fill
+            # leaves open, and islanded pads inside the ring that are in fact joined.
+            ok[np.hypot(PX-p["x"], PY-p["y"]) <= p["w"]/2 + z["clr"]] = False
+        else:
+            clear_rect(p["x"], p["y"], p["w"], p["h"], z["clr"])
     for t in tracks:
         if t["layer"] != z["layer"] or t["net"] == z["net"]: continue
         (ax, ay), (bx, by) = t["a"], t["b"]
@@ -301,25 +309,54 @@ for z in zones:
             nlab += 1
 
     mine = [p for p in pads if z["layer"] in p["layers"] and p["net"] == z["net"]]
-    reach = {}
-    for p in mine:                                   # a pad joins the pour by its spokes
-        r = max(p["w"], p["h"])/2 + z["clr"] + 4*G
-        sel = (np.abs(PX-p["x"]) <= r) & (np.abs(PY-p["y"]) <= r) & (lab >= 0)
-        reach[p["id"]] = set(np.unique(lab[sel]).tolist())
-    if any(not v for v in reach.values()):
-        for k, v in reach.items():
-            if not v:
-                bad("POUR UNREACHED", f'{z["net"]} pour on {z["layer"]} does not reach {k}')
-    else:
-        common = set.intersection(*reach.values()) if reach else set()
-        if not common and reach:
-            groups = {}
-            for k, v in reach.items(): groups.setdefault(tuple(sorted(v)), []).append(k)
-            bad("POUR SPLIT", f'{z["net"]} pour on {z["layer"]} is islanded: ' +
-                "  ||  ".join(", ".join(sorted(g)) for g in groups.values()))
+    islands.append((z, PX, PY, lab))
     print(f'pour "{z["net"]}" on {z["layer"]}: {nlab} island(s), '
           f'{100.0*ok.sum()/ok.size:.0f}% of the outline is copper, '
           f'{len(mine)} pad(s) of the net')
+
+# A poured net is one net, not one pour. An island joins it through a pad's spokes, a via
+# standing in it or a track of the net lying in it, and a pad on the other face joins
+# through tracks and vias exactly as in section A - a surface-mount GND pad on the back of
+# a board poured on the front is reached by nothing else. So every pad of the net is
+# grouped by what really connects: islands, pads, tracks and vias together.
+for net in sorted(POURED):
+    items = [("pad", i) for i, p in enumerate(pads) if p["net"] == net] + \
+            [("trk", i) for i, t in enumerate(tracks) if t["net"] == net] + \
+            [("via", i) for i, v in enumerate(vias) if v["net"] == net]
+    par = {k: k for k in items}
+    def find(x):
+        while par[x] != x: par[x] = par[par[x]]; x = par[x]
+        return x
+    for A in items:
+        for B in items:
+            if A < B and touches(A, B): par[find(A)] = find(B)
+    for zi, (z, PX, PY, lab) in enumerate(islands):
+        if z["net"] != net: continue
+        def near(x, y, r):
+            sel = (np.abs(PX-x) <= r) & (np.abs(PY-y) <= r) & (lab >= 0)
+            return set(np.unique(lab[sel]).tolist())
+        for k in items:
+            if k[0] == "pad":
+                p = pads[k[1]]
+                if z["layer"] not in p["layers"]: continue
+                hit = near(p["x"], p["y"], max(p["w"], p["h"])/2 + z["clr"] + 4*G)   # by its spokes
+            elif k[0] == "via":
+                v = vias[k[1]]
+                hit = near(v["x"], v["y"], v["d"]/2 + z["clr"] + 4*G)
+            else:
+                t = tracks[k[1]]
+                if t["layer"] != z["layer"]: continue
+                hit = near(*t["a"], t["w"]/2 + 2*G) | near(*t["b"], t["w"]/2 + 2*G)
+            for h in hit:
+                node = ("isl", zi, h)
+                par.setdefault(node, node)
+                par[find(k)] = find(node)
+    groups = defaultdict(list)
+    for k in items:
+        if k[0] == "pad": groups[find(k)].append(pads[k[1]]["id"])
+    if len(groups) > 1:
+        bad("POUR SPLIT", f'{net} (poured) is in {len(groups)} pieces: ' +
+            "  ||  ".join(", ".join(sorted(g)) for g in groups.values()))
 
 # ------------------------------------------------------------------ report
 print(f'{len(pads)} pad-layers, {len(tracks)} tracks, {len(vias)} vias, '

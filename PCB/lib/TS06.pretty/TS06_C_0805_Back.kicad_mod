@@ -1,0 +1,164 @@
+(footprint "TS06_C_0805_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "0805 chip capacitor, hand-solder lands (KiCad C_0805_2012Metric_Pad1.18x1.45mm_HandSolder). Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "capacitor 0805 SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -1.78 0)
+		(layer "B.Fab")
+		(uuid "ce0dd3a6-c2c7-5a82-aa6a-ccd19b5f0a96")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_C_0805_Back"
+		(at 0 1.78 0)
+		(layer "B.Fab")
+		(uuid "4e31be61-5420-5104-978d-3a4aea795a6f") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "5ebad362-5191-5c9c-a9de-328fed8a04a6") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "a297c9cb-d936-575a-8ef6-b0e8a58a8873") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "0f4ea5a2-2d6e-58d5-be7a-d34dc0cab591") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 1.0375 0)
+		(size 1.175 1.45)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.212766)
+		(uuid "ab1cb76b-deb5-528a-b124-cd972d24974a")
+	)
+	(pad "2" smd roundrect
+		(at -1.0375 0)
+		(size 1.175 1.45)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.212766)
+		(uuid "840264ac-abb4-5635-b81a-56582a8954f9")
+	)
+	(fp_line
+		(start 1.88 -0.98)
+		(end -1.88 -0.98)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "961b8ad9-1fdd-5916-a34e-c1a776930176")
+	)
+	(fp_line
+		(start -1.88 -0.98)
+		(end -1.88 0.98)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "06756ea9-21b9-59b2-9e37-9582a55a624a")
+	)
+	(fp_line
+		(start -1.88 0.98)
+		(end 1.88 0.98)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "bcb8e88d-caaf-5513-b97b-d1f3e05bb10e")
+	)
+	(fp_line
+		(start 1.88 0.98)
+		(end 1.88 -0.98)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "d8b887c2-980b-560f-98ed-2650855ae446")
+	)
+	(fp_line
+		(start 1 -0.625)
+		(end -1 -0.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ea255033-8f7c-5f5c-8191-f9e48405efa8")
+	)
+	(fp_line
+		(start -1 -0.625)
+		(end -1 0.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "512bf489-076b-5588-9f7a-21585368adda")
+	)
+	(fp_line
+		(start -1 0.625)
+		(end 1 0.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "b3aae53e-bf90-580f-adfd-54701adf349c")
+	)
+	(fp_line
+		(start 1 0.625)
+		(end 1 -0.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7f28a6d6-4947-593c-bc63-ff2215958e46")
+	)
+	(embedded_fonts no)
+)

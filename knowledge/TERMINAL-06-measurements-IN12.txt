@@ -1,0 +1,119 @@
+# TERMINAL-06 — measurement capture: IN-12
+ 
+Slots into `docs/measurements.md` per the CAD library repo layout. First entry in the
+Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`).
+ 
+Sample: 1 of your pulled IN-12 tubes, Vogel digital caliper, 0.01 mm resolution.
+ 
+---
+ 
+## ⚠ CORRECTION — 05.09.26: reading 1 was mislabelled, and it propagated
+ 
+`3d/IN12.FCStd` now carries a parametric model of this tube with a populated spreadsheet.
+Cross-checking it against the readings below turns up a labelling error on this sheet that
+went on to cause a much larger drawing error downstream.
+ 
+| | This sheet said | `IN12.FCStd` alias | Verdict |
+|---|---|---|---|
+| 25.27 mm | "Envelope, **narrow axis** (`env_w`)" | `envD` = **25.50** | **Mislabelled. It is the DEPTH, not a width.** |
+| 28.70 mm (mean of 2–3) | "Envelope, wide axis (`env_h`)" | `envH` = **28.86** | Consistent — good |
+| — | *never measured* | `envW` = **19.47** | **No caliper support at all** |
+| 18.63 mm | Digit numeral height | — | Consistent with an `envH` of 28.86 |
+ 
+**Why it matters:** a sheet that reports a 25.27 "narrow axis" and a 28.70 "wide axis" describes
+a tube roughly 25 × 29 in its *face*. The concept plates read it that way and drew the ИН-12А as a
+front face about 22 × 24 with **14 mm of depth** — a shallow, wide block. The part is the other
+way round: a **19.47 × 28.86 face on a 25.50 mm barrel.** Taller than it is wide, and deep.
+ 
+**Provenance of the model's numbers is itself unconfirmed.** `envW 19.47`, `pinD 0.92`,
+`pinFreeL 6.25`, the pin radii and `pipD` may be calipered, datasheet-derived or estimated —
+this sheet cannot tell. **Before any of them go on a PCB, confirm which.** `envW` in particular
+has no reading on this sheet and is the one dimension a socket footprint cannot be wrong about.
+ 
+---
+ 
+## Parameters now available from `3d/IN12.FCStd`
+ 
+Read out of the document's own spreadsheet aliases, 05.09.26:
+ 
+| Alias | Value | Meaning |
+|---|---|---|
+| `envW` | 19.47 | envelope width (the narrow face axis) |
+| `envH` | 28.86 | envelope height (the tall face axis) |
+| `envD` | **25.50** | envelope depth — front glass to rear seating plane |
+| `pinCount` | 12 | |
+| `pinD` | 0.92 | pin diameter |
+| `pinFreeL` | 6.25 | free pin length beyond the rear face |
+| `pipD` | 3.70 | tip-off pip diameter |
+| `ClosestPinRad` | 6.20 | nearest pin radius from field centre |
+| `fARTHpINRad` | 8.50 | farthest pin radius from field centre |
+| `ClosestPinTotal` | 12.40 | = 2 × 6.20, pin field across the narrow axis |
+| `FarthestPinTotal` | 17.00 | = 2 × 8.50, pin field across the tall axis |
+| `Bottom3PinsTotal` / `Pitch` | 8.75 / 3.10 | bottom pin group |
+| `Side3PinsTotal` / `Pitch` | 9.80 / 3.55 | side pin group |
+ 
+`IN12.step`'s pin sketch spans **12.90 × 17.00**, which corroborates the two radii.
+ 
+**The `IN12_nixie.FCMacro` in the same folder is now behind the model.** Its `DEFAULTS` block
+describes a simple 4/4/2/2 rectangular pin grid at 2.75 × 3.53 pitch; the FCStd spreadsheet has
+moved on to a radial field with the corner groups above. **Treat the FCStd as authoritative and
+the macro as the thing that built the first version of it.**
+ 
+---
+ 
+## The architectural consequence — this is the important part
+ 
+**The 12 leads leave the REAR face of the tube.** Not the bottom. That single fact decides how
+every ИН-12 product in this project is built:
+ 
+- **The tube cannot stand on a deck over a socket.** There is nothing under it to plug into.
+- It **hangs off a board behind it**, facing forward, pins through that board.
+- The board is therefore **vertical**, parallel to the tube face, spanning the row.
+- Depth stack, front to back: `0` glass face → `25.50` rear face → pins `6.25` into a board.
+  With direct-solder into 1.6 mm stock the board's front face sits at **25.50** behind the glass
+  and 4.65 mm of pin protrudes at the rear.
+- **The whole 25.5 mm barrel is forward of the board** — which serves the Rev E "show more of the
+  bulb" goal far better than a deck ever could, because all four flanks are exposed, not just the
+  face.
+This is confirmed by the prototype itself: the two hand-decorated tube daughterboards each carry a
+**ring of pads per tube**, which is exactly what a rear-exit pin field lands in. That observation
+was already recorded in `claude/TERMINAL-06-anode-driver-study.md` and was not connected to the
+plate geometry at the time.
+ 
+---
+ 
+## Readings taken (original, 27.08)
+ 
+| Reading | Value | Best-guess identity | Confidence |
+|---|---|---|---|
+| 1 | 25.27 mm | ~~Envelope, narrow axis (`env_w`)~~ **→ envelope DEPTH (`envD`)** | Corrected 05.09.26 |
+| 2 | 28.60 mm | Envelope, tall axis (`envH`), pass 1 | — |
+| 3 | 28.80 mm | Envelope, tall axis (`envH`), pass 2 | Two passes, 0.20 mm apart — normal jaw-pressure spread on glass |
+| 4 | 18.63 mm | **Digit numeral height** | High |
+ 
+**`envH` working value: mean of readings 2–3 = 28.70 mm**, against the model's 28.86. Per the
+min/mean/max rule this still needs two more samples before it is load-bearing.
+ 
+### The one that was already flagged
+ 
+The concept plates assumed an **18 mm digit** when setting the old brow geometry. Reading 4 —
+**18.63 mm** — is that feature measured rather than assumed. The brow is deleted in Rev E, so the
+0.63 mm delta no longer threatens anything, but the digit height is now doing new work: it sets
+how much of the 28.86 face is lit, and therefore how the row reads at a distance.
+ 
+## Still needed to close out this part
+ 
+- **`envW` on a real tube.** The model says 19.47; nothing on this sheet supports it. Two samples.
+- **Confirm the pin field pattern against a tube**, not just against the model — which of the 12
+  positions carry which cathode is `secCathodeMap`'s job, but the *geometry* needs a caliper.
+- **Socket, separately** — or the decision to skip sockets and direct-solder. That decision now
+  sets the board-to-glass distance directly, so it is no longer a detail: it is the depth of the
+  whole product. See `TS06-LIB-SOCKET` in the library guide.
+- **Tip-off pip location** — `pipD 3.7` is in the model but its *position* on the rear face is
+  not recorded here, and it decides whether the tube can sit flush against a board.
+- **Getter flash location** relative to the visible face.
+- **Depth, front glass to digit plane** — parallax under the rake, now more significant given the
+  barrel is 25.5 deep rather than the 14 the plates assumed.
+Two more full samples minimum before any of the above go in as `dims.*` aliases — one tube's
+numbers are a hypothesis, not a spec.
+ 

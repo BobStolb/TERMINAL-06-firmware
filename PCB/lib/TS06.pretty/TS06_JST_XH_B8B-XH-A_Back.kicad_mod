@@ -1,0 +1,207 @@
+(footprint "TS06_JST_XH_B8B-XH-A_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "JST XH B8B-XH-A: 8-way, 2.50 mm pitch, top entry, through-hole (KiCad JST_XH_B8B-XH-A_1x08_P2.50mm_Vertical), pin field centred. XS3, the logic connector. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "connector JST XH vertical 8way back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -3.65 0)
+		(layer "B.Fab")
+		(uuid "110861b1-00bb-5abe-8493-1e9c7eef17f3")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_JST_XH_B8B-XH-A_Back"
+		(at 0 4.7 0)
+		(layer "B.Fab")
+		(uuid "61ef9906-02d2-57d0-9ee9-991f9bfa9601") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "6eb8321f-aec7-525b-b26a-db6dd6cabb38") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "97d02883-afdc-542e-a906-2bbded8aaf41") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "4c77e7c9-78d7-525d-8c48-56a2d01311e8") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 8.75 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "f10bca34-4be0-52a6-975b-b8fa3c724dca")
+	)
+	(pad "2" thru_hole oval
+		(at 6.25 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "813651e4-ee11-528c-afc5-cd755c114a5c")
+	)
+	(pad "3" thru_hole oval
+		(at 3.75 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "98a31452-7446-595a-b9d8-980a82a51f3a")
+	)
+	(pad "4" thru_hole oval
+		(at 1.25 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "424f689e-5746-58b5-a034-7432c043cac0")
+	)
+	(pad "5" thru_hole oval
+		(at -1.25 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "77792024-dc7a-5f96-949c-8676626114bf")
+	)
+	(pad "6" thru_hole oval
+		(at -3.75 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "e9163bf4-09c5-5316-957b-f9838344e5a1")
+	)
+	(pad "7" thru_hole oval
+		(at -6.25 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "9beed3cf-b453-5ee9-af10-1ed25cbb0db6")
+	)
+	(pad "8" thru_hole oval
+		(at -8.75 0)
+		(size 1.7 1.95)
+		(drill 0.95)
+		(layers "*.Cu" "*.Mask")
+		(uuid "19d66319-8b1f-59f3-96a6-93e0783f52c0")
+	)
+	(fp_line
+		(start 11.7 -2.85)
+		(end -11.7 -2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "090c74c0-2734-5c17-96a7-5cc6cb9097e8")
+	)
+	(fp_line
+		(start -11.7 -2.85)
+		(end -11.7 3.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "81f0c84c-38cf-54c5-a302-c53e9856978a")
+	)
+	(fp_line
+		(start -11.7 3.9)
+		(end 11.7 3.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "4e8bea66-35fa-5f14-8784-7a54a68d433e")
+	)
+	(fp_line
+		(start 11.7 3.9)
+		(end 11.7 -2.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "59105263-39f7-5c0c-92c9-4b264413f9a5")
+	)
+	(fp_line
+		(start 11.2 -2.35)
+		(end -11.2 -2.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "1d4d4b79-669b-5fce-8142-283c5db33b2a")
+	)
+	(fp_line
+		(start -11.2 -2.35)
+		(end -11.2 3.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "a2fb74de-447a-5c89-abed-508daca517c2")
+	)
+	(fp_line
+		(start -11.2 3.4)
+		(end 11.2 3.4)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "25d55ec8-0189-5b67-bf02-6baff9899436")
+	)
+	(fp_line
+		(start 11.2 3.4)
+		(end 11.2 -2.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "38348cfd-f880-5906-9642-f583a3d21b1c")
+	)
+	(embedded_fonts no)
+)

@@ -1,0 +1,219 @@
+# SCALER-06 — decatron scaler, concept spec (Rev 2)
+ 
+**Concept plates (Rev 2): https://claude.ai/code/artifact/362e5d96-8a7a-4565-b361-1484fcc353e3**
+— hero, panel elevation and profile, and a live ring you can switch between all five sources.
+ 
+The shop's fourth product and its first that is not a clock. **Nothing has been bought, nothing
+calipered, no passport read.** Every voltage and dimension below is provisional.
+ 
+---
+ 
+## The thesis in one line
+ 
+A decatron does exactly one thing: it counts pulses too fast for a person to follow, and shows the
+count as a glow walking a ring of gas. It was built for nuclear instrumentation — the stage between a
+Geiger tube and a mechanical register was literally called a *scaler*. Every decatron clock ever built
+asks the tube to pretend it is counting seconds. **Give it something real to count and it stops
+pretending.**
+ 
+---
+ 
+## Rev 2 (02.09.26) — five things to count, because almost nobody owns a source
+ 
+Rev 1 had one input: a Geiger tube. It is the most beautiful mode and it carried an obvious flaw —
+**almost nobody owns anything radioactive**, so on a normal desk the ring steps about once every three
+seconds forever and the customer never sees the object do the thing they bought it for. **A showpiece
+nobody can demonstrate is a bad product no matter how good the story is.**
+ 
+The fix is not to abandon radiation. It is to notice that **a decatron does not care what the pulses
+are** — it is a counter, and anything that closes a contact is a pulse.
+ 
+| Position | Source | Added parts | What it feels like |
+|---|---|---|---|
+| **1 · BACKGROUND** | СБМ-20, 400 V | tube ≈900 ₽ | Poisson lurching, ~22 CPM. The honest one. Smears near a source. |
+| **2 · ENTROPY** | Reverse-biased transistor in avalanche breakdown, comparator-gated, divided down | **≈20 ₽** | **Genuine hardware randomness, in any room, with nothing radioactive on the desk.** The same un-fakeable property for a fiftieth of the cost. Digits show a fresh four-figure draw twice a second. |
+| **3 · MAINS** | Optocoupler on the transformer secondary, ÷10 into the ring | ≈30 ₽ | A hard 5 Hz beat. Digits show cycles counted in the last minute — **3000 at exactly 50 Hz**, breathing a few counts either side all day as the grid balances. A frequency meter you watch rather than read. |
+| **4 · AUDIO** | Electret capsule + comparator, panel threshold | ≈50 ₽ | The ring dances to the room. Least scientific, and **the one that sells the object to somebody standing in front of it.** |
+| **5 · EXTERNAL** | Two banana jacks | ≈100 ₽ | Bring your own pulses — photodiode, reed switch on a bike wheel, a second tube. **The position that makes it an instrument rather than a toy.** |
+| 6 · OFF | — | — | HV down, ring dark. A 400 V object should have an off position on the front panel. |
+ 
+**What this costs: about 200 ₽ and one switch the shop already owns.** Four extra sources for roughly
+two hundred roubles of small-signal parts, on a six-position rotary from the **same Vladi59 stock
+already bought for TERMINAL-06** — eleven secured against a need for twenty — read by the same A6
+resistor ladder, with the same debounce discipline. The control scheme ports straight across.
+**The cheapest thing in this document is the thing that makes it demonstrable.**
+ 
+**And it makes the radiation mode better, not worse.** A buyer who has already seen the ring dance to
+their voice understands what they are looking at before they meet the Geiger tube. Mode 1 stops being
+the feature that has to carry the product and becomes the one that *explains* it — the same mechanism
+driven by something they cannot see, hear or touch.
+ 
+---
+ 
+## 1. Display
+ 
+| Part | Qty | Role |
+|---|---|---|
+| **ОГ-3** | 2 | The visible ring. 8-pin РШ 5-1, scaler class — only a zero cathode and the main are brought out, so the position **cannot** be read electrically. You watch it. Argon, **violet** |
+| **А-101** | 1 | The readable decade. 13-pin РШ-30, **all ten cathodes wired to pins**. Neon, orange-red |
+| **ИН-2** | 4 | Rate / count / frequency readout, 9 mm digits |
+| **ИН-15А** | 1 | Multiplier — blank = ×1, **K** = ×1000. The symbol tube doing its designed job |
+| **ИНС-1** | 2 | Pilot and overrange lamps |
+ 
+**The prefix tube carries a multiplier, not a decimal.** ИН-2 has no decimal point, so the instrument
+reads like a decade-switched lab meter: four digits and a multiplier. 24 000 displays as `0024` + K.
+ 
+### Sorting a mixed lot — count the pins first
+ 
+- **8 pins** (РШ 5-1) = ОГ-series scaler. Two cathodes out. Cascadeable, not readable.
+- **13 pins** (РШ-30) = А-series commutator. Ten cathodes out. Readable.
+- **15 pins** (ZB13) = EZ10A/B, Elesta import, ~21 mm envelope, purple hydrogen glow, Latin printing.
+  **Does not fit either Soviet socket.**
+Within a group the envelopes are identical — the printed type number and the glow colour are the only
+way to tell ОГ-3 from ОГ-4 or ОГ-9. **Read the glass, not the listing.**
+ 
+### Two ОГ-3 traits that look like faults and are not
+ 
+1. It glows **violet**, not orange — argon fill. This is why the product's palette is violet.
+2. There is an **intentional dark coating inside the top of the envelope** from manufacture.
+Neither is damage. Neither is grounds for rejecting a lot.
+ 
+---
+ 
+## 2. Power — one rail, several sources
+ 
+СБМ-20 has a plateau roughly 350–475 V and is normally run at **400 V** through a several-megohm anode
+resistor. A Soviet ОГ-class decatron wants an anode supply in the same **400–475 V** band. **These
+parts were designed to sit on the same chassis.** One HV boost feeds the whole instrument, with a
+185 V tap for the nixie row off the same converter. Verify against the ОГ-3 passport before designing
+around it.
+ 
+```
+HV BOOST 400 V ─┬─ 5.1 MΩ ── СБМ-20 ──┐
+                │                      │
+                │   avalanche source ──┤
+                │   mains opto ────────┼── shaper ── MCU ── mode select (A6 ladder)
+                │   electret + comp ───┤                        │
+                │   EXT jacks ─────────┘                        │
+                ├─ ОГ-3 ring  ←── guide pulses ─────────────────┤
+                ├─ А-101 readable decade ←──────────────────────┤
+                └─ 185 V tap ── 4× ИН-2 + ИН-15А ←──────────────┘
+```
+ 
+**Rate ceiling, handled in firmware not hoped away.** The ОГ class tops out in the low kilohertz.
+Background is under 1 Hz so this never matters in a room, but near a source — and always in ENTROPY
+mode, where the raw avalanche stream is kHz — the ring would outrun the tube. **The firmware divides
+before the ring and displays the divisor.** A ring that has silently stalled looks broken; a ring
+honestly showing ÷20 looks like an instrument.
+ 
+---
+ 
+## 3. Parts and cost
+ 
+| Part | Qty | Unit | Line | Source · stock |
+|---|---|---|---|---|
+| ОГ-3 decatron | 2 | 180 ₽ | 360 | Avito Seller A · **53 in stock**, seller unverified |
+| А-101 decatron | 1 | 190 ₽ | 190 | Avito Seller A · 50 |
+| ИН-2 | 4 | 80 ₽ | 320 | Begrant · 158, new |
+| ИН-15А | 1 | 35 ₽ | 35 | Begrant · 283 |
+| ИНС-1 | 2 | 12 ₽ | 24 | Begrant · 1 008 |
+| ПЛ31 socket | 1 | 10 ₽ | 10 | Begrant · 178 |
+| **СБМ-20 Geiger tube** | 1 | ≈900 ₽? | ≈900 | **Not on any register.** One listing check needed |
+| **Mode hardware** — avalanche source, opto, electret, jacks | 1 set | ≈200 ₽ | ≈200 | Amperkot, common small-signal parts |
+| **6-position rotary** (mode selector) | 1 | 250 ₽ | 250 | **Vladi59 stock already bought** |
+| Sockets РШ 5-1 ×2, РШ-30 ×1, РШ27 ×4 | 7 | ? | ? | **none of these four patterns priced** |
+| **Glass, sockets and modes** | | | **≈2 289 ₽** | plus unpriced socket patterns |
+ 
+Add the 400 V supply, MCU board, panel PCB, print and packaging: **≈6 500–7 000 ₽ a unit**.
+**Proposed retail 24 000 ₽ (≈$290), founder 20 000 ₽.**
+ 
+### The framing decides the price, not the BOM
+ 
+A commodity Geiger counter is $100 on any marketplace. **If a buyer arrives thinking "radiation
+detector", the listing has already failed.** It has to arrive as what it is: a working piece of 1960s
+counting instrumentation in which the display *is* the counting mechanism, that happens to respond to
+the room. **Sell the ring, not the reading.** Every photograph is of the glow. The video is the mode
+switch — thirty seconds of the ring at background, then a hand claps and it dances.
+ 
+---
+ 
+## 4. Form
+ 
+Half-width lab rack module. **150 W × 190 H × 120 D mm**, panel vertical — a ring wants to be seen
+square-on, so unlike the rest of the family this panel does not rake. Decatron dome ⌀ ≈33 mm behind a
+⌀46 turned bezel; nixie strip beneath; **six-position mode selector at the lower left**, mic port and
+two banana jacks to its right.
+ 
+Printed in matte black PETG with the panel face printed separately in grey-green so the two-tone is a
+**material change rather than paint**.
+ 
+**Identity:** GROUND #0B0D0C · HAMMERTONE #1E2722 · BEZEL #3B463E · LEGEND #D9D5C6 ·
+ARGON VIOLET #A98BFF · NIXIE #FF9E36.
+ 
+**Carries over:** low-side MPSA42 switching · the neon ballast rule (**one resistor per lamp, never
+shared**) · Nano-class MCU · **the A6 ladder and the rotary itself** · printed enclosure process ·
+logging every unit's rail voltage.
+ 
+**Does not carry:** the six-tube multiplex, the 401 Hz ISR. **None of P2's ghosting problem exists
+here — there is no multiplex to ghost.** That is the practical argument for building it while the
+ИН-12 anode-driver question waits on parts.
+ 
+---
+ 
+## 5. What it must never claim
+ 
+**It counts ionising events. It is not a calibrated dosimeter, it is not certified for anything, and
+nobody should make a decision about their safety using it.**
+ 
+Every listing claim must be demonstrable on a bench: *"steps once per detected particle"*, *"shows a
+sixty-second count rate"*. **No µSv/h figure** unless checked against a real reference — and even
+then, a number that looks like a dose reading invites a use this object must not be put to. **Write
+the disclaimer before the listing, not after.**
+ 
+The other four modes make this easier, not harder: the more the object is understood as a counter
+that will count anything, the less it reads as a safety instrument.
+ 
+---
+ 
+## 6. Open questions, in order
+ 
+1. **Source an СБМ-20 and price it.** The only BOM line with no register entry. Ask about СТС-5 and
+   СИ-8Б as alternates — different sensitivities, same rail.
+2. **Pull the real ОГ-3 passport figures** — anode supply, guide-pulse amplitude and width, maximum
+   stepping rate, single- or double-pulse type. Forum numbers are not a datasheet, and this is the
+   rule that caught the gra-afch ИН-17 error.
+3. **Buy four ОГ-3 and step one by hand** before designing the guide driver. At 180 ₽ each this is the
+   cheapest de-risking on the board.
+4. **Bench the avalanche source before trusting it.** Reverse-biased BJT breakdown is voltage- and
+   part-dependent; some transistors do it happily at 8–12 V and some refuse. Try three types, and
+   **check the output is actually unbiased before the listing says "true random".**
+5. **Decide whether position 6 is OFF or a clock.** A seconds mode is the obvious sixth position and
+   it is deliberately absent — the whole pitch is that this is not a clock. OFF is the honest use of
+   the position on a 400 V object, but decide it on purpose rather than by omission.
+6. **Confirm the А-101 earns its socket.** If the readable decade adds nothing the four-digit nixie
+   readout does not, drop it and run two ОГ-3 — a second ring is more beautiful than a number.
+7. **Four socket patterns, none priced** — РШ 5-1, РШ-30, РШ27, ПЛ31. Ask SLON999.
+8. **Verify Avito Seller A.** Two products depend on his stock — this ring and the "предок" ИН-9 — and
+   his rating, real name and shipping have never been confirmed.
+9. **Read the precedent honestly.** Decatron Geiger counters exist as one-off hobby builds; what does
+   not exist is one sold as a finished object, and nothing at all combines five sources on a switch.
+   Read two of those builds before designing the driver.
+---
+ 
+## Deltas owed to other documents
+ 
+- **`WATCHLIST-concept-tierlist.md`** — add **SCALER-06, S tier, Functional / complex**. The first
+  concept whose display mechanism *is* the measurement rather than a rendering of one. It supersedes
+  **DEKA**, which should be folded into it. Promotes ОГ-3 and А-101 from B-tier curiosities to product
+  parts.
+- **`SELLERS-meshok-register.md`** — add a **Geiger-tube row** (no source yet) and a **socket-pattern
+  column**; flag that **Avito Seller A is load-bearing for two products and still unverified**; note
+  that the Vladi59 rotary lot now serves two products, which changes the 20-of-each shortfall maths.
+- **`DISPLAYS-gas-discharge-reference.md`** — the decatron family sits outside its four-mechanism
+  table. It is **glow-transfer**, not shaped-cathode, DC matrix, AC-memory or self-scan. Worth a
+  **fifth row (mechanism E)**, with the note that the shift register is made of gas.
+- **New protocol rule:** *a part that has been used as a clock component for fifty years may still
+  have an original job, and the original job is usually a better product.*
+- **New protocol rule:** *if the demonstration needs something the customer does not own, the product
+  needs another mode.*
+ 

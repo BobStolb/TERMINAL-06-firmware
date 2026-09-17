@@ -1,0 +1,63 @@
+# TERMINAL-06 — measurement capture: МТ1 / ТВ1-2
+ 
+Fourth entry in the Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`),
+same format as the IN-12, IN-17, and ИНС-1 sheets.
+ 
+Sample: 1 pulled МТ1 toggle, Vogel digital caliper, 0.01 mm resolution.
+ 
+## Reading quality this round
+ 
+Six caliper photos came in; four were shot right-side-up and read with confidence, two
+were upside-down and are being handled the same way the IN-17/ИНС-1 sheets handled that
+problem — reported as low-confidence with a re-shoot recommended, not guessed into a
+`dims.*` value. **Update, 27.08.26:** a seventh photo closed out row 7 — jaws on the
+threaded stem itself, past the mounting nut, real caliper reading.
+ 
+## All dimensions to date
+ 
+| # | Dimension | Value | Method | `dims.*` alias | Confidence | Status |
+|---|---|---|---|---|---|---|
+| 1 | Body box — candidate L | **10.43 mm** | Caliper, 0.01 mm | `body_l` | Medium-high — clean read | Jaws on the Bakelite housing block only; endpoints look clean but not cross-checked against the field list's exact "L" definition |
+| 2 | Body box — candidate W, or bracket short axis | **11.92 mm** | Caliper, 0.01 mm | `body_w` | Medium-high — clean read | Broader jaw span than #1; likely a different feature, not a second pass on the same one |
+| 3 | Overall length, bracket back to bushing thread end | **16.48 mm** | Caliper, 0.01 mm | `overall_l` | Medium-high — clean read | Diagonal jaw span across the whole switch minus the lever |
+| 4 | Bracket plate — long dimension | **19.16 mm** | Caliper, 0.01 mm | `bracket_l` | Medium-high — clean read | Jaws specifically on the flat mounting bracket, rivets visible in frame |
+| 5 | Hardware stack area (nut/washer near bushing) | **~18.5 mm read, low trust** | Caliper, upside-down photo | — | **Low — needs re-shoot** | Jaw closure looked tight enough that this number seems too large for what it's measuring; digit read itself is uncertain on top of that |
+| 6 | Small feature near lever pivot | **Unclear** | Caliper, upside-down photo, jaws nearly fully closed | — | **Low — needs re-shoot** | Tightest jaw closure in the set; whatever this is, it's a small dimension and the reading isn't trustworthy as captured |
+| 7 | Bushing thread major diameter | **7.85 mm** | Caliper, 0.01 mm, jaws on the stem past the mounting nut | `bush_d` | **Medium-high — clean caliper read, replaces the earlier ~8–9 mm visual estimate** | 27.08.26. Single sample — good enough to size a prototype fascia hole; a second sample would firm it up for a batch order but isn't blocking |
+| 8 | Bushing usable length | — | — | — | Not captured | |
+| 9 | Anti-rotation flat — width, angular position | — | — | — | Not captured | |
+| 10 | Solder lug projection past body | — | — | — | Not captured | |
+| 11 | Lever — pivot-to-tip length | — | — | — | Not captured | |
+| 12 | Lever — full throw angle | — | — | — | Not captured | The one the spec's 12° rake / brow clearance actually depends on — see note below on how the prototype plan is handling this one differently |
+ 
+## Worth flagging
+ 
+**Rows 5 and 6 are genuinely two different features, not one number read twice.** Row 5's
+jaw span covers roughly the nut-and-washer stack ahead of the bracket; row 6 is a much
+tighter closure, more consistent with a single small part — possibly the lever's pivot
+boss. Re-shoot both right-side-up before trying to identify them further; guessing which
+is which from an inverted display risks mislabelling two real dimensions as one bad one.
+ 
+**Row 12 — lever throw angle — is the one this capture sheet exists to get right for a
+parametric keepout model.** For that goal it's still a completely open number. For the
+prototype specifically, `claude/TERMINAL-06-prototype-plan.md` has opted to skip deriving
+this on paper and instead test-fit the actual lever against a printed brow — worth noting
+here so the two documents don't read as contradicting each other on how urgent this row is.
+ 
+## Still needed
+ 
+- Re-shoot readings #5 and #6 right-side-up, and confirm what each is actually spanning.
+- Bushing usable length, anti-rotation flat, solder lug projection — none photographed
+  in a way that isolates them yet.
+- Lever swing: pivot-to-tip length, and the throw angle at both extremes (neutral won't
+  do — need the lever photographed at full "up" and full "down") — for the parametric
+  library's keepout model; the prototype itself is handling this via physical test-fit.
+- One more full sample on each confirmed reading, per the min/mean/max rule, when this
+  part is being finalised for the ten-unit batch rather than one prototype.
+## Next
+ 
+Once the throw angle and pivot-to-tip length exist, this is the part described in the
+library guide's Section 2 origin rules as needing a **revolved swing cone** for its
+keepout — the first library part where the keepout geometry is genuinely non-obvious
+rather than a simple offset from the body.
+ 

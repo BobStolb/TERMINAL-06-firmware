@@ -1,0 +1,557 @@
+# EMBER-06 — six-digit nixie clock, exposed glass on a copper deck (Rev A)
+ 
+The second model in the shop, not the second version of the first one. Where
+TERMINAL-06 sinks its tubes into a trench behind a brow, EMBER-06 stands them on a
+bare-metal deck and lets the glass be the object. 4× IN-14 for HH:MM, 2× IN-16 for
+seconds, 4 neon lamps forming two colons, ice-blue underglow.
+ 
+Read §9 before writing any listing copy. The whole point of this model is that it is a
+peer to TERMINAL-06 at the same price, chosen on taste — not an upgrade.
+ 
+Firmware: fork of the TERMINAL-06 tree, six substantive lines changed.
+ 
+---
+ 
+## 1. Design thesis
+ 
+One sentence, and every other decision falls out of it:
+ 
+> **TERMINAL-06 hides the tubes inside an instrument. EMBER-06 puts them on a plinth.**
+ 
+Consequences that follow, and that you should not fight later:
+ 
+- No brow, no trench, no rake. A low horizontal body with 55 mm of glass standing above it.
+- The accent is a real metal finish, not a printed colour. **The safety-orange brow is
+  TERMINAL-06's mark and must never appear on this model.**
+- Round side-view glass means the customer sees the unlit cathode stack behind the lit
+  digit, all the time, from every angle. That is a feature here. It was something the
+  IN-12 trench deliberately hid.
+- Exposed tubes collect dust and can be knocked. Accept it, say so in the listing, and
+  ship a microfibre cloth.
+---
+ 
+## 2. Tubes
+ 
+Verified against original datasheets, not from memory — surplus tube listings routinely
+quote the wrong figures.
+ 
+| | IN-14 (ИН-14) | IN-16 (ИН-16) |
+|---|---|---|
+| Role | HH:MM, 4 off | seconds, 2 off |
+| Digit height | 18 mm | 13 mm |
+| Envelope Ø | 19 mm | 13 mm |
+| Overall height | 55 mm | 45 mm |
+| Base | 13 wire leads, 35 mm | 13 wire leads |
+| Anode supply, nominal | 170 V | 170 V |
+| Maintaining drop | **145 V** | **140 V** |
+| Cathode current, nominal | 2.5 mA | 2.0 mA |
+| Rated life | ~5 000 h | min 5 000 h |
+ 
+**The 5 V gap is the reason this model is buildable.** TERMINAL-06 mixes IN-12 (≈140 V)
+with IN-17 (≈105 V) — 35 V apart, which is why it needs a separate anode resistor bank
+and a firmware trim to stop the small tubes hogging current. IN-14 and IN-16 sit 5 V
+apart. They are near-electrical twins. The seconds tubes still get their own resistors,
+but the values land one or two E12 steps apart instead of a different order of magnitude,
+and the perceptual match falls out almost for free.
+ 
+Both tube types are wire-ended. There are no pins and no sockets anywhere in this design
+— see §7 for why that is a deliberate trade-off and not an oversight.
+ 
+**Neon colons.** INS-1 / IN-3 class miniature neon lamps, four off, in two vertical pairs.
+A single neon run on DC glows at one electrode only, so a one-lamp "colon" is really one
+dot. Use two lamps per colon position, stacked, inside a printed diffuser sleeve. They
+are pennies each and the result is deterministic. Measure the strike voltage of your
+actual batch — surplus neons vary more than the datasheet suggests.
+ 
+---
+ 
+## 3. Electrical
+ 
+### 3.1 Run the rail at 200 V, not 185 V
+ 
+This is the one genuine departure from the TERMINAL-06 electrical design, and it is
+forced by the tubes.
+ 
+At a 185 V rail an IN-14 dropping 145 V, plus ~3 V across the opto and the K155ID1, leaves
+only **37 V** across the anode resistor. TERMINAL-06 had 79 V. Halving the headroom
+doubles the sensitivity of tube current to rail droop: a 10 V sag moves IN-14 current by
+27 % here versus 13 % there, and you will see it as the display breathing when the
+multiplex duty changes.
+ 
+At 200 V there is 52 V of headroom and the behaviour is calm. The stock boost circuit has
+the margin for it — IRF840 is a 500 V part and the reservoir cap is 4.7 µF / 350 V.
+ 
+> **Verify before you trust it:** the feedback divider on the stock board is trimmed for a
+> set point near 180 V. Confirm on the bench that the regulation loop actually reaches and
+> holds 200 V, and that the ADC feedback node stays under 5 V, before you commit ten
+> boards. One resistor may need changing. Do not assume.
+ 
+### 3.2 Anode resistors, at a 200 V rail
+ 
+Assumes 3.0 V total across the TLP627 and the K155ID1 output, and 1/6 duty across six
+tubes.
+ 
+**IN-14 — 52 V across R**
+ 
+| R | peak | avg | peak power | note |
+|---|---|---|---|---|
+| 10 k | 5.20 mA | 0.87 mA | 0.27 W | soft |
+| **8.2 k** | **6.34 mA** | **1.06 mA** | **0.33 W** | **start here** |
+| 6.8 k | 7.65 mA | 1.27 mA | 0.40 W | bright |
+| 5.6 k | 9.29 mA | 1.55 mA | 0.48 W | floor — don't go lower |
+ 
+**IN-16 — 57 V across R**
+ 
+| R | peak | avg | peak power | note |
+|---|---|---|---|---|
+| 13 k | 4.38 mA | 0.73 mA | 0.25 W | soft |
+| **11 k** | **5.18 mA** | **0.86 mA** | **0.30 W** | **start here** |
+| 8.2 k | 6.95 mA | 1.16 mA | 0.40 W | bright |
+| 6.8 k | 8.38 mA | 1.40 mA | 0.48 W | floor — IN-16 is a 2 mA tube |
+ 
+Use 0.5 W parts throughout. Average dissipation is under 60 mW, but the peak matters for
+thermal cycling and the physical size looks right on the deck underside.
+ 
+The 8.2 k / 11 k pairing puts IN-16 at roughly 81 % of the IN-14 current, which tracks
+the 2.0 mA / 2.5 mA nominal ratio almost exactly. Expect to need little or no firmware
+trim — but keep `SEC_BRIGHT_TRIM` in the code anyway, because tube batches vary and it is
+free.
+ 
+### 3.3 Neon drive
+ 
+Four lamps, one low-side switch, gated from D10.
+ 
+- MPSA42 (300 V NPN), base through 10 kΩ from D10, emitter to HV ground.
+- Each lamp gets its own **330 kΩ** series resistor to the 200 V rail: ~0.44 mA per lamp,
+  ~1.76 mA total added rail load. Negligible against six tubes at ~1 mA average each.
+- The full rail appears across the lamp until it strikes, so ignition is never marginal.
+### 3.4 Underglow — one colour, and here is why
+ 
+The reference look is ice-blue light pooling under each tube. The obvious implementation
+is addressable LEDs. **Do not use them.**
+ 
+Bit-banging WS2812B blocks interrupts for roughly 30 µs per LED. Eight LEDs is ~240 µs of
+blackout. The multiplex frame is 2.49 ms at 401 Hz, so a single tube slot is 415 µs — the
+LED update would swallow more than half of one tube's illuminated time, every refresh.
+The result is visible flicker and a bright-dark stripe across the row. There is no clever
+scheduling fix that survives a 60 fps listing video.
+ 
+Use plain single-colour LEDs on the existing D11 PWM rail, exactly as TERMINAL-06 does
+with amber. One channel, no timing conflict, no new pins — and there are no new pins
+available (see §3.5).
+ 
+> **Blue-specific caveat.** Blue LEDs are less well-behaved than amber at low duty: the
+> perceived hue shifts toward violet and low-frequency flicker becomes visible sooner.
+> Clamp the PWM floor at ~15 % rather than allowing zero-to-full, and diffuse hard through
+> a printed collar. A blue backlight that strobes at the dim setting will be the first
+> thing a reviewer mentions.
+ 
+### 3.5 Pin map — unchanged from TERMINAL-06
+ 
+Six tubes, same multiplex, same allocation. This is the single biggest reason EMBER-06 is
+a three-week project and not a three-month one.
+ 
+```
+D2   anode, seconds TENS        D3..D6 anodes H H M M
+D7   button SET                 D8  button ADJ
+D9   HV boost oscillator        D10 neon colons (4 lamps via MPSA42)
+D11  underglow PWM              D12 lever SW3 PROGRAM/RUN
+D13  anode, seconds UNITS
+A0..A3 K155ID1 BCD              A4/A5 DS3231 I2C
+```
+ 
+Every usable pin is allocated. A6/A7 on a Nano are analogue-in only. D0/D1 are the
+bootloader UART. **There is no headroom for a second backlight channel, an encoder, or a
+sensor.** If a future model needs one, it needs a different main board — that lesson is
+already written up in the MIMI-06 study.
+ 
+D13 still shares the onboard LED, so the seconds-units tube flashes for about a second at
+boot. Cosmetic, same as TERMINAL-06.
+ 
+---
+ 
+## 4. EM06-DECK — the whole model in one board
+ 
+TERMINAL-06's repeatability move was TS06-FASCIA, which turned 30 minutes of hand-wiring
+into a two-connector plug-in. EMBER-06's equivalent is bigger: **one board is the tube
+socket, the control panel, the neon and LED carrier, and the visible top surface of the
+product.**
+ 
+**176 × 72 mm, 1.6 mm FR4, ENIG finish, no soldermask and no silkscreen on the top layer.**
+ 
+### 4.1 Why a PCB and not a metal plate
+ 
+A laser-cut copper sheet is the "right" answer and it is the wrong answer at a batch of
+ten: $15–25 per unit, a separate supplier, a lead time, a deburring step, and you still
+need a tube board underneath it. The deck PCB is ~$6, dimensionally perfect, arrives with
+the holes already in it, and does four jobs at once.
+ 
+**Be honest with yourself about the finish**, because this is the one place the model can
+look cheap:
+ 
+| Finish | Looks like | Verdict |
+|---|---|---|
+| ENIG | warm gold, stable forever | **use this** |
+| Bare copper (OSP) | true copper for ~2 weeks | then tarnishes *blotchily* from handling — not the even patina of real sheet metal |
+| Immersion silver | bright, then black | no |
+ 
+Real copper patinas evenly and beautifully. A bare-copper PCB does not — it goes uneven
+around wherever a thumb touched it. ENIG gives a warm metal that photographs superbly and
+never changes, and "gold-finished deck" is easier listing copy than explaining patina.
+If you want true copper, order OSP and lacquer the top face yourself after assembly; add
+5 min per unit and expect to redo the ones you get dust in.
+ 
+### 4.2 Top face
+ 
+All soldering happens on the underside. **The top face carries no solder joints, no
+silkscreen, and no components** — it is a continuous metal plane with holes in it.
+ 
+The top pour ties to logic ground. Each tube's 13 leads sit on a small bolt circle, and
+at 200 V the pour must be held clear of every one of them: use a **single annular moat
+3 mm wide around the whole lead field** rather than per-hole clearances, which would
+merge into a ragged shape anyway. The result reads as a machined bolt circle inside a
+ring, which is exactly the look this model wants.
+ 
+> **Tracking risk.** A grounded pour 3 mm from a 200 V lead across bare FR4 is fine dry and
+> is not fine after two years in a humid room. Conformal-coat the top face after assembly.
+> This also locks in a bare-copper finish if you went that route — one step, two problems.
+ 
+### 4.3 Geometry
+ 
+Tube centres, X from the left edge of the 176 mm deck:
+ 
+| Position | X | Tube |
+|---|---|---|
+| H1 | 24.5 | IN-14 |
+| H2 | 48.5 | IN-14 |
+| colon 1 | 66.5 | 2× neon |
+| M1 | 84.5 | IN-14 |
+| M2 | 108.5 | IN-14 |
+| colon 2 | 126.5 | 2× neon |
+| S1 | 141.5 | IN-16 |
+| S2 | 158.5 | IN-16 |
+ 
+Left margin to glass edge 15.0 mm, right margin 11.0 mm. **The asymmetry is deliberate**
+— same reasoning as TERMINAL-06's 20.75 / 18.7. The seconds tubes are visually lighter, so
+an even margin makes the row look like it is sliding right.
+ 
+- Tube centreline at Y = 22 mm from the front edge.
+- Control centreline at Y = 56 mm — behind the glass, reached over the top.
+- Control X positions **22 / 64 / 88 / 112 / 154**, carried over from TS06-FASCIA
+  unchanged. The boards are different but the drilling pattern is shared, which keeps one
+  jig valid across both models.
+### 4.4 Controls
+ 
+Electrically identical to TERMINAL-06 — 2 buttons, 3 levers, time-setting gated behind
+the PROG lever so a customer cannot fumble into it. Physically different: brass or
+knurled-barrel buttons and a smaller lever bat, to suit the warmer object.
+ 
+| Feature | X | Detail |
+|---|---|---|
+| Button SET | 22 mm | ⌀12.2 |
+| Lever PWR | 64 mm | ⌀13.2 + anti-rotation flat, hard cut of 12 V |
+| Lever LUM | 88 mm | ⌀13.2, hard cut of LED +5 V |
+| Lever PROG | 112 mm | ⌀13.2, to D12 |
+| Button ADJ | 154 mm | ⌀12.2 |
+ 
+Mounting controls through a 1.6 mm PCB rather than a printed panel means the bezel nuts
+land on a flat, true surface and torque evenly. It also means **you cannot re-drill a
+mistake** — check plate 04 before ordering.
+ 
+### 4.5 Connectors
+ 
+Three keyed connectors, deliberately, so 200 V cannot be plugged into a 5 V header at 11 pm.
+ 
+- **J1** — 8-way JST-VH: six switched anode lines, HV+, HV GND. VH's 3.96 mm pitch is the
+  minimum acceptable creepage at 200 V; do not substitute XH here.
+- **J2** — 10-way IDC: cathodes K0–K9.
+- **J3** — 10-pin JST-XH: GND, +5 V, BACKL, NEON, SET, ADJ, PROG, LED_RAIL_IN,
+  LED_RAIL_OUT, spare.
+- Plus a 2-pin inline for the PWR lever in the 12 V feed, as on TERMINAL-06.
+### 4.6 Cathode routing
+ 
+IN-16 cathode for digit N goes to the same K155ID1 output the IN-14s use for digit N, so
+one `digitMask` covers all six tubes. **Measure the digit → physical lead table yourself**
+with the mapping jig sketch, for both tube types separately. Do not take it from a
+datasheet and do not assume IN-16 follows IN-14's order. Surplus markings are not reliable
+and this mistake is invisible until HV is applied.
+ 
+---
+ 
+## 5. Enclosure
+ 
+**176 × 72 × 38 mm plinth.** Front face vertical — no rake, because there is no display
+recessed behind it to angle toward the viewer. Total object height with tubes ≈ 93 mm.
+ 
+Against TERMINAL-06's 176 × 96 × 78 wedge this is lower, deeper, and taller overall: a
+completely different silhouette on a shelf, which is the point.
+ 
+- **Body** — GRAPHITE PETG/ASA, matte, 0.20 mm, 4 walls, 20 % gyroid, no supports.
+  ~7 h. Shallower than the TERMINAL-06 chassis, so the print is faster.
+- **Base plate** — black PETG, debossed insignia and serial recess.
+- **Diffuser collars** — 8 off, natural translucent PETG or white PLA, 0.12 mm layers,
+  printed as one plate. These sit under each tube and spread the LED. Print spares; they
+  are the part you will scrap most.
+- **No accent-coloured part.** The deck is the accent. Resist the urge to add one.
+Rear: ⌀8 DC jack, 13 × 7 mm slot aligned to the Nano's USB port, 5-slot vent array. Same
+as TERMINAL-06 — reuse the geometry.
+ 
+Feet: four cork discs. The object is light and top-heavy with 55 mm of glass on it;
+silicone feet let it rock.
+ 
+**Identity** — palette: VOID #0A0B0C, GRAPHITE #24272B, BONE #DCD8D0, CATHODE #FF9E36,
+plus EMBER-only COPPER #B87333 and ICE #8FD4E8. **SIGNAL #F25610 is reserved to
+TERMINAL-06 and does not appear here.**
+ 
+Insignia: a circle bisected by a bar that breaks the outline, numeral 06 inside. The same
+construction rule as TERMINAL-06's hexagon, a different primitive — so the two read as one
+workshop without either looking like a revision of the other. Original mark. **No
+franchise logos, names or marks anywhere on the product, packaging, listing copy or photo
+props.**
+ 
+---
+ 
+## 6. Firmware
+ 
+Fork of the TERMINAL-06 tree. Six substantive changes, all small:
+ 
+1. `SEC_BRIGHT_TRIM` retuned for IN-16 — expect a value near 1.0, unlike the IN-17 case.
+2. Neon output on D10 drives four lamps through one transistor instead of a single dot.
+   Code unchanged; only the hardware behind the pin differs.
+3. **Underglow PWM floor clamped at ~15 %** — new, ~4 lines. Prevents the blue hue shift
+   and low-duty flicker described in §3.4.
+4. Anti-poisoning sweep extended to the neon lamps so all four age evenly.
+5. Transition effects retuned. The glitch effect was designed against IN-12, where the
+   unlit cathodes are hidden. On round side-view glass the whole stack is visible and the
+   glitch reads as noise. Use a slower crossfade; keep the seconds tubes excluded, as
+   before.
+6. HV set point 185 → 200 V.
+Flash unchanged at roughly 13.4 kB / 394 B RAM. Timer2 stays at prescaler 1 for the
+401 Hz frame — **this is not optional**, it is what keeps the listing video free of
+banding.
+ 
+---
+ 
+## 7. The socket question
+ 
+Every tube in this design is soldered directly to the deck by its leads. TERMINAL-06's
+IN-12s sit in sockets and can be swapped by the customer. This is a real difference and it
+goes in the honest-trade-offs column, not the ignore-it column.
+ 
+Turned-pin sockets were considered and rejected: 66 sockets per unit is ~$3.30 and,
+worse, each one adds height variance and a degree of wobble. **Tube verticality is the
+signature quality risk of this model** — six wire-ended tubes standing proud on a flat
+deck, where one leaning tube ruins the whole row and is obvious in every photograph.
+Sockets make that harder to control, not easier.
+ 
+So: solder direct, control the geometry with jigs, and cover the downside with service.
+Offer tube replacement at $40 plus the tube, state it plainly in the listing, and note
+that because the deck is one board it is a bench job rather than a rebuild. Keep two
+matched spare tubes of each type from the batch for exactly this.
+ 
+---
+ 
+## 8. Cost and price
+ 
+Materials per unit at a batch of ten:
+ 
+| Item | $ |
+|---|---|
+| Main board — logic section, populated | 20.00 |
+| IN-14 × 4 | 32.00 |
+| IN-16 × 2 | 8.00 |
+| Neon lamps × 4 | 2.00 |
+| EM06-DECK PCB, ENIG | 6.00 |
+| Anode + neon resistors | 1.50 |
+| Levers × 3 | 3.60 |
+| Buttons × 2, brass | 4.00 |
+| Wiring, connectors | 2.50 |
+| Filament | 4.00 |
+| Fasteners, heat-set inserts | 3.00 |
+| LEDs + diffuser collars | 1.50 |
+| PSU | 6.00 |
+| Packaging | 6.00 |
+| Defect allowance, 8 % | 8.00 |
+| **Total** | **108.00** |
+ 
+**IN-14 pricing is the swing factor.** $8/tube assumes a bulk NOS lot from one seller. At
+$12/tube the BOM goes to $124 and the $329 margin drops by $16. Price the tubes before
+you commit to the band.
+ 
+| Price | fees ~11 % | shipping | materials | left | per hour (2 h 40) |
+|---|---|---|---|---|---|
+| $249 | $27 | $18 | $108 | $96 | $36 |
+| $289 | $32 | $18 | $108 | $131 | $49 |
+| **$329** | $36 | $18 | $108 | **$167** | **$63** |
+| $369 | $41 | $18 | $108 | $202 | $76 |
+ 
+**List at $329 with free shipping — the same price as TERMINAL-06, deliberately.** Units
+1–3 at $279 as a founder price to seed reviews. Never below $249. Offer a matched spare
+tube pair at $30.
+ 
+The $63/hour against TERMINAL-06's $70 is the cost of six wire-ended tubes instead of four
+pinned ones. It is worth it to have a second model that shares a firmware tree, a pin map,
+a control drilling pattern and a rear-panel geometry.
+ 
+---
+ 
+## 9. Positioning — read this before writing any listing copy
+ 
+EMBER-06 is a **sibling**, not a successor. The shop is meant to read as a workshop with a
+catalogue, where a customer picks by taste and pays the same either way. Two models at one
+price beat a good model and a better model, because the second framing makes the cheaper
+one look like a compromise and makes anyone who already bought it feel stupid.
+ 
+| | TERMINAL-06 | EMBER-06 |
+|---|---|---|
+| Thesis | tubes recessed in an instrument | tubes standing on a plinth |
+| Tubes | IN-12, flat front-view | IN-14 + IN-16, round side-view |
+| Digit height | 18 mm | 18 mm — *identical* |
+| Silhouette | 176 × 96 × 78 wedge, 12° rake | 176 × 72 × 38 plinth + 55 mm glass |
+| Accent | safety-orange printed brow | bare-metal deck |
+| Backlight | amber | ice blue |
+| Rail | 185 V | 200 V |
+| Mood | cold, industrial, cyberpunk | warm, quiet, mid-century |
+| Buyer | gamer and engineer desks, mecha, industrial decor | living rooms, warm decor, gifting |
+| Price | $329 | $329 |
+ 
+### Honest trade-offs, in both directions
+ 
+State these plainly. They are what make the two models peers rather than a ladder.
+ 
+**EMBER-06 gives up:** customer-replaceable tubes (soldered, not socketed); dust
+protection (open deck); knock resistance (55 mm of unguarded glass); a little margin
+($63/h vs $70/h).
+ 
+**TERMINAL-06 gives up:** the visible cathode stack, which is half the reason people love
+IN-14s; the metal surface; the low-and-wide silhouette; a warm palette. Its trench, which
+protects the tubes, is also what hides them.
+ 
+Neither list is a defect list. They are the reasons a given customer picks one.
+ 
+### Rules
+ 
+- The words **"v2", "Mk II", "improved", "upgraded", "next generation"** appear nowhere —
+  not in titles, tags, descriptions, photo captions or social posts.
+- Cross-link as **"also available"**, never "see also the newer model".
+- Both stay at $329. If one has to move, move both.
+- Both are "handmade limited run of 10".
+- Do not launch in the same week — but do not launch EMBER-06 as news either. It is a
+  second option that was always going to exist.
+- Shoot both on the same set with the same lighting family, so the listings read as one
+  catalogue. Unlike MIMI-06, EMBER-06 needs no second lighting setup: the dark set that
+  flatters nixie glass also flatters a graphite body and a gold deck.
+---
+ 
+## 10. Build order (≈2 h 40 min hands-on per unit)
+ 
+Jigs made once:
+ 
+- **J-LEAD-14** — printed comb holding IN-14's leads at final spacing and length.
+- **J-LEAD-16** — the same for IN-16. **You need both.** IN-16's leads are finer and on a
+  smaller circle; one comb will not serve two tube types, and freehand forming gives ten
+  units with ten different tube heights.
+- **J-VERT** — a printed square that drops over a tube and registers against the deck, so
+  each tube is soldered plumb rather than eyeballed. This is the jig that protects the
+  signature quality risk; make it first.
+- **J-MAP** — measured digit → K155ID1 lead tables for *both* tube types, taped to the bench.
+Steps:
+ 
+1. Print body / base / collars — overnight
+2. Heat-set inserts — 6 min
+3. Form all six tubes' leads on J-LEAD-14 and J-LEAD-16 — 25 min
+4. Populate deck underside: resistors, neons, MPSA42, LEDs, connectors, controls — 25 min
+5. Flash and verify logic board at 200 V — 8 min
+6. Solder six tubes into the deck, each set with J-VERT — 35 min *(the long pole; do this
+   first in a session, never last at night)*
+7. Mate deck to logic board: HV, cathodes, logic, in that order, power off — 10 min
+8. Set HV 200 ± 8 V, trim seconds brightness — 10 min
+9. Mechanical assembly, **gloves on from the moment the deck leaves its bag** — 15 min
+10. 24 h burn-in — 5 min attended
+11. Serialise, photograph, pack — 20 min
+---
+ 
+## 11. QC — every unit
+ 
+- HV rail 200 ± 8 V at TP1/TP2 after 5 min warm
+- Full power-on cathode sweep, all 60 cathodes strike cleanly
+- Ghost check: display 88:88:88, blank each tube in turn, no residual glow
+- IN-16s within one perceptual step of the IN-14s at 2 m in a dim room
+- All four neon lamps strike, and both colons blink together
+- Underglow: sweep PWM from floor to full — no visible flicker, no violet shift at minimum
+- **Tube verticality: all six within 1° of plumb, checked with a square from front and
+  side.** One leaning tube fails the unit. This is the check that will actually catch things.
+- **Deck cosmetics: no fingerprints, no flux wicked through to the top face, no scratches.**
+  Inspect under raking light, not overhead light.
+- Drift < 2 s over the 24 h burn-in
+- All three levers actuate; PROGRAM exit writes the RTC; both buttons click+hold
+- Film 5 s at 60 fps — any banding means the Timer2 prescaler didn't take
+- Serial inked, QC card signed and dated
+Build log per unit: serial, tube batch for both types, measured HV, anode resistors,
+trim value, drift, build date.
+ 
+---
+ 
+## 12. Batch plan
+ 
+- **Week 0** — build unit 1 end to end. Measure both cathode maps, confirm the boost loop
+  holds 200 V, pick the two resistor values, revise the deck, re-order. Do not start the
+  batch before unit 1 has run 24 h.
+- **Week 1** — order everything; printer runs nightly.
+- **Week 2** — build in stations, ten of each operation at a time.
+- **Week 3** — 48 h burn-in, shoot the ten-slot photo set on units 1 and 2, pack.
+- **Week 4** — list, quantity 10, three at the founder price.
+### Risks
+ 
+- **Tube supply and envelope tint.** Worse than TERMINAL-06, not better — round glass shows
+  tint variation far more than IN-12's flat face, and here six tubes sit in one exposed
+  row with nothing hiding them. Buy all six tubes × ten units, plus 20 % spares, from one
+  seller in one purchase. Non-negotiable.
+- **Verticality.** The signature failure mode. Mitigated by J-VERT, caught by QC, but it
+  will still cost you units early.
+- **Deck cosmetics.** Every fingerprint on a gold plane shows in a photograph. Gloves, and
+  the deck stays bagged until step 4.
+- **The 200 V set point.** If the stock feedback loop will not reach it, you need a resistor
+  change *before* ten boards are populated. This is a week-0 task, not a week-2 surprise.
+- **Revising after unit 1.** A deck respin costs ~$20 and a week. Ten wrong decks cost the run.
+---
+ 
+## 13. Listing kit
+ 
+**Title**
+ 
+```
+Nixie Tube Clock IN-14 with Seconds | Exposed Glass on Gold Deck | 6 Digit Retro
+Desk Clock | Neon Colons, Ice Blue Glow | Handmade Limited Run of 10
+```
+ 
+**Tags**
+ 
+nixie tube clock, in14 nixie clock, nixie clock with seconds, 6 digit nixie, retro desk
+clock, mid century modern clock, vintage tube clock, glowing clock, warm desk decor,
+gift for engineer, soviet nixie tube, handmade clock, ambient desk light
+ 
+**Ten photo slots** — note these differ from TERMINAL-06's. The hero there is the panel;
+here it is the glass.
+ 
+1. Three-quarter hero, lit, dark set — the glass row at eye level
+2. Front elevation, lit, dead level, square-croppable
+3. **Macro on one IN-14** — lit cathode in front, nine unlit behind. *This is the shot that
+   sells this model.* It is the thing TERMINAL-06 physically cannot show.
+4. Raking light across the unlit gold deck, showing the bolt-circle moats
+5. Scale in a room — on a shelf beside books, not on a gaming desk
+6. Rear panel
+7. The size step — IN-14 next to IN-16, close, showing the deliberate hierarchy
+8. Dim room, underglow on, ice blue against amber
+9. Spec card
+10. **Video, 15–25 s, 60 fps** — cathode sweep → seconds ticking on the small tubes →
+    colons blinking → one crossfade. Open on the glass, not the controls.
+---
+ 
+**Safety.** 200 V DC behind a reservoir capacitor that stays charged after power-off. This
+model runs 15 V higher than TERMINAL-06 and has more exposed conductor near the top face.
+Bleed the cap before touching the tube side. One hand in your pocket.
+ 
+**Attribution.** Firmware descends from AlexGyver's NixieClock v2.5
+(github.com/AlexGyver/NixieClock_v2). Keep the credit in the source.
+ 

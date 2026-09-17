@@ -1,0 +1,243 @@
+# QUADRANT — 2 × 2 nixie, feasibility and respec (Rev 4)
+
+*(Filename is legacy. The wrist question this document was opened to answer is now closed —
+negatively — and the concept has moved. Kept at this path so nothing that links here breaks.)*
+
+**Concept plates (Rev 2): https://claude.ai/code/artifact/ce24ba82-740c-421a-9ebe-652531e7876c**
+— hero, general arrangement, and a live 2×2 running the shared cathode-order flip.
+
+---
+
+## ⚠ Rev 4 (05.09.26) — the desk half of this document is superseded
+
+**§1 (QUADRANT-D) is now a production spec: `claude/QUADRANT-D-spec.md` (Rev 1), with a sourced
+BOM at `QUADRANT-D-parts-list.xlsx`.** Go there for anything you intend to build or buy. This
+document remains the record of *why the wrist version was withdrawn* and the home of §2
+(QUADRANT-W) and §3 (matching), both of which stand unchanged.
+
+**Six things below are wrong and are corrected in the spec.** Listed here so nothing is read off
+this page by accident:
+
+| §1 says | Corrected to | Why |
+|---|---|---|
+| Drive: **2 × HV5622**, static | **2 × HV5630** | HV5622 is a **220 V** part. The rail is 185 V and ИН-17's ТУ asks ≥200 V supply — 20–35 V of margin on a device that stands the full rail when off. HV5630 is the identical part at **300 V**. This shop already refused a 160 V transistor on this rail. |
+| \"**3 GPIO**\" | **4 signals + a 12 V logic rail + a CD4504B level shifter** | The HV55xx/HV56xx logic supply is **10.8–13.2 V**, not 3.3/5 V. Missed entirely in Rev 3. |
+| Power: **mains**, ≈1 W | **USB-C PD at 12 V**, ≈2.5 W | The 12 V logic rail makes 12 V the natural input; a PD trigger makes it one cable and removes a mains PSU from an entry product. |
+| Controls: **knob + button on the top deck** | **one rear encoder-with-push**; the front face carries nothing | A 2 × 2 of glass wants no hardware in front of it. |
+| **≈3 500 ₽**/unit, \"a third of TERMINAL-06\" | **≈4 890 ₽**/unit, **48.5 %** of TERMINAL-06 | Rev 3 costed the power supply at zero and lumped enclosure + PSU + packaging at ≈900 ₽, roughly a third of what those groups cost on TERMINAL-06. Rebuilt line by line. Still the cheapest thing the shop can make; the listing copy has to say \"half\", not \"a third\". |
+| Anti-poisoning \"**mandatory**\" | mandatory, **and the duty cycle is a commercial risk in its own right** | Static drive is 100 % duty. ИН-17's ТУ life is **7 500–9 000 h ≈ 10–12 months of always-on.** TERMINAL-06 never faced this because it multiplexes at 1/6 duty. See spec §11.2 — this is the most serious thing Rev 3 did not know. |
+
+Two things Rev 3 flagged as open are now answered rather than merely restated:
+
+- **Open question 6 (ИН-17 cathode order) now blocks two products, not one.** QUADRANT-D is four
+  ИН-17 and nothing else, so effect 3 — its cheapest differentiator — is unavailable until
+  `secCathodeMap` is run. Shared work with TERMINAL-06's seconds tubes; do it once.
+- **Open question 1 (three orthogonal caliper readings) is the gate on the entire product.**
+  Without the lead exit pattern there is no board footprint, and without a board footprint there is
+  no case, no window and no collar. One evening. Nothing else can start.
+
+---
+
+## Rev 3 (02.09.26) — the gate opened, and the answer was no
+
+Rev 1 named one gating question and said the project existed or did not on it: **which axis are ИН-17
+digits viewed down?** The answer is in:
+
+> **ИН-17 can only be viewed from one side, and it is the ~20 mm face.** The long axis runs back
+> into the case.
+
+That is Rev 1's **branch B**, which Rev 1 itself called dead on arrival: 22 mm of tube perpendicular
+to the watch face puts the case over ~30 mm thick. **The ИН-17 wristwatch is withdrawn.**
+
+The thesis is not withdrawn. Four digits read at once, in a square, is still a product nobody sells —
+it just becomes a **desk miniature**, and the wrist version moves to a tube the market has already
+proved.
+
+### Three things Rev 1 got wrong, and only one was the obvious one
+
+| Rev 1 said | True | Consequence |
+|---|---|---|
+| Side-view is \"the version that works\" — tube lies flat, 14 mm sets thickness | **End-view only**, ~20 mm face, barrel running back | Wrist case ~30 mm. Dead. |
+| \"Rotate the rear pair 180° so its leads point away\" — listed as an option that does not work | **There is no rear pair.** In a 2×2 of end-view tubes all four face the viewer and all 48 leads leave straight backwards into one board | The entire §3 lead problem was written for a layout that does not exist. **No riser board, no flex, no lateral dressing.** |
+| ~60–75 min per unit in tube leads alone; budget 2.5–3 h | Four tubes into one flat board, no interference. **25–35 min** until a jig exists | The labour argument that forced a $700+ price **evaporates**. This can be a $180 object. |
+
+### The rule, restated correctly
+
+Rev 1 proposed: *for any wearable, the tube's shortest dimension is the case thickness.* Still right —
+it was missing the half that matters: **you do not get to choose which dimension faces you.** The
+viewing axis is fixed by how the cathodes are stacked, and case thickness is whatever lies behind that
+face. **Ask which face you look at before asking how thick anything is.**
+
+---
+
+## 1. QUADRANT-D — the desk miniature (primary) — **SUPERSEDED, see the Rev 4 banner**
+
+Four glass barrels pointing at you in a square, in a black block you could close a hand around. The
+property that made ИН-17 wrong for a wrist — you can only look into one end — is what makes this read
+as an instrument: four little windows, each with a number burning at the bottom of it.
+
+- **74 W × 82 H × 78 D mm**, front face raked back 15°, ≈340 g. *(Spec Rev 1 shrinks this to
+  ≈62 × 72 × 66 mm and ≈420 g once the mains PSU leaves the box and a ballast plate goes in.)*
+- 2 × 2 at **26 × 27 mm pitch**, behind a recessed square window with a 2 mm reveal. *(Carried
+  forward unchanged.)*
+- Two ИНС-1 dots between the rows as the HH/MM separator. *(Carried forward unchanged.)*
+- One knob and one button on the top deck. *(Superseded — one rear encoder.)*
+- **HH over MM. No pause, no button, no sequence.** *(Carried forward — it is the thesis.)*
+
+### The design rule this settles
+
+TERMINAL-06 and MIMI-06 put their tubes **proud on an inset deck** because ИН-12 is a *side-view*
+tube — there is a whole envelope to show and a trench wasted it. **An ИН-17 seen end-on has nothing
+to show but its face**; standing it proud would display a glass barrel and a set of leads. So it gets
+a **window, not a plinth**, and the open-deck rule stays where it belongs.
+
+### Always on changes one thing that matters
+
+A watch lights its tubes ~2 minutes a day, so Rev 1 could call poisoning a low risk and treat the
+slot-machine sweep as decoration. A desk object runs them **continuously**, which puts this product
+under exactly TERMINAL-06's anti-poisoning discipline: a full cathode sweep on a timer —
+**every 15 minutes, 0→9 three times, 10 ms a step** (see `claude/ANIMATIONS-effects-reference.md`).
+
+*(Rev 4: this is right and it did not go far enough — see the banner's last row, and spec §11.2.
+The sweep is replaced by the **pinwheel** sweep, and `ANIMATIONS` Rev 2 withdraws the slot-machine
+entry that was written for the watch.)*
+
+### Drive — same answer, different reason
+
+| | Rev 1, wrist | Rev 3, desk |
+|---|---|---|
+| Drive | 2× HV5622, static, 3 GPIO | **unchanged** — the one thing Rev 1 got right *(Rev 4: right in principle, wrong in part number and pin count — see banner)* |
+| Power | 3.7 V cell, ≈320 mA bursts, P-FET gating | mains, ≈1 W continuous, no gating *(Rev 4: USB-C PD, 12 V, ≈2.5 W)* |
+| Anti-poisoning | low risk | **mandatory** |
+| Brightness matching | critical — all four lit at once | **still critical**, and now visible all day |
+| HV safety | creepage, coating, back-off interlock, against skin | sealed enclosure, bleed before opening — shop standard |
+| Lead dressing | 48 leads, riser or lateral fan | **48 leads straight back into one board** |
+
+Static is still right, but now simply because *a permanently-lit display should not multiplex*.
+**None of P2's ghosting problem can occur here** — it is a multiplex artefact and there is no
+multiplex.
+
+**Deleted from the risk list entirely:** the NCH8200HV milliamp idle draw, the cell C-rating, the
+100–220 µF bulk for boost surge, the 10 s on-time cap, the Qi coil, and the flat rectangular sapphire
+that was probably the most expensive part in the watch.
+
+### Cost — **superseded by `QUADRANT-D-parts-list.xlsx`**
+
+| Item | Qty | Unit | Line | Source |
+|---|---|---|---|---|
+| ИН-17 | 4 | 150 ₽ | 600 | s_svshkin ×12 · Avito Seller B ×18 · **10 already in hand** (yg-radio, 870 ₽) |
+| Binning allowance (60–70% yield) | +2 | 150 ₽ | 300 | ~6 bought per 4 shipped |
+| ИНС-1 colon pair | 2 | 12 ₽ | 24 | Begrant ×1 008 |
+| HV5622 ×2 + boost | 1 | — | ≈900 | **unpriced** *(Rev 4: HV5630 ×2 ≈900 ₽ + boost 450 ₽, still unquoted)* |
+| MCU, RTC, board | 1 | — | ≈800 | shared parts bin *(Rev 4: 660 ₽ logic + 500 ₽ PCB)* |
+| Enclosure, PSU, packaging | 1 | — | ≈900 | small print, one filament batch *(Rev 4: **1 230 ₽** — this line is where the error was)* |
+| **Per unit** | | | **≈3 500 ₽** | *(Rev 4: **≈4 890 ₽**)* |
+
+**Proposed retail 15 000 ₽ (≈$181), founder 12 000 ₽.** *(Rev 4: unchanged and confirmed — at the
+corrected cost it still returns 4 242 ₽/hour against TERMINAL-06's 4 981 ₽ on an object that costs
+half as much and builds in a third less time.)* Deliberately below TERMINAL-06 as the shop's
+entry object — the cheapest way for someone to own real nixie glass from this bench — and its low
+parts count and short build are what let it be that without hurting margin.
+
+---
+
+## 2. QUADRANT-W — the wrist, on ИН-16 (sibling)
+
+The thesis was never about ИН-17. It was that **every nixie watch on sale reads the time
+sequentially** — press, wait, hours, wait, minutes — because two tubes is all that fits, and that this
+is the most-complained-about thing in the category. That survives the tube being wrong.
+
+| | NIWA V2 | Nixoid Next | **QUADRANT-W** |
+|---|---|---|---|
+| Tubes | 2× ИН-16 + 2× ИВ-15 | 2× ИН-16 | **4× ИН-16** |
+| Reads time | HH, pause, MM | HH, 1.5 s pause, MM | **all four at once** |
+| Case | 55 ⌀ × 17 mm | ≈50 ⌀ × 16.9 mm | target ≈17 mm |
+| Price | $499 | $485 | **$650–800** |
+| Glass/unit | — | — | **1 000 ₽** (250 ₽ × 4) |
+
+**Why ИН-16 and not another guess.** *Both competitors put ИН-16 on a wrist and ship it.* That is not
+a datasheet claim or a listing photo — it is two products in the market proving the tube's viewing
+axis and shortest dimension both work in a ~17 mm case. And the supply is already the deepest on the
+board: **Begrant, 250 ₽, 500 in stock** — eighty-three six-digit clocks' worth, and it is EMBER-06's
+tube, so it is a line the shop already restocks.
+
+**Still unmeasured, and skipping it is the same mistake twice.** *We have never calipered an ИН-16.*
+The 10.5 mm figure in Rev 1 came from reasoning about why NIWA works, not from a tube on a bench —
+precisely the class of assumption that cost this concept a revision. **Buy six, measure all three
+axes, and confirm which face the digits are viewed through before drawing a case.** Same for
+**ИН-19** (40 ₽, 101 in stock at Begrant), which would make the watch smaller again if its short axis
+comes in under ~11 mm.
+
+**Sequencing: build the desk miniature first.** It uses tubes already in hand, has no unmeasured part
+beyond the ИН-17 axes, and proves the 2×2 layout, the static driver and the matched-quad binning
+process — all three of which the wrist version needs, and none of which are cheaper to learn on a
+$700 object with a sapphire in it. *(Rev 4: still true, and now also the way the shop learns to
+reflow a QFP-44 HV part — on two chips, on the cheapest product in the range.)*
+
+---
+
+## 3. Matching — the cost that did not go away
+
+A sequential two-tube watch never shows two tubes side by side, so mismatch is invisible. **QUADRANT
+shows all four at once, and on a desk object it shows them permanently.** Expect to bin NOS ИН-17
+into matched quads at **60–70% yield, ~6 bought per 4 shipped**. At 150 ₽ that is ~900 ₽ of glass per
+unit including losses — nothing. **Depth is the question for those sellers, not price.**
+
+---
+
+## Open, in order
+
+1. **Three caliper readings on one ИН-17, all three orthogonal axes**, plus the 19.30 / 17.50 pair
+   re-taken on two more samples. The viewing axis is settled; the numbers behind it are not, and every
+   dimension in §1 rests on them. **Rev 4: this is now the gate on the whole product — spec §11.1.**
+2. **Lead exit geometry** — circle, comb, or two rows, at what pitch. Now a board-layout question
+   rather than a packaging crisis, but it still sets the footprint.
+3. **Bin six ИН-17 by eye at 1.5 mA** and find out whether 60–70% is pessimistic or optimistic. Ten
+   tubes are on the bench; this costs an evening.
+4. **Depth at s_svshkin and Avito Seller B.** Twelve and eighteen tubes is two or three units after
+   binning, not a run. **Rev 4: with the ten in hand this is 40 tubes ≈ six or seven units. Ask both
+   sellers by message — spec §11.4. This has not moved since Rev 3 and it is what decides whether
+   QUADRANT-D is a line or a one-off run.**
+5. **Caliper six ИН-16** for QUADRANT-W, and confirm the viewing face.
+6. **ИН-17's cathode order is unmeasured.** The plates run the ИН-12 mask as a stand-in. Effect 3
+   (cathode-order flip) will step through the wrong order on ИН-17 and *look almost right*, which is
+   worse than looking wrong. Measure it or exclude these tubes from that effect. **Rev 4: this now
+   blocks QUADRANT-D's cheapest differentiator as well as TERMINAL-06's seconds tubes.**
+7. **Leave it at four digits.** Seconds would need two more tubes and a 3×2, which stops being a
+   square and stops being the idea. Recommendation: the squareness is the product. **Rev 4: upheld.**
+8. **New, Rev 4 — ИН-17 life at 100 % duty.** ТУ minimum 7 500–9 000 h is ten to twelve months of
+   always-on. Run one tube at 1.4 mA beside one at 2 mA and photograph both weekly. Spec §11.2.
+
+---
+
+## Deltas owed to `claude/WATCHLIST-concept-tierlist.md` (fold into Rev G)
+
+- **QUADRANT-D — A tier, Functional.** 4× ИН-17 in 2×2, HH:MM at once, desk miniature,
+  **≈4 890 ₽/unit** *(corrected, Rev 4)*, proposed 15 000 ₽. **Buildable with tubes already in hand,
+  capped at six or seven units by ИН-17 depth.** The shop's entry object.
+- **QUADRANT-W — B tier, Functional, blocked.** Same thesis on 4× ИН-16 (250 ₽ ×500, Begrant).
+  Blocked on an ИН-16 caliper pass.
+- **The ИН-17 wristwatch is withdrawn** — record the reason, not just the outcome, so it is not
+  re-proposed: the tube is end-view and its long axis is the case depth.
+- **THIMBLE** should be respecified as *the ИН-19 version of QUADRANT-W*, and the ИН-19 measurement
+  should happen in the same pass as ИН-16.
+- **New protocol rule 19 (corrected):** *establish a tube's viewing axis before any dimension is
+  costed. The face you look at is fixed by the cathode stack; the case depth is whatever sits behind
+  it. Ask which face first.*
+- **New protocol rule 20:** *an end-view tube gets a window; a side-view tube gets an open deck.*
+  The shop's open-deck rule is about showing an envelope, and only side-view tubes have one to show.
+- **New protocol rule 21 (Rev 4):** *before specifying a driver IC, read its two least glamorous
+  numbers — maximum output voltage and logic supply range. Both were wrong here and both changed
+  the product.*
+- **New protocol rule 22 (Rev 4):** *a display whose ТУ life is measured in months of always-on
+  operation is a duty-cycle decision before it is an aesthetic one.*
+- **Rev 4 — two concepts move house:** **DEKA becomes QUADRANT's DIAL module** and **PULSE (and half
+  of DASH) becomes COLUMN**, both accessories rather than flagships. See `claude/QUADRANT-D-spec.md`
+  §6.
+- **Correction to record, carried:** gra-afch.com's ИН-17 page states "45 × 13 mm, digit height
+  13 mm". That is ИН-14/ИН-8 data. Do not use that vendor's dimension fields.
+
+---
+
+**Sources:** soviet-tubes.com · swissnixie.com · eandc.ru · rudatasheet.ru · niwa.watch ·
+nixoid.store · professionalwatches.com. The viewing-axis finding is the user's own, from the tube.

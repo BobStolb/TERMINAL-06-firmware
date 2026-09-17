@@ -1,0 +1,165 @@
+(footprint "TS06_JST_VH_B2P-VH_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "JST VH B2P-VH: 2-way, 3.96 mm pitch, top entry, through-hole (KiCad JST_VH_B2P-VH_1x02_P3.96mm_Vertical), pin field centred. XS1, the 185 V feed: VH so it cannot mate with any 5 V XH plug. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "connector JST VH vertical HV back TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -5 0)
+		(layer "B.Fab")
+		(uuid "0b8f9348-561c-56a3-bd3e-e7e6dcfd066b")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_JST_VH_B2P-VH_Back"
+		(at 0 6.1 0)
+		(layer "B.Fab")
+		(uuid "c55a87c0-c558-52d4-ba5e-9404cda18610") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "68164867-1f52-573c-926e-43a062be3151") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "53f7c0d1-9133-547f-a416-2a8fc745afbb") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "2f0fb777-5bef-54c8-9e7c-8a5340e984e6") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at 1.98 0)
+		(size 2.7 2.7)
+		(drill 1.7)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.092593)
+		(uuid "485b9b76-b0ed-56b0-9af3-605702cd4ea4")
+	)
+	(pad "2" thru_hole circle
+		(at -1.98 0)
+		(size 2.7 2.7)
+		(drill 1.7)
+		(layers "*.Cu" "*.Mask")
+		(uuid "0f8480af-07be-57a5-af7e-959a47646895")
+	)
+	(fp_line
+		(start 4.43 -4.2)
+		(end -4.43 -4.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "51371d0a-6663-5d04-853f-af99c02c2528")
+	)
+	(fp_line
+		(start -4.43 -4.2)
+		(end -4.43 5.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "90ebfd4f-407e-5849-90d8-ec170fd241c4")
+	)
+	(fp_line
+		(start -4.43 5.3)
+		(end 4.43 5.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "beefabf0-3ee0-5753-bb70-c630ed0461f5")
+	)
+	(fp_line
+		(start 4.43 5.3)
+		(end 4.43 -4.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "27d33545-8aad-5a71-a300-9ee135ebf836")
+	)
+	(fp_line
+		(start 3.93 -3.7)
+		(end -3.93 -3.7)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "8803eb9a-9af4-5a78-bff8-9a7ff87254f6")
+	)
+	(fp_line
+		(start -3.93 -3.7)
+		(end -3.93 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "ecbde842-5fbc-5a1d-a02b-92d19abab4cb")
+	)
+	(fp_line
+		(start -3.93 4.8)
+		(end 3.93 4.8)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "d8725335-3790-59ad-bfa4-efa1718a7cba")
+	)
+	(fp_line
+		(start 3.93 4.8)
+		(end 3.93 -3.7)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "a4a6c2f8-3d8f-575e-8c90-6baa73b0352c")
+	)
+	(embedded_fonts no)
+)

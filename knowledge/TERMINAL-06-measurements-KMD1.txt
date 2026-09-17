@@ -1,0 +1,59 @@
+# TERMINAL-06 — measurement capture: КМД1-1
+ 
+Fifth entry in the Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`),
+same format as IN-12, IN-17, ИНС-1, and МТ1.
+ 
+Sample: 1 pulled КМД1-1 button, Vogel digital caliper, 0.01 mm resolution.
+ 
+**Measurement strategy this round was differential**: only dimensions expected to differ
+from the МТ1 lever were captured. Everything else is carried over from the МТ1 sheet as
+an *assumption*, not a re-confirmed measurement — flagged clearly below so it doesn't
+quietly become load-bearing.
+ 
+## All dimensions to date
+ 
+| # | Dimension | Value | Method | `dims.*` alias | Confidence | Status |
+|---|---|---|---|---|---|---|
+| 1 | Body box — candidate dimension A | **13.75 mm** | Caliper, upside-down photo | `body_l`? | Medium — digit read plausible but orientation makes it not fully certain | Best guess: body box length or width, not yet assigned with confidence |
+| 2 | Body box — candidate dimension B | **16.91 mm** | Caliper, upside-down photo | `body_w`? | Medium — same caveat as #1 | Second body-box candidate; not yet distinguished from #1 |
+| 3 | Bushing thread major diameter | **~7.85 mm, by eye against the now-measured МТ1 stem** | Visual comparison, 27.08.26 — not an independent caliper reading on this part | — | **Medium — upgraded from pure assumption, still not calipered on the button itself** | МТ1's own bushing is now a real caliper reading (7.85 mm, see that sheet). A direct side-by-side look found the КМД1-1 stem "close enough by eye" to that — corroborates the shared-hardware guess but doesn't replace measuring this part directly |
+| 4 | Bushing usable length | *(carried over from МТ1)* | — | — | **Assumption, not measured** | МТ1 sheet doesn't have this yet either |
+| 5 | Front hardware stack (nut/washer) | *(carried over from МТ1)* | — | — | **Assumption, not measured** | Still unresolved on both parts |
+| 6 | Plunger free height | — | — | — | Not captured | |
+| 7 | Plunger pressed height (→ travel) | — | — | — | Not captured | Travel is what goes in `KEEPOUT` |
+| 8 | Body box — third dimension (depth) | — | — | — | Not captured | Only two candidates in hand; a box needs three |
+| 9 | Terminal count | **3, confirmed** | Visual, reference photo | — | High — clearly countable | Three solder pins visible along one edge |
+| 10 | Front element type | **Plunger/button cap, confirmed** | Visual, reference photo | — | High | Black cap, not a metal lever — confirms this is genuinely a different actuator type from МТ1, not just a different body shape |
+| 11 | Lug orientation vs. anti-rotation feature | — | — | — | Not captured | Body is wider than the bushing, so rotation isn't free — matters for how it's keyed in the fascia hole |
+ 
+## Worth flagging
+ 
+**Row 3 moved from pure assumption to eye-confirmed, 27.08.26 — still worth a real caliper
+pass before it's load-bearing for a batch order.** МТ1's bushing is now a measured 7.85 mm
+(this sheet's row 3 was previously "an assumption stacked on an estimate" against МТ1's old
+~8–9 mm visual guess). A direct look at both stems side by side found them close enough by
+eye to treat as the same hardware. That's good enough to size one prototype fascia hole —
+it is not the same as an independent caliper reading on this specific button, and if this
+part is ever sourced from a different batch or lot for the ten-unit run, it's worth actually
+measuring rather than continuing to inherit МТ1's number.
+ 
+**Rows 1–2 need endpoint identification**, same issue as the МТ1 sheet had. Without
+knowing exactly what each caliper span started and ended on, "13.75 mm" and "16.91 mm"
+are real numbers attached to an uncertain label.
+ 
+## Still needed
+ 
+- An independent caliper pass on this part's bushing thread, when precision beyond
+  "close enough by eye" is actually needed (batch order, not the prototype).
+- Third body-box dimension — depth — to complete L × W × H.
+- Plunger free height and pressed height (travel).
+- Lug orientation relative to the anti-rotation feature.
+- One more full sample on the two confirmed-unique readings, per the min/mean/max rule,
+  when finalising for the batch rather than the prototype.
+## Next
+ 
+The shared-hardware assumption is now corroborated twice — consistent reference photos,
+plus a direct eyeball comparison against a measured МТ1 stem — which is enough to proceed
+with one prototype fascia. Modelling this part for the parametric library still wants a
+real caliper reading on the button itself rather than continuing to borrow МТ1's number.
+ 

@@ -1,0 +1,50 @@
+# TERMINAL-06 — measurement capture: SR25-style rotary switch
+ 
+Sixth entry in the Section 3 capture-sheet series (`TERMINAL-06-cad-component-library.md`),
+same format as IN-12, IN-17, ИНС-1, МТ1, and КМД1-1 — with one difference: **every number
+in this sheet comes from an Ozon listing photo, not a caliper.** The part is still in
+transit. This is the guide's own "datasheet dimensions are a starting hypothesis, not a
+measurement" line, applied to itself.
+ 
+Source: Ozon listing (Похожие/размеры screenshot), 2 September delivery window.
+ 
+## All dimensions to date
+ 
+| # | Dimension | Value | Method | `dims.*` alias | Confidence | Status |
+|---|---|---|---|---|---|---|
+| 1 | Body diameter — variant A | **25 mm** | Listing photo, manufacturer-dimensioned | — | **Low — datasheet, unconfirmed** | One of two variants shown; not established which was ordered |
+| 2 | Body diameter — variant B | **19 mm** | Listing photo | — | **Low — datasheet, unconfirmed** | Second variant; same open question |
+| 3 | Shaft diameter | **6 mm** | Listing photo | `shaft_d` | Low-medium — stated for both variants, still unconfirmed by caliper | |
+| 4 | Overall height | **23.5 mm** | Listing photo | `body_h` | Low — datasheet, unconfirmed | Given for the 25 mm-body variant only; no figure shown for the 19 mm variant |
+| 5 | Bushing thread size | — | — | — | Not given | Not visible in this crop of the listing |
+| 6 | Bushing usable length | — | — | — | Not given | |
+| 7 | Position count | — | — | — | **Open — needs physical confirmation** | Project requires 6; photo shows a denser terminal ring than that, consistent with an 11–12 position wafer ahead of a stop ring. Not resolvable from a photo |
+| 8 | Wafer/pole count | **~2, visual only** | Listing photo | — | Low | Two-wafer stack visible on both variants; not stated as a spec figure |
+| 9 | Hardware included | Hex nut + flat washer, per photo | Listing photo | — | Confirmed present, not dimensioned | Neither piece has a stated size in this crop |
+ 
+## The one thing to resolve before anything else here matters
+ 
+**Which body diameter — 25 mm or 19 mm — is the actual part on order?** Everything else
+in this sheet is downstream of that. If it's not obvious from the order confirmation or
+listing title, it's worth a direct check before this switch's hole gets laid out
+alongside the МТ1 and КМД1-1 holes on the same fascia — a 6 mm difference in body
+diameter is not a rounding error at that scale.
+ 
+## Still needed
+ 
+- Resolve the variant question above.
+- Real caliper pass on the physical part once it arrives: body diameter, shaft diameter,
+  overall height (all three, not just cross-checking the listing).
+- Bushing thread size and usable length.
+- Actual position count and detent spacing — confirm the stop ring gives exactly 6, not
+  assumed from the photo's denser terminal ring.
+- Nut and washer dimensions, if they're the ones actually used rather than swapped for
+  hardware matching the rest of the control cluster.
+## Next
+ 
+Fine to block out as a placeholder cylinder in the fascia assembly sketch right now —
+that's what "hypothesis, not measurement" is for. Don't let it survive past the part's
+arrival without a real caliper pass; a control cluster laid out around an unconfirmed
+25 mm-vs-19 mm body is the kind of mistake that's invisible in FreeCAD and obvious the
+day the fascia comes back from the printer.
+ 

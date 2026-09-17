@@ -1,0 +1,139 @@
+(footprint "TS06_XS4_JST_XH_2p"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "XS4, 2-pin JST-XH, 2.5 mm pitch, colon leads to SEC. Housing measured 7.30 mm wide - wider than this board's 6.5 mm limit, but only the two THT pins land here; the housing itself overhangs the board edge with the cable exiting into open air, same as the mating half at SEC's own XS4. Pad 1 = raw +185V in, pad 2 = switched return to SEC's MPSA42 collector.")
+	(tags "connector JST-XH XS4 colon THT TERMINAL-06")
+	(attr through_hole)
+	(property "Reference" "REF**"
+		(at 0 -3.2 0)
+		(layer "F.Fab")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b01")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "XS4"
+		(at 0 3.2 0)
+		(layer "F.Fab")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b03") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b04") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b05") (hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 0.0000 -1.2500)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b06")
+	)
+	(pad "2" thru_hole circle
+		(at 0.0000 1.2500)
+		(size 1.6 1.6)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b07")
+	)
+	(fp_line
+		(start -1.5 -2.5)
+		(end 1.5 -2.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b08")
+	)
+	(fp_line
+		(start -1.5 2.5)
+		(end 1.5 2.5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b09")
+	)
+	(fp_line
+		(start -3.65 -3.85)
+		(end 3.65 -3.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b0a")
+	)
+	(fp_line
+		(start -3.65 3.85)
+		(end 3.65 3.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b0b")
+	)
+	(fp_line
+		(start -3.65 -3.85)
+		(end -3.65 3.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b0c")
+	)
+	(fp_line
+		(start 3.65 -3.85)
+		(end 3.65 3.85)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2e2a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5b0d")
+	)
+	(embedded_fonts no)
+)

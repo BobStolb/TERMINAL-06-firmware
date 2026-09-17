@@ -1,0 +1,164 @@
+(footprint "TS06_R_2512_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "2512 chip resistor, hand-solder lands (KiCad R_2512_6332Metric_Pad1.40x3.35mm_HandSolder). For the tube anode series resistors: 1 W body, and in normal running they drop well under 100 V. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "resistor 2512 SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -2.73 0)
+		(layer "B.Fab")
+		(uuid "a8e31947-9f19-553b-84f5-7bc7491c65c3")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_R_2512_Back"
+		(at 0 2.73 0)
+		(layer "B.Fab")
+		(uuid "b138b7c6-e461-59bb-b51e-579a17e00e77") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "f54c655b-30d2-51a3-a8c9-d93d2f63d74e") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "8847ab70-2a4f-57e8-9927-08f2fca8d44a") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "ccccbeee-39f6-5960-8602-f942d0dfbb50") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 3.05 0)
+		(size 1.4 3.35)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.178571)
+		(uuid "4ffbb7cd-1c71-572e-84ad-eff2e2c15468")
+	)
+	(pad "2" smd roundrect
+		(at -3.05 0)
+		(size 1.4 3.35)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.178571)
+		(uuid "bbb1dd11-286c-5396-a3e3-7e150e7174c2")
+	)
+	(fp_line
+		(start 4 -1.93)
+		(end -4 -1.93)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "2e32d74b-fd7c-5da0-a463-df254700c736")
+	)
+	(fp_line
+		(start -4 -1.93)
+		(end -4 1.93)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "02b224fc-fbcf-5b1c-abce-5bd87f812cbb")
+	)
+	(fp_line
+		(start -4 1.93)
+		(end 4 1.93)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "a2144d9e-cd22-5fbd-b358-26abcae3e066")
+	)
+	(fp_line
+		(start 4 1.93)
+		(end 4 -1.93)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "3834dad2-73a0-5c79-ae08-b763dab93abd")
+	)
+	(fp_line
+		(start 3.15 -1.6)
+		(end -3.15 -1.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "af049e0a-dd80-5bbf-afec-afe84f3dc5bc")
+	)
+	(fp_line
+		(start -3.15 -1.6)
+		(end -3.15 1.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "7150767b-111b-5c00-bfe8-e87906ca42bd")
+	)
+	(fp_line
+		(start -3.15 1.6)
+		(end 3.15 1.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "79574411-75d6-5e3b-aa15-27abbc52b671")
+	)
+	(fp_line
+		(start 3.15 1.6)
+		(end 3.15 -1.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f013e8c9-25b4-5dcb-9484-0b56b2bcbce8")
+	)
+	(embedded_fonts no)
+)

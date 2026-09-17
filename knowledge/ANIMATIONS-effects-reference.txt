@@ -1,0 +1,270 @@
+# ANIMATIONS — what the glass does, from the source (Rev 3)
+ 
+Every effect the shop's firmware can run on a gas-discharge display, with the real constants read
+out of the synced AlexGyver NixieClock v2.5 source rather than estimated. Companion to
+`claude/TERMINAL-06-spec.md` §5 (firmware status) and to every concept-plate set — MIMI-06 and
+SCALER-06 inherit this catalogue, and **QUADRANT-D contributes a family of its own (§5)**.
+ 
+Live, running versions of all of these:
+**https://claude.ai/code/artifact/be830226-8f69-407f-8402-f4884e6fd099** (TERMINAL-06 plate 01 — flip
+effects, glitch, sweep, colon fade, backlight breathe, ИН-15 idle cycling, all on real timings).
+ 
+**Why this document exists.** Three separate documents were quoting effect behaviour from memory,
+one of them wrongly (see the `DOT_BRIGHT` correction below). The effects are also the single
+most-commented-on feature in nixie clock reviews and the whole content of listing slot 10, so what
+they actually do is commercial information, not trivia.
+ 
+**Rev 2 (05.09.26) — the QUADRANT entry in §5 was wrong and is replaced.** It was written for the
+ИН-17 wristwatch, whose premise was *"total tube on-time on the watch is ~2 minutes a day, so
+poisoning risk is low."* That product is withdrawn (`claude/QUADRANT-wrist-feasibility.md` Rev 3)
+and QUADRANT-D is a **desk object on static drive at 100 % duty** — the highest cathode on-time of
+anything in the range, not the lowest. The premise is inverted, so the effect it justified is
+replaced by the pinwheel sweep, and a genuinely new family — **two-axis transitions** — is added,
+because a 2 × 2 is the shop's first display that is not a row. See `claude/QUADRANT-D-spec.md` §4.
+ 
+**Rev 3 (05.09.26) — the catalogue has been assuming a limitation that QUADRANT-D removes.**
+Every effect in this file dims a **whole tube**, because on a multiplexed display that is the only
+kind of dimming there is. QUADRANT-D drives forty private cathode lines from HV shift registers, so
+it can set the brightness of **one cathode**, and therefore light two digits in one tube at
+different levels. That is a capability, not an effect, and §0 below records it before the effects
+that depend on it. See `claude/QUADRANT-D-spec.md` §4.0.
+ 
+**Source files:** `firmware/nixieClock_2_v2.5/effects.ino`, `glitch.ino`, and the settings block of
+`nixieClock_2_v2.5.ino`. Line references are to the synced GitHub copy in this project.
+ 
+---
+ 
+## 0. What kind of dimming the hardware allows — read this before the effects
+ 
+| Drive | What can be dimmed | Products |
+|---|---|---|
+| **Anode multiplex** (К155ИД1 + optos) | the **whole tube** — `indiDimm` is per-tube because the anode is what's switched | TERMINAL-06, and everything inherited from AlexGyver |
+| **Static, HV shift registers** | **any individual cathode**, by rewriting the register with binary code modulation | QUADRANT-D |
+ 
+The second row is new to the shop and it is why §5 gains an effect the source has no equivalent
+for. Mechanics, from the QUADRANT-D spec: 64-bit chain, **16 µs per rewrite at 4 MHz**, BCM at
+8 planes per frame ≈ 800 writes/s ≈ **0 % CPU on an RP2040's PIO+DMA**.
+ 
+**Two constraints that shape every effect built on it:**
+ 
+1. **Usable depth is probably 4–5 bits, not 8.** A nixie needs time to ionise; at 100 Hz the LSB
+   plane is ~39 µs and the glow may simply not form. Characterise the floor on the bench and treat
+   it as the resolution, not as a bug.
+2. **Never light two cathodes in one tube at the same instant** — they would share one anode
+   resistor's ~1.4 mA and the nearer cathode may hog it. **Time-interleave them inside the frame.**
+   Above ~100 Hz the eye integrates it identically and the current-sharing question never arises.
+---
+ 
+## 1. Flip effects — what happens when a digit changes
+ 
+Selected at runtime, stored in EEPROM, cycled by a button in stock firmware and (per Rev C) by
+rotary position 3 in TERMINAL-06. `FLIP_SPEED[] = {0, 130, 50, 40, 70, 70}` — milliseconds per
+step of each effect's timer, indexed by effect number.
+ 
+| # | Name (source) | Step | What actually happens |
+|---|---|---|---|
+| 0 | нет эффекта | — | `sendTime()` writes the digits straight out. Nothing crossfades. |
+| 1 | плавное угасание и появление | **130 ms** | Only tubes whose digit *changed* ramp `indiDimm` down to 0, swap, and ramp back to `indiMaxBright`. Unchanged tubes never flicker. Source comment recommends 100–150. |
+| 2 | перемотка по порядку числа | **50 ms** | Each changed tube decrements its digit — 9, 8, 7 … wrapping through 0 — until it equals the target. Tubes finish at different times, so the row settles raggedly. Recommended 50–80. |
+| 3 | перемотка по порядку катодов | **40 ms** | Walks the *physical* cathode stack via `cathodeMask`, stepping the index toward the target rather than the numeral. **The only effect that makes sense exclusively on a nixie** — the glow steps through the depth of the tube instead of through arithmetic. Recommended 30–50. |
+| 4 | поезд (train) | **70 ms** | Whole reading shifts one place right per tick while the leftmost tube goes dark, until the row is empty; then new digits feed in at the left, **last digit first**, sliding right to their homes. 8 ticks on 4 tubes. Recommended 50–170. |
+| 5 | резинка (elastic band) | **70 ms** | One digit at a time is stretched along the row to the right edge and flicked off, rightmost source first; then each new digit is fed in at the left and stretched to its place, deepest first. **21 stages** on 4 tubes. Recommended 50–150. |
+ 
+### Cathode masks — needed for effect 3, and easy to get wrong
+ 
+```
+BOARD_TYPE 0  digitMask   {7, 3, 6, 4, 1, 9, 8, 0, 5, 2}   cathodeMask {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}
+BOARD_TYPE 1  digitMask   {2, 8, 1, 9, 6, 4, 3, 5, 0, 7}   cathodeMask {1, 6, 2, 7, 5, 0, 4, 9, 8, 3}
+BOARD_TYPE 2  digitMask   {9, 8, 0, 5, 4, 7, 3, 6, 2, 1}   cathodeMask {1, 0, 2, 9, 3, 8, 4, 7, 5, 6}
+```
+ 
+`cathodeMask` is the physical stacking order of the cathodes inside the tube — identical for both
+ИН-12 board types, different for ИН-14. **TERMINAL-06's board is BOARD_TYPE 0**, corrected on the
+bench 01.09.26; the firmware shipped as `1`, which was the cause of the scrambled digits in early
+testing.
+ 
+**ИН-17's cathode order has never been measured.** Effect 3 on the seconds tubes will step through
+the wrong order until `secCathodeMap` is run — and it will look almost right, which is worse than
+looking wrong. Either measure it or exclude the seconds tubes from effect 3 specifically.
+**Rev 2: this now blocks two products.** QUADRANT-D is four ИН-17 and nothing else, so effect 3 —
+its cheapest differentiator — is unavailable until the same one-evening measurement is taken. The
+work is shared; do it once, for both.
+ 
+### Six-tube port
+ 
+TERMINAL-06 generalises effects 4 and 5 from 4 tubes to 6. Effects 1–3 are per-tube and generalise
+for free. **Seconds are excluded from transition effects entirely** — a digit that changes every
+second should step instantly, not crossfade, or the display never settles.
+ 
+**Rev 2 caveat: effects 4 and 5 assume a row.** They are defined by "shift one place right", which
+has no meaning on a 2 × 2 without deciding what "right" is. See §5.
+ 
+---
+ 
+## 2. Glitch — the thing reviewers write about
+ 
+`glitch.ino`. Settings: `GLITCH_ALLOWED` (button-toggled), `GLITCH_MIN 30`, `GLITCH_MAX 120` seconds.
+ 
+- Fires at a random interval **30–120 s**.
+- Picks **one random tube** (`glitchIndic = random(0,4)`).
+- Blinks it **2–6 times** (`glitchMax = random(2,6)`), toggling `indiDimm` between 0 and
+  `indiMaxBright`.
+- Interval between blinks: `random(1,6) * 20` ms → **20–100 ms**, re-randomised every blink.
+- Suppressed unless `secs > 7 && secs < 55`, so it never collides with a minute flip.
+That suppression window is worth keeping in any port: the glitch reads as a failing tube, and a
+failing tube *during* a transition reads as a broken product.
+ 
+---
+ 
+## 3. Anti-poisoning sweep — maintenance that photographs well
+ 
+Settings: `BURN_PERIOD 15` minutes, `BURN_LOOPS 3`, `BURN_TIME 10` ms.
+ 
+Every 15 minutes, every tube runs 0→9 **three times** at **10 ms** a step — about **300 ms** of
+controlled chaos, then straight back to the time. Also runs at power-on.
+ 
+This is not decoration. A cathode that never fires sputters and goes cloudy, and on a product with
+a ten-unit run and no returns budget that is a warranty problem, not an aesthetic one. It also
+happens to be the best three seconds of the listing video, which is why it opens slot 10.
+ 
+---
+ 
+## 4. Colon and backlight
+ 
+| Setting | Value | Note |
+|---|---|---|
+| `DOT_TIME` | 500 ms | colon period |
+| `DOT_TIMER` | 20 ms | brightness step — **the colon fades, it does not blink** |
+| `DOT_BRIGHT` / `_N` | **35 / 15** | day / night. See correction below |
+| `BACKL_BRIGHT` / `_N` | 180 / 20 | day / night |
+| `BACKL_STEP` | 2 | breathing step |
+| `BACKL_TIME` | 5000 ms | breathing period |
+| `BACKL_PAUSE` | 600 ms | dark pause between breaths |
+| `BACKL_MODE` | 0 / 1 / 2 | breathing · constant · off |
+| `NIGHT_START` / `NIGHT_END` | 23 / 7 | night dimming window |
+| `INDI_BRIGHT` / `_N` | 23 / 3 | digit brightness, 0–24. **At 24 you get phantom digits** |
+ 
+**Correction, standing since 28.08.26.** `DOT_BRIGHT` / `DOT_BRIGHT_N` in the pushed source are
+still **35 / 15** — the original LED-era values. The **170 / 90** figures that appear in
+`claude/TERMINAL-06-spec.md` §5 and in `terminal-06.html` are an unverified *target* for a neon
+colon, not a value anyone has flashed. Tune on the bench at prototype step P6 against the real
+ИНС-1 pair. Do not let 170/90 propagate any further as if it were settled.
+ 
+**Rev 2:** QUADRANT-D has no backlight at all and its night dimming is **LDR-driven and
+continuous**, not a 23:00–07:00 window — so `NIGHT_START`/`NIGHT_END` and the whole `BACKL_*` block
+do not port to it. Its brightness is one global PWM on the HV driver's blanking pin, which is also
+why it cannot develop a tube-to-tube brightness mismatch in firmware.
+ 
+---
+ 
+## 5. Effects added by this shop, not inherited
+ 
+### ИН-15 idle symbol cycling (TERMINAL-06 Rev D)
+ 
+Not in the AlexGyver source — new code, not yet written. With all 18 cathodes of the ИН-15Б/ИН-15А
+pair individually switchable through two MCP23017 expanders, rotary position 1 (Normal) cycles the
+pair through its glyph set as an ambient animation while the clock is idle.
+ 
+- ИН-15Б: **A, W, F, Hz, H, V, S, Ω** (8 glyphs)
+- ИН-15А: **μ, −, +, %, n, m, M, K, Р, П** (10 glyphs)
+**Open, and it is a product question not a code question:** if the animation runs continuously, a
+glance may catch it mid-cycle on an unrelated glyph instead of the correct A or P. Two honest paths
+— cycle only after N seconds of no input and snap back on activity, or accept the trade because the
+real time reference is the digit tubes. Not resolved. The live page above runs the "always cycling"
+version so the trade can be judged by eye rather than argued about.
+ 
+### ~~Slot-machine glance sweep (QUADRANT)~~ — WITHDRAWN, Rev 2
+ 
+Written for the ИН-17 wristwatch on the premise that *"total tube on-time on the watch is ~2 minutes
+a day, so poisoning risk is low"*, with a short slot-machine cycle at the start of each glance
+serving as both signature animation and token cathode exercise. **The wristwatch is withdrawn and
+the premise is inverted:** QUADRANT-D is a desk object on **static drive at 100 % duty**, the
+highest cathode on-time in the range. Nothing here survives the change. Replaced by the two entries
+below.
+ 
+### Pinwheel sweep (QUADRANT-D)
+ 
+The §3 anti-poisoning cycle — 0→9 three times, 10 ms a step — run with a **90° phase offset per
+tube**, so the glow appears to rotate around the square. Same maintenance function, same duration,
+and it is the clearest single demonstration that a 2 × 2 is not a short row.
+ 
+Two scheduling options, and they are a product decision rather than a code one:
+ 
+- **`BURN_PERIOD 15` as inherited** — four sweeps an hour, maximum cathode coverage, which is what
+  static drive needs.
+- **On the hour only** — the maintenance routine reads as a chime you can see, which is a listing
+  bullet, at a quarter of the coverage.
+Recommendation: **run both** — hourly at full length as the visible event, and a short background
+sweep on the 15-minute timer. The cost is 300 ms of display time and nothing else.
+ 
+### Two-axis transitions (QUADRANT-D) — new family
+ 
+Effects 4 and 5 are defined by *"shift one place right"*, which is a statement about a row. The
+shop's first square display can do things no row can, and this is new inventory, not a re-skin:
+ 
+Positions: `0` HH-tens (top-left) · `1` HH-units · `2` MM-tens · `3` MM-units.
+ 
+| Name | Order / motion | Ticks | Needs §0 per-cathode? |
+|---|---|---|---|
+| **Dissolve** | per tube: the old digit interleaved down while the new one comes up, two numerals visible at two *depths* | ~16 @ 30 ms | **yes — and this is the one the shop has never been able to build** |
+| **Pinwheel flip** | 0 → 1 → 3 → 2, 90° apart | 4 @ 60 ms | no |
+| **Diagonal wipe** | (0,3) then (1,2) | 2 @ 90 ms | no |
+| **Orbit** | all four digits step one place clockwise, N laps, then land | 4N + 1 | no |
+| **Fold** | top row falls into the bottom row, new values rise out | ~6 @ 70 ms | no |
+| **Column then row** | HH as a pair, then MM as a pair — the group break is *shown*, which is how the display gets away with no separator when the colon is dark | 2 | no |
+ 
+**Dissolve deserves its own paragraph.** AlexGyver's effect 1 ramps `indiDimm` — the whole tube
+goes dark and comes back. Dissolve fades *between digits inside one envelope*: for a moment you see
+the outgoing numeral and the incoming one at once, at different depths in the glass, one giving way
+to the other. **It is the most physically nixie thing in this catalogue and it is structurally
+impossible on a multiplexed display**, because a multiplexed tube has exactly one brightness. It is
+a bench question — see §0's two constraints — and if it survives the bench it leads the listing
+video.
+ 
+**Constraint that comes free with static drive:** none of these can band on camera at any frame
+rate, because nothing is multiplexed. Effects 4 and 5's "film the train or the elastic band" rule
+(§rules 5) exists because slow per-tube brightness ramps do not read at 60 fps — that still applies
+to *speed*, but not to *safety*. Film any of them.
+ 
+**Blocked on the same measurement as effect 3:** none of the above needs `cathodeMask`, but the one
+effect that is exclusively nixie does, and QUADRANT-D is four ИН-17 and nothing else. Measure the
+ИН-17 cathode order once and it serves both products.
+ 
+### The ring (SCALER-06)
+ 
+Not an animation at all, and that is the point — the decatron's glow is stepped by the events
+themselves, one position per detected particle. **The only "effect" in the shop's catalogue that
+cannot be faked in firmware**, and the only one whose motion carries information. Its one firmware
+parameter is the divider in front of it, needed because the ring cannot step faster than the low
+kilohertz.
+ 
+**Rev 2 addition — the same is true of QUADRANT-D's DIAL module** (`claude/QUADRANT-D-spec.md`
+§6.4), for a reason worth writing down: an ОГ-3's ten counting cathodes are **commoned to one pin**,
+so the glow cannot be addressed, only stepped by guide pulses, and the only position readable
+electrically is the index cathode. One detent of the knob is one step of the glow. **The
+impossibility of faking it is the feature.**
+ 
+---
+ 
+## Rules that came out of writing this down
+ 
+1. **Quote the constant, not the memory.** Three documents were carrying `DOT_BRIGHT 170/90` as
+   fact. One `grep` settled it.
+2. **An effect that walks the cathode stack needs the cathode stack measured.** Effect 3 is the most
+   nixie-specific thing in the catalogue and the most likely to be silently wrong on any tube whose
+   `cathodeMask` was assumed.
+3. **Exclude fast-changing digits from slow effects.** Seconds never crossfade.
+4. **Suppress the glitch around transitions.** A stutter during a flip reads as a fault.
+5. **Effects 4 and 5 are the ones that read at 60 fps.** Effect 1 does not — a 130 ms/step
+   brightness ramp is invisible against a camera shutter. Film the train or the elastic band.
+6. **New, Rev 3: ask what the drive topology lets you dim before writing an effect.** This whole
+   file quietly assumed whole-tube dimming for five revisions, because that is all a multiplex can
+   do. Static drive dims a cathode. **An architecture change hands back capabilities as well as
+   taking work away — go looking for them.**
+7. **New, Rev 2: an effect inherits its form factor's premise, and the premise dies with the form
+   factor.** The slot-machine sweep was correct for a watch lit two minutes a day and actively wrong
+   for the same concept on a desk at 100 % duty. **When a concept moves, re-derive its animations
+   from its duty cycle, not from its old entry in this file.**
+8. **New, Rev 2: a row effect is not automatically a square effect.** "Shift one place right" has no
+   definition on a 2 × 2. Ask what the display's shape allows before porting anything.
+ 

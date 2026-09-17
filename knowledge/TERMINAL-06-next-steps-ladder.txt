@@ -1,0 +1,82 @@
+# TERMINAL-06 — the ladder
+ 
+**Created 06.09.26**, after a week trapped on P2. This doc exists to stop that happening again.
+ 
+## The two rules
+ 
+**1. One rung per sitting. Finish it, stop, and don't chain into the next one.**
+ 
+**2. If a rung takes more than one evening, STOP and say so.** That is the tripwire. P2 ate a
+week because nobody called it after night two. Anything that overruns gets re-scoped or parked
+— it does not get pushed through.
+ 
+**Rungs 3–7 cannot reopen the ghosting question.** None of them touch the digit multiplex.
+That is deliberate: there is a run of work here with no route back into the swamp.
+ 
+---
+ 
+## Phase 1 — bank what already works (one evening, ~30 minutes total)
+ 
+**Rung 1 — Commit and push the firmware.** *(10 min)*
+Right now `BOARD_TYPE 0`, the timing constants, the `MUX_SLOTS` diagnostic and its comment block
+all sit on unpushed local branches. That is the best work of the week and it exists in one place
+on one machine.
+**Done when:** it's on GitHub.
+ 
+**Rung 2 — Set the time and leave it running.** *(5 min)*
+Put it where you'll see it. Let it run overnight.
+**Done when:** it's still showing the right time in the morning — which also silently confirms
+the DS3231, the boost stage and thermal behaviour, three things never yet checked over hours.
+ 
+**Rung 3 — Measure the HV rail.** *(10 min)*
+One number, meter on 600 V DC, black lead clipped to ground before power-on. Closes **P3**,
+open since the beginning.
+**Done when:** a voltage is written into the prototype plan.
+ 
+---
+ 
+## Phase 2 — make it look like a product (one evening each, any order)
+ 
+**Rung 4 — Fit the backlight LEDs.** Six amber on D11 PWM, pads already on the board.
+**Done when:** the tubes glow from behind. Biggest visual change for the least work on this list.
+ 
+**Rung 5 — Fit the colon.** 2× ИНС-1, **220 kΩ ballast each, never shared** (spec §3), low-side
+MPSA42 on D10.
+**Done when:** the colon blinks. This is the rung where it stops reading as a test rig and starts
+reading as a clock.
+ 
+**Rung 6 — Caliper the socket.** Seat height above PCB, tip-off pip projection, front-glass-to-
+digit depth. Twenty minutes with the calipers.
+**Done when:** `TS06-LIB-SOCKET` exists. Unblocks the case geometry, which is currently resting
+on assumptions (the 32 mm floor / 17 mm centreline are still guesses).
+ 
+**Rung 7 — Print the chassis and brow, test-fit.** Unattended machine time.
+**Done when:** you're holding it and can see whether the brow reveal is right (spec §6).
+ 
+---
+ 
+## Phase 3 — the two that finish it
+ 
+**Rung 8 — Build the SEC module.** 2× ИН-17 + their 2 TLP627s on D2/D13. Then set
+`MUX_SLOTS 6` and look.
+**This is the payoff rung.** If the empty-slot theory is right, the ghosting simply is not there
+— the slots have real tubes and real anodes now. And if it is clean, **re-run the refresh sweep
+before accepting the 50 Hz/camera-flicker concession**; that trade was priced under a wrong
+model and may not need paying.
+*By this point seven rungs are banked, so this one can fail without the project feeling stuck.*
+ 
+**Rung 9 — Rotary fascia artwork.** Pure design, no electronics, no soldering. All the
+dial-critical numbers are already measured (26.94 mm body, 6 mm shaft, 6 positions over ~160°).
+Good rung for an evening with no patience for hardware.
+ 
+---
+ 
+## Parked, deliberately
+ 
+- **TS06-TUBE** — decide it on tube-reveal geometry after rung 7, not on bleed resistors. Its
+  resistor justification is withdrawn.
+- **Anode-driver hardware** (MPSA92, HV shift registers) — not needed for this product. Kept in
+  the study for QUADRANT and the decatron build.
+- **The four fitted ИН-12 bleed resistors** — leave them in. Harmless, and desoldering risks
+  joints for nothing.
+ 

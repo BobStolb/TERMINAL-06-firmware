@@ -1,0 +1,994 @@
+# QUADRANT-D — 2 × 2 nixie desk miniature, production spec (Rev 3)
+ 
+The shop's **entry object**: four ИН-17 pointing at you in a square, HH over MM, read at once,
+in a black block you can close a hand around. One cable, one control, no mode tree.
+ 
+Supersedes the desk half of `claude/QUADRANT-wrist-feasibility.md` (Rev 3), which opened this
+concept and is retained for the wrist sibling and the withdrawal record. **Six of Rev 3's
+decisions change here and are listed in §0 rather than quietly overwritten.**
+ 
+Deliverables: this spec · `QUADRANT-D-parts-list.xlsx` (sourced BOM, live formulas) ·
+concept plates (not yet drawn — blocked, see §11.1).
+ 
+**Rev 2 (05.09.26) — four changes, all downstream of one decision.**
+ 
+1. **Wi-Fi is withdrawn.** A clock that asks to join a network is the wrong object. NTP goes with
+   it, DS3231 becomes the only timebase, and the telemetry link moves to **USB** (§3.1, §4).
+2. **Which makes the power input plain 5 V**, since the cable that carries data has to carry
+   power and a PC port is not a PD source. The PD trigger and the 20 W brick are deleted and the
+   "wrong charger, nothing lights" failure mode goes with them (§3.3).
+3. **MCU re-picked: RP2040.** No radio in the product at all, driverless USB CDC (a CH340 driver
+   prompt would kill the telemetry feature on contact), and PIO+DMA for §4.0 (§3.1).
+4. **§4.0 is new and it changes the animation catalogue.** Static drive was chosen to delete the
+   multiplex; what nobody costed is what it gives back — **per-cathode brightness**, and with it
+   a digit-to-digit crossfade inside one tube that no multiplexed nixie clock can perform.
+Also in Rev 2: the bezel-magnet configuration scheme is **dropped** and replaced by a 25 ₽ piezo
+(§4 B tier); **DIAL is parked and reassigned to TERMINAL-06** (§6.4); the module bus loses its
+radio and becomes wired (§6.2).
+ 
+**Rev 3 (05.09.26) — the internals, and three things that changed while drawing them.**
+ 
+1. **§5 is rewritten as the internals section**, because the case size is an *output* of the board
+   layout, not an input to it. **One vertical board**, tubes on the front face, everything else on
+   the back — the forty cathode traces never leave the board they start on and no internal
+   connector carries high voltage (§5.1). Case falls out at **62 × 70 × 58 mm**.
+2. **The colon is deleted** (§2.3). The 2 × 2 grouping *is* the separator — that was always the
+   thesis — and removing it takes out two ИНС-1, two ballasts, a transistor, a printed holder, a
+   binning step and the QC line TERMINAL-06 calls *"the most visible defect on the product"*.
+3. **Knock gets a hardware fallback** (§3.2): the rear panel gains **two buttons** beside the
+   encoder, and the rule is now written down — *no function is knock-only.*
+4. **Rev 2's 420 g was wrong** and is corrected to ≈330 g with the arithmetic shown (§5.4). Cost
+   lands at **≈4 697 ₽**.
+---
+ 
+## 0. What changed against the feasibility document, and why
+ 
+Rev 3 costed and sketched this product before anyone read a driver datasheet. Six corrections,
+all of them load-bearing.
+ 
+| Rev 3 (02.09.26) | Rev 1 of this spec | Why |
+|---|---|---|
+| Drive: **2 × HV5622**, static, "3 GPIO" | **2 × HV5630** (300 V), static, **4 signals + a level shifter** | HV5622 is rated **220 V**. The rail is 185 V and eandc's ТУ for ИН-17 asks for **≥200 V supply**, so 220 V is 20–35 V of margin on a part that stands the full rail when off. This shop already refused a 160 V transistor on a 185 V rail (spec §3, MPSA42 over 2N5551). HV5630 is the same part at 300 V. |
+| "3 GPIO" | **CLK · DIN · LE · BL**, plus **12 V logic** | The HV55xx/HV56xx family's logic supply is **10.8–13.2 V**, not 3.3/5 V. SPI has to be shifted up. This was missed entirely. |
+| Power: **mains**, ≈1 W continuous | **USB-C PD, 12 V**, ≈2.5 W | The 12 V logic rail above makes 12 V the natural input, a PD trigger makes it one familiar cable, and it removes a mains PSU and its enclosure volume from an entry product. |
+| Controls: one knob + one button on the **top deck** | **one rear encoder-with-push**, and the front face carries nothing | "No prominent control scheme" is the brief. A 2 × 2 of glass wants no hardware in front of it. |
+| Cost ≈ **3 500 ₽**/unit | **≈4 700 ₽**/unit, itemised | Rev 3's "enclosure, PSU, packaging ≈900 ₽" is roughly a third of what those three groups cost on TERMINAL-06, and it costed the power supply at zero. Rebuilt line by line in the workbook: **the product is just under half of TERMINAL-06, not a third of it.** |
+| Anti-poisoning "mandatory" | **mandatory, and the duty cycle is a product risk in its own right** | Static drive means 100 % duty. ИН-17's ТУ life is **7 500–9 000 h ≈ 10–12 months of always-on**. See §11.2. This is the single most important thing Rev 3 did not know. |
+ 
+Rev 3's core findings all stand: end-view tube, window not plinth, 48 leads straight back into
+one flat board, no riser, no flex, 25–35 min of tube work, and the labour argument that forced a
+$700 wrist price does not exist here.
+ 
+---
+ 
+## 1. Thesis and position in the range
+ 
+**Every nixie clock on the market is a row.** Four digits in a square is not a smaller version of
+that — it is a different object. A row reads as a readout; a square reads as an *instrument face*,
+and it gives the firmware a second axis nothing else in the shop has (§4).
+ 
+| | TERMINAL-06 | **QUADRANT-D** | EMBER-06 |
+|---|---|---|---|
+| Glass | 4× ИН-12А + 2× ИН-17 + 2× ИН-15 + 2× ИНС-1 | **4× ИН-17 and nothing else** | ИН-14/ИН-16 |
+| Digits | 6 | **4** | 6 |
+| Controls | rotary + 2 levers + 2 buttons | **one rear encoder** | — |
+| Power | mains PSU | **USB-C** | — |
+| Drive | multiplexed, К155ИД1 + optos | **static, HV shift registers** | — |
+| Cost / retail | 10 078 ₽ / 27 000 ₽ | **≈4 700 ₽ / 15 000 ₽** | — / $329 |
+| Hands-on | 2 h 20 | **≈1 h 30** | — |
+ 
+Its job is to be **the cheapest way for someone to own real nixie glass from this bench**, and to
+be the product that carries the shop's second drive architecture on four tubes instead of six.
+ 
+**Niche, stated deliberately:** the desk-setup audience — mechanical keyboards, a monitor arm, one
+good lamp, everything USB-C. That audience buys objects that *do something on the desk*, which is
+why the telemetry mode (§4, S tier) exists and why the body is 62 mm wide rather than 176.
+ 
+---
+ 
+## 2. Display and drive
+ 
+### 2.1 Static, and this is where the shop learns it
+ 
+`claude/TERMINAL-06-anode-driver-study.md` §4 T3.3 already wrote the verdict:
+ 
+> HV shift-register static drive — **Rev E / product 2.** Right answer for a product line, wrong
+> answer for this run. **Carry it forward to QUADRANT** and the decatron product so they don't
+> inherit the multiplex from scratch.
+ 
+This is that product. Two independent reasons, one of which is not a preference:
+ 
+1. **Multiplex is forbidden here by the tube, and Rev 3 has a second source for it.**
+   `TERMINAL-06-measurements-IN17.md` records a **4 mA DC overcurrent ceiling**; four tubes at 25 %
+   duty need ~6 mA peak to average 1.5 mA, so it does not fit. A Russian catalogue entry
+   (tec.org.ru) looked at first like a contradiction — it permits **3.5–7 mA in pulse** — until the
+   condition is read: **скважность до 25**, i.e. that allowance holds only at a duty of ~4 %. A
+   four-tube multiplex runs at 25 % duty (скважность 4), which is six times denser than the pulsed
+   rating covers. **Both sources say the same thing.** (Two banks at 50 % duty would fit the DC
+   figure at 3 mA peak — costed and rejected in §2.4.)
+2. **Static makes the entire ghosting programme structurally impossible.** No cathode selection
+   ever changes, so there is nothing to ghost. Deleted from this product before it exists:
+   К155ИД1, six TLP627s, six anode bleed resistors, the multiplex ISR, `DEAD_TICKS`, the
+   refresh-rate-versus-dead-time trade, the 274 Hz ceiling, and the camera-banding criterion that
+   generated all of it. QUADRANT-D **cannot band on video at any frame rate.**
+Also: 100 % duty is ~4–6× the light of a multiplexed tube, which matters on a 9 mm digit.
+ 
+### 2.2 The chips
+ 
+**2 × HV5630PG-G** — 32-channel low-voltage-serial to high-voltage-parallel converter,
+open-drain, **300 V**, 100 mA/channel sink, 8 MHz clock, QFP-44, daisy-chained.
+64 channels for **40 cathodes**; the spare 24 are §6's expansion budget.
+ 
+- **HV5622 is the 220 V part of the same family and is the wrong one here.** Same footprint, same
+  pinout, same price class. If a distributor stocks only the 220 V part, that is a reason to keep
+  looking, not a reason to accept 35 V of margin on the shop's first static HV product.
+- **Logic supply 10.8–13.2 V.** CLK/DIN/LE/BL come from a 3.3 V MCU, so a **CD4504B** hex level
+  shifter (Vcc = 3.3 V logic side, Vdd = 12 V) sits between them. One 16-pin DIP/SOIC part, four
+  channels used, two spare.
+- **BL (blank) is global PWM brightness for free.** One pin dims all forty cathodes together,
+  which is the correct behaviour for a display whose whole risk is *four tubes visibly not
+  matching* (§11.3). Per-tube brightness trimming is not offered and should not be — a global dim
+  cannot introduce a mismatch.
+- **QFP-44 is not millable on the CNC 3040.** This is a Rezonit board with a stencil and a hotplate,
+  or careful hand-work under the microscope. Budget it as a skill to acquire once, on two chips,
+  rather than a per-unit cost.
+- **Counterfeit risk:** the same warning the TERMINAL spec carries for the MCP23017s applies
+  harder to an HV part. Buy through ChipDip or Farnell, not a marketplace listing.
+### 2.3 Rail, resistors, current
+ 
+| | Value | Working |
+|---|---|---|
+| HV rail | **185 V nominal**, trimmable to 200 V | Same rail as TERMINAL-06 — one rail voltage across the shop. eandc's ТУ asks ≥200 V supply and swissnixie quotes ≤170 V strike / 105 V maintain; the 300 V driver is what makes raising the trimmer free if a batch strikes reluctantly. |
+| Anode resistor, per tube | **56 kΩ 0.5 W start** | (185 − 105) / 56 k = **1.43 mA**. 47 k → 1.70 mA (brighter), 68 k → 1.18 mA (softer, longer-lived). 0.5 W is for the voltage rating, not the ~0.11 W dissipated. **One per tube, never shared.** |
+| Colon | **none — deleted in Rev 3** | See below. |
+| Total HV load | 4 × 1.43 ≈ **5.7 mA @ 185 V ≈ 1.06 W** | |
+ 
+**The colon is deleted, and it should have been from the start.** *HH over MM, read at once* was the
+thesis in the first sentence of the feasibility document — **the 2 × 2 grouping is the separator.**
+A row needs a colon because `1423` is otherwise one number; a square does not, because the eye reads
+two fields before it reads four digits. Putting a colon between the rows was a row habit carried
+onto a shape that does not have the problem.
+ 
+What leaves with it: 2 × ИНС-1, two 220 kΩ ballasts, an MPSA42 and its base resistor, the printed
+colon holder, the **J-NEON** pairing rig, the matched-pair binning step in the build, and the QC
+line TERMINAL-06 §3 calls **"the most visible defect on the product"** — *a brightness mismatch
+between the two dots of one colon.* **Deleting a whole class of visible defect from the entry
+product is worth more than the 50 ₽.**
+ 
+**The seconds tick moves onto the digits.** Per-cathode PWM (§4.0) makes a **1 Hz breathe of ~3–5 %
+depth** free — the whole display inhales once a second. Nothing extra, nothing to mismatch, and it
+is liveness without a blinking dot. If it reads badly on the bench, the window-wash LEDs (§5.5) are
+the fallback carrier for the same pulse.
+ 
+### 2.4 Rejected, with the reason recorded
+ 
+- **Two-bank multiplex** (2 tubes/bank, 50 % duty, 3 mA peak — legal under the 4 mA ceiling).
+  Costs two К155ИД1s, a second cathode bus, an ISR, dead-time tuning and six bleed footprints, to
+  arrive at the same average current and the same brightness as static drive. **Multiplexing does
+  not extend tube life** — sputtering tracks average charge, not peak — so it buys nothing on
+  §11.2 either. Rejected.
+- **5 × 74HC595 + 40 × MPSA42 + 40 base resistors.** Through-hole, millable, no counterfeit
+  exposure, ~120 ₽ of parts. And **85 extra components and ~250 extra solder joints per unit** on
+  the product whose entire argument is a short build. Rejected — but this is the honest fallback
+  if HV5630 cannot be sourced, and it should be kept in the back pocket rather than forgotten.
+---
+ 
+## 3. Timebase, control, power
+ 
+### 3.1 No radio in this product
+ 
+**Wi-Fi is withdrawn (Rev 2).** A clock that opens a captive portal and asks to join a network
+is a different kind of object from the one this shop sells, and the objection is correct: the
+setup screen would be the first thing a customer ever saw. NTP goes with it.
+ 
+| | **Rev 2 — RP2040 + DS3231 (recommended)** | Rev 1 — ESP32-C3 + NTP | Shop standard — Nano + DS3231 |
+|---|---|---|---|
+| Radio | **none, at all** | Wi-Fi | none |
+| USB to the host | **native CDC, driverless** | native CDC | CH340 bridge — **a driver install on some Windows machines** |
+| Logic | 3.3 V, matches the CD4504B low side | 3.3 V | 5 V |
+| Per-cathode PWM (§4.0) | **PIO + DMA, ~0 % CPU** | timer ISR, few % | timer ISR, tight on an AVR |
+| Timebase | DS3231, ±2 ppm ≈ 1 min/year | RTC-less | DS3231 |
+| Cost | ~300 ₽ | ~350 ₽ | ~450 ₽ with RTC |
+ 
+**RP2040**, on three grounds: no radio anywhere in the product; **driverless USB CDC**, which
+matters because the telemetry link (§4, S tier) is a consumer-facing USB connection and a CH340 driver
+prompt would be the support burden that kills it; and the PIO block, which shifts the HV
+registers with zero CPU — see §4.0, the capability the whole animation catalogue now rests on.
+ 
+Against it: the shop has no RP2040 habits. That costs less than it sounds, because **static drive
+means there is no AlexGyver ISR to port** — no К155ИД1, no anode multiplex, no A6/A7 ladder. The
+QUADRANT firmware shares almost nothing with TERMINAL-06's except the effect *ideas*.
+ 
+**Setting the time, with no network.** Three layers, in the order a customer meets them:
+ 
+1. **It arrives set.** DS3231 is ±2 ppm — about a minute a year. Set on the bench at QC, and for
+   most owners that is the last time anyone touches it.
+2. **It sets itself whenever it is plugged into a PC.** The telemetry agent (§4) sends the host
+   clock on connect. No UI, no network, and the audience this is aimed at plugs it into a PC.
+3. **The encoder, for the twice-a-year case.** Press-and-hold → hours flash, turn, press →
+   minutes flash, turn, press → done. That is a DST shift or a house move, not a daily interaction.
+### 3.2 The only control
+ 
+**Everything is on the rear panel and nothing is on the front.** No dial artwork, no fascia PCB, no
+resistor ladder — **TERMINAL-06 §2 does not exist in this product** — and in use or in a photograph
+the object has no visible interface at all.
+ 
+| Rear panel | Function |
+|---|---|
+| **Rotary encoder with push** | turn = brightness · press = confirm |
+| **BTN 1 — FACE** | cycle time → date → MM:SS → DUAL |
+| **BTN 2 — BACK** | cancel / return · **hold = set time** (hours flash, turn, press, minutes flash, turn, press) |
+| USB-C | power, and data when it is a PC |
+ 
+**Rev 3: the two buttons are the knock's fallback, and this is now a rule rather than a nicety.**
+ 
+> **No function is knock-only.** Every gesture the piezo triggers has a button that does the same
+> thing. A knock is a shortcut, never the only path.
+ 
+The reason is concrete: knock detection depends on the desk. A glass desk transmits beautifully, a
+thick carpeted trestle may not, and the threshold that works on the bench may not work in a
+customer's room. If the piezo is the only way to see the date, a bad desk turns a feature into a
+fault report. With two buttons behind it, a bad desk costs the customer a party trick and nothing
+else — and §11.8's bench test becomes a tuning exercise rather than a gate.
+ 
+Two sensors, not controls, and both earn their place:
+ 
+Two sensors, not controls, and both earn their place:
+ 
+- **LDR** (~5 ₽) on an ADC pin, **looking up through the top deck, not forward** — it has to read
+  the room, not the tube glow. Auto-dim is the primary mitigation for §11.2, not a convenience.
+- **Piezo disc** (~25 ₽) bonded inside the base plate, on an ADC pin. See §4.5. One part, no hole
+  in the case, and now with a button behind it.
+### 3.3 Power — one plain USB-C cable, 5 V
+ 
+**Rev 2 change: the PD trigger is deleted.** Dropping Wi-Fi puts the telemetry link on USB, which
+means the cable that carries data has to carry power too — and a PC's USB port is not a PD source.
+So the input is **plain 5 V**, boosted to 12 V on the board for the HV5630 logic rail and the HV
+converter.
+ 
+- ~2.5 W total → **≈560 mA at 5 V.** Fine on any USB-C port, any USB 3.x port, or any phone
+  charger. Marginal only on a legacy 500 mA USB 2.0 port, where it will simply run dimmer if the
+  port sags — the LDR curve already tolerates that.
+- **The "wrong charger and nothing lights" failure mode from Rev 1 is gone entirely.** So is the
+  20 W PD brick in the box; a plain 5 V 1.5 A supply ships instead, and most owners will use the
+  PC.
+**One cable, two destinations — this is the whole story:**
+| Plugged into | What happens |
+|---|---|
+| **The 5 V supply in the box, or any phone charger / USB hub** | It is a clock. Everything in §4 works — animations, knock, date, seconds, brightness, the lot. |
+| **A PC, with the same cable** | Identical, plus the telemetry faces, and the RTC sets itself. |
+ 
+**There is never a second cable and never a wall wart alongside a data lead.** The PC is optional:
+plugging it in adds features, unplugging it takes them away and the clock carries on. That is why
+the heartbeat in §4 falls back to the clock after five seconds — the resting state of the product is
+a clock on a charger.
+ 
+---
+ 
+## 4. What it does — the behaviour catalogue
+ 
+Ranked as you ranked them. §4.0 is new and it is the enabling capability underneath the S tier —
+without it, half of what follows is not buildable.
+ 
+### 4.0 The capability nobody had costed: per-cathode brightness
+ 
+Static drive was chosen to *delete* the multiplex. What was not noticed is what it gives back.
+ 
+Each tube owns ten private cathode lines on the shift registers. Rewriting the 64-bit chain takes
+**16 µs at 4 MHz**, so the display can be re-drawn hundreds of times a second — and with **binary
+code modulation (8 planes per frame, not 256 slots)** a full 8-bit brightness field costs
+~800 register writes a second. On RP2040 that is a PIO program fed by DMA: **0 % CPU.**
+ 
+What that unlocks, none of which a multiplexed clock can do:
+ 
+- **Per-tube brightness** — so a tube can fade while its neighbours hold.
+- **Per-cathode brightness** — so *two digits inside one tube* can be lit at different levels.
+- Global master dim still lives on the driver's BL pin, on top of everything above.
+**Two honest constraints, both bench questions:**
+ 
+1. **The bottom bits may not strike.** A nixie needs time to ionise; at 100 Hz the LSB plane is
+   ~39 µs and the glow may not form at all. Expect a usable depth of **4–5 bits (16–32 levels)
+   with a minimum on-time floor**, not a clean 8-bit ramp. Characterise the real curve on the
+   bench before any effect is tuned to it.
+2. **Never light two cathodes in one tube simultaneously.** They would share one anode resistor's
+   ~1.4 mA and the nearer cathode may hog it. **Time-interleave them inside the frame instead** —
+   at >100 Hz the eye integrates it identically, and the current question disappears.
+---
+ 
+### S — animations
+ 
+The 2 × 2 is the shop's first display that is not a row, and **every effect in the existing
+catalogue is defined by "shift one place right"**, which has no meaning on a square. This is new
+inventory, not a re-skin. Positions: `0` HH-tens (top-left) · `1` HH-units · `2` MM-tens ·
+`3` MM-units.
+ 
+| Effect | Order / motion | Ticks | Notes |
+|---|---|---|---|
+| **Dissolve** | per tube: old digit interleaved down while the new one comes up | ~16 @ 30 ms | **The exclusive one.** Two numerals at two *depths* in the same tube, one giving way to the other. AlexGyver's effect 1 fades the whole tube; this fades between digits. **No multiplexed nixie clock can do it**, because it needs per-cathode brightness (§4.0). If it works on the bench it is the single best thing in the listing video. |
+| **Pinwheel** | 0 → 1 → 3 → 2, 90° apart | 4 @ 60 ms | The rotational order. Doubles as the sweep, see A tier. |
+| **Diagonal wipe** | (0,3) then (1,2) | 2 @ 90 ms | Two ticks, not four. Reads as a shutter. |
+| **Orbit** | all four digits step one place clockwise, N laps, then land | 4N + 1 | The digits are interchangeable between positions, which is a fact about a square and not about a row. |
+| **Fold** | top row falls into the bottom row, new values rise out | ~6 @ 70 ms | The vertical answer to "train". A row has no vertical. |
+| **Cathode-order flip** | walks the physical cathode stack via `cathodeMask` | 30–50 ms/step | Effect 3, inherited — **the only effect that is exclusively nixie**, the glow stepping through the depth of the tube instead of through arithmetic. **Blocked:** ИН-17's `cathodeMask` has never been measured, and the ИН-12 mask looks *almost* right, which is worse than looking wrong. One `secCathodeMap` session clears it, and it also serves TERMINAL-06's seconds tubes. |
+ 
+**A property worth putting in the listing copy:** static drive means **none of these can band on
+camera at any frame rate.** TERMINAL-06 spent a whole prototype gate on that problem. This product
+cannot have it. Film any effect, at any shutter, with no test.
+ 
+**Keep the glitch as inherited** — random tube, 2–6 blinks of 20–100 ms, every 30–120 s, suppressed
+around transitions. It is the single most-commented-on feature in nixie clock reviews and it costs
+nothing to port.
+ 
+### S — desk telemetry, over USB (no network)
+ 
+Four digits is exactly two two-digit numbers, and **a square reads them as two numbers where a row
+reads them as one.** `67` over `54` is unambiguously CPU over GPU; `6754` in a row is not. That is
+the structural argument for this feature and it is worth stating in the listing.
+ 
+- **Link:** USB CDC at 115 200, line-based ASCII, driverless on RP2040. `V 67 54` — two values,
+  top and bottom. `N 1234` — one four-digit number. `B 45` — brightness override. `T` — hand back
+  to the clock. `S <unix>` — set the RTC.
+- **Heartbeat:** no line for 5 s → **revert to the clock.** The clock is the resting state, always.
+  Unplug the PC and it is a clock again with no interaction.
+- **Agent:** a small open-source script on the shop's GitHub, beside the firmware. **Ship a script,
+  not a signed installer** — an unsigned .exe collects a SmartScreen warning and a support ticket;
+  the PC-setup audience runs a script happily and can read it. Windows first (LibreHardwareMonitor
+  for temps), Linux second, macOS if asked.
+- **Payloads worth shipping day one:** CPU °C over GPU °C · CPU % over RAM % · down over up
+  Mb/s · a countdown · a pomodoro · unread count · anything the user pipes in.
+- **Non-negotiable:** the clock is finished and sellable **before** the agent exists. Ship it as a
+  firmware feature and a download, never as a dependency. WATCHLIST's caveat stands — the shop has
+  never shipped a device the computer talks back to.
+### A — the pinwheel sweep
+ 
+The anti-poisoning cycle (0→9 three times, 10 ms a step, ~300 ms) run with a **90° phase offset per
+tube**, so the glow rotates around the square. Same maintenance function, same duration, and it is
+the clearest single demonstration that this is not a short row.
+ 
+- **Schedule: both.** A full pinwheel **on the hour** as the visible event, plus a quiet one on the
+  inherited 15-minute timer. Static drive is 100 % duty (§11.2), so coverage is not optional.
+- **Direction carries meaning:** clockwise on the hour; counter-clockwise when a countdown or a
+  timer reaches zero. Free, and it means the object has one gesture that only ever appears at the
+  end of something.
+### B — the bezel-magnet scheme: agreed, dropped
+ 
+**Collars become purely cosmetic.** One printed part, ~120 ₽, no sensor, no magnet alignment, no
+contacts. They still carry the best margin in the range (§6.1); they just stop trying to be a
+configuration channel.
+ 
+Recorded so it is not re-proposed from scratch: if config-by-object is ever wanted back, **the
+cheap version is not a hall sensor — it is a resistor in the collar**, read as a voltage divider on
+one ADC pin. Literally TERMINAL-06 §2's A6 ladder, one resistor and two contacts per collar. It
+was the wrong tool that made the idea expensive, not the idea. Parked, not deleted.
+ 
+**Better sensing, and it replaces the whole scheme with one part:**
+ 
+| Option | Cost | Verdict |
+|---|---|---|
+| **Piezo disc, knock-sensing** | ~25 ₽ | **Take this one.** See §4.5. One ADC pin, bonded inside the base, **no hole in the case and no moving part**. Reads knocks on the desk, not sound, so music and speech do not false-trigger. |
+| Capacitive pad behind the shell | ~10 ₽ | Works through 2 mm of PETG; RC charge-time method needs no special silicon. Fallback if knock proves unreliable on a soft or carpeted desk. Needs humidity/drift calibration. |
+| Reed switch | ~30 ₽ | Same magnet-alignment hassle as the hall sensor. No. |
+| IR / ToF gesture (VL53L0X) | ~250 ₽ | Ten times the price, false-triggers on a passing hand, reads as a gimmick. No. |
+ 
+---
+ 
+### Five more, all cheap and all on-brand
+ 
+**4.5 — Knock to answer.** Two knocks on the desk → the square shows the date for four seconds,
+then returns. One knock → seconds. The piezo reads mechanical shock through the base, so it is
+deaf to the room. **No button, no hole, no visible input at all** — the object appears to have no
+interface and answers anyway, which is the whole brief in one part. Filming it is one shot: a hand
+enters frame, knocks the desk, the digits change. Bench work: an envelope threshold plus a
+~250 ms debounce, and a rejection window so the encoder's own click cannot trigger it.
+ 
+**4.6 — Seconds on demand, as a square.** No seconds tubes and no room for them, so instead the
+display **re-labels itself**: MM over SS — and with the colon deleted (§2.3), the signal that the
+meaning changed is the **1 Hz breathe switching to a faster cadence**, or a single pulse of the
+window wash (§5.5). In a row,
+`0942` is ambiguous between a time and a date and a count. In a square, the top pair and the
+bottom pair are visibly two fields, so the same four tubes can mean HH/MM, MM/SS or DD/MM without
+a mode indicator anywhere. **Only a square can do this without a legend.**
+ 
+**4.7 — DUAL, named and listed.** Formalise the above as the product's headline capability rather
+than a side effect: **any two two-digit values, stacked.** Time over date · MM over SS ·
+CPU over GPU · in over out · hours over minutes of a timer · day-of-month over day-of-week. It is
+the one thing this shape does that no nixie clock on the market does, it costs nothing, and it is
+the sentence the listing title should be built around.
+ 
+**4.8 — Dissolve.** Called out separately from the animation table because it is not another
+effect, it is a **capability no competitor's hardware has**: per-cathode brightness (§4.0) lets one
+digit hand over to another *inside the same tube*, two numerals visible at two depths mid-flip. It
+is the most physically nixie thing in the whole catalogue and it exists only because this product
+dropped the multiplex. If the bench confirms it, lead the listing video with it.
+ 
+**4.9 — The warm-up.** Power-on runs a slow strike through the physical cathode stack — 0→9 in
+`cathodeMask` order at ~200 ms a step — so the tube visibly wakes through its own depth. Then the
+unit's serial for a beat (`0003`), then its **lifetime lit hours**, then the time. Three seconds
+total. Nothing else on Etsy has a boot sequence at all, it makes each unit read as a serialised
+instrument rather than a craft item, and the hour meter turns §11.2's replacement quad from a
+complaint into an obvious purchase at the right moment.
+ 
+**Bonus, free: catch-up.** After a power cut the DS3231 already knows the time — so instead of
+snapping to it, **wind to it**: spin the digits forward from the last displayed reading to now,
+about two seconds. An outage becomes a visible, deliberate event instead of a silent jump, and it
+is four lines of firmware.
+ 
+### Parked, with reasons
+ 
+- **Seconds tubes.** Two more tubes and a 3 × 2. *The squareness is the product* — Rev 3 of the
+  feasibility document said it and §4.6 makes it unnecessary anyway.
+- **Sound.** A buzzer is a returns risk on any always-on desk object.
+- **A second control.** The moment there are two controls there is a control *scheme*.
+- **Config-by-object.** See the B-tier note above — parked as the resistor ladder, not the hall
+  sensor.
+## 5. Internals, boards, and where the case size comes from
+ 
+Protocol rule 20: *an end-view tube gets a window; a side-view tube gets an open deck.* ИН-17 seen
+end-on has nothing to show but its face, so standing it proud would display a glass barrel and
+forty-eight leads. Everything below follows from that one decision.
+ 
+### 5.1 One board, and the reason is the forty cathodes
+ 
+The obvious layout is two boards — a tube board at the front, a main board in the base. **It is
+wrong here, and the number that kills it is 40.** Static drive gives every tube ten private cathode
+lines; if the drivers live on the main board, forty conductors at 185 V have to cross between the
+two on a ribbon. That is TERMINAL-06's cathode harness — *"mistakes invisible until HV"*, the
+second-worst step in its build — reintroduced into the product that exists to not have it.
+ 
+**So: one vertical board, perpendicular to the tube axis. Tubes on the front face, everything else
+on the back face, encoder and USB-C protruding rearward.** The forty cathode traces never leave the
+board they start on, there is **no internal connector carrying high voltage**, and the case gets
+shallower because the tall parts sit behind the tube tails rather than under them.
+ 
+```
+   front                                                        rear
+   ├─ collar (printed, swappable)
+   │  ├─ window aperture, 2 mm reveal
+   │  │   ┌──────── 4 × ИН-17, end-view, 2×2 at 26 × 27 mm ────────┐
+   │  │   │  face setback ~3 mm │ envelope ~22 mm running back      │
+   ─┼──┼───┴────────────────────┴───────────────────────────────────┴─┐
+    │  │                                        Q-BOARD, 1.6 mm ──────┤
+    │  │   front face: 48 tube holes, 4 anode R      back face: ──────┤
+    │  │                                             2 × HV5630 ──────┤
+    0  2                     27                   29 │ CD4504B ───────┤
+                                                     │ RP2040 ────────┤
+                                                     │ DS3231SN ──────┤
+                                                     │ HV boost ──────┤
+                                                     │ 5→12 V boost ──┤
+                                                     │ cap + bleed ───┤
+                                                     │ encoder ───────┤ ← through rear panel
+                                                     │ 2 × button ────┤ ← through rear panel
+                                                     │ USB-C ─────────┤ ← through rear panel
+                                                     └── 54 ───── 58 ─┘
+```
+ 
+**Front face of the board** — 48 tube holes in four clusters, 4 anode resistors, and nothing else.
+**Back face** — the two HV5630s sit directly behind the tube clusters, so a cathode trace runs
+15–25 mm from its hole to its driver pin and never crosses another tube's field. At a 26 mm
+horizontal pitch and a lead cluster ~12 mm across, there is a **~14 mm channel between adjacent
+tubes** to route ten traces out of each — routable, though it wants a 4-layer board rather than 2.
+ 
+**Fallback if the layout does not close:** split into Q-TUBE (tubes + both HV5630s + CD4504B) and
+Q-MAIN, with **the drivers staying on the tube board regardless**, so the interconnect is 7 ways —
+GND, +12 V, +3.3 V, CLK, DIN, LE, BL — plus a separate keyed 2-pin JST-VH for the 185 V, exactly
+TERMINAL-06's three-keyed-families discipline. Costs one more PCB (~+150 ₽) and gains nothing else.
+ 
+### 5.2 What is actually inside — the whole inventory
+ 
+| Where | Part | Note |
+|---|---|---|
+| Front face | 4 × ИН-17 | 48 leads, wire-ended, no socket. Held coplanar by **J-QLEAD** during soldering |
+| Front face | 4 × 56 kΩ anode resistor | sees 80 V, dissipates 0.11 W — one 1206 each, no series pair needed |
+| Back face | 2 × HV5630, QFP-44 | 40 cathodes + 24 spare channels. Behind the tube clusters |
+| Back face | CD4504B, SOIC-16 | 3.3 V → 12 V level shift on CLK/DIN/LE/BL |
+| Back face | RP2040 module, ~18 × 23 mm | castellated, soldered flat. Native USB, PIO drives the register chain |
+| Back face | **DS3231SN, SOIC-16 + CR1220** | **the bare chip, not a ZS-042 module.** Saves 30 × 20 mm *and* deletes the charging-resistor bodge the shop has to do to every ZS-042 it buys |
+| Back face | HV boost module, ~38 × 20 mm | NCH8200HV class, 12 V in, trimmed to 185 V |
+| Back face | 5 V → 12 V boost, ~17 × 12 mm | the whole reason the input can be plain USB 5 V |
+| Back face | 4.7 µF 250 V reservoir + **1 MΩ bleed** | **new: the bleed is permanent, not a bench step.** 185 µA, τ ≈ 4.7 s, so the cap is under 10 V about twenty seconds after unplugging. On a consumer product that is worth 3 ₽ |
+| Back face | EC11 encoder + 2 tactile buttons | rear panel, §3.2 |
+| Back face | USB-C receptacle | rear panel, power **and** data on the same connector |
+| Base | Piezo disc | bonded to the inside of the base plate, two wires to the board |
+| Top edge | LDR | looking up through a 2 mm hole in the top deck, not forward — it must read the room, not the tube glow |
+| Base | 2 × amber LED, window wash | §5.5, optional and defaulted low |
+ 
+**Nothing else.** No colon lamps (§2.3), no К155ИД1, no optocouplers, no bleed resistors per tube,
+no cathode harness, no fascia board, no resistor ladder, no mains anything.
+ 
+### 5.3 The size, derived rather than asserted
+ 
+Every figure below is arithmetic on the working envelope **≈19.3 × ~17.5 mm face, ~22 mm deep**
+(rows 1–3 of the capture sheet, one sample). **Two of the three are still single-sample calipers and
+the third is a photo estimate, so treat ±2 mm as the honest band** and re-derive when §11.1 closes.
+ 
+| Chain | Sum |
+|---|---|
+| **Width** — 26 mm pitch + 19.3 mm envelope = 45.3 block · +2 mm reveal each side = 49.3 aperture · +6.5 mm frame each side | **≈62 mm** |
+| **Height** — 27 mm pitch + 17.5 mm envelope = 44.5 block · +2 reveal = 48.5 aperture · +7 top frame · +14 base | **≈70 mm** |
+| **Depth** — 2 reveal + 3 face setback + 22 tube + 1.6 board + 25 rear components + 4 rear wall | **≈58 mm** |
+ 
+**62 × 70 × 58 mm, front raked 15°.** Rev 2 said 66 mm deep; the single-board layout takes 8 mm out
+because the tall parts stopped living under the tubes.
+ 
+**The layout rule that falls out of it, worth keeping:** *front third is glass, middle is the board,
+rear third is everything tall.* The tubes end at ~29 mm, so from there back the full 60 mm of
+interior height is free — which is where the boost module, the reservoir cap and the encoder go.
+Anything tall that creeps forward under the tubes hits a 12 mm ceiling.
+ 
+### 5.4 Weight — and the 420 g figure was wrong
+ 
+A printed PETG shell at this size is ~120 g; boards ~40 g; four tubes 28 g. **That is ~190 g, and
+an entry product that feels light feels cheap** — this is the single most correctable
+perceived-quality problem in the range.
+ 
+Rev 2 claimed ≈420 g. **Checked: it does not add up.** A 3 mm steel plate at 55 × 60 mm is 78 g, for
+~270 g total. To reach 420 g the plate would have to be over 10 mm.
+ 
+**Corrected target: ≈330 g, from a 5 mm laser-cut steel plate at 58 × 62 mm (141 g).** And make it
+earn its place twice: **the plate is the visible base**, bead-blasted and clear-coated, with the
+printed shell sitting on it — so the mass is also the part that stops the object reading as
+"3D-printed", and it is where the serial gets engraved. Flat laser cut, no machining, ~200 ₽ for ten.
+If it still wants heft, lead shot in epoxy in the base voids is the cheap second stage.
+ 
+### 5.5 Light that is not a tube — the honest answer
+ 
+**A lit bezel is how a nixie clock ends up looking like a forty-dollar kit.** That is the real
+objection, not "LEDs are tacky": an RGB halo around the glass is the visual signature of the
+cheapest end of your own market, and a buyer deciding between this and a $60 AliExpress clock reads
+it in the first photo. **No RGB, no addressable strip, no colour cycling, no underglow spilling
+onto the desk, no visible point source.** Those are the ones to refuse.
+ 
+But there is a version that is not that, and one argument makes it worth having:
+ 
+> **With the colon deleted, this product has no light source that is not a digit.** No status
+> channel, no acknowledgement, no heartbeat.
+ 
+So: **two amber 595 nm LEDs — the shop's existing backlight part — firing into the window well from
+the top edge, hidden, diffused, PWM'd, default very low or off.** The recess reads as a faintly warm
+cavity instead of a black hole, and TERMINAL-06 §3's rule carries over verbatim: *amber only,
+blue/white fights the tube glow.*
+ 
+What they are actually for:
+ 
+- **knock acknowledgement** — a single soft pulse says the piezo heard you;
+- **"no host"** and **"wrong supply"** indication, which otherwise has nowhere to live;
+- the **1 Hz seconds pulse**, if §2.3's digit-breathe reads badly on the bench;
+- boot heartbeat during the warm-up.
+**Two better places for light, if more is wanted later:** behind the tubes rather than in front — an
+amber wash inside the case seen through a smoked rear panel, lighting the 48 leads and the two QFPs
+(*the back is the datasheet* — a differentiator, where a lit bezel is a cliché); or a **lit collar
+sold as an accessory variant**, so the base product stays pure and the light is opt-in revenue.
+ 
+### 5.6 Identity
+ 
+Printed in PETG, same process and one filament batch as everything else: **chassis · collar ·
+rear panel · window well insert.** The base is the steel plate, not a printed part. Palette
+unchanged — VOID #0A0B0C · GRAPHITE #24272B · SIGNAL #F25610 · CATHODE #FF9E36 · BONE #DCD8D0.
+ 
+---
+ 
+## 6. Modularity — what is worth building and what is not
+ 
+The brainstorm asked for a module system. Most of it is a good idea; one specific part of it is
+not, and the research says which.
+ 
+### 6.1 Tier 1 — collars. Build this first, it is nearly free
+ 
+A snap-on front bezel, one printed part, ~25 g of filament and ~8 minutes. Brass-look, orange,
+bone, machined aluminium for the top of the range. **Purely cosmetic as of Rev 2** — the hall
+sensor and the magnet-keyed configuration are dropped (§4, B tier), which also removes the only
+alignment-critical step from the assembly. Sell at 1 200–1 800 ₽, attach rate is whatever the
+photos earn, and the whole risk is a printer running overnight. **There is no cheaper margin
+anywhere in this document.**
+ 
+### 6.2 The bus: wired, because there is no radio in this product
+ 
+Modules dock left or right on a **4-pin magnetic pogo pair** (≈100–250 ₽ a pair; 2 A per pin is
+ten times what is needed), carrying **5 V · GND · TX · RX** — a half-duplex UART chain with the
+clock as master. Each module takes 5 V and makes its own HV.
+ 
+- **No high voltage on the connector.** Nothing at 185 V ever crosses a contact a customer can
+  touch. That rule survives Rev 2 unchanged and is the one part of the bus that is not negotiable.
+- **UART, not I²C.** A bumped magnet drops a frame and the next one re-syncs; it cannot wedge a
+  bus the way a half-clocked I²C transaction can.
+- **A module also works on a short cable**, not only docked — the same four wires, just longer.
+**What Rev 2 gives up, stated plainly:** free placement anywhere on the desk. That needed a radio,
+and there is no radio in this product. For the record, and without re-litigating it: **ESP-NOW is
+not the thing you rejected** — no router, no portal, no credentials, no account, two devices
+talking directly — but it is still a radio and the call is yours. Wired is the default and the
+spec is written for it.
+ 
+### 6.3 Module roster, ranked by effort
+ 
+| | What | Effort | Note |
+|---|---|---|---|
+| **COLUMN** | ИН-9 bargraph + one salvaged Japanese slide fader | **lowest** | ИН-9 drive is one transistor: an MJE340 current sink, **0–8 mA gives 0–103 mm of bar at 10.3 mm/mA, linear**, tube voltage nearly constant while the glow expands. 260 ₽ × 288 in stock at Begrant. Faders come from the ¥1 500 dead RAMSA already sourced for DASH (~30 per chassis). This is PULSE and half of DASH shipped as a 6 000 ₽ accessory instead of a flagship. **Build this second, after the collar.** |
+| **PIP** | one ИН-19 or ИН-17 satellite — date, temperature, a countdown | low | 40 ₽ of glass. STUDY, at accessory scale. |
+| ~~**DIAL**~~ | the dekatron knob | — | **Parked, Rev 2 — reassigned to TERMINAL-06.** The research stands and is kept at §6.4; the verdict changed. |
+| **PANE-lite** | a whole ИЛЦ/ИЛТ multi-digit VFD in one envelope as a text strip | medium | Undocumented pinouts (WATCHLIST open question 17). |
+ 
+### 6.4 DIAL — the dekatron knob: parked, and it belongs to TERMINAL-06
+ 
+The brainstormed version was: dekatron on a bearing, slip ring, potentiometer, reads how far it
+was turned, displays the menu position on itself. **The idea survives. The mechanism does not, and
+the tube is the reason.**
+ 
+What ОГ-3 actually is (tube-tester.com datasheet; the dos4ever decatron clock for the drive):
+ 
+- **Anode supply 450 V typical (420 V minimum)**, 190 V maintaining, 600–800 µA. That is a
+  **second, higher HV rail** — not a tap off the 185 V nixie bus.
+- **The ten counting cathodes are commoned to one pin (K1–9).** Only the index cathode K0 is
+  brought out separately.
+- Three guide electrodes, 40 V bias, **110–140 V transfer pulses**, up to 20 kHz.
+Two consequences, one fatal to the sketch and one that improves it:
+ 
+1. **You cannot address a position.** The glow can only be *stepped* around by guide pulses, and
+   the only position you can ever read electrically is the index cathode. A potentiometer telling
+   you "the knob is at 63°" is useless — there is no way to jump the glow to position 6.
+2. **Which means the potentiometer and the slip ring were never needed.** Use a **rotary encoder**:
+   one detent of the knob = one guide pulse = one step of the glow. The glow *follows your hand*,
+   1:1, mechanically honest, and the relative-only nature of the tube exactly matches the
+   relative-only nature of an encoder. Home to K0 at power-on — the same trick the dos4ever clock
+   uses to resynchronise.
+**So the tube does not rotate at all.** A knurled ring turns around a stationary tube. This deletes
+the bearing, the slip ring, and — the part worth saying out loud — **it deletes a rotating
+contact carrying 450 V**, which was a wear item, an arcing source and a safety argument you would
+have had to win.
+ 
+Supply: ОГ-3 300 ₽ × 17 at Begrant is the only decatron on the board deep enough to try twice
+(WATCHLIST, B tier). Six more decatron types exist across four sellers if it works.
+ 
+**Rev 2 verdict: parked, and the right home is TERMINAL-06, not QUADRANT.** Three reasons, and
+they are all about fit rather than feasibility:
+ 
+- **It is a control surface, and QUADRANT-D's entire brief is not having one.** A knob you turn to
+  pick a menu position belongs on the instrument with six labelled rotary positions, not on the
+  object whose only control is hidden round the back.
+- **A 450 V rail on an entry product is the wrong risk in the wrong place.** TERMINAL-06 already
+  carries mains, an enclosure with room, and a customer paying 27 000 ₽ for exactly this kind of
+  content.
+- **It is the only motion in the shop's catalogue that cannot be faked in firmware** — a real
+  gas-discharge handoff, stepped one position per detent. That is flagship material and it should
+  be sold as such, beside SCALER-06's ring, not as a 12 000 ₽ accessory to a 15 000 ₽ clock.
+**Everything above stays valid wherever it lands** — stationary tube, rotating ring, encoder not
+potentiometer, home to K0 at power-on, and no rotating contact at 450 V. Carry it to the
+TERMINAL-06 spec when that product's next revision opens; do not re-derive it.
+ 
+---
+ 
+## 7. Cost and price (₽, Sept 2026, ~82.8 ₽/$)
+ 
+Ten-unit batch. **Every line marked ~ is an estimate and needs a quote before it is trusted** —
+the same discipline TERMINAL-06 §7 applies to its own unverified lines.
+ 
+| Group | Item | Qty/unit | Unit ₽ | Line ₽ | Source |
+|---|---|---|---|---|---|
+| **A Glass** | ИН-17 | 4 | 150 | 600 | s_svshkin ×12 · Avito Seller B ×18 · **10 in hand** (yg-radio) |
+| | Binning allowance, 60–70 % yield | +2 | 150 | 300 | ~6 bought per 4 shipped |
+| **B Drive** | HV5630PG-G | 2 | ~450 | ~900 | ChipDip / Farnell — **quote needed** |
+| | CD4504B level shifter | 1 | ~60 | 60 | Amperkot |
+| | HV boost module (NCH8200HV class, 12 V in) | 1 | ~450 | 450 | ≈$5–8 AliExpress |
+| | Anode R, 4 × 56 kΩ 1206 | 4 | 8 | 32 | Amperkot. One per tube, never shared |
+| | Reservoir cap 4.7 µF 250 V · **1 MΩ permanent bleed** · passives | — | — | 90 | The bleed is a BOM part now, not a bench step (§5.2) |
+| **C Logic** | RP2040 module (Pico-class) | 1 | ~300 | ~300 | Ozon — **quote needed**. No radio, driverless USB CDC, PIO for §4.0 |
+| | **DS3231SN chip + CR1220 holder** | 1 | ~120 | 120 | **Rev 3: the bare chip, not a ZS-042 module** — saves 30 × 20 mm and deletes the charging-resistor bodge |
+| | Rotary encoder + knob | 1 | ~110 | 110 | rear panel |
+| | **2 × tactile button + caps (§3.2)** | 2 | ~20 | 40 | **Rev 3 — the knock's fallback** |
+| | LDR · piezo disc | 1 | ~35 | 35 | Amperkot |
+| | 2 × amber 595 nm LED + resistors (§5.5) | 2 | ~15 | 30 | window wash, and the product's only status channel |
+| **D PCB** | **One board, ~58 × 58 mm, 1.6 mm, black mask, likely 4-layer** | 1 | ~500 | ~500 | Rezonit, order 15–25. 4 layers for the 40-trace cathode fan-out (§5.1) |
+| **E Enclosure** | PETG chassis + collar + rear panel + window well | 1 | ~200 | 200 | one filament batch |
+| | **Steel base plate, 5 mm, laser cut — visible, not hidden** | 1 | ~200 | 200 | 141 g of the ≈330 g finished weight (§5.4). Serial engraved here |
+| | Inserts, fasteners, feet | — | — | ~80 | |
+| **F Power** | 5 V→12 V boost · 5 V 1.5 A supply · USB-C cable | 1 | ~400 | ~400 | Ozon. **PD trigger and 20 W brick deleted, Rev 2** |
+| **G** | Packaging, consumables, spare-part allowance | — | — | ~250 | |
+| | **Cost per unit** | | | **≈4 697 ₽ ≈ $57** | |
+ 
+**Against the feasibility document's 3 500 ₽:** +900 ₽ of driver honesty, +400 ₽ of a power supply
+it costed at zero, +200 ₽ of a base plate that is also the product's face, +635 ₽ of logic itemised
+rather than waved at, −300 ₽ of enclosure once the mains PSU left the box. **"A third of TERMINAL-06" does not survive the
+itemisation: 4 697 / 10 078 = 46.6 %.** Still the cheapest thing the shop can make, still under
+half — but the listing copy has to say "half", not "a third".
+ 
+**Rev 2 took 215 ₽ back out**, all of it downstream of dropping Wi-Fi: −150 ₽ of PD trigger and
+brick, −50 ₽ on the MCU, −15 ₽ net on sensors.
+ 
+**Rev 3 puts 25 ₽ back in**, and the near-neutrality is the interesting part. Out: the colon
+(−49 ₽ of ИНС-1, ballasts and MPSA42) and the RTC module (−30 ₽, replaced by the bare chip). In:
+two buttons (+40), the window-wash LEDs (+30), a heavier and now *visible* base plate (+50).
+**The colon paid for the fallback controls almost exactly.**
+ 
+| Retail | ≈USD | Net after ~25 % fees + shipping | Profit/unit | Per hour (1.5 h) | Margin |
+|---|---|---|---|---|---|
+| 12 000 | $145 | 9 000 | 4 303 | 2 869 | 35.9 % |
+| 13 500 | $163 | 10 125 | 5 428 | 3 619 | 40.2 % |
+| **15 000** | **$181** | **11 250** | **6 553** | **4 369** | **43.7 %** |
+| 18 000 | $217 | 13 500 | 8 803 | 5 869 | 48.9 % |
+ 
+**List at 15 000 ₽. Units 1–3 at 12 000 ₽ (founder price, buying reviews). Never below 9 500 ₽.**
+Matched replacement quad at 1 800 ₽ (§11.2 makes this a real product line, not a courtesy).
+Collars 1 200–1 800 ₽. COLUMN 6 000 ₽. *(DIAL is no longer in this range — see §6.4.)*
+ 
+15 000 ₽ is 4 369 ₽/hour against TERMINAL-06's 4 981 ₽ at its recommended price — slightly less
+per hour on an object that costs less than half as much to make and takes a third less time to
+build. That is what an entry product is supposed to look like. Etsy's dense middle for four-tube
+builds is $130–260, so $181 sits mid-band with a shape nobody else sells.
+ 
+---
+ 
+## 8. Sourcing
+ 
+| Supplier | What | Watch |
+|---|---|---|
+| **s_svshkin (Воронеж)** · **Avito Seller B** · **in hand** | ИН-17 — 12 + 18 + 10 = **40 tubes** | **This is the whole constraint.** 40 tubes at 60–70 % binning yield is **six to seven units.** That is a first run, not a line. See §11.4. |
+| **Begrant (Омск)** | ИН-9 260 ₽ ×288 (COLUMN, §6.3) | Orders from 500 ₽, combined shipping. **Rev 3: QUADRANT-D itself no longer buys anything here** — the colon is deleted and ОГ-3 left with DIAL. |
+| **ChipDip / Farnell** | **HV5630PG-G ×2/unit** | **Zero secured, price unverified.** Distributor stock only — an HV part from a marketplace listing is the exact failure class the MPSA42-over-2N5551 rule exists to avoid. Confirm the **300 V** part number on the invoice, not the 220 V one. |
+| **Amperkot** | CD4504B, MPSA42, anode/ballast resistors, LDR, **piezo disc**, encoder, headers | One order, nothing exotic. Hall sensor deleted, Rev 2. |
+| **Ozon** | **RP2040 module**, DS3231, 5 V→12 V boost, 5 V 1.5 A supply, USB-C cable, PETG, magnets, fasteners | Only trap, as always: two PETG spools from different batches. |
+| **Rezonit** | one board, 1.6 mm, black mask | Black mask = surcharge + longer lead. Order 15–25. **Cannot be ordered until §11.1 closes.** |
+| *(noted, not a source)* | zapadpribor.com lists **255 × ИН-17** | Ukrainian supplier. Recorded because it proves the tube exists in quantity somewhere; **not commercially reachable from this bench**, and it should not appear in a plan as if it were. |
+ 
+---
+ 
+## 9. Build (~1 h 30 hands-on/unit, after jigs)
+ 
+Jigs: **J-QLEAD** (four-tube lead comb — sets all 48 leads at final spacing and the four tubes
+coplanar *and at equal height*, the single most valuable jig in the product) · **J-BIN** (bench rig,
+four positions at 1.5 mA side by side, for binning matched quads by eye) · **J-MAP** (ИН-17
+digit→pin table, needed once — it is what unblocks the cathode-order flip in §4).
+**J-NEON is not needed — Rev 3 deleted the colon.**
+ 
+**Tube handling, from the ИН-17 datasheet and from a commercial ИН-17 kit's own assembly manual:**
+solder no closer than **8 mm from the glass**, bend no closer than **3 mm**; trim leads to ~15–20 mm
+before insertion and flush after; straighten each lead with long-nose pliers first; tack two
+*opposite* leads to hold the tube square before committing the rest; burn each cathode in at
+1.5–2 mA for 1–2 minutes before final soldering. **Orientation is off the anode lead** — confirm
+which convention your batch uses before drilling anything (§11.10).
+ 
+Reflow board (2 × QFP-44 + passives) → flash and bench-light → **bin a matched quad on J-BIN** →
+set tubes in J-QLEAD, solder 48 leads → set HV 185 ± 8 V, set anode resistors, tune BL curve →
+print parts → fit ballast plate and inserts → assemble (gloves) → set the RTC, confirm USB
+enumeration and knock threshold →
+24 h burn-in → serialise, photograph, pack.
+ 
+Rev 3's estimate of 25–35 min for the tube work stands and is the bulk of the hand time. The
+static board has **no cathode harness at all** — TERMINAL-06's second-worst step does not exist
+here.
+ 
+---
+ 
+## 10. QC — every unit
+ 
+HV 185 ± 8 V warm · **reservoir cap under 10 V within 30 s of unplugging (the 1 MΩ bleed, §5.2)** ·
+all 40 cathodes strike · **all four tubes within one perceptual step of each other at 1 m, judged in
+a dark room — this is the defect that gets a return** · **all four tube faces coplanar and at equal
+height in the window, checked against the collar rather than by eye** · pinwheel sweep runs clean,
+no stuck or skipped cathode · BL dims
+smoothly 5–100 % with no flicker and no tube dropping out early · LDR night curve reaches ~25 %
+· **per-cathode dimming characterised: record the lowest BCM plane that still strikes reliably on
+this unit's tubes (§4.0)** · dissolve runs without a cathode failing to light · **enumerates as a
+serial port on a clean Windows machine with no driver install**, and the agent sets the RTC ·
+DS3231 holds through a 30 s power cut and catch-up runs · knock detection fires on two desk taps
+and does **not** fire on the encoder's own click · **both rear buttons reach every face the knock
+reaches** · window-wash LEDs dim to invisible and do not glow through the shell seams · drift
+< 2 s / 24 h ·
+film 5 s at 60 fps — **static drive means this is a formality, and that is the point** · serial
+inked, QC card signed, hour meter zeroed.
+ 
+Build log per unit: serial, tube batch and bin, HV, anode resistor value, BL curve, drift, date.
+ 
+---
+ 
+## 11. Open, in order
+ 
+**11.1 — The ИН-17 capture sheet exists; it is the *lead geometry* that is missing, and that is
+what blocks the board.** `TERMINAL-06-measurements-IN17.md` (Rev 3) already holds what the case can
+be roughed out from — **19.30 mm and 17.50 mm** glass-only caliper readings, **12 leads** (11 used,
+0–9 + anode), **9 mm digits**, **7 g**, the ≤170 V / ≥105 V / 1.5–2 mA electricals and the
+**4 mA overcurrent ceiling** that forced static drive in the first place. The viewing axis is
+settled: **end-view**.
+ 
+What is genuinely open, and what each item blocks:
+ 
+| Sheet row | Missing | Blocks |
+|---|---|---|
+| **5, 6, 7** | **lead pitch, lead diameter, free length, and the exit pattern — circle, comb or two rows** | **The PCB footprint, and therefore the Rezonit order, and therefore everything.** This is the one that matters. |
+| 13 | two orthogonal readings at one axial height — round body or oval | the window aperture and the 2 mm reveal; also retro-labels rows 1–2 |
+| 3 | real overall length along the tube's own axis (current figure is a photo estimate) | case depth behind the window |
+| 9 | viewed face → digit plane, **re-datumed to the end face** now that end-view is settled | how deep the digit sits inside the window; the parallax the collar has to clear |
+| 10–12 | the lead spacer as its own part — outer size, hole pitch, slide range | the **J-QLEAD** jig, which is the highest-value jig in the build |
+| 1, 2 | two more samples each, per the min/mean/max rule | promoting either to a load-bearing `dims.*` value |
+ 
+**One evening with a caliper, and rows 5–7 are the half-hour of it that unblocks the board.**
+ 
+**Rev 3 — I went looking for rows 5–7 on the web instead, and they are not there.** Checked: both
+Dieter's original ИН-17 datasheet scans (electrical tables and a pin list, no drawing), the ТУ
+transcriptions at rudatasheet.ru, eandc.ru and tec.org.ru (mass, digit height, "glass, socketless,
+flexible leads" — no envelope drawing), swissnixie ("about 15 × 20 mm"), soviet-tubes
+("22 × 20 × 14 mm"), neonixie, and a commercial ИН-17 clock kit's own assembly manual, which tells
+the builder to trim leads to 15–20 mm and says nothing about their spacing. **No published source
+gives the lead pitch, the lead circle, or the lead diameter.** That is the answer, and it is a
+useful one: the number does not exist to be looked up, so the caliper is not a shortcut being
+skipped — it is the only path.
+ 
+**What the search does give is a bound, which is enough to keep drawing.** Twelve leads inside a
+~14–17.5 mm minor envelope put lead-to-lead spacing at roughly **2.5–3 mm** whichever pattern they
+use (a ~11 mm circle gives 2.9 mm; two rows of six give ~2.5 mm). So each cluster is **~11–13 mm
+across**, which at the 26 mm horizontal pitch leaves a **~14 mm routing channel between tubes** —
+enough to fan ten cathodes out of each cluster. **The board is routable at the assumed pitch.**
+That is what §5.1 is drawn on, and it is a bound, not a measurement.
+ 
+**11.2 — Tube life at 100 % duty. The most serious commercial risk in the product.**
+ИН-17's ТУ life is **7 500 h (soviet-tubes) to ≥9 000 h (rudatasheet)** — at always-on, that is
+**ten to twelve months.** TERMINAL-06 never had to think about this because it multiplexes at 1/6
+duty. Static drive spends the whole budget. What to do, in order:
+  1. **Run at 1.2–1.4 mA, not 2 mA.** 68 kΩ anode resistors cost nothing and buy proportionally.
+  2. **Make the LDR night curve aggressive** — 25 % for eight hours a day is a real ~20 % of
+     lifetime charge saved.
+  3. **Decide whether the hour meter (§4.9) is visible or hidden.** Visible is the honest choice
+     and it makes the replacement quad an obvious purchase rather than a complaint.
+  4. **Bench the actual number.** Run one tube at 1.4 mA continuously beside one at 2 mA and
+     photograph both weekly. ТУ life is a minimum at rated current and community experience with
+     ИН-series glass at reduced current runs far longer — but **the ТУ figure is the one a
+     warranty conversation will be held at**, so design to it and be pleasantly surprised.
+  5. **Say it in the listing.** "Replaceable matched tube set, 1 800 ₽" reads as engineering.
+     Silence followed by a dim tube at month fourteen reads as a defect.
+**11.3 — Binning.** Four tubes lit permanently, side by side, all day. Rev 3's estimate is
+60–70 % yield, ~6 bought per 4 shipped. **Bin six by eye at 1.5 mA on J-BIN and find out whether
+that is pessimistic** — ten tubes are on the bench, it costs an evening, and it sets the real
+glass cost per unit.
+ 
+**11.4 — Supply depth is the difference between a product and a one-off run.** 40 tubes is six or
+seven units. Before this is called the shop's entry *line*, either s_svshkin and Avito Seller B
+have to have more than their listings show, or a third source has to appear. **Ask both, by
+message, this week.** Rev 3 flagged this and it has not moved.
+ 
+**11.5 — HV5630 price, stock and package.** Quote it. If only the 220 V HV5622 is stocked, the
+options are (a) wait, (b) run the rail at 170–175 V and accept slower striking on cold tubes, or
+(c) fall back to §2.4's 74HC595 array. **Do not silently accept the 220 V part at 185 V.**
+ 
+**11.6 — ИН-17 cathode order, unmeasured.** Blocks the cathode-order flip and §4.9's warm-up, and running the ИН-12 mask on
+ИН-17 looks almost right. One `secCathodeMap` session clears it and it also serves TERMINAL-06's
+seconds tubes, so the work is shared.
+ 
+**11.7 — Is there a 3–5 V-logic 32-channel HV driver?** The HV57708-class parts may remove the
+12 V logic rail and the CD4504B entirely. Twenty minutes of datasheet reading could delete two
+parts from every unit forever.
+ 
+**11.8 — Three bench questions §4 now depends on, none of them long.**
+  1. **How far down does a cathode still strike?** Sweep the BCM plane depth on one tube and find
+     the shortest on-time that lights reliably. It sets the usable brightness resolution and every
+     effect timing downstream. Expect 4–5 bits, not 8.
+  2. **Does dissolve read as a crossfade or as a fault?** Two digits time-interleaved inside one
+     tube at 100–200 Hz. If the eye sees flicker or one cathode dominating, the effect is dead and
+     the animation table loses its best row — better to know before the listing video is planned.
+  3. **Does the piezo distinguish a desk knock from the encoder's own click?** Envelope threshold
+     plus a rejection window. If it cannot, fall back to the capacitive pad (§4, B tier).
+**11.10 — Which lead is the orientation key? Two conventions are documented and they are not the
+same.** A commercial ИН-17 kit's manual says the **anode lead is marked with a white bar** and goes
+into the marked hole. A Russian catalogue entry instead describes one lead as **«вывод обрезан
+(ключ)»** — physically cut short as an index. Both cannot be true of one batch, and getting it wrong
+means four tubes soldered in rotated. **Look at your own ten tubes before the footprint is drawn**,
+and record which convention they use in the capture sheet. It also decides whether J-QLEAD needs a
+keyway or a marked slot.
+ 
+**11.11 — Three source disagreements on ИН-17, recorded rather than resolved.** Sustaining voltage
+**≥105 V** (rudatasheet, swissnixie) against **>160 V** (tec.org.ru) — the anode resistor value in
+§2.3 assumes 105 V and would need rechecking if 160 V is right. Life **≥7 500–9 000 h** against
+**1 000 h minimum** on the same page — §11.2's whole risk assessment sits on the higher figure.
+Digit height **9 mm** (four sources) against **~8 mm** (neonixie). **None of these changes a decision
+today; all three are cheap to settle on the bench and one of them (105 vs 160 V) changes a resistor.**
+ 
+**11.9 — The telemetry agent is a support surface, not just a feature.** Decide before launch:
+which OS ships first, whether it is a script or a binary, where it lives (the shop's GitHub, beside
+the firmware), and what the listing promises. **Promise nothing about it in the title.** The clock
+must be complete without it.
+ 
+---
+ 
+## 12. The wireless-power question, answered
+ 
+The company is **Etherdyne Technologies** and the product is **Ether Power**. It has not gone
+anywhere — it is just still a licensing conversation rather than a part you can buy.
+ 
+- **What it is:** 6.78 MHz resonant power. A **flexible wire loop runs around the edge of the
+  desk** and a hub drives it at **up to 100 W**; devices carry flat PCB coil receivers and work
+  anywhere in the field, in any orientation except perpendicular to it. Not Qi — Qi is a coil
+  aligned on a pad; this is a room-scale field with a wire, which is why the coils look different.
+- **The demos:** the fully cable-free desktop PC that went round in mid-2025 (Hackaday, Tom's
+  Hardware), and then **CES 2026** in January, where they showed position-free multi-device power
+  as a "Wire-Free Power Zone".
+- **The kit is real and in stock:** the EtherPower Evaluation Kit is a hub, a loop sized for a
+  2 × 4 ft desktop, **eight receivers from Rx1 (34 mm, 5 V, 100 mW) to Rx8 (130 mm, 24 V, 7 W)**,
+  field-indicator LEDs and documentation. Ships from California in a few days. **No published
+  price — you fill in a form and talk to them**, and the intended path is a licensing deal, which
+  is exactly why it hasn't turned into a component.
+- **The numbers they publish themselves:** best measured DC-to-DC efficiency **69 %** (44.3 W out
+  from 64.0 W in), and the desk build reported a **~10 W idle draw with nothing being powered**.
+  The eval kit is **still in SAR compliance testing**.
+**Verdict for QUADRANT-D: no, and the arithmetic is short.** The clock wants ~2.5 W, which is an
+Rx7/Rx8-class receiver — **a 100–130 mm coil under a 62 mm product**. Then it wants 6.78 MHz of RF
+sitting beside a 31 kHz HV boost and 185 V of glass. Then it asks a customer to buy a desk hub to
+avoid one USB-C cable, and burns 10 W idle to save 2.5 W of cable. Your own instinct was right for
+a better reason than you gave: it isn't the charging that's silly, it's that **the loss budget of
+the field is four times the load.**
+ 
+**The hedge that costs nothing:** put a flat, unobstructed **20 mm keep-out and two 12 V input pads
+in the base**, documented. If a customer ever has the zone, the module is a receiver coil and a
+regulator dropped into the base — a $30 accessory later, for zero design cost now.
+ 
+**Rev 2 note:** the other half of the wish — free placement of modules — was going to ride ESP-NOW,
+and Rev 2 removed every radio from the product. The module bus is now wired (§6.2). So the honest
+Rev 2 position is narrower than Rev 1's: **wired power, wired data, and one cable to the desk.**
+The keep-out above is still worth leaving in the base, because it costs nothing and it is the only
+part of this section that could ever become real.
+ 
+---
+ 
+## 13. Deltas owed to other documents
+ 
+**`claude/ANIMATIONS-effects-reference.md`** — Rev 2 withdrew the slot-machine entry, which was
+written for the wristwatch's *"~2 minutes a day, so poisoning risk is low"* premise and is inverted
+on a desk object at 100 % duty. **Rev 3 owed:** the six-effect two-axis table above, and — the
+bigger item — **§4.0's per-cathode brightness, which adds a capability the catalogue has never had.
+Every effect in that file assumes whole-tube dimming, because until this product that was the only
+kind available.** *(Both corrections made in this pass.)*
+ 
+**`TERMINAL-06-measurements-IN17.md`** — the sheet's Rev 2 banner still presented the viewing-axis
+question as open (*"answer it by looking at one tube"*) and still said *"QUADRANT dies"* under
+end-view. **It was answered on 02.09.26 — end-view — and the concept moved rather than died.**
+Row 9's datum also had to move to the end face. *(Corrected to Rev 3 in the previous pass.)*
+**Rev 4 owed and made in this pass:** the pulsed-current condition (3.5–7 mA **only at скважность
+≥25**, which is why a 25 %-duty multiplex is still out), the two competing orientation-key
+conventions (§11.10), the three source disagreements (§11.11), the handling limits (8 mm / 3 mm),
+and the finding that **rows 5–7 are not published anywhere** and must be calipered.
+ 
+**`claude/QUADRANT-wrist-feasibility.md`** — banner pointing here for the desk half, carrying §0's
+corrections. *(Done in the previous pass; the Rev 2 numbers supersede its cost line again.)*
+ 
+**`claude/WATCHLIST-concept-tierlist.md` (fold into Rev G)** — Rev 3's deltas are still owed and
+are amended by this spec:
+- **QUADRANT-D — A tier, Functional.** ≈4 697 ₽/unit, retail 15 000 ₽, USB-C 5 V, **no radio**,
+  **62 × 70 × 58 mm, ≈330 g, one board, four tubes and nothing else** —
+  static HV shift-register drive. **Buildable now on tubes in hand; capped at six to seven units by
+  ИН-17 depth (§11.4).**
+- **DEKA stays a standalone concept, and it is TERMINAL-06's, not QUADRANT's.** Record the
+  re-specification at §6.4 — the ten counting cathodes are commoned, the glow cannot be addressed
+  only stepped, so the knob is a rotary encoder around a **stationary** tube, with no slip ring and
+  no rotating contact at 450 V. Rev 1 of this spec proposed it as a QUADRANT module; **Rev 2 parks
+  it and reassigns it**, because a knob belongs on the instrument that already has a control
+  surface.
+- **PULSE and half of DASH likewise become COLUMN**, a 6 000 ₽ accessory rather than a flagship.
+- **New protocol rule 21:** *before specifying a driver IC, read its two least glamorous numbers —
+  maximum output voltage and logic supply range. Both were wrong in this concept's first revision
+  and both changed the product.*
+- **New protocol rule 22:** *a display whose ТУ life is measured in months of always-on operation
+  is a duty-cycle decision before it is an aesthetic one. Ask how many hours a year each cathode
+  is lit before choosing static drive.*
+- **New protocol rule 23 (Rev 2):** *deleting a mechanism can hand back a capability. Static drive
+  was chosen to remove the multiplex; it also made per-cathode brightness possible, which is the
+  most valuable thing in the product. When something is removed, ask what it was preventing.*
+- **New protocol rule 24 (Rev 2):** *a consumer feature that needs a driver install does not exist.
+  The MCU was re-picked for driverless USB, not for MIPS.*
+- **New protocol rule 25 (Rev 3):** *derive the case from the boards, not the boards from the case.*
+  Every dimension in §5.3 is a sum of real parts. A case size asserted first is a constraint you
+  then have to fight.
+- **New protocol rule 26 (Rev 3):** *before assuming a datasheet figure is missing from our sheet,
+  check whether it is missing from the world.* ИН-17's lead pitch is not published by any vendor,
+  archive or ТУ transcription found — so the caliper pass is the only source, not a shortcut we
+  skipped.
+- **New protocol rule 27 (Rev 3):** *a feature with no manual fallback is a fault report waiting to
+  happen.* The knock gesture is charming and desk-dependent; two buttons cost 40 ₽ and turn a
+  possible defect into a lost party trick.
+---
+ 
+**Safety.** 185 V DC behind a reservoir cap that stays charged after power-off. Bleed before
+touching the tube side. One hand in your pocket. **DIAL's 450 V rail is a different class of object,
+not a bigger version of this one — and as of Rev 2 it is not in this product at all (§6.4).**
+ 
+**Sources.** tube-tester.com (ОГ-3 datasheet) · dos4ever.com (decatron clock drive) ·
+die-wuestens.de (ИН-9 drive note) · Microchip/RS HV5522-5530-5622-5630 datasheet ·
+soviet-tubes.com · swissnixie.com · eandc.ru · rudatasheet.ru · etherdyne.net ·
+hackaday.com · tomshardware.com. Tube geometry and the viewing-axis finding are the user's own,
+from the bench.
+ 

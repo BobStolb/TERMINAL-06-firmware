@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "XS4, 2-pin JST-XH, 2.5 mm pitch, right-angle/corner variant - pads run along X so the cable exits downward off the board's bottom edge instead of straight up. Housing still overhangs the 6.5 mm board width same as the straight variant; only the two THT pins land here. Pad 1 = raw +185V in, pad 2 = switched return to SEC's MPSA42 collector.")
+	(descr "XS4, 2-pin JST-XH, 2.5 mm pitch, right-angle/corner variant - pads run along X so the cable exits downward off the board's bottom edge instead of straight up. Housing still overhangs the 6.5 mm board width same as the straight variant; only the two THT pins land here. Pad 1 = raw +185V in, pad 2 = switched return to SEC's MPSA42 collector. CONFIRMED 2026-09: exact housing dimensions don't matter here (same as colon) since the real connector already fits inside a standard LED pad footprint with margin - the only thing that actually matters is holding the pitch to JST-XH standard, which this footprint already does at 2.5 mm.")
 	(tags "connector JST-XH XS4 colon THT right-angle TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"

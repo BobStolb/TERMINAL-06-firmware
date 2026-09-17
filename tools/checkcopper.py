@@ -8,6 +8,7 @@ Checks, per layer:
   * every pad has at least one track or via of its own net landing on it
 
 Usage:  python3 tools/checkcopper.py PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb [clearance_mm]
+            [--hv HV185,CAT_*] [--hv-clr 0.6]      # a wider gap around high-voltage nets
 """
 import re, sys, math
 
@@ -54,8 +55,28 @@ def extract_footprints(src):
         i = j
     return out
 
-SRC = open(sys.argv[1], encoding="utf8").read()
-CLR = float(sys.argv[2]) if len(sys.argv) > 2 else 0.2
+ARGS = sys.argv[1:]
+HV, HVCLR = [], 0.6
+if "--hv" in ARGS:                 # net names; a trailing * matches a prefix
+    k = ARGS.index("--hv"); HV = [p for p in ARGS[k+1].split(",") if p]; del ARGS[k:k+2]
+if "--hv-clr" in ARGS:
+    k = ARGS.index("--hv-clr"); HVCLR = float(ARGS[k+1]); del ARGS[k:k+2]
+SRC = open(ARGS[0], encoding="utf8").read()
+CLR = float(ARGS[1]) if len(ARGS) > 1 else 0.2
+
+# Any copper pair that involves a high-voltage net keeps the larger gap. IPC-2221B Table 6-1,
+# 151-250 V: 0.4 mm between conductors under solder mask (B4), 0.8 mm between bare
+# component terminations (A6) - run with --hv-clr 0.8 and read the PAD/PAD lines to hold
+# bare pads to A6. The 0.2 mm default is for the low-voltage logic every other net carries.
+def is_hv(n):
+    return bool(n) and any(n == p or (p.endswith("*") and n.startswith(p[:-1])) for p in HV)
+def need(a, b):
+    return HVCLR if (is_hv(a) or is_hv(b)) else CLR
+
+# An unplated hole is not copper: nothing on it carries a voltage, so no net clearance
+# applies to it. What does apply is the drill-to-copper distance KiCad checks as
+# hole_clearance, 0.25 mm by default.
+HOLECLR = 0.25
 
 def seg_seg(a, b, c, d):
     def sp(p, q, r):
@@ -80,6 +101,22 @@ def seg_rect(a, b, cx, cy, w, h):
         if cx-hw <= p[0] <= cx+hw and cy-hh <= p[1] <= cy+hh: return 0.0
     return min(seg_seg(a, b, e[0], e[1]) for e in edges)
 
+def seg_pad(a, b, p):
+    """Distance from a segment to a pad's real outline: a round pad is a circle and an oval
+    pad a stadium; rect and roundrect stay rectangles, the conservative reading. Measuring
+    every pad as its bounding square put a track that sat 0.6 mm from a round tube pad at
+    0.26 mm from the square's corner."""
+    if p["shape"] == "circle" or (p["shape"] == "oval" and abs(p["w"] - p["h"]) < 1e-9):
+        return seg_seg(a, b, (p["x"], p["y"]), (p["x"], p["y"])) - p["w"]/2
+    if p["shape"] == "oval":
+        r = min(p["w"], p["h"]) / 2
+        if p["w"] > p["h"]:
+            c1, c2 = (p["x"] - p["w"]/2 + r, p["y"]), (p["x"] + p["w"]/2 - r, p["y"])
+        else:
+            c1, c2 = (p["x"], p["y"] - p["h"]/2 + r), (p["x"], p["y"] + p["h"]/2 - r)
+        return seg_seg(a, b, c1, c2) - r
+    return seg_rect(a, b, p["x"], p["y"], p["w"], p["h"])
+
 # ---- collect pads
 pads = []
 for f in extract_footprints(SRC):
@@ -97,7 +134,8 @@ for f in extract_footprints(SRC):
             pads.append({"ref": f"{ref}.{m.group(1)}", "x": ox+float(m.group(3)),
                          "y": oy+float(m.group(4)), "w": float(m.group(5)),
                          "h": float(m.group(6)), "net": net, "layer": L,
-                         "thru": m.group(2) == "thru_hole"})
+                         "thru": m.group(2) == "thru_hole", "fp": ref, "kind": m.group(2),
+                         "shape": re.match(r'\(pad "[^"]*" \w+ (\w+)', m.group(0)).group(1)})
 
 # A segment/via's (net ...) field is either just a code - (net 3) - resolved
 # through the net table below, or, on every save this KiCad setup has
@@ -162,8 +200,8 @@ def flag(s): bad.append(s)
 for t in tracks:
     for p in pads:
         if p["layer"] != t["layer"] or p["net"] == t["net"]: continue
-        g = seg_rect(t["a"], t["b"], p["x"], p["y"], p["w"], p["h"]) - t["w"]/2
-        if g < CLR:
+        g = seg_pad(t["a"], t["b"], p) - t["w"]/2
+        if g < (HOLECLR if p["kind"] == "np_thru_hole" else need(t["net"], p["net"])):
             flag(f'TRACK/PAD  {t["net"]}@{t["layer"]} vs {p["ref"]}'
                  f'({p["net"]}) at ({p["x"]:.1f},{p["y"]:.1f})  gap {g:+.2f}')
 # ---- track vs track
@@ -172,22 +210,37 @@ for i in range(len(tracks)):
         s, t = tracks[i], tracks[j]
         if s["layer"] != t["layer"] or s["net"] == t["net"]: continue
         g = seg_seg(s["a"], s["b"], t["a"], t["b"]) - s["w"]/2 - t["w"]/2
-        if g < CLR:
+        if g < need(s["net"], t["net"]):
             flag(f'TRACK/TRACK  {s["net"]} vs {t["net"]}'
                  f' @{s["layer"]}  gap {g:+.2f}  near ({s["a"][0]:.1f},{s["a"][1]:.1f})')
 # ---- vias
 for v in vias:
     for p in pads:
         if p["net"] == v["net"]: continue
-        g = seg_rect((v["x"],v["y"]), (v["x"],v["y"]), p["x"], p["y"], p["w"], p["h"]) - v["d"]/2
-        if g < CLR:
+        g = seg_pad((v["x"],v["y"]), (v["x"],v["y"]), p) - v["d"]/2
+        if g < (HOLECLR if p["kind"] == "np_thru_hole" else need(v["net"], p["net"])):
             flag(f'VIA/PAD  {v["net"]} at ({v["x"]:.1f},{v["y"]:.1f}) vs {p["ref"]}  gap {g:+.2f}')
     for t in tracks:
         if t["net"] == v["net"]: continue
         g = seg_seg(t["a"], t["b"], (v["x"],v["y"]), (v["x"],v["y"])) - t["w"]/2 - v["d"]/2
-        if g < CLR:
+        if g < need(t["net"], v["net"]):
             flag(f'VIA/TRACK  {v["net"]} at ({v["x"]:.1f},{v["y"]:.1f})'
                  f' vs {t["net"]}@{t["layer"]}  gap {g:+.2f}')
+# ---- pad vs pad between different parts: that is placement, not routing. Pads inside one
+# footprint keep whatever spacing the manufacturer's land pattern gives them.
+for i in range(len(pads)):
+    for j in range(i+1, len(pads)):
+        p, q = pads[i], pads[j]
+        if p["layer"] != q["layer"] or p["fp"] == q["fp"]: continue
+        if "np_thru_hole" in (p["kind"], q["kind"]): continue
+        if p["net"] and p["net"] == q["net"]: continue
+        if p["shape"] == "circle" and q["shape"] == "circle":
+            g = math.hypot(p["x"] - q["x"], p["y"] - q["y"]) - p["w"]/2 - q["w"]/2
+        else:
+            g = math.hypot(max(abs(p["x"] - q["x"]) - (p["w"] + q["w"])/2, 0.0),
+                           max(abs(p["y"] - q["y"]) - (p["h"] + q["h"])/2, 0.0))
+        if g < need(p["net"], q["net"]):
+            flag(f'PAD/PAD  {p["ref"]}({p["net"]}) vs {q["ref"]}({q["net"]}) @{p["layer"]}  gap {g:+.2f}')
 # ---- anything routed on F.Cu vs the netless decorative copper
 for (ga, gb, gw) in gold:
     for t in tracks:

@@ -16,7 +16,6 @@ import re, sys, math
 SRC = open(sys.argv[1], encoding="utf8").read()
 OUT = sys.argv[2] if len(sys.argv) > 2 else "board.svg"
 S = 5.0                                   # px per mm
-W, H = 176.0, 52.0
 PAD = 6.0
 
 MASK, SILK, GOLD, CU, ZONE, HOLE = "#0d0f10", "#e8e6e0", "#d8b25e", "#8a6a3a", "#5c4526", "#000"
@@ -204,6 +203,19 @@ def view(side, oy):
             f'<rect x="0" y="0" width="{W}" height="{H}" rx="1.5" fill="{MASK}"/>'
             f'{inner}</g>')
 
+def board_extent():
+    """Width and height from the Edge.Cuts geometry actually in the file. This used to be
+    the fascia's fixed 176 x 52, which drew every other board on a fascia-sized plate.
+    Every generator here puts the board origin at (0, 0)."""
+    xs, ys = [], []
+    for k in ("gr_rect", "gr_line", "gr_arc", "gr_poly"):
+        for b in blocks(k):
+            if '(layer "Edge.Cuts")' not in b: continue
+            for x, y in re.findall(r'\((?:start|mid|end|xy) ([\d.-]+) ([\d.-]+)\)', b):
+                xs.append(float(x)); ys.append(float(y))
+    return (max(xs), max(ys)) if xs else (176.0, 52.0)
+
+W, H = board_extent()
 body = view("F", PAD) + view("B", PAD*2 + H)
 total_h = PAD*3 + H*2
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{(W+PAD*2)*S}" '

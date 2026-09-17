@@ -1,0 +1,436 @@
+# TERMINAL-06 — concept plates (**Rev F DRAWN AND PUBLISHED 09.09.26** — Rev E.2 superseded)
+ 
+> ## ⛔ HOLD — the ИН-12А is drawn wrong on every sheet in Rev E.2
+>
+> **Raised 05.09.26, confirmed against `3d/IN12.FCStd`.** Every plate in Rev E.1 and E.2 draws the
+> ИН-12А as a **22 × 24 × 14** block **standing on a deck over a socket**. The part is
+> **19.47 × 28.86 × 25.50** and its **12 leads leave the REAR face**, so it cannot stand on
+> anything — it hangs off a **vertical board behind the row**, facing forward.
+>
+> This is not a dimension error that can be patched in the numbers. It invalidates:
+>
+> - **the plinth** — a shelf tubes stand on, which is now the wrong idea entirely;
+> - **the exploded view (01C)** — shows a horizontal board under a plinth;
+> - **the right profile and plan (01B)** — both drawn around a bottom-seated tube;
+> - **the tube macro (plate 01)** — captions "12 leads · socket" at the *bottom* of the tube;
+> - **the height stack** — tubes are 28.86 tall, not 24, so 96 overall is wrong;
+> - **the depth stack** — a 25.5 mm barrel plus a board is far deeper than the drawn 14 mm.
+>
+> **The case argument survives and is arguably stronger.** With a rear-pin tube on a vertical
+> board, the *entire* 25.5 mm barrel stands forward of any structure — all four flanks visible,
+> not just the face. That is a better answer to "the case hides the bulbs" than the deck ever was.
+>
+> **Do not use the Rev E.2 drawings for anything dimensional.** They remain published as the
+> record of what was drawn. Rev F redraws them from `3d/IN12.FCStd`.
+>
+> **DIRECTION SETTLED 05.09.26 — see "Rev F" below.** The case is not being patched; it is
+> replaced. Cheeks-and-boards, face 237 → **204.3**, depth 104 → 44. **Drawn and published 09.09.26.**
+>
+> Corrected component reference and the mounting consequence: `claude/render/render5.py` →
+> `r-in12-reference.svg`, `r-in12-mounting.svg`. Full parameter list and the caliper mislabel
+> that caused this: `TERMINAL-06-measurements-IN12.md`.
+>
+> **Root cause.** The caliper sheet recorded 25.27 mm as *"envelope, narrow axis"*. It is the
+> **depth**. Read as a width it describes a wide shallow tube, which is what got drawn — and
+> `envW 19.47` was never calipered at all, so nothing contradicted it. **A mislabelled reading
+> propagated into eleven drawings because no one drew the part in section.**
+ 
+Drawn plates of the six-digit nixie instrument, generated against `claude/TERMINAL-06-spec.md` and the
+caliper sheets of 27–28.08. **None of these are photographs.**
+ 
+**Published page (Rev E.2): https://claude.ai/code/artifact/210653a4-aa41-4360-8cb7-2448320ec09e**
+Superseded Rev E.1 page: https://claude.ai/code/artifact/be830226-8f69-407f-8402-f4884e6fd099
+Superseded Rev C page: https://claude.ai/code/artifact/871b4b62-a9d1-4e9c-8a4d-d1156bbedc05
+Superseded Rev A page: https://claude.ai/code/artifact/228b390e-e335-4139-8d5d-92eed70512e0
+ 
+**Rev E** was the case revision: *the old case hides the bulbs too much — something offset inner, so
+more of the bulb is on display.*
+**Rev E.1 (02.09.26)** added the drawn views that revision needed — a three-quarter hero and a
+general-arrangement sheet — **and corrected two numbers that only became wrong once the thing was
+drawn.** See "What drawing it caught" below.
+**Rev E.2 (05.09.26)** adds eight more drawings across three new sheets: the night pair, the three
+remaining orthogonal views, and the inside-and-scale set. *The page moved to a new URL in this
+revision* — see "Why the page has a new URL".
+ 
+---
+ 
+## The plates
+ 
+| # | Plate | What it is for |
+|---|---|---|
+| 00 | **Corrections** | Six discrepancies between the Rev C drawings and the current spec |
+| 01 | **Hero + front elevation, lit** | Slot 1 and 2. Three-quarter axonometric, plus all ten emitters running the real firmware timings |
+| **01A** | **After dark** | **Night three-quarter + night rear three-quarter. The case argument only pays off in a dark room, and the rear panel appears nowhere else** |
+| **01B** | **The other three sides** | **Left three-quarter · right profile (1:1) · plan (1:1). The profile carries the 24 / 30 / 12° numbers; the plan proves the row now sits inside the plinth** |
+| **01C** | **Inside, and how big** | **Exploded four-layer · fascia detail ×2.6 · 1:1 scale beside a phone and a mug** |
+| 02 | **The case, in section** | Rev C wedge vs Rev E open deck, with the sightline drawn |
+| 03 | **General arrangement** | Front elevation · right profile · plan, dimensioned |
+| 04 | **Dial study** | Redrawn at the *measured* 32°/step; interactive six-screen walk |
+| 05 | **Animation catalogue** | Every effect with its real constant — see `claude/ANIMATIONS-effects-reference.md` |
+| 06 | **Cost** | What Rev E moves, and what is still unquoted |
+| 07 | **Listing kit** | Title, tags, ten slots, video storyboard |
+ 
+**Camera for the hero: 29° yaw, 10° elevation, axonometric (no perspective), so every edge stays
+measurable.** That is deliberately close to the 27°/10° the Rev A plates used — the house view. The
+night hero uses 34°/7° (lower, more product-shot) and the left three-quarter mirrors it at −34°/11°.
+ 
+### Why the page has a new URL
+ 
+Rev E.2 was published as a **new artifact** rather than an update to the Rev E.1 page. The Rev E.1
+page could not be republished without first re-reading its entire 180 KB source, which was not a
+sensible use of a session; the content was verified identical to the local copy first (one blank
+line of difference), so **nothing was lost — the new page is the old one plus three sheets.**
+**The Rev E.1 URL still resolves and still shows the old eight-sheet version.** Treat the Rev E.2
+URL as authoritative and retire the old one when convenient.
+ 
+---
+ 
+## ✅ Rev F — DRAWN AND PUBLISHED, 09.09.26
+ 
+**Published page (Rev F): https://claude.ai/code/artifact/c1b3ced6-eb22-4bf5-bd7a-d30c2d9e09eb**
+ 
+Ten plates, eight drawings, generated by `claude/render/rev_f.py`. Every dimension on the page
+traces to that file's `DIMS` table and every `DIMS` entry names its source, marked **F** FreeCAD /
+**M** calipered / **C** catalogue / **A** assumed. **One row is amber: board stock at 1.60 is the
+only assumed load-bearing figure left.**
+ 
+| Plate | Sheet |
+|---|---|
+| 00 | The corrections — why Rev E is withdrawn |
+| 01 | The part — ИН-12А / ИН-15, with the full provenance table |
+| 02 | The object — three-quarter, lit and unlit |
+| 03 | Front elevation, 1:1 |
+| 04 | Plan — the stems, not the faces |
+| 05 | The cheek — right profile, 1:1 |
+| 06 | The stack — exploded section |
+| 07 | HV containment |
+| 08 | Scale, 1:1 |
+| 09 | Still open — five things, ranked |
+ 
+### ⚠ The ИН-17 moved the face twice before it settled
+ 
+`TERMINAL-06-measurements-IN17.md` Rev 5 has the full account. Short version: the ИН-17 was
+assumed at 15 wide, then drawn at **17.58 × 19.20 portrait** from two caliper readings, and both
+were wrong. **The tube is not flat.** It is a round Ø20 stem that flattens to a **14 mm face**.
+The two readings were two chords of that curve, not a width and a height.
+ 
+Consequences, all of them in the Rev F drawings:
+ 
+- Face **14 × 20**, digit **9.00** against ИН-12's 18.63 — the seconds read at **48%** the height
+  of the hours, on half the glass area. Stated on plate 03 as a design consequence with two ways
+  out, not left as an accident.
+- **The seconds pair is spaced off the stems.** A 3 mm face gap puts the two Ø20 stems 17 apart
+  and they touch. Pair centres are **20.5**, which reads at the front as a 6.5 mm gap. Plate 04
+  exists for this one number.
+- Overall face **204.3** — not the 195 quoted below, which assumed a 15 mm ИН-17.
+ 
+---
+ 
+## Rev F — the architecture, settled 05.09.26
+ 
+The Rev E/F body was **104 mm deep to carry a display stack 27 mm deep**. Three quarters of
+the side view was empty case. That, not the tube error, is why the proportion failed — and
+the tube error is what made it visible, because a 25.5 mm barrel on a vertical board makes
+the real depth budget obvious.
+ 
+**Decision: cheeks and boards. No moulded body.**
+ 
+| | Rev E.2 | **Rev F** |
+|---|---|---|
+| Face width | 237 | **204.3** |
+| Height | 96 | **62** |
+| Depth | 104 | **44** |
+| Body | raked slab + plinth | **none — two end cheeks, 6 mm** |
+| Fascia | printed panel | **a PCB — black mask, legend in silkscreen** |
+| Tube mounting | deck + socket underneath | **vertical tube board, direct-solder, rear pins** |
+ 
+### Why the face drops 33 mm
+ 
+The row was laid out for a 22 mm tube. The part is **19.47**. With the gaps rebuilt around the
+real widths the row lands at **204.3 including 8 mm margins** — 237 → 204.3. *This is a real
+spec change* — it moves the fascia order, the enclosure and every listing photo.
+ 
+**The 195 figure quoted on 05.09.26 was drawn on a 15 mm ИН-17 and is superseded.** The gaps, as
+built: 3 inside a pair, 8 at the colon, 8 before the seconds, **6.5 inside the seconds pair**,
+12 before the annex, 8 margins. Only the 6.5 is set by something invisible from the front.
+ 
+### The five elements
+ 
+Front to back, all between the two cheeks:
+ 
+| z | Element | Notes |
+|---|---|---|
+| 2.0 | **Fascia board** | 204.3 × 30, black mask. Rotary, 2 levers, 2 buttons. Legend and wordmark in silkscreen / ENIG |
+| 2.0 → 27.5 | **8 tubes** | glass forward, the whole 25.5 barrel exposed |
+| 27.5 | **Tube board** | direct-solder, pins through |
+| 8 → 40 | **Main board** | horizontal, low |
+| 42.4 | **Bottom closure** | see the safety note — barrier first, graphics second |
+| diagonal | **Rear / top closure** | one board on the cheek diagonal; vented on the slope |
+ 
+### ⚠ The open frame costs a rear closure, and a bottom one
+ 
+**Tube pins protrude 4.65 mm behind the tube board and sit at 185 V.** In Rev E the deck was
+the barrier; there is no deck now and no body either, so **the rear board is the only thing
+between those pins and a finger.** The main board needs the same treatment underneath. This is
+a per-unit QC check, not a design assumption — the same rule Rev E already carried, moved to a
+new surface.
+ 
+### Retention — direct-solder for this run
+ 
+**Ten boards already in hand are drilled for tube pins and their holes are too small to take
+sockets.** So this run is direct-solder: the tube board's front face lands at exactly 25.5 mm
+behind the glass and no seat height enters the depth stack. **Sockets are wanted on future
+boards** — replaceability matters for a product and for binning matched sets — and the next
+tube-board revision should be drilled for them. *A socket spec was mentioned but did not
+arrive; the seat height it would add to the 44 mm depth is still uncharacterised.*
+ 
+### Iteration risk, named
+ 
+The fascia being a PCB freezes the legend at fab time, and **the legend wording is still design
+intent** — RUN / TIME / DISP / AMB / INFO / DATE was never decided, and the A6 ladder that
+decodes it is unwritten. **Build the fascia as a printed insert first and swap it for the black
+board once the legend is frozen.** The cheeks-and-boards structure does not care what the
+fascia is made of, so this costs nothing and removes the only expensive mistake available here.
+ 
+### Still unmodelled — updated 09.09.26
+ 
+**ИН-17 and ИН-15 have no FreeCAD model.** Their status has improved but is not closed:
+ 
+- **ИН-15 = ИН-12 in form**, stated 05.09.26, and drawn that way throughout. Only the glyph set
+  differs. No separate model needed.
+- **ИН-17** is now drawn from a factory outline drawing rather than a guess: 14 × 20 × 22,
+  Ø20 stem, 12 leads on a circle, 35 mm free, key = cut-short lead. **The lead pitch and circle
+  diameter are still not dimensioned anywhere**, so the footprint cannot be drawn. That is the
+  one remaining blocker on this tube and it needs the bench, not the web —
+  see `TERMINAL-06-measurements-IN17.md` Rev 5.
+ 
+### Drawings
+ 
+`claude/render/rev_f.py` → `rf-hero.svg`, `rf-night.svg`, `rf-front.svg`, `rf-profile.svg`,
+`rf-plan.svg`, `rf-exploded.svg`, `rf-hv.svg`, `rf-scale.svg`. Run it with `python3 rev_f.py`;
+it prints the computed face width and centres so a geometry change is visible immediately.
+ 
+Superseded drafts: `render9.py` (`f-hero`, `f-cheek`, `f-exploded` — pre-ИН-17 correction),
+`render7.py` (massing study), `render8.py` (B vs C developed), `render5.py`
+(`r-in12-reference.svg`, `r-in12-mounting.svg` — **still current**, used on plate 01).
+ 
+---
+ 
+## Why Rev C was wrong — six corrections
+ 
+| Rev C plates showed | True now | Source |
+|---|---|---|
+| **7 pieces of glass** — 4× ИН-12А, 2× ИН-17, one ИНС-1 colon | **10 pieces + 1 LED.** Rev C.3 added the ИН-15Б/ИН-15А AM/PM pair; Rev D wired all 18 cathodes for idle cycling; Rev C.4's "m" lamp became an amber LED behind a stencil | spec §3 |
+| Dial at **30°/step and 60°/step** as competing hypotheses | **6 positions across a ~160° arc, ~32°/step**, hand-counted | 28.08 caliper |
+| Rotary body **⌀25 mm** | **26.94 mm** — matches neither listing variant | 28.08 caliper |
+| Control ⌀ are photo estimates | **МТ1 bushing 7.85 mm** calipered; КМД-1 eye-corroborated | 27.08 caliper |
+| Connector counts from before the colon moved | **XS3 is 8-pin** — the 5-pin "J3" is dead everywhere | spec §4 |
+| Tubes recessed in a 166 × 21 trench under a brow | **No trench, no brow** | Rev E |
+ 
+**ИНС-1 count is 2, not 3.** Any older caption saying 3 is stale.
+ 
+---
+ 
+## The case change
+ 
+### The diagnosis
+ 
+Rev C's failure was not depth — it was **framing**. A 166 × 21 mm trench turns each ИН-12А into a lit
+rectangle in a slot: you see a window, never a tube — no envelope, no flanks, no domed top, no pins,
+and the unlit cathode stack cropped by the trench lip. The 12 mm brow overhung it, so at any angle but
+dead-on the brow's shadow took the top third of every envelope. **The three-quarter hero is exactly
+the shot that geometry fails.**
+ 
+### The move
+ 
+**The chassis steps back under the tubes instead of leaning over them.**
+ 
+- **No trench. No brow.** Both deleted. The safety-orange brow is gone with them — that accent now has
+  no home on the object and needs one somewhere else.
+- A **plinth rises out of the base slab, inset from each side and set back from the front edge.** The
+  tube board mounts on top. Nothing in the chassis is ever in front of, above or beside a tube — the
+  deck is a shelf, not a slot.
+- Tubes stand fully proud: ~23 of the ИН-12А's 24 mm envelope above the deck line.
+- **Backlight moves** into the deck surface behind each socket, grazing the glass from below.
+### Geometry (Rev E.1 — corrected, unchanged in E.2)
+ 
+| | Rev E claimed | **Rev E.1, from the drawing** |
+|---|---|---|
+| Base slab | 237 × 104 × 40 | **237 W × 104 D × 56 H** |
+| Plinth | 190 × 46 × 18, **inset 24** each side | **213 W × 46 D × 16 H, inset 12** each side |
+| Setback from front edge | 30 | 30 — unchanged |
+| Deck height | 58 | **72** (56 + 16) |
+| Overall with glass | — | **96** |
+| Front rake | 12° | 12° — unchanged |
+ 
+### What drawing it caught
+ 
+Two numbers were wrong in Rev E and neither was arguable once the plan view existed:
+ 
+1. **The plinth was too narrow for its own tube row.** The tube row spans x = 13.5 → 223.5 (the ИН-15А
+   annex reaches 223.5). A 190 mm plinth inset 24 each side runs 23.5 → 213.5, so **the last tube
+   overhung the plinth by 10 mm and the first sat 10 mm inboard of nothing.** Corrected to 213 wide,
+   inset 12. **The "24 mm inset" figure was invented before the annex was drawn and never re-checked
+   against it.**
+2. **The base was too short to carry its own fascia.** TS06-FASCIA is 52 mm tall and sits on a face
+   raked 12°; a 40 mm slab cannot hold it. Corrected to 56 mm, which puts the deck at 72 and the
+   overall height with glass at 96 — the same height as the Rev C wedge, which is reassuring rather
+   than surprising.
+Both are the same class of error: **a dimension asserted in prose, never drawn.** The plan view took
+about a minute to produce the contradiction. Plate 01B now carries that plan as a standing check.
+ 
+### Safety consequence — not optional
+ 
+With the trench gone, **the deck's top surface is the only barrier between a customer's fingers and
+185 V.** Every pin, socket shoulder and cathode lead must sit strictly below the deck plane, and the
+plinth top must be a continuous printed surface with no cable slot open to the top face. **Per-unit QC
+check, not a design assumption.**
+ 
+### Dust
+ 
+An exposed tube collects dust in a way a trenched one does not. Real, and worth naming in the listing.
+Hood is the mitigation; a soft brush in the box is the cheaper one.
+ 
+### Provisional
+ 
+**Plinth height, setback and rake angle are derived, not measured on a printed part.** One test print
+and a sight check before the chassis is committed. The whole revision is a viewing-angle claim, and
+viewing angles are checked with an eye.
+ 
+---
+ 
+## Tube pitch — unchanged, and it is fixed hardware
+ 
+| Position | Part | Centre, mm | Envelope |
+|---|---|---|---|
+| H tens | ИН-12А | 24.5 | **19.47 × 28.86 × 25.50** |
+| H units | ИН-12А | 49.5 | **19.47 × 28.86 × 25.50** |
+| Colon | ИНС-1 ×2 | 65.5 | — |
+| M tens | ИН-12А | 81.5 | **19.47 × 28.86 × 25.50** |
+| M units | ИН-12А | 106.5 | **19.47 × 28.86 × 25.50** |
+| S tens | ИН-17 | 137 | 15 × 20 — **not modelled, unverified** |
+| S units | ИН-17 | 155 | 15 × 20 — **not modelled, unverified** |
+| **AM** | ИН-15Б | **189.5** | ≈ИН-12А, **not modelled** |
+| **PM** | ИН-15А | **212.5** | ≈ИН-12А, **not modelled** |
+| **"m"** | amber LED + stencil | **201** | — |
+ 
+**Centres are unaffected by the tube-geometry correction — pitch is set by the board, not the glass.**
+But a 19.47-wide tube on 25 mm centres leaves a 5.5 mm gap, not the 3 mm the old 22 mm width implied,
+so the row reads more open than drawn. Margins 13.5 each side → **face 237 mm**. The annex costs 61 mm. Its 16 mm gap is deliberately wider
+than the 12 mm MM/SS gap so the pair reads as an annex rather than as two digits that lost their
+taper.
+ 
+### The fascia decision
+ 
+**TS06-FASCIA grows to 237 × 52 mm** so the dial stays centred under a symmetrical tube row.
+Estimated +250 ₽/unit; **needs a Rezonit quote.** The alternative is a 176 mm panel left-justified
+with the spare 61 mm as a badge plate. **Recommendation, not confirmed by the user** — free to reverse
+until Rezonit is called.
+ 
+**Consequence:** MIMI-06 does not need the annex, so it stays at 176 mm and **the two products stop
+sharing a fascia outline.** One artwork and one order of 30 becomes two artworks and two orders of 15.
+Tube board, TS06-SEC, control scheme, ladder circuit, switchgear and firmware base remain common.
+**Price both quantities.**
+ 
+---
+ 
+## Plate 04 — the dial study is closed
+ 
+**6 positions across ~160°, ~32°/step**, hand-counted by turning the shaft through its full travel.
+The denser-looking terminal ring turned out to be a 2-pole pin layout (2 inner wiper commons +
+12 outer taps), not twelve positions. At 32°/step the labels span 160°, the ring stays ~25 mm tall,
+and the bottom 18 mm of the board is free for the wordmark and the A6 ladder resistors.
+ 
+**30° was a guess that happened to be close. A guess that happens to be close is still what a
+15 000 ₽ respin is made of.**
+ 
+Plate 01C's fascia macro draws the same 32°/step at ×2.6 with the legend set, which is the artwork
+proof. **The legend wording — RUN / TIME / DISP / AMB / INFO / DATE — is still design intent, not a
+decided spec**, and the A6 tapped-divider ladder that decodes it is not written.
+ 
+Still open, low priority, does not block the artwork: rotary overall height, bushing thread and usable
+length.
+ 
+---
+ 
+## What is interpretation, not spec
+ 
+- Glow, glass tint and the faint unlit cathode stack are an interpretation of how ИН-12s look in a dim
+  room. Envelope tint varies between batches — hence the one-seller rule.
+- **Since Rev E.2 the axonometric views draw the hand-authored cathode paths too**, not type — the
+  same wire-stroke glyphs the 1:1 elevation uses, mapped onto the projected face. Effect **timings**
+  are the firmware's; brightness curves and light falloff are not, and nothing here is ray-traced.
+- The night sheets are a *reading* of a dark room. Nothing computed the falloff; it is hand-authored
+  per surface.
+- Surface finish reads smoother than 0.20 mm PETG will photograph.
+- The heroes are axonometric with no perspective — a real lens will foreshorten the depth.
+- The exploded view draws the board as **one plate**. In the real prototype the ИН-12s sit on two
+  hand-decorated daughterboards above the main board; the production intent is a single fabricated
+  tube board (TS06-TUBE, see `claude/TERMINAL-06-anode-driver-study.md`). Component blocks are
+  indicative positions, not a layout.
+- The scale sheet's phone (146 × 71) and mug (⌀80 × 95) are nominal typical objects, not a specific
+  product.
+---
+ 
+## Ten listing slots
+ 
+1. Hero, three-quarter, lit — **drawn, plate 01/01A.** The shot the old case failed.
+2. **Dead-on front, dial legible** — the rotary is the differentiator. Drawn, plate 01.
+3. Scale in a room. **237 mm is wider than buyers expect; show it honestly.** **Drawn, plate 01C.**
+4. Macro on one ИН-12А: lit cathode in front, nine unlit behind. **Only possible now the trench is
+   gone.** Drawn, plate 01 macro; fascia macro at 01C.
+5. The dial under raking light, knob mid-turn. **Fascia macro at 01C covers the artwork half.**
+6. Rear panel — DC jack, USB service slot, vent, HV warning, "always on, no switch". **Drawn, 01A.**
+7. On the bench — cathode harness, J-LEAD, J-NEON rig, meter at 185 V. *Photo only.*
+8. Dim room: backlight on, colon lit, annex showing A and the "m" stencil. **Drawn, 01A.**
+9. Spec card. **Profile and plan at 01B are the raw material.**
+10. **Video 15–25 s at 60 fps** — sweep → seconds ticking → rotary clicking six screens → ИН-15 pair
+    stepping its symbol set → one flip effect. **Effect 4 or 5; effect 1 does not read at 60 fps.**
+**Eight of the ten slots now have a drawing standing in for the photo.** They are not photographs and
+must not be listed as such — but they are enough to lay out the listing before a single unit exists.
+ 
+---
+ 
+## Still open
+ 
+0. **Rev F — redraw every sheet against `3d/IN12.FCStd`, and settle how the tube board mounts.**
+   Blocks all dimensional use of the plates. See the hold notice at the top.
+1. **P2 is blocked and a prettier case does not unblock it.** Nothing past P2 should be scheduled.
+2. **Nothing in the Rev E case has been printed.** Plinth, setback, rake — one test print settles all
+   three, and it does not depend on P2.
+3. **The fascia respin is unquoted**, and the MIMI split it causes is unpriced.
+4. **The control firmware still does not exist**, and the dial legend wording is not decided.
+5. **`DOT_BRIGHT` is still 35/15 in the pushed source**, not 170/90.
+6. **Etsy payouts** — tracked separately, still the thing that makes the rest moot.
+7. **MIMI-06 and SCALER-06 still have only their single night sheet built and not published**; the
+   equivalent of plates 01B/01C has not been drawn for either.
+## Source
+ 
+The drawings are generated by a small dependency-free SVG toolkit kept at `claude/render/` and
+mirrored into the `TERMINAL-06-firmware` repo under `render/`. Five files:
+ 
+| File | Produces |
+|---|---|
+| `tubes.py` | shared primitives — wire-cathode glyph paths, glow filter stack, tube face, knob/lever/button |
+| `render.py` | daylight axonometric heroes + dimensioned GA sheets (8 SVGs) |
+| `render2.py` | lit 1:1 front elevations, rear panel, tube macro (6 SVGs) |
+| `render3.py` | night heroes + night rear three-quarter (5 SVGs) |
+| `render4.py` | TERMINAL-06 extended set — left 3/4, profile, plan, exploded, fascia ×2.6, scale (6 SVGs) |
+ 
+Everything is driven from the millimetre constants above. `render/README.md` carries the usage notes
+and three traps worth knowing before extending it:
+ 
+1. **The world is y-up; every tube fragment is y-down.** Feed the face matrix a `+y` vector and every
+   glyph renders vertically mirrored — and it is hard to spot, because a flipped 3 still looks like a
+   3. Check a **4** or a **9**.
+2. **`glyph_path()` falls back to the `"8"` path for any character not in the table, silently.**
+   Cyrillic **Р** and **П** are now their own entries (U+0420 / U+041F, *not* the Latin lookalikes);
+   before they were added the AM/PM tube rendered a perfectly plausible 8 for weeks.
+3. **Do not use the axonometric camera for a plan or a profile.** Its depth term grows with height, so
+   at a steep angle upper geometry sorts behind lower geometry and the drawing inverts. Elevations are
+   built as true orthographic SVG — which is also what makes them measurable. And in those hand-built
+   sheets the coordinates are screen-space, **y down**: angle maths moved across from the world-space
+   code needs its `cos` negated, or the dial legend fans below the knob instead of around it.
+**The older `terminal06-render-source.zip` toolchain is fully superseded.** Its `front.py` still
+describes the Rev C trench geometry; do not feed it to anything.
+ 

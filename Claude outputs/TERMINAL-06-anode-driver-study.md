@@ -1,0 +1,319 @@
+# TERMINAL-06 — anode driver / ghost-suppression options study
+
+**Created 04.09.26.** Triggered by the question: *"do I need a bleed resistor on all eight
+lamps in the finished product, and can that be streamlined or eliminated?"*
+
+Companion to `claude/TERMINAL-06-prototype-plan.md` P2 (the finding) and
+`claude/TERMINAL-06-spec.md` §4 (the parts). This doc is the **options space**, ordered by
+what to try first. Nothing here is bench-confirmed yet.
+
+---
+
+## DECISION — what the commercial product looks like (04.09.26)
+
+Not a menu. This is the architecture; the sections below are the reasoning behind it.
+
+### Board stack — four boards, of which **two** are new tube-carrying PCBs
+
+| # | Board | New? | Carries |
+|---|---|---|---|
+| 1 | **AlexGyver main** | no — **and never modified** | Nano, DS3231, boost + P504, К155ИД1, 4× TLP627, 4 anode lines out |
+| 2 | **TS06-TUBE** | **NEW — must be added to the Rezonit order** | 4× ИН-12А sockets, **4× anode bleed footprints**, 4× anode series-R footprints, anode header + 10-way cathode bus |
+| 3 | **TS06-SEC** (46 × 34 mm) | already specced §4 | 2× ИН-17 + **their 2× TLP627** + 2× bleed footprints; 2× ИН-15 + 2× MCP23017 + 18× MPSA42; colon; HL3 |
+| 4 | **TS06-FASCIA** | already specced | front panel only — no tube electronics |
+
+**The gap this closes:** the Rezonit order (§ vendor table) currently lists only TS06-SEC and
+TS06-FASCIA. The ИН-12 tube board is treated throughout the spec as a pre-existing given
+("the same 14.5 mm standoff as the tube board") — in the prototype it is the pair of
+hand-decorated troll-face daughterboards. **That board is not being fabricated, which means
+the four ИН-12 bleed resistors have nowhere to live except flying leads.** TS06-TUBE exists
+to fix exactly that.
+
+Second reason to fab it, independent of ghosting: a custom tube board sets the tube
+positions and the deck offset directly, which is the "offset inner deck so more of each bulb
+is on display" complaint about the current case. And ten commercial units should not ship
+with someone else's hand-drawn doodle art on the tube plane.
+
+### Counts, settled
+
+- **Decoders: one. Not two, not three.** The existing К155ИД1 already serves all six digits —
+  cathode N of *every* multiplexed tube ties to output N (spec §4 cathode routing: *"so one
+  `digitMask` covers all six tubes"*). **Adding tubes to a multiplex never adds decoders.**
+  It only adds anode switches. This is the single most common wrong assumption about
+  multiplexed displays and it is worth stating plainly.
+- **Optos: six.** Four stock on the main board (D3–D6), two new on TS06-SEC (D2/D13 arriving
+  as SEC_A0/SEC_A1 on XS3 as 5 V logic — which is why HV arrives separately on XS1).
+  **Same TLP627 part number for all six, deliberately.** Mixing driver stages across one
+  display gives you tubes that ghost differently from their neighbours, which is cosmetically
+  worse than uniform mild ghosting. Uniformity beats speed here.
+- **Bleed resistors: six footprints.** Four on TS06-TUBE, two on TS06-SEC. Each as **2×
+  510 kΩ in series** (a standard 1206 is ~200 V working, too tight at 185 V plus trimmer
+  headroom). Zero on the ИН-15s and colon — statically driven, cannot ghost.
+- **The ИН-12 anode lines run main board → TS06-TUBE, so their bleeds sit at the tube end.
+  The AlexGyver board is never touched.**
+
+### The one variable left open, and why that is correct practice
+
+Whether those six bleed footprints get **populated or left DNP** is decided by one evening
+of bench work (T1.1 blanking first, then T1.2). That is not indecision — it is how
+production hardware is normally designed: **lay out for the worst case, populate to the
+bench result.** Designing the footprints in costs ~0 ₽ and zero schedule. Omitting them and
+being wrong costs a PCB respin across ten units.
+
+### Explicitly not in this product
+
+- **Two-bank multiplex** — needs a second К155ИД1, a second cathode bus and firmware work to
+  buy a 24 % → 12 % improvement that T1.1 can buy for free. Not worth the wiring.
+- **MPSA92 high-side restage** — redesigns a driver stage that isn't ours, on a schedule
+  that can't absorb it.
+- **HV shift-register static drive** — **Rev E / product 2.** Right answer for a product
+  line, wrong answer for this run. Carry it forward to QUADRANT and the decatron product so
+  they don't inherit the multiplex from scratch.
+
+---
+
+## 0. First correction: it is six, not eight
+
+Only tubes in the **anode-multiplex rotation** can ghost. Ghosting requires the cathode
+selection to change while a previous anode is still conducting — a statically-driven lamp
+has a fixed cathode and cannot ghost, ever.
+
+| Lamp | Count/unit | Drive | Can ghost? |
+|---|---|---|---|
+| ИН-12А (HH:MM digits) | 4 | anode multiplex, via TLP627 | **yes** |
+| ИН-17 (seconds digits, SEC module) | 2 | anode multiplex, via TLP627 | **yes** |
+| ИН-15Б / ИН-15А (AM/PM) | 2 | **static**, MCP23017 → MPSA42 cathodes | no |
+| Colon neons | 2 | **static**, own ballast | no |
+
+**Worst case is six bleed resistors per unit, not eight.** Sixty across the ten-unit run,
+at ~3–5 ₽ each — **the cost was never the problem. The problem is sixty hand-soldered
+flying leads sitting at 185 V next to glass**, which is a reliability and labour issue.
+Everything below is aimed at that, not at the ₽.
+
+---
+
+## 1. The decisive unknown, and why it must be resolved before anything is designed in
+
+The ghost has **two** contributors, and the bleed resistor only addresses one:
+
+| Contributor | What fixes it |
+|---|---|
+| **(a)** Anode-node capacitance (~30 pF) draining through the tube | bleed resistor — yes |
+| **(b)** TLP627 Darlington **conduction tail** — the opto is still actively sourcing current | bleed resistor — **largely no** |
+
+While the opto is genuinely on, its impedance is tens of ohms; a 1 MΩ bleed to ground is
+irrelevant next to that and the anode stays near the rail. The bleed only starts to win as
+the opto's impedance rises during the *late* part of its turn-off. **So the bleed truncates
+the tail of the tail. It does not delete the tail.**
+
+**The risk this creates is concrete: if (b) dominates, sixty bleed resistors buy very little
+and the design carries them forever.** So:
+
+> **Do not commit the bleed resistor to a PCB revision before Tier 1 below has been run.**
+
+> **RESOLVED, 05.09.26 — read this before anything below.** A controlled sweep settled it.
+> Holding dead time at 608 µs and doubling the frame rate from 50 Hz to 100 Hz **brought the
+> ghosting back**, while on-time went *down*. Required dead time is not constant — it scales
+> with each tube's off-period. **No firmware setting escapes it; this is hardware.**
+>
+> **The mechanism in this document was wrong.** The dominant term is not the TLP627's
+> Darlington storage time. The ghost happens during the *rest of the frame*, not in the dead
+> window: cathodes are bussed, so every tube sees every driven cathode, and **tube A's anode
+> node has no discharge path** — the opto can only source, and the stock board has no bleed.
+> The node floats for milliseconds, draining only through leakage and the tube.
+>
+> **Therefore: T1 (firmware) is dead, T1.2 and T3.2 (opto changes) address the wrong term, and
+> the 1 MΩ anode bleed — §4's existing part — is the correct fix.** τ ≈ 30 µs against ~30 pF,
+> ~34 mW per tube. **T2.1's PCB footprints are now a requirement, not insurance**, so
+> TS06-TUBE (spec §3b) must be fabricated.
+>
+> Measured constraints to design against: **tail 448–608 µs at 50 Hz without a bleed**; **100 Hz
+> is camera-clean at 30 and 60 fps** (400 Hz was never reachable — the hard ceiling is
+> 1/(6×D) = 274 Hz); **duty = 1/6 − D × F**, which prices every fix directly. Confirmation
+> pending one 1 MΩ resistor on one tube — procedure in the prototype plan's P2.
+
+> **SUPERSEDED — UNVERIFIED-TAIL WARNING, 05.09.26.** A bench sweep appeared to measure the TLP627 tail at
+> ~250–300 µs, and this study was briefly updated to treat that as established. **It is not.**
+> The sweep was almost certainly run on an uncommitted 75 Hz bracketing tree rather than the
+> build whose tick period the arithmetic assumed. The ~100 µs working figure below is
+> therefore still an assumption, and so is any figure larger than it. The clean measurement
+> is now specified in `claude/TERMINAL-06-prototype-plan.md` (P2 → "The measurement that will
+> actually settle it"): sweep `DEAD_TICKS` down on the `fix/multiplex-dead-time` branch with
+> effects off. **Every hardware decision in this document waits on that number.**
+
+### 1a. The number that decides it
+
+Everything is sized off the TLP627's actual turn-off/storage time. The working figure in
+use is ~100 µs, which is an *assumption*, not a measurement. **If the real figure is ~20 µs,
+Tier 1 alone almost certainly clears this and no resistor is ever needed. If it is ~200 µs,
+Tier 3 becomes likely.** Two ways to pin it down:
+
+- **Free, today:** the Toshiba TLP627 datasheet's switching-characteristics table (t_off /
+  t_storage, at a stated load — note the load, it matters).
+- **Properly:** on a scope, at the actual anode load.
+
+### 1b. Recommendation that sits outside the electronics
+
+**There is no oscilloscope in the workshop inventory.** Every step below is otherwise
+judged *by eye*, one variable at a time, with no way to see the tail that is causing all of
+this. For a ten-unit production run with a blocked gate, a basic used scope on Avito
+(~2 000–3 000 ₽, well inside the workshop budget's noise floor) is probably the highest-
+leverage purchase in the whole project — it converts this study from A/B guesswork into
+measurement, and it pays for itself again on the MCP23017 I²C bus work at P6a and on every
+future product. **Flagged as a recommendation, not a blocker** — Tier 1 can be run by eye.
+
+---
+
+## 2. Tier 1 — zero new parts. Try these first; any of them may eliminate the need entirely
+
+These change **no BOM line and no PCB footprint**, and they propagate to all ten units by
+reflashing or by a resistor value substitution.
+
+### T1.1 — К155ИД1 blanking codes (firmware only)
+
+Input codes **10–15 are invalid** on the К155ИД1 — no cathode is selected, the display
+blanks. Writing a blank code between digit slots buys **real dead-time without lowering the
+frame rate**, which is a different axis from the 01.09.26 bracketing (that traded dead-time
+*against* refresh rate; this does not).
+
+- Cost: ~25 % brightness if ~25 % of each slot is blanked (scale to the measured tail).
+- Recovery: nudge **P504** up. Ceiling is the **TLP627's 300 V**, not the cap or the switch.
+- **If this alone clears it at acceptable brightness: zero resistors, zero PCB change, and
+  the fix ships to all ten units as a flash.** This is the single most likely "eliminate
+  the need" outcome and should be tried before anything else.
+
+### T1.2 — opto LED resistor 100 Ω → 470 Ω (a value change, not an added part)
+
+Six resistors already exist in the BOM. Raising them (~38 mA → ~8 mA) pulls the Darlington
+out of deep saturation, which is exactly what shortens storage time. **No new footprint, no
+new part, no assembly change** — the assembler stuffs a different value.
+
+- Cost: brightness on those channels; stacks with T1.1's cost, so budget both against P504.
+- Test on **one** channel first and compare against its neighbours — reversible, ~5 ₽.
+
+### T1.3 — name the requirement that is generating all of this
+
+The ~400 Hz target exists **only** to beat 60 fps camera banding. At the stock ~50 Hz the
+tail is 2 % of a slot and invisible — there is no ghosting problem at all. This is worth
+stating explicitly so it is a *decision* rather than an inherited constant.
+
+**Recommendation: keep the 400 Hz criterion.** Buyers photograph these clocks and the Etsy
+listing photos are shot on camera; a display that bands on video is a visible product
+defect. But it should be on the record that this one requirement is the source of the
+entire cost below it.
+
+---
+
+## 3. Tier 2 — if Tier 1 is insufficient: make the resistor a non-event instead of eliminating it
+
+The goal here is **not** to avoid six resistors. It is to avoid six *flying leads*.
+
+### T2.1 — put the bleed on the PCB (this is the actual answer to "streamline")
+
+Custom PCBs are **already budgeted** (14 250 ₽ / 1 425 ₽ per unit, §D of the spec's cost
+table) and the tube daughterboards already route every anode. Adding a ground pour and six
+bleed footprints to that board turns *"sixty hand-soldered flying leads at 185 V"* into
+*"six pads that get stuffed with everything else."* Marginal PCB cost ≈ 0 ₽; marginal
+assembly cost ≈ 0 steps.
+
+**Gotcha — do not blindly specify a standard 1206.** Common thick-film 1206 parts are rated
+around **200 V working**, which is uncomfortably tight against a 185 V rail plus any
+trimmer headroom taken to recover blanking brightness. Options, in order of preference:
+
+1. **Two 470–510 kΩ in series** per tube (each sees <100 V) — cheapest and safest, uses
+   ordinary parts, and conveniently gives a **tuning point** (see T2.2).
+2. A single **2010/2512** or an explicitly HV-rated chip resistor (check the datasheet's
+   working-voltage line, not just the power rating).
+3. Through-hole 1 MΩ 0.5 W — rated well past 350 V, but back to hand-stuffing.
+
+The prototype's flying-lead version stays a **bodge for bench testing only**. It should
+never reach a shipped unit.
+
+### T2.2 — treat the bleed value as a knob, not a fixed 1 MΩ
+
+1 MΩ at 185 V sinks 185 µA and costs 34 mW per tube. Dropping to ~470 kΩ sinks ~390 µA and
+truncates more of the opto's late tail — at 6 × 390 µA ≈ **2.3 mA of extra continuous rail
+load**, which lands directly on the P3 boost-headroom question. **This is a real trade to
+bench, not a fixed value to copy from the ИН-17 line in spec §4.** Sweep it on one tube.
+
+### T2.3 — bleed bus, not point-to-point
+
+Once it is on the daughterboard, the six resistors drop to a ground trace running the length
+of the board — **no wire to the reservoir cap at all**, which also deletes the "confirm the
+cap's negative leg is really ground" step and its associated risk of a wrong tap at 185 V.
+
+---
+
+## 4. Tier 3 — architectural changes that attack the root cause
+
+### T3.1 — split the multiplex into two banks (best value in this tier)
+
+Two К155ИД1s (or one decoder plus bank select), three tubes each. Both banks scan in
+parallel, so at the same 400 Hz frame rate **each slot doubles, 416 µs → 833 µs**, and the
+fixed tail's share **halves, 24 % → 12 %**. Nothing else in this study attacks the
+slot-length term.
+
+- Bonus: per-tube duty doubles (1/6 → 1/3), so the display is **~2× brighter** — which pays
+  for T1.1's blanking cost outright instead of fighting it.
+- Costs: one more К155ИД1 (Soviet, cheap, plausibly already in hand); a few more Nano pins
+  or an MCP23017 channel; a modest PCB change; and **two tubes now lit at once, doubling
+  instantaneous rail load** — which is exactly the P3 measurement, so P3 must be done first.
+- Taken to its limit this option *becomes* T3.3.
+
+### T3.2 — replace the opto output stage: fast opto + MPSA92 high-side
+
+Use a fast low-voltage opto purely as a level shifter driving an **MPSA92** (300 V PNP, the
+complement of the MPSA42 already in the BOM at 18/unit from Amperkot) as the actual HV
+switch. Removes the Darlington storage time at the source — the switching transistor is
+fast, and the opto now carries only base current rather than the full load.
+
+- Costs: 6 optos + 6 transistors + ~12 resistors per unit, a new circuit to validate from
+  scratch, and fiddly high-side base drive referenced near the rail.
+- **Verdict: a real fix, but the schedule cost is high and it is strictly worse value than
+  T3.1 unless T3.1 has already been tried and fallen short.**
+
+### T3.3 — delete the multiplex: HV shift registers, static drive
+
+**HV5622/HV5522-class 32-channel high-voltage shift registers** (Microchip / ex-Supertex).
+Two chips ≈ 64 channels, enough to drive all six tubes' 60 cathodes **statically** over SPI.
+
+This does not mitigate ghosting — it **makes ghosting structurally impossible**, because no
+cathode selection ever changes. It also deletes, in one move: the К155ИД1, all six TLP627s,
+all six bleed resistors, the whole multiplex ISR, `DEAD_TIME_TICKS`/`NUM_INDI`, the
+refresh-rate-vs-dead-time trade, the camera-banding criterion, and the 1/6-duty derating in
+the anode-resistor math. The display also runs at **100 % duty — roughly 6× brighter**, so
+the anode resistors go up substantially (a straightforward spec recalculation).
+
+- Costs, stated honestly: fine-pitch package — **not millable on the CNC 3040**, so it is a
+  Rezonit board plus reflow or careful hand-soldering under the microscope. Sourcing in
+  Russia is grey-market, which means **the same counterfeit risk the spec already flags for
+  the MCP23017s** — and a counterfeit HV part failing in a customer's house is the exact
+  failure class the MPSA42-over-2N5551 decision was made to avoid. Price and availability
+  both need checking before this is more than a direction.
+- **Verdict: the right answer for a product *line*; the wrong answer for *this* ten-unit run
+  if Tier 1 or 2 clears it.** Log it as the **Rev E / product-2 direction** — it applies
+  equally to the QUADRANT wristwatch concept and to the decatron product, both of which
+  would otherwise inherit this same multiplex problem from scratch.
+
+---
+
+## 5. Recommended order
+
+| # | Step | New parts | Reaches 10 units by | Eliminates need? |
+|---|---|---|---|---|
+| 0 | TLP627 datasheet t_off figure | — | — | sizes everything below |
+| 0b | *(recommended)* used scope, ~2–3 k ₽ Avito | — | — | converts guesswork → measurement |
+| 1 | **T1.1** blanking codes 10–15 + P504 recovery | **none** | reflash | **plausibly yes** |
+| 2 | **T1.2** LED resistor 100 Ω → 470 Ω | **none** (value change) | value sub | **plausibly yes** |
+| 3 | **T2.1/T2.2** bleed on PCB, value swept, 2× series | 12 cheap R | PCB rev | no — but makes it free to assemble |
+| 4 | **T3.1** two-bank multiplex | 1 × К155ИД1 | PCB rev | halves the term |
+| 5 | **T3.2** opto + MPSA92 | ~24/unit | redesign | yes, at schedule cost |
+| — | **T3.3** HV shift registers | new board | Rev E | yes, structurally — **next product** |
+
+**Bench discipline, unchanged:** one variable at a time, log the rail voltage every time,
+bleed the 4.7 µF reservoir cap through ~100 kΩ for ~10 s and **verify <10 V on a meter**
+before touching the HV side. One hand in your pocket.
+
+**Answer to the original question, in one line:** worst case it is six resistors, not eight,
+and they belong **on the PCB, not on flying leads** — but Tier 1 costs nothing, ships by
+reflash, and may mean the count is **zero**. Run Tier 1 before designing anything in.

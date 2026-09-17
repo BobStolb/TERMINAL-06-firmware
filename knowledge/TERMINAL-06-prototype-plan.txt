@@ -1,0 +1,1545 @@
+# TERMINAL-06 — prototype plan (P-series), 27.08.2026
+ 
+Unit 1, end to end. Companion to `claude/TERMINAL-06-spec.md` (Rev D.2) — the spec says
+what to build, this says in what order to build it and what each step has to produce
+before the next one is allowed to start.
+ 
+## Hardware in hand — stated 26.08.26, sourcing updated 27.08.26, rotary arrived 28.08.26
+ 
+- Stock AlexGyver NixieClock v2 board **built, working, 4× ИН-12А**, stock 4-tube firmware
+- **No** colon lamps fitted · **no** case · **no** seconds module
+- ИН-17 pair ready, ИНС-1 ready, **spares for every tube type already in the original scope**
+- МТ1 levers and КМД1 buttons in hand, bushing diameter measured (7.85 mm, see P1)
+- **Rotary switch (SR25-style) — IN HAND as of 28.08.26, now mostly characterised.**
+  Ordered from Ozon, arrived ahead of the ~2 Sept estimate. Two caliper/bench sessions
+  in: body diameter is a real 26.94 mm (matching neither of the listing's two variants,
+  25 mm or 19 mm), **shaft diameter is confirmed at 6 mm (matches the listing exactly —
+  the one figure that held up)**, and **position count is confirmed by hand: 6 positions
+  across a ~160° arc (~32°/step)**. Pin layout on the underside is two concentric rings —
+  an inner ring with 2 populated pins on opposite sides (almost certainly the wiper/common
+  for each of two poles) and an outer ring with 12 pins (6 taps × 2 poles) — consistent
+  with the 2-wafer construction already confirmed visually. Only bushing thread/usable
+  length and overall height remain unmeasured; neither blocks the dial artwork. The МТ1
+  levers and КМД1 buttons already in hand were unaffected by the earlier sourcing change;
+  only the rotary itself was ever in question.
+- **ИН-15А (glyph tube, AM/idle-cycling) — sourced, NOT in hand.** Begrant 35 ₽ б/у ×283
+  or yg-radio 30 ₽ новые ×25, not yet ordered.
+- **ИН-15Б (glyph tube, PM/idle-cycling) — a handful secured on Meshok, 28.08.26, for
+  prototype purposes.** Enough to build and test P6a on one unit. This is **not** yet a
+  documented ten-unit-batch source — "doesn't have depth" — so the batch-quantity question
+  is real but deferred; it no longer gates the prototype the way it did as of Rev D.2.
+- **Firmware source — recovered from a separate chat and pushed to a real repo, 28.08.26
+  evening.** The display-layer firmware described at P2/P6 below previously existed only
+  as a zip attached to a different chat session, with no way to bring it into this project
+  directly. The user's saved copy of that zip's contents was uploaded here, verified
+  file-by-file, and pushed to
+  **[github.com/BobStolb/TERMINAL-06-firmware](https://github.com/BobStolb/TERMINAL-06-firmware)**
+  (initial commit `7063270`) — see `claude/TERMINAL-06-spec.md`'s matching header note and
+  §5 for the one finding that came out of inspecting the real source: **`DOT_BRIGHT`/
+  `DOT_BRIGHT_N` are still 35/15 (LED-era), not the 170/90 this plan's P6 step used to cite
+  as settled guidance** — corrected at P6 below.
+- **Firmware libraries — added, 28.08.26, same evening.** The repo's `libraries/`
+  placeholder is now populated: **GyverButton** and **RTClib**, in standard Arduino
+  library layout, added via a local Claude Code session with direct filesystem/git
+  access (no interactive login needed — credentials were already cached on that
+  machine). Current HEAD: **`5b5b29f`** ("Add GyverButton and RTClib library
+  sources"), clean, matching `origin/main`. Checked against every `#include` in the
+  pushed sketch files: only `GyverButton.h` and `RTClib.h` (plus the AVR-bundled
+  `Wire.h`/`EEPROM.h`) are actually referenced, so a few sibling libraries found in
+  the same source folder (EEPROMex, GyverHacks, GyverTimer — leftovers from
+  AlexGyver's original project) were correctly left out.
+- **P2 bench-testing, 01.09.26 — one bug fixed, one real hardware limitation found.**
+  Full writeup at P2 below. Short version: `BOARD_TYPE` was wrong in the shipped
+  firmware (`1`, should be `0` for this physical board) — found, fixed, confirmed
+  solid. Separately, and unrelated: at the firmware's target ~400 Hz six-tube
+  refresh rate, the main board's ИН-12 tubes show real, persistent ghosting
+  (multiple digits partially lit at once, confirmed by eye). Bracketing the only
+  firmware lever available (dead-time between tube slots, traded against refresh
+  rate) proved there's no setting that's both camera-clean and ghost-free on this
+  hardware — it's a hardware quench-speed limitation, not a firmware bug. **P2 is
+  now BLOCKED** pending a hardware fix on the anode driver side.
+- **P2 root cause refined, 04.09.26 — still blocked, but now with a specified fix list.**
+  The slow element is the **TLP627 photo-Darlington's own turn-off/storage tail** (~100 µs
+  working figure), not anode-node capacitance. At the stock 4-tube/50 Hz rate that tail is
+  2 % of a slot; at the target 6-tube/400 Hz rate it is **24 %** — which is exactly why the
+  dead-time-vs-refresh-rate bracketing could never win. **This scales the wrong way with
+  tube count** (8 tubes in the multiplex chain → 32 %), so the fix has to land before the
+  chain grows, not after. Three costed remediation paths and a bench test order are now
+  written up at P2; the tube-socket daughterboard architecture and the P504 HV trimmer are
+  identified there too.
+## Status — P2 is now the blocker; the rest is unaffected
+ 
+- **Rotary: in hand, mostly measured (28.08.26).** Body diameter 26.94 mm, shaft diameter
+  6 mm (confirmed, matches listing), position count 6 across a ~160° arc — all closed.
+  Pin layout (2 inner wiper commons + 12 outer taps, 2 poles) documented — only one pole
+  is needed for the A6 tapped-divider ladder in spec §2, the second is spare. Still open:
+  bushing thread size/usable length, overall height, and confirming the feature identity
+  behind two earlier readings (8.59 mm, 12.10 mm) — none of these block the dial artwork,
+  which only needs body ⌀, detent angle and position count, all three now in hand.
+- **AM/PM drive topology: superseded, not decided by this plan any more.** The plan
+  originally sketched here (single PCF8574-class expander, 2 channels, diode-OR into a
+  third transistor for "M-stencil") has been replaced in `claude/TERMINAL-06-spec.md`
+  Rev D by a different chat's more thorough design: **two MCP23017 I²C expanders (U3
+  @0x20, U4 @0x21) individually switching all 18 cathodes across both real ИН-15А/Б
+  symbol tubes** — not simple AM/PM pilot lamps, but multimeter-glyph tubes that
+  idle-cycle their full symbol set on rotary position 1 and show the correct A/Р glyph
+  otherwise. P6a below is rewritten to match the spec, not the earlier plan.
+- **"m" indicator trigger: reopened, genuinely undecided.** The authoritative spec
+  currently specifies HL3 (a plain amber LED behind the "m" stencil) as **unconditionally
+  always-on** whenever the clock is powered. But earlier in this same chat you said the
+  "m" indicator "turns on when the 12h mode is turned on," and those two answers disagree.
+  Doesn't block bench work (HL3's basic +5V/GND wiring is identical either way, see P6a),
+  but needs a decision from you before HL3 gets soldered into any board for real.
+- **`DOT_BRIGHT` neon retune: confirmed NOT done, 28.08.26.** Direct inspection of the
+  firmware source (now in the GitHub repo, see above) shows the colon brightness values
+  are still `DOT_BRIGHT 35` / `DOT_BRIGHT_N 15` — the original LED-era numbers. This plan's
+  P6 previously cited 170/90 as if it were already applied guidance; it's actually still an
+  open bench task, corrected below.
+- **P2 blocked, 01.09.26 — see full writeup at P2.** BOARD_TYPE fix is solid and should
+  go in regardless. The ghosting/anode-quench finding is the real blocker: it needs a
+  hardware fix, not another firmware setting, before P2 can be marked passed.
+**The next concrete action is no longer "flash and verify" — it's deciding and bench-
+testing a hardware fix for the anode-quench ghosting (see P2).** Everything from P3
+onward stays on hold until that's resolved; nothing downstream of P2 has been touched
+by this finding, there's just nothing to do on those steps yet.
+ 
+**On the "six tubes, not eight" question (28.08.26):** the firmware's tube count refers
+*only* to the anode-multiplexed digit tubes — 4× ИН-12А + 2× ИН-17, driven off D2–D6/D13
+through the shared К155ИД1 BCD decoder. That number has not changed under Rev D and isn't
+going to: the colon (2× ИНС-1) and the AM/PM pair (2× ИН-15) were deliberately kept **off**
+that multiplex entirely, on purpose, from the moment they were added. The colon is a
+direct low-side switch off D10 (no multiplexing — always the same two lamps). The AM/PM
+pair is switched from its own shared anode resistors through two MCP23017 I²C expanders,
+addressed over A4/A5, with zero involvement from the digit-multiplex ISR. This split
+existed specifically so that neither of those additions would ever require reopening the
+timer/ISR code path — see spec §2's pin map note ("D10 and D11 are the board's only fixed
+jobs outside the digit multiplex") and §3's MCP23017 circuit. **So no, the six-tube
+firmware doesn't need updating before P2** — it was never scoped to include the colon or
+AM/PM tubes, and P2's whole job is to validate the digit multiplex in isolation. The
+MCP23017 driver and the idle-cycling state machine are separate, not-yet-written code,
+already tracked at P6a/P8, not part of what P2 is testing.
+ 
+## The critical-path finding
+ 
+The rotary gates **only** the fascia artwork (detent angle → plate 05 → TS06-FASCIA) and the
+A6 half of the control firmware. It gates **nothing** on the display side.
+ 
+The two custom PCBs are the long-lead items in the whole project, and **TS06-SEC can be fully
+specified without ever touching a rotary switch.** So the prototype runs display-first: every
+number TS06-SEC needs is measurable right now, on the clock that already works, with parts
+already owned plus about 400 ₽ of passives.
+ 
+**Rev D adds a third parallel track, not a new bottleneck.** The AM/PM + idle-cycling
+indicator circuit needs none of: the rotary, TS06-SEC's cathode routing, or the fascia. It
+needs both ИН-15 tubes (both now at least partially secured, 28.08.26) and two MCP23017
+expanders, none of which is on the bench yet.
+ 
+**01.09.26: this "display-first, rotary/AM-PM in parallel" structure still holds** — P2's
+ghosting finding blocks P3 onward (everything downstream of the digit-multiplex gate), but
+it doesn't block rotary characterisation (already done, see P1/P8) or AM/PM sourcing
+(P6a), since neither depends on the multiplex firmware passing. What it does block is any
+further HV bench work on the main board's display path until the anode-quench question is
+answered.
+ 
+---
+ 
+## ~~P0 — same day, ~30 min, no bench~~ — crossed out 27.08.26
+ 
+~~1. Pay the Vladi59 cart and confirm the real combined-parcel cost. 3 650 ₽, nine line
+   items, Севастополь → Кронштадт.~~ **Superseded.** The rotary portion of that cart is
+no longer needed — rotary switches now come from Ozon. Whether the *button/lever* portion
+of the same cart (11 КМД1 + 10 МТ1, already reported "in hand" above) still needs paying
+is a real open question this crossing-out surfaces: if those parts are physically on the
+bench already, either they were paid some other way, or there's an unpaid cart sitting
+behind hardware you've already received. Worth a five-minute look at the actual Meshok
+order history next time you're there — not urgent, just don't let it go stale silently.
+ 
+~~2. Confirm Etsy can register, list and *pay* a Russia-based seller.~~ **Deferred.**
+Etsy store logistics will be its own, more nuanced discussion later — pricing, payout
+routing, and possibly a non-Etsy storefront are all tangled together and don't belong as
+a 20-minute checkbox item in a hardware prototype plan. Tracked, not forgotten: still the
+thing that invalidates the most on the business side if it comes back wrong, per spec §7 —
+just not a prototype-blocking task, and not solved by rushing it here.
+ 
+**Net effect: P0 contributed nothing that the display-first prototype actually depends on.**
+Nothing above blocked P1 or P2 before, and nothing here blocks them now either. **P0 is
+fully retired — there is no version of it left to come back to.**
+ 
+## P1 — caliper what is already here
+ 
+**Scope correction, 27.08.26 evening: P1 exists to unblock the prototype, not to feed the
+parametric CAD library another chat is building.** That library (`TERMINAL-06-cad-
+component-library.md` and its capture sheets) is aiming for full fit-and-keepout solids for
+a reusable part model — tip-off pip location, getter flash position, pin pitch, glow-point
+offset, min/mean/max on every dimension. Genuinely useful for that goal. Mostly irrelevant
+to this one. The filter that actually matters here: **does the number end up on a PCB
+order, or on a 3D print?** A PCB respin costs money and weeks. An FDM print is free to
+redo after a physical test-fit.
+ 
+**МТ1 and КМД1 bushing diameters are closed** (7.85 mm, measured/eye-corroborated —
+see prior entry). **Rotary status changed again 28.08.26: two more real dimensions are in
+hand, and the number that actually decides the dial artwork is now confirmed.**
+ 
+**Headline finding #1 (27.08.26 evening): measured body diameter is 26.94 mm** — neither
+of the listing's 25 mm or 19 mm variants. This is exactly why P1 never trusted the listing
+numbers as load-bearing: a listing photo is a hypothesis, not a measurement.
+ 
+**Headline finding #2 (28.08.26): shaft diameter and position count are both confirmed by
+hand.** Shaft ⌀ is a real 6 mm — this is the one listing figure that actually held up.
+Position count is **6, spanning a ~160° arc (~32° per step)** — confirmed the only way it
+can be, by turning the shaft through its full travel and counting the physical detents,
+not by reading a photo. That resolves the single most consequential open item in this
+whole document: the dial artwork can now be drawn for real. Pin layout is also documented:
+two concentric rings on the underside, an inner ring with 2 pins on opposite sides (the
+wiper/common for each pole) and an outer ring with 12 pins (6 taps × 2 poles) — consistent
+with the 2-wafer construction already confirmed visually. **Spec §2's A6 ladder only needs
+one pole** (one common + 6 taps); the second pole is spare and doesn't need wiring for this
+design.
+ 
+What's still open on the rotary, and doesn't block the dial artwork: overall height and
+bushing thread size/usable length (needed before the fascia's thickness/mounting details
+are final, not before the hole pattern is drawn), and confirming the exact feature behind
+two earlier readings (a bracket width at 8.59 mm and a wafer-stack depth at 12.10 mm) plus
+a re-shoot of a third (~5.8 mm, shot upside-down).
+ 
+| Measurement | Status | Needed for MVP, and when |
+|---|---|---|
+| МТ1 body/bracket dims incl. bushing | **Measured** — bushing ⌀ 7.85 mm | Closed |
+| КМД1-1 bushing | **Eye-corroborated against МТ1's 7.85 mm** | Closed for the prototype |
+| Rotary body/wafer ⌀ | **Measured — 26.94 mm**, matches neither listing variant | Closed |
+| Rotary shaft ⌀ | **Measured — 6 mm, matches the listing exactly** | Closed |
+| Rotary detent angle / position count | **Confirmed — 6 positions across a ~160° arc (~32°/step)**, hand-counted | Closed — this is the number the dial artwork depends on |
+| Rotary pin layout | **Documented — 2 inner (opposite, wiper commons) + 12 outer (6 taps × 2 poles)** | Informational — confirms 2-pole construction; only one pole needed for the A6 ladder |
+| Rotary overall height | Listing said 23.5 mm, not independently re-measured | Yes — before P8, low priority (enclosure depth clearance, not the fascia face) |
+| Rotary bushing thread / usable length | Not captured | Yes — before P8 |
+| Rotary bracket width (8.59 mm) / wafer-stack depth (12.10 mm) | Measured, feature identity unconfirmed | Worth confirming before P8, not urgent otherwise |
+ 
+**Still standing from the tube sheets, already sufficient for MVP:**
+- **IN-12 digit height measured at 18.63 mm**, against the concept plates' assumed 18 mm —
+  0.63 mm taller. Worth a note against the brow sketch, but a printed test-fit settles it
+  faster than reworking the sketch on paper first.
+- **ИН-17 envelope: 19.30 mm and 17.50 mm** at two axial points — feeds **P4/P7**'s TS06-SEC
+  layout, single sample is fine for one prototype board.
+- **ИНС-1: 6.97 mm envelope (confident)**, plus cap-terminated-not-wire-ended — worth a
+  glance at the actual tube to confirm which end is the mounting reference (ten seconds, no
+  calipers needed) before finalising the colon holder in spec §6.
+**Action:** the rotary's dial-critical numbers are done — body ⌀, shaft ⌀, detent angle and
+position count are all real, hand-taken measurements now. What's left is low-stakes and can
+happen whenever convenient before P8: overall height, bushing thread/usable length, and
+confirming the 8.59 mm/12.10 mm feature IDs (plus re-shooting the ~5.8 mm reading
+right-side-up). None of it blocks generating the dial artwork.
+ 
+## P2 — flash the six-tube firmware onto the four-tube clock ← BLOCKED, 01.09.26
+ 
+**What this step exists to prove:** that the six-tube multiplex firmware — specifically
+the ISR/prescaler rewrite that takes the display refresh from the stock board's ~50 Hz up
+to ~400 Hz — actually works correctly on real hardware, using the four ИН-12 tubes already
+built and working, *before* any new hardware (SEC module, colon, AM/PM pair) is added. It
+is a gate: nothing after P2 starts until it passes clean. It does not test the rotary, the
+buttons, the lever, the colon, or anything from Rev D — purely the digit multiplex.
+ 
+Pass criteria, unchanged from the original plan:
+1. All four ИН-12 digits display correctly, no cathode swaps.
+2. D13's onboard LED flashes once for about a second at boot, then stays off.
+3. No HV glow on the two unpopulated channels (D2, D13 — no tube there yet).
+4. Filmed at 60 fps for 5 s, no banding/flicker on playback — the actual point of the
+   prescaler rewrite (the stock 50 Hz rate beats against camera shutters).
+The display-layer port (Timer2 prescaler 8→1, 401 Hz, buzzer removed, rev B controls) lives
+at **[github.com/BobStolb/TERMINAL-06-firmware](https://github.com/BobStolb/TERMINAL-06-firmware)**
+(HEAD `5b5b29f` as of the libraries update; bench-testing below happened on top of that,
+see the BOARD_TYPE and ghosting findings for what's changed locally and not yet pushed).
+ 
+### Bench result, 01.09.26 — two separate findings
+ 
+**Finding 1 — BOARD_TYPE was wrong. Fixed, solid, unrelated to finding 2.** The firmware
+shipped with `#define BOARD_TYPE 1` ("IN-12 upside down — AlexGyver IN-12 board as
+shipped"). The actual physical board needs **`BOARD_TYPE 0`**. This was the direct cause
+of the wrong/scrambled-looking digits seen in early bench testing — a single-digit,
+wrong-cathode-mapping problem, not the ghosting described below. **Commit this fix to the
+repo regardless of how the ghosting question resolves** — it's independently confirmed
+correct and doesn't depend on anything else in this section.
+ 
+**Finding 2 — real ghosting at the target refresh rate, root-caused to the anode driver's
+quench speed, not fixable in firmware alone.** With BOARD_TYPE corrected, a second and
+separate symptom remained: at ~400 Hz, multiple digits partially light at once on the same
+tube — confirmed by eye, not a camera artifact, and persistent (not the ~300 ms power-on
+anti-poisoning sweep, `burnIndicators()`, which was ruled out early on since this doesn't
+clear after boot).
+ 
+The team bracketed the only firmware lever available — dead-time forced between tube slots
+before the next tube's anode turns on, traded directly against refresh rate, since both draw
+on the same fixed per-tube rotation-time budget — at both extremes:
+ 
+- **~400 Hz, `DEAD_TIME_TICKS = 0`:** clean on camera by design (the original point of the
+  prescaler-1 rewrite), but severe ghosting.
+- **~75 Hz, `DEAD_TIME_TICKS = 182`, `NUM_INDI = 4`:** ghosting reduced to near-
+  imperceptible, but noticeable flicker at 60 fps returns — confirmed on camera.
+**There is no middle setting to go hunting for.** A camera-safe refresh rate and enough
+dead-time to let a tube fully quench pull in directly opposite directions on this hardware,
+because both draw from the same rotation-time budget. This is a real ceiling on what
+firmware timing alone can do here, not a "try a few more numbers" problem.
+ 
+**What this points to:** the anode driver/tube isn't quenching fast enough on its own, so
+firmware can only trade one symptom for the other, never eliminate both. This is exactly
+the failure mode the spec already anticipated a bleed resistor for on the SEC module's
+ИН-17s (`claude/TERMINAL-06-spec.md` §4: "1 MΩ anode bleed... ghost suppression") — an
+active discharge path that speeds up the actual physical quench time, rather than firmware
+just waiting longer for a slow passive one. With that in place, a fast rotation (400 Hz)
+could plausibly stay clean without needing any `DEAD_TIME_TICKS` margin at all, satisfying
+both criteria simultaneously instead of trading one for the other. **This is now flagged
+as a possible requirement on the MAIN board's ИН-12 anode drivers too, not only the SEC
+module's ИН-17s** — see the caveat added to spec §4.
+ 
+**Scorecard against the four pass criteria:**
+1. Correct digits — **pass**, via the BOARD_TYPE fix, solid and unrelated to finding 2.
+2. D13 boot-flash behaviour — unaffected, not explicitly re-verified after the fixes, but
+   no reason to expect a regression.
+3. No HV on unpopulated channels — unaffected, same as #2.
+4. No camera banding — **fail**, at the only setting (~400 Hz) where digits are clean.
+   This isn't a tuning gap, it's a confirmed conflict between criteria 1/4 and the
+   ghosting symptom.
+**P2 status: BLOCKED, not just incomplete.** Root cause identified (anode driver quench
+time); firmware-only mitigation proven insufficient in both directions; a hardware fix
+(active anode discharge / bleed resistor, or a faster-quenching driver stage) is needed on
+the main board before re-test. **The BOARD_TYPE fix should go into the repo regardless** —
+it's solid and unrelated. Whether to leave `DEAD_TIME_TICKS`/`NUM_INDI` at their current
+diagnostic bracketing values or revert them to production defaults (`0` / `6`) while the
+hardware fix is pending: **recommendation is to revert to `0`/`6`** — neither bracketed
+extreme is a viable shipped configuration, and leaving an experimental diagnostic value in
+place risks it being mistaken for a real setting later. Commit the BOARD_TYPE fix with the
+values reverted, and leave this writeup (not a code comment) as the record of what was
+tried and why.
+ 
+**Nothing downstream of this gate (P3 onward) should start until a hardware fix is
+bench-tested and this scorecard re-run clean.**
+ 
+### Finding 2, refined — 04.09.26: the quench limit is the **TLP627's own turn-off time**, and it gets *worse*, not better, as tubes are added
+ 
+The 01.09.26 writeup above called this "anode driver quench time" and assumed the slow
+element was **anode-node capacitance** discharging through the tube. That framing was
+directionally right but not precise enough to specify a fix. Inspecting the board's actual
+BOM/schematic against the observed behaviour puts the dominant term somewhere else:
+ 
+**The TLP627 is a photo-Darlington optocoupler.** A Darlington output stage has a
+**storage / turn-off tail** — after the drive to its internal LED is removed, the output
+transistor keeps conducting for a further period while the base charge clears. Working
+figure: **~100 µs** (order: tens to a couple hundred µs, load-dependent — *verify against
+the Toshiba TLP627 datasheet before committing to a design*). This is a fixed physical
+property of the part. It is **not** a capacitance effect, and no amount of anode-side
+capacitance reduction removes it.
+ 
+That single number explains the whole bracketing result, quantitatively:
+ 
+| Configuration | Frame rate | Slot per tube | ~100 µs tail as % of slot | Observed |
+|---|---|---|---|---|
+| Stock, 4 tubes | ~50 Hz | ~5000 µs | **2 %** | invisible — never a problem on the stock firmware |
+| Stock, 4 tubes | ~400 Hz | ~625 µs | **16 %** | visible |
+| **Target, 6 tubes** | ~400 Hz | ~416 µs | **24 %** | **glaring — this is P2's symptom** |
+| 8 glass (6 digits + 2 more in the chain) | ~400 Hz | ~312 µs | **32 %** | worse still |
+ 
+Mechanism, precisely: the opto is still conducting into the *previous* tube's anode while
+the К155ИД1 has already switched cathode selection to the *next* digit. The stale tube
+therefore faintly shows the **new** digit. This is why forced dead-time helped — it was
+buying time for the tail to clear — and why it could only ever trade against refresh rate:
+the tail is a constant, so the only firmware lever is to make the slot longer.
+ 
+**Tube-count scaling — the question this raises, answered.** The intuition that adding four
+more tubes will *increase current draw and therefore leave less charge behind to ghost* is
+a coherent mechanism in general, but it does **not** apply to this circuit, for two reasons:
+ 
+1. **The display is multiplexed — only one tube conducts at any instant.** Each tube's anode
+   sits behind its own TLP627. When that opto turns off, that anode node becomes an
+   electrical island: the *only* path off it is through its own tube. The other tubes cannot
+   drain it, because their own optos are open. The shared cathode bus is not a relief valve
+   either — it is the **destination** of the ghost current, not an escape from it. This is
+   exactly why a bleed resistor is required: it is the only *deliberate* path off that
+   island. Adding tubes adds more islands; it does not connect them.
+2. **More tubes divides the frame into more slots.** At a fixed frame rate, each additional
+   tube makes every slot *shorter*, so the fixed ~100 µs tail becomes a *larger* fraction —
+   see the table. **Ghosting scales in the wrong direction with tube count.**
+There is also a second-order brightness cost: per-tube duty falls from 1/6 to 1/8 (**~25 %
+dimmer per tube**) before any blanking is applied — which eats the same rail headroom the
+BCD-blanking remediation below depends on.
+ 
+**Practical consequence: fix the ghosting at six before scaling the multiplex chain.**
+Eight is a strictly harder version of the same problem, not an escape from it.
+*(Exception: any lamp driven **statically** rather than through the digit multiplex — the
+colon pair and the ИН-15 AM/PM tubes on the MCP23017s — adds no slot and has no tail. None
+of the above applies to those. Only tubes joined to the anode-multiplex rotation count.)*
+ 
+### Physical architecture correction — 04.09.26
+ 
+The ИН-12 tubes **do not** mount directly on the main driver board, despite the two
+silkscreened `IN-12` footprints visible on it. In this actual build each **pair** of tubes
+sits on a separate small **daughterboard** (hand-decorated with white "troll face" doodle
+art around each socket's pin ring), connected back to the main board by a straight
+multi-pin header at the top edge. Two such daughterboards carry the four tubes.
+ 
+Within each socket's pin ring, **one pin sits alone inside a distinct circular outline**,
+separated from the ring of ~8–9 others — the candidate anode pin. **Not yet meter-confirmed.**
+Confirmation procedure (board dead and bled): check continuity between the *same-position*
+pin on two *different* tube sockets. **No continuity → anode** (unique per tube).
+**Continuity → shared cathode** (all like digits bussed in parallel to the К155ИД1).
+ 
+Construction is **single-sided**: all copper and all through-hole solder joints are on the
+back. **Any existing through-hole joint on the back is a legal tap point** — reflow the
+existing blob and slide the new resistor lead in alongside the original pin. **No trace
+cutting is required anywhere in this fix.**
+ 
+### Component identification — 04.09.26
+ 
+- **HV set-point trimmer:** the blue preset, marked **P504** (= 500 kΩ; BOM lists 470 k/500 k
+  class). Sets the boost converter's rail voltage. *Identified from BOM inference plus the
+  board marking, not from a schematic* — confirm with a meter (resistance from each leg to
+  HV+, to ground, and to any Nano analog pin; board dead and bled) before relying on it.
+- **The 100 Ω resistors beside the optos are LED-side current limiters** (~38 mA into each
+  TLP627's internal LED). They are **not** anode-side resistors. **The D3–D6 pads are the
+  wrong place to add anything for ghosting** — adding series resistance there only dims the
+  tubes and, if anything, slows the Darlington further.
+- **Voltage ceiling on this board is the TLP627's 300 V rating** — *not* the 4.7 µF
+  reservoir cap (350–400 V) and *not* the boost switch (500 V class, likely IRF840). 185 V
+  has margin; 250 V does not.
+- Do not confuse the **1 MΩ anode bleed** (ghost suppression, anode node → ground) with the
+  **12 kΩ-class anode series resistor** (current limiting, in-line). Different parts,
+  different jobs; see spec §4.
+### Three remediation paths, in test order — 04.09.26
+ 
+Change **one variable at a time**, and log rail voltage at every step.
+ 
+0. **Confirm the opto part number** stamped on the packages, and note the current trimmer
+   position and measured rail voltage as the baseline.
+1. **1 MΩ 0.5 W anode bleed, one tube first.** Anode node → confirmed ground. Anode-node
+   capacitance ≈30 pF gives τ ≈ 30 µs (fast against a 416 µs slot); cost ≈34 mW per tube.
+   **Expect an improvement, not a cure** — this removes the capacitive tail but does nothing
+   about the Darlington's own conduction tail. This is the same part already budgeted for
+   the SEC module's ИН-17s (spec §4).
+2. **Raise one opto's LED resistor 100 Ω → 470 Ω** (≈8 mA). Pulls the Darlington out of deep
+   saturation, which shortens storage time. Costs brightness on that channel. **A 5 ₽ test
+   and fully reversible** — do one channel and compare against its neighbours.
+3. **BCD blanking + trimmer recovery (no new parts).** The К155ИД1's input codes **10–15 are
+   invalid** — no cathode is selected, the display is blanked. Writing a blanking code
+   between digit slots buys *real* dead-time **without** reducing the frame rate, which is a
+   different axis from the 01.09.26 refresh-rate-vs-dead-time bracketing. A ~100 µs tail
+   needs ~25 % of each slot blanked → **~25 % brightness cost**, recoverable by nudging P504
+   up — staying well under the TLP627's 300 V ceiling.
+The likely shipped answer is **1 + 3 combined**. Path 2 is a cheap diagnostic that tells you
+how much of the tail is saturation-related before committing to the blanking cost.
+ 
+**Safety, every time:** the 4.7 µF reservoir cap stays charged after power-off. Bleed it
+through ~100 kΩ for ~10 s and **verify <10 V on a meter** before touching the HV side. One
+hand in your pocket.
+ 
+### PARTIAL RETRACTION — 04.09.26: "there is no middle setting" was drawn from confounded data
+ 
+Re-reading the stock AlexGyver ISR (`firmware/nixieClock_2_v2.5/isr.ino`, synced repo)
+against the 01.09.26 bracketing shows the two test points **changed three variables at
+once** and the conclusion drawn from them does not hold:
+ 
+| Test point | Frame rate | DEAD_TIME_TICKS | NUM_INDI | Result |
+|---|---|---|---|---|
+| A | ~400 Hz | 0 | 6 | ghosting |
+| B | ~75 Hz | 182 | **4** | clean, but flicker |
+ 
+**Nothing between A and B was ever tested, and B moved the refresh rate and the tube count
+as well as the dead time.** "No middle setting to go hunting for" was a conclusion about
+two extreme points, not about the space between them.
+ 
+**The mechanism, from the stock ISR:**
+ 
+```c
+indiCounter[curIndi]++;
+if (indiCounter[curIndi] >= indiDimm[curIndi])
+  setPin(opts[curIndi], 0);          // anode OFF at the dimming threshold
+if (indiCounter[curIndi] > 25) {     // slot ends, decoder switches
+  ...                                 // ← the ghost window is between these two events
+```
+ 
+**Dead time in ticks = 26 − `indiDimm`.** The brightness control *is already* a dead-time
+control — the anode is cut early and the decoder does not switch until tick 26. At full
+brightness (`indiDimm` = 25) that gap is **one tick**, and one tick is nowhere near a
+~100 µs tail. **Full brightness is therefore the maximum-ghosting condition by
+construction.**
+ 
+At ~400 Hz over 6 tubes the slot is ~416 µs across 25 ticks → **~16.6 µs per tick**. So:
+ 
+| `indiDimm` | Dead time | Brightness | vs ~100 µs tail |
+|---|---|---|---|
+| 25 | ~17 µs | 100 % | far too short — **ghosts** |
+| 22 | ~66 µs | 88 % | marginal |
+| **19** | **~116 µs** | **76 %** | **should clear it** |
+| 16 | ~166 µs | 64 % | comfortable margin |
+ 
+**Concrete prediction: ~76 % brightness clears the ghosting at the full 400 Hz frame rate
+with no hardware change at all.**
+ 
+**The exact knob: `#define INDI_BRIGHT` at the top of the main `.ino` (range 0–24).**
+`changeBright()` copies it into `indiMaxBright` → `indiDimm[]`, which is the ISR threshold
+above. So this is a **one-line source edit and a reflash** — not a trimmer, not a button.
+Sweep **24 → 20 → 18 → 12** and watch the ghost. Dead time = 26 − `INDI_BRIGHT` ticks
+(≈16.6 µs each): 24 → ~33 µs, 20 → ~100 µs, 18 → ~133 µs, 12 → ~233 µs.
+ 
+**P504 is NOT the brightness control and must not be used for this test.** It sets the HV
+rail. Turning it changes voltage, not the anode/decoder timing that causes the ghost, and
+turning it up walks toward the TLP627's 300 V ceiling. It is only for recovering brightness
+*after* a working `INDI_BRIGHT` is found.
+ 
+*Check: `changeBright()` sits inside `#if (NIGHT_LIGHT == 1)`. If `NIGHT_LIGHT` is 0 in the
+fork, `indiDimm[]` is being set somewhere else — find that instead. Symptom: changing
+`INDI_BRIGHT` and reflashing produces no visible change.*
+ 
+**Why B's `DEAD_TIME_TICKS` behaved so differently:** at 182 it plainly *extended* the slot
+rather than stealing ticks from inside it — which is why the frame rate collapsed to 75 Hz.
+**Dead time taken from inside the slot costs brightness; dead time added to the slot costs
+refresh rate.** The 01.09.26 writeup treated these as the same budget. They are not, and
+that is the error that made the problem look unsolvable in firmware.
+ 
+**Immediate consequence for P2: the cheapest test has never been run, and it needs no
+soldering iron, no parts and no code change** — just turn the display brightness down at
+400 Hz and watch the ghosting. If it recedes as the display dims, the mechanism is confirmed
+and this is a firmware fix, not a hardware one. Then cap maximum brightness at the smallest
+`indiDimm` that clears it and recover the lost output on P504 (ceiling: the TLP627's 300 V).
+ 
+*Caveat: the fork's ISR (`BobStolb/TERMINAL-06-firmware`) is rewritten — cached dim/port/mask,
+6 tubes, an explicit `DEAD_TIME_TICKS` — so the variable names above are the stock v2.5
+ones. Check the fork's own `isr.ino` for where the anode-off and decoder-switch actually sit
+relative to each other. The 25-tick figure and the ~16.6 µs/tick that follows from it should
+also be confirmed against the fork's real OCR2A, not assumed from stock.*
+ 
+### BENCH RESULT — 05.09.26: CONFIRMED. The prediction holds; this is a firmware fix.
+ 
+**First real bench data P2 has produced.** Two photos, same tubes, same framing, **both at
+ISO 50** (fair comparison, exposure not doing the work):
+ 
+| `INDI_BRIGHT` | Dead time | Observed |
+|---|---|---|
+| **24** (max) | ~33 µs | Whole cathode stack hazed — multiple digits visibly glowing at once |
+| **12** | ~233 µs | Digits clean, unlit cathodes actually dark |
+ 
+**The ghosting tracks `INDI_BRIGHT` exactly as predicted.** That closes the question the
+01.09.26 bracketing got wrong: the ghost window is the gap between anode-off and
+decoder-switch, the brightness constant sets that gap, and it is reachable in firmware at
+the full frame rate. **No bleed resistor, no opto change, no PCB revision is required to
+clear it.**
+ 
+Consequences, immediately:
+- **T1.1 is the fix.** The three remediation paths in the study are superseded as *primary*
+  options; the bleed footprints on TS06-TUBE/TS06-SEC drop to **DNP insurance**, laid out
+  but unpopulated (which is exactly why they were specced as footprints rather than parts).
+- **The 01.09.26 "hardware fix required" conclusion is now formally wrong**, not merely
+  imprecise. Recorded rather than deleted — the confounded-bracketing error is the useful
+  lesson.
+**Still open — the number that matters is the *highest* working value, not any working
+value.** Every point of `INDI_BRIGHT` given up is brightness given up. 12 works but is
+visibly dim; the job now is to bisect upward (try 18, then 20/21 if clean, 15 if not) and
+find the threshold, then recover the remainder on P504 under the TLP627's 300 V ceiling.
+ 
+**Bonus — this measures the TLP627's turn-off tail with no oscilloscope.** The threshold
+value *is* the measurement: tail ≈ (26 − `INDI_BRIGHT`) × tick period. If 18 is clean and 20
+is not, the tail sits between ~100 µs and ~133 µs, which would confirm the ~100 µs working
+figure the whole study was sized against. The display is the instrument.
+ 
+**Caveat that must be resolved before this result is carried to production: what were
+`NUM_INDI` and the frame rate during this test?** Dead time in *ticks* is 26 − `INDI_BRIGHT`
+regardless of tube count, but frame rate is 25 × `NUM_INDI` ticks. Holding ~400 Hz with six
+tubes instead of four requires a ~1.5× faster tick, which shrinks each tick and therefore
+demands ~1.5× more ticks of dead time for the same absolute tail — i.e. a proportionally
+lower `INDI_BRIGHT` and a bigger brightness cost. **A threshold found at four tubes does not
+transfer to six unchanged.** This is the tube-count scaling from the 04.09.26 refinement,
+now in units that can be measured.
+ 
+### ROOT CAUSE FOUND — 05.09.26: the prescaler rewrite silently rescaled the brightness constant by 8×
+ 
+**The user's own observation cracked it:** stock `nixieClock_2_v2.5.ino` at `INDI_BRIGHT 24`
+is *flawless* on the same hardware; the fork at 24 ghosts badly and needs 5–8 to approach
+clean. Same board, same tubes, same optos — so this was never a hardware limitation.
+ 
+**The fork's ISR header states the tick rate outright** (`firmware/nixieClock_TS06/isr.ino`):
+Timer2 Fast PWM, TOP = 255, **prescaler 1 → 62.5 kHz → one tick = 16 µs**. Stock runs the
+identical structure at **prescaler 8 → 7.81 kHz → one tick = 128 µs**.
+ 
+Dead time is counted in *ticks* (`26 − INDI_BRIGHT`) in both. **The tick got 8× shorter and
+nothing rescaled the brightness constant to compensate:**
+ 
+| Build | Prescaler | Tick | `INDI_BRIGHT` | Dead time | Result |
+|---|---|---|---|---|---|
+| Stock v2.5 | 8 | 128 µs | 24 | **256 µs** | flawless |
+| Fork | 1 | 16 µs | 24 | **32 µs** | severe ghosting |
+| Fork | 1 | 16 µs | 12 | 224 µs | haze + flicker |
+| Fork | 1 | 16 µs | 5–8 | 288–336 µs | near-clean |
+ 
+**Stock is not better engineered. It is slower, and slow accidentally hides the opto's
+tail.** This is a units regression introduced by the prescaler-1 rewrite, not a property of
+the board.
+ 
+### The TLP627 tail is now MEASURED — and it is ~3× the assumed figure
+ 
+Stock is clean at **256 µs** of dead time; the fork needs **~288 µs** to approach clean.
+Those agree. **The TLP627's real turn-off tail on this load is ~250–300 µs, not the ~100 µs
+working figure every estimate in this project has been sized against.** Measured with no
+oscilloscope, using the display as the instrument and stock firmware as the reference point.
+ 
+**This retracts the 05.09.26 "the resistors are probably dead" call.** Run the arithmetic at
+the real number: 6 tubes, 400 Hz frame → 416 µs slot; a 288 µs dead time leaves 128 µs of
+on-time — **~31 % duty, ~2/3 of the brightness gone.** That is too expensive to ship.
+**Hardware help is back on the table** (T1.2's 470 Ω LED resistor becomes considerably more
+attractive now that the tail is known to be large), but the target is now a measured number
+instead of a guess.
+ 
+### Two cheap tests before anything else
+ 
+**1. Turn the effects OFF and re-judge.** The fork added *"anti-poisoning and glitch across
+six tubes"* (spec §5). `GLITCH_ALLOWED = 1` deliberately lights wrong digits, and the
+anti-poisoning cycle sweeps cathodes — **both look exactly like haze and flicker.** The
+residual seen at `INDI_BRIGHT` 5–8, and the "noticeable flicker" at 12, may be partly or
+wholly deliberate effects being mistaken for ghosting. Set `GLITCH_ALLOWED = 0` and disable
+the anti-poisoning cycle, then re-judge. **No conclusion about residual haze is safe until
+this is ruled out.**
+ 
+**2. Ask whether 400 Hz is actually required — nobody has tested it.** At a fixed 288 µs
+tail, halving the frame rate doubles the on-time for the same ghost margin:
+ 
+| Frame rate | Slot (6 tubes) | Dead | On | Duty |
+|---|---|---|---|---|
+| 400 Hz | 416 µs | 288 µs | 128 µs | **31 %** |
+| **200 Hz** | 832 µs | 288 µs | 544 µs | **65 %** |
+ 
+**Twice the brightness at the same ghost margin.** 200 Hz is far above the 50 Hz that beat
+against camera shutters and almost certainly still films clean — but that is an assumption
+until it is filmed at 60 fps, which is a five-minute test.
+ 
+**Implementation note — Timer2 has no ÷2 or ÷4.** Its prescaler options are 1, 8, 32, 64,
+128, 256, 1024 only, which is exactly why the original rewrite jumped 8→1 with nothing in
+between. So 200 Hz is *not* reached via the prescaler. Keep prescaler 1 and **lengthen the
+slot instead: change the per-tube tick count from 26 to 52** (`if (c > 25)` → `if (c > 51)`)
+and extend the brightness range to 0–50. Then 62500 / 52 / 6 = **200 Hz**, and
+`INDI_BRIGHT 34` gives 18 ticks (288 µs) of dead time at **65 % duty**. Two constants. ISR
+cost is unchanged (still 62.5 kHz); the changeover path runs once in 52 instead of once in
+26, so marginally cheaper.
+ 
+### CONFOUND FOUND — 05.09.26 (later): the 24-vs-12 photos were probably NOT taken on `main`
+ 
+A Claude Code session sent to implement the timing change reported that **the working tree
+was never `main`** — it was the uncommitted 01.09.26 bracketing state, and none of it was
+committed:
+ 
+- `DEAD_TIME_TICKS 182`, `TUBE_TICKS 208` → **~75 Hz**, not 400 Hz
+- `NUM_INDI 4` (with `opts[]`/`anodeStates[]` trimmed and `#if NUM_INDI > 4` guards)
+- `INDI_BRIGHT 5`
+- a working prototype of the dead-time mechanism already in the ISR (decoder blanked at tick 26)
+**The corroborating detail: the user reported "noticeable flicker" at `INDI_BRIGHT 12`.**
+There is no visible flicker at 200–400 Hz. There *is* at 75 Hz — and "noticeable flicker" is
+exactly what the 01.09.26 bracketing recorded at that same `DEAD_TIME_TICKS 182 / NUM_INDI 4`
+setting. **That points hard at the photos having been taken on the dirty bracketing tree.**
+ 
+**Consequences — both of the previous two entries must be downgraded:**
+ 
+1. **The "~250–300 µs measured TLP627 tail" is NOT established.** It was derived from a
+   tick-period assumption (16 µs, SLOT 26) that only holds on committed `main`. On the dirty
+   tree the slot is 208 ticks with 182 blanked — a completely different geometry, under which
+   ghosting at `INDI_BRIGHT 24` is *not* explained by the dead-time theory at all (there would
+   be ~2900 µs of blanking). **Treat the tail figure as unverified.** Do not let it harden
+   into spec §4 or the driver study.
+2. **The prescaler-8-vs-1 explanation still stands on its own** — it is derived from reading
+   both ISRs directly, not from the photos, and it correctly explains why stock v2.5 at
+   `INDI_BRIGHT 24` is flawless while the fork's committed `main` at 24 is not. What it does
+   *not* do is license the specific microsecond figures pulled from the photo sweep.
+**The mechanism is still right; the number attached to it is not.** Ghosting does track
+brightness, that was directly observed. How much dead time it actually needs is unmeasured.
+ 
+### The measurement that will actually settle it
+ 
+The new branch is the instrument: known constants, built from clean `main`, effects
+switchable off. Flash `fix/multiplex-dead-time` and then **sweep `DEAD_TICKS` downward**
+(18 → 12 → 8 → 4) with `GLITCH_ENABLED`/`BURN_ENABLED` off, holding everything else fixed.
+The lowest value that is still clean by eye, × 16 µs, **is** the TLP627's tail — measured on
+a known build with one variable moving. That is the number every hardware decision in
+`claude/TERMINAL-06-anode-driver-study.md` depends on.
+ 
+### Brightness — correcting a framing error in both directions
+ 
+Claude Code's headline: at `SLOT_TICKS 52`, per-tube duty over the whole frame is
+34/(52×6) = **10.90 %**, against the old 23/(26×6) = **14.74 %** — i.e. **26 % dimmer**, and
+"65 % slot duty doesn't recover what 200 Hz costs."
+ 
+**Arithmetic correct, baseline wrong.** `INDI_BRIGHT 23` at `SLOT_TICKS 26` gives only 3
+ticks (48 µs) of dead time — that is the *ghosting* configuration, not a shippable one. The
+like-for-like comparison holds dead time constant at 18 ticks:
+ 
+| Config | Frame | Max bright | Per-tube duty |
+|---|---|---|---|
+| SLOT 26, DEAD 18 (400 Hz, ghost-free) | 400 Hz | 8 | **5.13 %** |
+| SLOT 52, DEAD 18 (200 Hz, ghost-free) | 200 Hz | 34 | **10.90 %** |
+| *SLOT 26, `INDI_BRIGHT 23` (400 Hz, ghosts)* | 400 Hz | 23 | *14.74 %* |
+ 
+**Against an equally ghost-free 400 Hz build, 200 Hz is 2.1× brighter — the trade was
+correct.** Against what has actually been on the bench, it will look 26 % dimmer, because
+what has been on the bench does not work. Both numbers are true; keep them straight.
+ 
+### Findings from the implementation worth keeping
+ 
+- **`SEC_BRIGHT_TRIM` is now a complete no-op** — `min(34+4, 34) = 34`. It was nearly dead
+  before too (`23+2` clamped to 24 = 1 tick). **This matters at P4/P7:** §4 specifies the
+  ИН-17 sustains ~105 V vs the ИН-12's ~140 V and hogs current, so per-tube brightness trim
+  is how the seconds tubes get balanced against the hours. To get any trim range back,
+  `INDI_BRIGHT` must sit below `MAX_BRIGHT`. **Open item, not yet decided.**
+- **`BACKL` (pin 11) is `OC2A`** — the backlight PWM writes the same `OCR2A` whose compare
+  match generates the multiplex interrupt. Fast PWM with TOP = 255 means one match per period
+  regardless of value, so the ISR *rate* is safe, but **changing backlight brightness shifts
+  the ISR's phase.** Pre-existing, harmless, but it is a variable to hold fixed during any
+  ghost judgement.
+- **ISR cost was never measured before and the old comment was wrong by ~2×**: measured
+  **86 cy mean / 161 worst of 256** = 33.5 % CPU, against the comment's claimed "~45 cycles,
+  about 18 %". Unchanged by this work (the longer slot runs the expensive changeover half as
+  often, offsetting the extra branch). Build: 13506 B flash (41.2 %), 468 B RAM (22.9 %).
+- **The anti-poisoning routine has no timing dependency** — it only writes `indiDigits[]`.
+  The brief was wrong to list it as needing a rescale.
+- Magic numbers found that were not anticipated: `applyBright()` clamped to a hardcoded 24;
+  `curCount` seeded to literal `26` in `0_data.ino` (at slot 52 the first frame would have
+  started mid-slot); `FLIP_SPEED[1]` crossfade steps *brightness*, so rescaling 23 → 34 made
+  the fade run 48 % long.
+- Bench work preserved on `bench/ghost-diagnostics-wip`; fix on `fix/multiplex-dead-time`;
+  nothing pushed. `BOARD_TYPE 0` and a `newTimeFlag` hour-rollover fix carried across.
+### THE DEAD_TICKS SWEEP DID NOTHING — 05.09.26 (later still)
+ 
+Bench report: "even on dead ticks = 2 the overlap is quite severe, but no annoying flicker
+though, even on 18. But the ghosting is definitely worse than before."
+ 
+**`DEAD_TICKS` is a ceiling, not the dead-time control.** The clamp is
+`curDimm = min(indiDimm[i], SLOT_TICKS - DEAD_TICKS)`, and it can only ever *lower* `curDimm`.
+With `INDI_BRIGHT 34` and `SLOT_TICKS 52`:
+ 
+| `DEAD_TICKS` | Clamp ceiling | `curDimm` | Actual dead time |
+|---|---|---|---|
+| 18 | 52 − 18 = 34 | min(34, 34) = **34** | 18 ticks — 288 µs |
+| 2 | 52 − 2 = 50 | min(34, 50) = **34** | 18 ticks — **288 µs, identical** |
+ 
+`INDI_BRIGHT` is the binding constraint, not the clamp. **Both settings produced exactly the
+same 288 µs, which is why they looked the same.** No data was generated.
+ 
+**The real dead-time control is `INDI_BRIGHT`**: dead time = (`SLOT_TICKS` − `INDI_BRIGHT`)
+× 16 µs. `DEAD_TICKS` only exists to stop brightness from eating the margin — it is a safety
+rail, and it does its job. It is not a knob to sweep.
+ 
+### "Worse than before" is real data, and it is bad news
+ 
+The comparison the eye is making is against the 01.09.26 dirty tree — and that configuration
+had an *enormous* dead window:
+ 
+| Build | Anode-off → next anode-on |
+|---|---|
+| Dirty tree (`TUBE_TICKS 208`, blank at 26, `INDI_BRIGHT 5`) | (26−5)×16 + 182×16 = **3248 µs** |
+| New branch (`SLOT 52`, `INDI_BRIGHT 34`) | 18×16 = **288 µs** |
+ 
+**11× less.** Of course it ghosts worse. **So the tail is well above 288 µs** — far beyond the
+~100 µs this project has been sized against, and beyond the ~250–300 µs briefly claimed and
+already withdrawn. The honest bracket right now is **>288 µs, and ≤3248 µs clears it (mostly
+— even there a faint haze was reported at `INDI_BRIGHT` 5–8).**
+ 
+**This partially vindicates the 01.09.26 conclusion I retracted.** "No middle setting"
+was drawn from confounded data and the reasoning behind it was wrong, but the *verdict* may
+turn out right. If the tail is ~1 ms or more, no camera-safe refresh rate survives it in
+firmware alone and a hardware fix is required after all.
+ 
+**Banked, and genuinely good:** **no flicker at 200 Hz**, confirmed by eye. The camera/flicker
+criterion is reachable. The only open question is whether the tail fits inside a 200 Hz slot.
+ 
+### New hypothesis: this may be the TUBE, not the optocoupler
+ 
+A 1–3 ms tail is very long for a Darlington. It is entirely ordinary for **nixie deionization
+time** — residual ionised gas in the envelope keeps the tube able to conduct at a reduced
+striking voltage for hundreds of µs to several ms after drive is removed. That would produce
+exactly this symptom and exactly this magnitude.
+ 
+**It changes which hardware fix is right:**
+- If it is the **opto**: the T1.2 LED-resistor change and an opto-stage swap help; the bleed
+  resistor mostly does not.
+- If it is **deionization**: the **1 MΩ anode bleed is the correct fix** (pull the anode below
+  the sustaining voltage fast so the gas stops being fed), and swapping the opto buys nothing.
+**Discriminator:** an opto tail is a fixed electrical property, independent of how hard the
+tube was driven. Deionization scales with conduction — more current and longer on-time mean
+more ionisation and slower recovery. So: **hold dead time fixed and vary on-time (or the HV
+rail). If the required dead time grows with on-time or with rail voltage, it is the tube.**
+`SLOT_TICKS` and `INDI_BRIGHT` being separate knobs is what makes this testable.
+ 
+### The sweep that will actually produce the number
+ 
+Give the sweep enough range to reach the answer. `SLOT 52` tops out at 832 µs of dead time
+even at `INDI_BRIGHT 1` — probably not enough.
+ 
+**Set `SLOT_TICKS 208`, `NUM_INDI 6`, `DEAD_TICKS 18`, effects off.** Frame rate is 50 Hz and
+*will* flicker — ignore it, this is a measurement, not a candidate build. Then sweep
+`INDI_BRIGHT` and record the first clean step:
+ 
+| `INDI_BRIGHT` | Dead time |
+|---|---|
+| 190 | 288 µs (matches the current branch — expect the same ghosting) |
+| 170 | 608 µs |
+| 150 | 928 µs |
+| 120 | 1408 µs |
+| 90 | 1888 µs |
+| 60 | 2368 µs |
+| 26 | 2912 µs (≈ the old "clean" config) |
+ 
+**The first clean step × 16 µs is the tail.** Then the arithmetic decides everything: at six
+tubes, max frame rate ≈ 1/(6 × (tail + usable on-time)). If that lands under ~100 Hz, firmware
+alone cannot deliver a camera-clean six-tube display on this hardware and the driver study's
+hardware options become the path — with the deionization-vs-opto discriminator above deciding
+*which* option.
+ 
+### THE TAIL IS MEASURED — 05.09.26. **288 µs < tail ≤ 608 µs.**
+ 
+Sweep run at `SLOT_TICKS 208`, `NUM_INDI 6`, effects off, 16 µs/tick:
+ 
+| `INDI_BRIGHT` | Dead time | Result |
+|---|---|---|
+| 190 | 288 µs | faint ghosting, visible only when looked for |
+| **170** | **608 µs** | **clean** |
+ 
+**Design to 608 µs.** The true value is somewhere in between; one more step at `INDI_BRIGHT
+180` (448 µs) would narrow it and is worth a single flash, because every µs shaved off the
+tail buys frame rate directly (see the formula below).
+ 
+Also confirmed at this setting: **50 Hz bands on camera at both 30 fps and 60 fps** but is not
+visible in peripheral vision — consistent with everything the prescaler rewrite was written
+to fix. And the display at 170 looks bright, with unlit cathodes properly dark.
+ 
+### The governing formula, and it is simple
+ 
+At `NUM_INDI` tubes, dead time D and frame rate F, per-tube duty over the whole frame is:
+ 
+> **duty = 1/N − D × F**
+ 
+For six tubes: **duty = 0.1667 − D × F**. Checks against measured points: at D = 608 µs and
+F = 50 Hz → 13.6 %, which is exactly `170/(208×6)`. Confirmed.
+ 
+Two things fall straight out of it:
+ 
+**A hard ceiling.** duty hits zero at **F_max = 1/(N × D) = 1/(6 × 608 µs) = 274 Hz.** Above
+that, six tubes at this tail are physically black. **400 Hz was never reachable** — not "hard",
+not "dim", *impossible*. That retires the 400 Hz target permanently, whatever else happens.
+ 
+**The whole trade, in one table** (six tubes, D = 608 µs):
+ 
+| Frame rate | `SLOT_TICKS` | `INDI_BRIGHT` | Per-tube duty | vs current bench (13.6 %) |
+|---|---|---|---|---|
+| 50 Hz *(now)* | 208 | 170 | 13.6 % | — *(bands on camera)* |
+| 100 Hz | 104 | 66 | 10.6 % | 78 % |
+| 120 Hz | 87 | 49 | 9.4 % | 69 % |
+| 137 Hz | 76 | 38 | 8.3 % | 61 % |
+| 168 Hz | 62 | 24 | 6.5 % | 48 % |
+| 200 Hz | 52 | 14 | 4.5 % | 33 % |
+ 
+### The one test left: what is the lowest camera-clean frame rate?
+ 
+Everything now reduces to a single question. **50 Hz bands. 200 Hz was reported flicker-free
+by eye but has never been filmed.** The lowest F that films clean at 60 fps sets the duty, and
+the duty decides whether this ships as a firmware-only fix.
+ 
+Sweep `SLOT_TICKS` down the table above, **filming each at 30 fps and 60 fps**. Keep
+`DEAD_TICKS 38` throughout — the clamp then pins brightness to `SLOT_TICKS − 38` automatically,
+so `SLOT_TICKS` is the only knob that moves and the 608 µs margin is held constant by
+construction.
+ 
+- **Lands at 100–137 Hz → firmware-only fix, done.** 8–11 % duty is 60–78 % of what is on the
+  bench right now and looking good; the shortfall is recoverable on P504.
+- **Needs 168 Hz or more → hardware.** Below ~7 % duty the display is too dim to ship, and the
+  only way to buy duty back is to shrink D.
+### What the hardware options are now worth, in units
+ 
+The formula prices them exactly. Cutting D from 608 µs to 200 µs moves 200 Hz from **4.5 % to
+12.7 %** duty and lifts the ceiling from 274 Hz to 833 Hz. **That is what a bleed resistor is
+buying** — not a vague "improvement", a specific number. The deionization-vs-opto
+discriminator in the previous entry decides which fix delivers it; at 608 µs, deionization
+remains the more likely culprit on magnitude alone.
+ 
+### 05.09.26 (cont.) — tail narrowed, **100 Hz confirmed camera-clean**, and a fork in the road
+ 
+**Tail bracket narrowed.** `INDI_BRIGHT 180` at `SLOT 208` (dead = 28 ticks = **448 µs**) was
+*not* as clean as 170. So: **448 µs < tail ≤ 608 µs.** Design figure stays 608 µs.
+ 
+**The big result: `SLOT_TICKS 104` → 100 Hz eliminates the banding at BOTH 30 fps and 60 fps.**
+The camera criterion — the thing the entire prescaler rewrite existed to satisfy, and the
+reason 400 Hz was ever targeted — **is met at 100 Hz.** The requirement was never 400 Hz; it
+was never even measured before now. Combined with the 274 Hz hard ceiling from the previous
+entry, the viable window is roughly **100–200 Hz**, and the bottom of that window is the
+brightest point in it.
+ 
+**But ghosting returned at `SLOT 104`.** There are exactly two explanations and they lead to
+opposite conclusions:
+ 
+**(A) `DEAD_TICKS` is still 18, not 38.** The clamp is `min(INDI_BRIGHT, SLOT_TICKS − DEAD_TICKS)`:
+ 
+| `DEAD_TICKS` | `curDimm` at SLOT 104 | Actual dead time |
+|---|---|---|
+| 18 (the branch default) | min(·, 86) = 86 | 18 ticks = **288 µs** |
+| 38 (what the sweep requires) | min(·, 66) = 66 | 38 ticks = **608 µs** |
+ 
+288 µs is *precisely* the "faint ghosting, visible if you look for it" level measured at
+`INDI_BRIGHT 190`. **This explanation predicts the observation exactly**, and it is the more
+likely of the two: `DEAD_TICKS 38` was only specified in the instruction that came *after* the
+branch was built with 18.
+ 
+**(B) The required dead time grows with frame rate.** If the dead time genuinely was 608 µs
+and it still ghosted, then dead time alone does not determine the ghost — and the variable
+that changed is the **off-period between visits to the same tube** (≈17 ms at 50 Hz, ≈8 ms at
+100 Hz). Residual ionisation that has not fully decayed leaves the tube primed to conduct on
+the next cycle. **That is the deionization signature**, and it is the discriminator proposed
+in the previous entry, run by accident.
+ 
+**The check that separates them: read back `DEAD_TICKS`.** Then re-flash `SLOT_TICKS 104`,
+`DEAD_TICKS 38`, `INDI_BRIGHT 66`.
+ 
+- **Clean → (A), and P2 is solved in firmware.** 100 Hz, camera-clean at 30 and 60 fps,
+  duty = 1/6 − 608 µs × 100 Hz = **10.6 %** — 78 % of the current bench brightness, with P504
+  available for the remainder. No bleed resistors, no PCB change, `SLOT_TICKS 104` /
+  `DEAD_TICKS 38` becomes the shipped configuration.
+- **Still ghosting → (B), and it is hardware.** Deionization confirmed, required dead time
+  scales with refresh, and no firmware setting escapes it. The driver study's bleed-resistor
+  path becomes the answer, priced by the same formula: cutting D to 200 µs takes 100 Hz duty
+  from 10.6 % to **14.7 %** and restores headroom to 200 Hz.
+**Either way the 400 Hz target is retired and the frame-rate requirement is now a measured
+100 Hz rather than an assumed 400.** That single correction makes every downstream number in
+the anode-driver study easier.
+ 
+### VERDICT — 05.09.26: **(B) confirmed. It is hardware. The bleed resistor is the fix.**
+ 
+`SLOT_TICKS 104`, `DEAD_TICKS 38`, `INDI_BRIGHT 66` → **no flicker at 30/60 fps, noticeable
+ghosting.** Dead time was held at 608 µs — the exact value that was clean at 50 Hz — and only
+the frame rate changed. **Required dead time is therefore not a constant. It scales with
+refresh rate, which no firmware setting can escape.**
+ 
+The two test points isolate it cleanly:
+ 
+| | `SLOT 208` | `SLOT 104` |
+|---|---|---|
+| Dead time | 608 µs | 608 µs *(held)* |
+| On-time | 2720 µs | 1056 µs *(went **down**)* |
+| Frame | 20 ms | 10 ms |
+| **Off-period per tube** | **17.3 ms** | **8.9 ms** |
+| Result | clean | ghosts |
+ 
+On-time *decreased*, so ionisation accumulated during conduction is not the driver. **The only
+quantity that moved the wrong way is the off-period** — the time each tube has to recover
+before it is revisited.
+ 
+### The mechanism, finally stated correctly
+ 
+**The ghost was never happening in the dead window.** It happens during the *rest of the
+frame*, every time another tube's cathode is driven. The cathodes are bussed: when tube B is
+showing "9", the К155ИД1 pulls the shared "9" line low for *every* tube. If tube A's anode
+still holds charge, tube A's "9" glows faintly too.
+ 
+And tube A's anode node **has no discharge path**. The TLP627 can only source, never sink; the
+stock board has no anode bleed. So after the opto turns off, that node floats, draining only
+through opto leakage and the tube itself — a time constant in the hundreds of µs to
+milliseconds. Dead time never fixed this. It only *delayed* the next cathode change, which is
+why more of it helped and none of it cured.
+ 
+**This also retires the TLP627 storage-time theory as the dominant term.** The 04.09.26
+refinement was wrong about the mechanism, though right that it was not simple capacitance.
+The dominant term is a **floating, undrained anode node**.
+ 
+### Why this makes the bleed resistor exactly right
+ 
+A 1 MΩ bleed to ground gives that node the discharge path it has never had. With ~30 pF of
+anode-node capacitance, τ ≈ **30 µs** — the node collapses in ~100 µs instead of lingering for
+milliseconds. It is the correct fix, it is the part already specced in §4, and it costs ~34 mW
+per tube.
+ 
+**Reversal, stated plainly:** on 05.09.26 this document said "don't solder, firmware may fix
+it." Firmware has now been proven not to fix it. Soldering is the next step.
+ 
+### Next: one resistor, one tube, tonight
+ 
+This is a **diagnostic, not a production commitment** — which is why flying leads are
+acceptable here and not in a shipped unit.
+ 
+1. Flash `SLOT_TICKS 104` / `DEAD_TICKS 38` / `INDI_BRIGHT 66` — the config where ghosting is
+   currently visible on all four tubes.
+2. **Bleed the 4.7 µF reservoir cap through ~100 kΩ for ~10 s and verify <10 V on a meter.**
+   One hand in your pocket.
+3. Confirm the anode pin on one tube's daughterboard: continuity between the same-position pin
+   on **two different** tube sockets. **No continuity → anode.** Continuity → shared cathode,
+   wrong pin.
+4. Fit **one 1 MΩ 0.5 W** from that anode pin to confirmed ground (continuity-check the ground
+   point against the Nano's GND pin first). Reflow the existing joint and slide the lead in
+   alongside — no trace cutting.
+5. **Compare that tube against its three neighbours in the same frame.** That is the whole
+   test — same firmware, same rail, same instant, one variable.
+**If that tube goes clean and the others do not: confirmed.** Fit the rest, then **re-sweep
+frame rate** — with the node drained, the 274 Hz ceiling and the whole duty table are
+recomputed from a much smaller D, and 200 Hz at ~12.7 % duty comes back into range.
+ 
+If it does not help, try **470 kΩ** (faster decay, 2.3 mA extra rail load across six tubes —
+lands on P3) before concluding.
+ 
+### Tap-point plan, 06.09.26 — proposed route and the two things that must be metered first
+ 
+Proposal from the bench: solder the backlight LEDs first so their legs stick out of the pads,
+then run a 1 MΩ from each tube's **pin 7** to the **negative LED leg** below it. Work done on
+the back; the annotated image is the front-side render.
+ 
+**Electrically sound — conditional on two measurements, both taken with the board dead and the
+reservoir cap bled to <10 V.**
+ 
+**Check 1 — is pin 7 actually the anode?** Continuity between **pin 7 of tube 1 and pin 7 of
+tube 2**. **No continuity → anode** (unique per tube). **Continuity → shared cathode; stop.**
+Fitting 1 MΩ from a bussed cathode to ground would put a permanent leak across the К155ИД1's
+output for that digit on every tube at once.
+ 
+**Check 2 — is the LED negative pad actually ground? This is the one that can cost hardware.**
+The backlight is **D11 PWM** (spec §2 pin map). If the LEDs are wired anode-to-+5 V with their
+cathodes commoned down to D11, then **the "negative" pad is the PWM switching node, not
+ground** — and a 1 MΩ from a 185 V anode to it pushes **~185 µA into an Arduino pin**, through
+the clamp diodes whenever D11 is not sinking. It would also make the bleed's effectiveness
+vary with backlight brightness, which would look like an intermittent ghosting bug.
+ 
+Meter it: **continuity / near-0 Ω between the LED negative pad and the Nano's GND pin.**
+Near-0 Ω → real ground, the plan is good. **Open, or reading through a resistor → it is the
+D11 node. Do not use it.** Fall back to the **GND pin on the 2-pin GND/5 V header** (top right
+of the board) or a Nano GND pin.
+ 
+**Practical: put the resistor body at the anode end and run the wire from its far leg to
+ground.** Only a few mm then sit at 185 V; the long run is at ~0 V. Reverse that and there is a
+185 V wire flapping next to glass.
+ 
+**And fit ONE, not four.** Tube 1 gets the resistor; tubes 2–4 are the control in the same
+frame. Four at once cannot distinguish "the fix works" from "the tap point was wrong."
+ 
+### GERBER ANALYSIS, 06.09.26 — board architecture resolved, and the LED-pad ground is NOT confirmed
+ 
+Gerbers read directly from the bench machine (`PCB/IN-12_norm/`, EasyEDA v6.3.53, 2020-06-13,
+board 99.05 × 80.77 mm) and rendered/net-analysed. Findings:
+ 
+**1. The architecture discrepancy is resolved — both observations were right.** The board ships
+from China as **one panel** and is **cut along the white line** into two boards that then mate
+via **P1↔P2 and P3↔P4**. The render shows the uncut panel; the photos show the post-cut tube
+board. **TS06-TUBE's rationale survives intact**: the tube board is still a bought board that
+cannot take added bleed footprints, and its tube pitch/outline are still fixed by someone
+else's layout. Spec §3b stands.
+ 
+**2. The top copper layer contains NO traces at all** — 142 pad flashes and a handful of stubs,
+nothing else. **Every net on this board is routed on the bottom layer.** This almost certainly
+explains the bench observation that the LED negative "has no traces going anywhere": inspecting
+from the component side shows no traces *for any net*. Front-side inspection carries no
+information on this board.
+ 
+**3. There is no ground pour or plane anywhere, on either layer.** All copper is discrete
+traces. **A pad is therefore never grounded by sitting in a pour** — it must have a real trace.
+The intuition "no trace visible, so it must be the shared ground plane" is exactly inverted
+here.
+ 
+**4. The LED "−" (square) pads DO each have a trace, and they daisy-chain to each other** along
+the bottom edge, with the centre LED position acting as a junction carrying five traces. So it
+is a genuine shared net, not a floating pad. **The "+" and "−" pads are on separate nets**
+(not shorted).
+ 
+**5. What could NOT be established: whether that shared LED-negative net is GND or the D11
+backlight PWM node.** 69 of the board's copper regions are large filled polygons carrying real
+routing, which the net extraction could not model, so any claim about where the net terminates
+would be unsound. **Unresolved by analysis — and it matters**: if it is the D11 side, a 1 MΩ
+from a 185 V anode injects ~185 µA into an Arduino pin and the bleed's strength varies with
+backlight brightness.
+ 
+### Consequence: bus the resistors instead of trusting the LED pad
+ 
+The question disappears if the bleed never touches that net. **Recommended:**
+ 
+1. Fit each resistor with its **body at the tube's pin 7**, cold leg outward.
+2. **Bus all the cold legs together** with a bare wire run along the tube board — this is the
+   "bleed bus" from the driver study, built in wire instead of copper.
+3. Run **one** wire from that bus to a **metered, known-good ground** on the main board — the
+   GND pin of the 2-pin GND/5 V header, or a Nano GND pin.
+One ground decision instead of four, no dependence on an unverified net, and the long run sits
+at ~0 V while only the few mm at each anode are at 185 V. If the LED-negative pad *is* later
+metered as true GND (continuity, near-0 Ω, to Nano GND), it becomes a convenience, not a
+dependency.
+ 
+### BLEED RESISTOR FITTED — 06.09.26: **1 MΩ produced no meaningful improvement.**
+ 
+Resistors soldered to the anodes, connections confirmed, no firmware change. **Ghosting
+essentially unchanged.** That result is informative: it falsifies the mechanism proposed in
+the 05.09.26 verdict.
+ 
+**Why the prediction failed.** The τ ≈ 30 µs figure assumed a *floating* anode node with
+nothing feeding it — under that assumption 1 MΩ collapses the node in ~100 µs and the ghost
+must vanish. It did not vanish, therefore **the node is not floating: something is actively
+holding it up.**
+ 
+The arithmetic says how much. For a tube to glow faintly its anode must sit near the
+sustaining voltage (~120–140 V for ИН-12). Holding 140 V across a 1 MΩ bleed requires a
+sustained **~140 µA** flowing in from somewhere. The only available source is the
+**TLP627's off-state leakage** — and a photo-Darlington is exactly the part that has this
+problem, because the input transistor's leakage is multiplied by the output transistor's gain.
+Tens to hundreds of µA at 185 V, warm, is entirely ordinary for the part.
+ 
+**So the fault is the opto after all — but its off-state LEAKAGE, not its turn-off time.**
+Every previous framing (storage tail, floating node, deionization) is superseded. This one
+also explains the frame-rate dependence: leakage is continuous, so the longer a tube sits
+unlit, the more the bleed can win against it — which is precisely why 50 Hz was clean and
+100 Hz was not, at identical dead time.
+ 
+### Three things to do, in order
+ 
+**1. Confirm the bleed is actually in circuit — the classic trap.** "There is continuity" is
+ambiguous here: **a 1 MΩ resistor will NOT beep on a continuity tester** (those trigger below
+~50 Ω). Measure in **resistance mode, from the tube's pin 7 to ground, expecting ~1 MΩ**. Open
+circuit means the ground end never landed; a beep means something is shorted. Ten seconds, and
+it rules out a false negative on the whole experiment.
+ 
+**2. Measure the HV rail — P3 has still never been done.** If P504 is set well above 185 V,
+everything conducts more readily and ghosting gets worse for free. **Then try turning P504
+DOWN** and watch the ghost. This reverses the earlier standing caution against touching it:
+lowering is safe (the 300 V TLP627 ceiling is only violated going up) and it is a free lever.
+If ghosting falls as the rail falls, the ghost is confirmed as marginal conduction.
+ 
+**3. Drop the bleed value on ONE tube and compare against its neighbours.** This directly tests
+the leakage hypothesis and sizes it: required R < V_sustain / I_leak.
+ 
+| Value | Current @185 V | Power | 6-tube rail load |
+|---|---|---|---|
+| 1 MΩ *(fitted, failed)* | 185 µA | 34 mW | 1.1 mA |
+| **470 kΩ** | 394 µA | 73 mW | 2.4 mA |
+| **220 kΩ** | 841 µA | 156 mW | 5.0 mA |
+| 100 kΩ | 1.85 mA | 342 mW — **needs 0.5 W** | 11 mA — likely overloads the boost stage |
+ 
+If 1 MΩ leaves the anode at ~140 V, leakage is ≳140 µA and **470 kΩ should bring it to ~75 V —
+below sustaining.** This is exactly the "treat the bleed value as a knob, not a fixed 1 MΩ"
+line already in the driver study (T2.2); the ИН-17 figure was never a design value for this
+board.
+ 
+**If 220 kΩ still does not clear it**, the leakage is too large to shunt at acceptable rail
+cost, and the answer becomes **replacing the anode driver stage** — study option T3.2, a fast
+opto level-shifting an **MPSA92** (300 V PNP). Its off-state leakage is nanoamps against the
+Darlington's microamps, roughly a thousandfold better, at which point a 1 MΩ bleed works
+easily. That reinstates T3.2 as the leading hardware path, now on evidence rather than
+speculation.
+ 
+### 06.09.26 — bleed measures **0.70 MΩ, not 1 MΩ**: a pre-existing parallel path
+ 
+Pin 7 to ground reads **700 kΩ** with a 1 MΩ resistor fitted. That implies **~2.3 MΩ already
+in parallel** (1/0.7 = 1/1 + 1/2.33), i.e. the anode node was **never fully floating even on
+the stock board** — some path to ground already existed. Candidate: back through the off opto
+to the HV rail and down the boost stage's feedback divider (the board carries a 470 kΩ fixed
+resistor plus the 500 kΩ P504 trimmer between HV+ and ground).
+ 
+**Two consequences, and the important one is not the mystery:**
+ 
+1. **The fitted bleed is working ~30 % HARDER than specified and still failed.** The
+   leakage-too-large conclusion is therefore strengthened, not weakened. Go lower, faster:
+   470 kΩ (∥2.3 M ≈ 390 k effective), then 220 kΩ (≈ 200 k effective).
+2. Diagnostic worth ten seconds: **reverse the meter leads on that 700 kΩ reading.** If the
+   value changes, there is a semiconductor junction in the parallel path — confirming it runs
+   through the opto rather than through passive board resistance.
+### The measurement that now decides everything: anode voltage under power
+ 
+Modelling has been wrong three times (storage tail → floating node → deionization → leakage).
+Stop inferring and read the node directly. **With the board running and a tube dark but
+ghosting, measure DC volts from that tube's pin 7 to ground.**
+ 
+- **~120–140 V** → confirmed: leakage is holding the anode at sustaining voltage. The bleed
+  value is the right lever; keep dropping it, and T3.2 (MPSA92, nanoamp leakage) is the
+  endgame if the rail cost gets unaffordable.
+- **~20–40 V** → the ghost is **not** anode-voltage-driven, every model in this document is
+  wrong, and the investigation has to move to the cathode side (К155ИД1 unselected-output
+  behaviour).
+A 10 MΩ DMM across a 700 kΩ node loads it negligibly, so the reading is trustworthy.
+ 
+**Procedure — 185 V, do it in this order:** power OFF, **clip** the black lead to ground, then
+power on, then touch only the red probe to pin 7. Never hold both leads. Meter on a 600 V DC
+range before it touches anything.
+ 
+## ACTUAL ROOT CAUSE FOUND — 06.09.26: **empty multiplex slots.** Not the optos, not the tubes.
+ 
+Found by the Claude Code session, confirmed by a direct A/B (`MUX_SLOTS 4` clears it, 6 does
+not). **This supersedes every mechanism proposed in this document** — storage tail, floating
+node, deionization, opto leakage. All four were wrong.
+ 
+**The mechanism.** In the fork's ISR the decoder is written inside the changeover guard,
+together with the anode turn-on:
+ 
+```c
+if (d && anodeStates[i]) {
+    PORTC = (PORTC & 0xF0) | decoderNibble[dig];   // digit onto the shared cathode bus
+    *curPort |= curMaskOn;                          // and this slot's anode on
+}
+```
+ 
+Stock AlexGyver rotates through exactly as many slots as it has tubes, so **a digit is never
+on the cathode bus without a driven anode to take the current.** This fork rotates through
+six. With no SEC module fitted, **slots 4 and 5 have no tube and no anode driver** — yet
+`anodeStates[]` initialises to all-1s and `indiDigits[]` holds real seconds values, so the
+guard passes and a digit is written to the bus for 21 of every 26 ticks with **no anode
+sourcing current anywhere on the board.**
+ 
+Any charge still decaying on the four real tubes' anodes then has that cathode as its only
+available path, and lights it. **Stock cannot produce this condition — it has no empty slots.**
+ 
+**This explains everything the other theories only partly covered:** why stock at
+`INDI_BRIGHT 24` is flawless on the same hardware; why dead time helped but never cured (the
+offending digit is driven in a slot with no anode of its own to blank); why it worsened with
+frame rate (more visits per second to the empty slots); and why the 1 MΩ bleed barely moved it.
+ 
+### The implication that matters: this is an artifact of MISSING HARDWARE
+ 
+**The ghosting on the bench is not a property of the finished instrument.** Fit the two ИН-17s
+and their two TLP627 anode drivers (D2/D13, on TS06-SEC) and slots 4 and 5 stop being empty —
+every slot then has a real tube and a real anode, exactly like stock.
+ 
+**Two consequences:**
+ 
+1. **`MUX_SLOTS 4` is a bench workaround for absent hardware, not a shipped setting.** It must
+   go back to 6 when the SEC module exists. Keep the constant and its comment block — it is
+   the correct diagnostic for exactly this condition.
+2. **The 06.09.26 decision to drop the camera-clean refresh rate was made under a wrong
+   picture and should be REOPENED once the SEC module is fitted.** If empty slots were the
+   dominant ghost source all along, a much higher refresh may be clean with all six tubes
+   present. **Not a promise** — this document's predictive record is poor — but the trade that
+   forced the concession may not exist. Re-run the refresh sweep before accepting flicker.
+### Proper firmware fix, better than the MUX_SLOTS hack
+ 
+The ISR should never leave a digit on the cathode bus without a driven anode. When the
+changeover guard fails it currently leaves **the previous slot's digit** on `PORTC`. It should
+instead write a blanking code (К155ИД1 inputs 10–15 select no cathode):
+ 
+```c
+} else {
+    PORTC = (PORTC & 0xF0) | decoderNibble[10];   // no anode this slot -> blank the bus
+}
+```
+ 
+With that, the rotation is safe at any `NUM_INDI` regardless of which slots are populated, and
+partially-built boards stop producing phantom faults. Worth doing regardless of the ИН-17s.
+ 
+### Open discrepancy to watch
+ 
+The 05.09.26 sweep reported `SLOT 208 / INDI_BRIGHT 170` (608 µs dead, 50 Hz, six slots, four
+tubes) as **clean**, which the empty-slot mechanism says should still have ghosted. Most likely
+explanation: it was "clean enough" without a perfect reference to compare against, and
+`MUX_SLOTS 4` has since provided one — a genuinely clean reference changes judgement. Worth a
+direct A/B against the old setting rather than assuming.
+ 
+## PRODUCT DECISION — 06.09.26: camera-clean refresh dropped — **NOW REOPENED, see above**
+ 
+**Owner's call, and it is the right one:** visible ghosting is a defect on a product someone
+pays a premium for and then lives with. Video flicker is not — it shows up on a phone camera,
+not in the room. **The ~400 Hz camera criterion is formally retired**, along with everything
+that was ever justified by it.
+ 
+This changes P2's scorecard: **criterion 4 (no camera banding at 60 fps) is removed.** P2 now
+passes on correct digits, correct boot behaviour, no HV on unpopulated channels, and **no
+naked-eye ghosting**. Listing photos and product video are handled at the camera end (stills,
+slower shutter), not in firmware.
+ 
+### The pristine setting is already measured — no revert needed
+ 
+The 05.09.26 sweep found it: **`SLOT_TICKS 208`, `INDI_BRIGHT 170`** — 608 µs dead time,
+50 Hz, 13.6 % duty, reported clean with dark unlit cathodes. That configuration *is* the
+shipped answer; it just was not recognised as one because it failed the criterion now dropped.
+ 
+**Expressed in AlexGyver's original timing it is the same display:**
+ 
+| | Stock (4 tubes) | **Recommended (6 tubes)** | Sweep equivalent |
+|---|---|---|---|
+| Timer2 prescaler | 8 | **8** | 1 |
+| Slot ticks | 26 | **26** | 208 |
+| `INDI_BRIGHT` | 24 | **21** | 170 |
+| Tick period | 128 µs | 128 µs | 16 µs |
+| Dead time | 256 µs | **640 µs** | 608 µs |
+| Frame rate | 75 Hz | **50 Hz** | 50 Hz |
+| Per-tube duty | 23 % | **13.5 %** | 13.6 % |
+ 
+**Why `INDI_BRIGHT 21`, not 24.** A straight revert to stock's 24 gives only 256 µs of dead
+time. At six tubes that lands almost exactly on the 05.09.26 sweep point that showed *faint
+ghosting when looked for*. Backing off three brightness steps buys 640 µs — past the measured
+clean threshold. **Three steps of brightness is the whole price of six pristine tubes.**
+ 
+**Bonus, and not a small one: prescaler 8 runs the ISR at 7.8 kHz instead of 62.5 kHz —
+roughly 4 % CPU instead of the measured 33.5 %.** That headroom matters directly for the
+MCP23017 I²C driver still to be written at P6a.
+ 
+### Settings to ship
+ 
+`BOARD_TYPE 0` · Timer2 prescaler **8** · `SLOT_TICKS 26` · `INDI_BRIGHT 21` · `NUM_INDI 6`
+· `DEAD_TICKS 5` (safety clamp, 640 µs) · effects re-enabled after the clean setting is
+confirmed.
+ 
+**Bench-confirm before committing** — start at 21; if anything is visible, step to 19 then 18.
+Predictions in this document have a poor record; the sweep data is trustworthy, the mapping
+between the two timing schemes should still be verified by eye.
+ 
+**Two settings that ride along.** `INDI_BRIGHT_N` (night) stays at its stock value — dimmer
+always means *more* dead time, so it is safe by construction. **`FLIP_SPEED[1]` (crossfade)
+steps brightness**, so its duration scales with the brightness range: it was retuned to 88 ms
+for a 34-step range, and at 21 steps it needs roughly **142 ms** to keep the same ~6 s fade.
+Leave it and the crossfade simply runs ~40 % fast.
+ 
+**Leave the fitted bleed resistors in place.** They cost 1.1 mA of rail and are harmless;
+desoldering risks the joints for no proven gain. Reassess only if P3 shows the boost stage
+short of headroom.
+ 
+### Consequences elsewhere
+ 
+- **The anode-driver hardware paths (MPSA92 restage, HV shift registers) are no longer needed
+  for THIS run.** They stay logged in `claude/TERMINAL-06-anode-driver-study.md` as the
+  answer for a future product that wants both — QUADRANT and the decatron build especially,
+  since static drive removes this whole class of problem at the design stage rather than
+  fighting it afterwards.
+- **TS06-TUBE's bleed-footprint rationale weakens; its geometry rationale does not.** Deck
+  height, forward offset and rake (spec §6 "Brow reveal") are still reasons to fab it. Decide
+  on that basis, not on the resistors.
+### SUPERSEDED — discrepancy flagged 06.09.26, resolved above
+ 
+The board render supplied with this proposal shows **four ИН-12 sockets on the main board
+itself**, alongside the Nano, К155ИД1, boost stage and all four optos — a single integrated
+board. That directly contradicts the 04.09.26 architecture note in this plan and spec §3b,
+both of which record the tubes as sitting on **separate hand-decorated daughterboards** linked
+by a header, and which is the entire stated rationale for adding **TS06-TUBE** to the Rezonit
+order.
+ 
+Both cannot be true of the same physical unit. Most likely one of: the render is the AlexGyver
+reference design while the physical build is a different (itworkclub) variant, or the earlier
+photo reading was wrong. **Unresolved — do not order TS06-TUBE until it is settled**, because
+if the ИН-12 anodes terminate on the main board, that board's justification changes completely
+and the four bleeds would belong somewhere else entirely.
+ 
+**P2 status: no longer blocked on diagnosis.** Root cause measured, the trade space is closed
+form, and one filming test decides firmware-vs-hardware. Update the scorecard once that test
+runs. What has changed is
+that the block now has a specified, costed fix list instead of "a hardware fix is needed."
+ 
+**Production-scaling question, answered 04.09.26 → `claude/TERMINAL-06-anode-driver-study.md`.**
+"Does every lamp need a bleed resistor in the shipped product?" **Worst case six, not eight**
+— the two ИН-15 AM/PM tubes and the colon are statically driven, take no multiplex slot, and
+cannot ghost. And the resistors should land **on the tube daughterboard PCB, never as flying
+leads** — the PCB run is already budgeted, so the marginal cost is ~0 ₽ and ~0 assembly
+steps, versus sixty hand-soldered leads at 185 V next to glass across the run. The study
+also ranks two **zero-new-part** options (К155ИД1 blanking codes; opto LED resistor value
+100 Ω → 470 Ω) that ship to all ten units by reflash/value-substitution and may drive the
+count to **zero** — **both should be run before any bleed resistor is committed to a PCB
+revision**, because if the Darlington's conduction tail dominates rather than the capacitive
+tail, the bleed resistors buy very little and the design carries them forever. Beyond that
+the study covers a two-bank multiplex (halves the tail fraction *and* doubles brightness),
+an MPSA92 high-side replacement for the opto output stage, and HV shift-register static
+drive as the Rev E / next-product direction that makes ghosting structurally impossible.
+**It also flags that there is no oscilloscope in the workshop**, which is why every step
+here is currently judged by eye.
+ 
+## P3 — HV headroom, *before* adding load
+ 
+Measure the rail at 185 ± 8 V warm with four tubes lit. Note the trimmer position. Six
+tubes plus a two-lamp colon plus two ИН-15 tubes (18 cathodes between them) is a further
+increase in rail load on top of what the Rev C plan already flagged — this reading is the
+baseline that says whether the stock boost stage holds up as load is added, or needs the
+feedback divider touched (the EMBER-06 study hit exactly this question at 200 V).
+ 
+**Safety: the reservoir cap stays charged after power-off. Bleed it before touching the
+tube side. One hand in your pocket.**
+ 
+## P4 — SEC module on perfboard, one ИН-17 (the real work)
+ 
+Two opto anode channels on D2 and D13 exactly as the main board drives D3–D6, one ИН-17 on
+flying leads, cathodes bussed to the existing К155ИД1 outputs.
+ 
+Produces the four numbers TS06-SEC cannot be laid out without:
+ 
+1. **J-MAP — the digit→pin table.** Sweep 0–9 with `secCathodeMap` (its own standalone
+   sketch in the repo's `firmware/secCathodeMap/` folder — it has its own `setup()`/
+   `loop()` and must stay out of the main sketch's folder or compilation collides on
+   duplicate definitions), write down which physical lead lights which numeral. *Never
+   from a datasheet — surplus markings lie.* This is the number that, if wrong, is
+   invisible until HV is on and costs a board respin.
+2. **Anode resistor.** Start 12 kΩ, compare against an ИН-12 at 2 m: 15 k soft / 10 k
+   bright / 8.2 k floor. Pick the value that puts ИН-17 within one perceptual step of ИН-12.
+3. **Ghost check.** Fit the 1 MΩ 0.5 W anode bleed, display `88:8888`, look for a faint
+   glow on the dark tube. Confirm the bleed actually kills it before it is committed to
+   copper. **01.09.26: given P2's finding, treat this step as validating the same fix that
+   the main board may also need — don't assume the SEC module's ghosting is a separate
+   problem from P2's, it's very likely the same root cause on a second board.**
+4. **Connector count.** Spec §4 now specifies XS3 as an **8-pin** JST-XH (GND, +5 V, BACKL,
+   DOT, SEC_A0, SEC_A1, SDA, SCL — the Rev D SDA/SCL pair replaced the Rev C.3 AMPM_SEL
+   wire); `terminal-06.html` is stated in spec Rev D to have been rewritten to match in the
+   same pass — worth a quick visual confirmation on the bench rather than taking that on
+   faith, since this exact discrepancy has already been wrong twice before.
+Cross-check the **19.30 mm / 17.50 mm** ИН-17 envelope readings against the SEC board's
+23 mm tube-centre spacing (spec §4) before finalising the layout — the single-sample
+readings already in hand are sufficient for this.
+ 
+## P5 — second ИН-17, full six-digit run
+ 
+Full cathode sweep, all 60 digits strike. Re-measure the rail under full six-tube load
+against the P3 baseline. Re-film at 60 fps. Twenty-four hours of soak on the bench, drift
+checked against a phone clock.
+ 
+## P6 — colon
+ 
+Pair the two ИНС-1s on a bench rig (J-NEON): same 220 kΩ, same rail, side by side, judged by
+eye *and* by one phone photo at fixed ISO and shutter. Brightness mismatch between the two
+dots is the most visible defect on the product, and there are enough spares to select from.
+ 
+Then the MPSA42 low-side switch on D10, 10 kΩ base resistor, **one 220 kΩ per lamp — never
+shared**.
+ 
+**Tune `DOT_BRIGHT` — this is still an outstanding bench task, not applied guidance.**
+Direct inspection of the pushed firmware source (28.08.26) confirmed `DOT_BRIGHT` /
+`DOT_BRIGHT_N` are still `35` / `15` — the original LED-era values from AlexGyver's code,
+never actually retuned despite the spec previously saying otherwise. 170/90 is this
+document's working target for neon, not a verified value — confirm it against the real
+matched-pair colon on the bench here, edit the two `#define`s in
+`firmware/nixieClock_TS06/nixieClock_TS06.ino`, and re-flash before treating it as done.
+ 
+**From the CAD measurement pass:** ИНС-1 is cap-terminated on one end, not a plain two-lead
+part — a quick look at the actual tube confirms which end is the real mounting reference
+before finalising the colon holder's press-fit socket (spec §6); no caliper needed for that
+call, just eyes.
+ 
+## P6a — AM/PM + idle-cycling indicator circuit (spec Rev D, runs parallel to P4–P6)
+ 
+**Rewritten 27.08.26 to match `claude/TERMINAL-06-spec.md` §3, which supersedes the simpler
+single-expander/diode-OR circuit this plan originally described here.** The authoritative
+design is not a 2-lamp AM/PM pair — it's two real Soviet multimeter symbol tubes (ИН-15Б:
+A, W, F, Hz, H, V, S, Ω — 8 glyphs; ИН-15А: μ, −, +, %, n, m, M, K, Р, П — 10 glyphs), with
+every one of their 18 cathodes individually switchable so the pair can idle-cycle its full
+symbol set on rotary position 1, not just flip between the two glyphs ('A' and 'Р') that
+functionally mean AM/PM.
+ 
+**What this needs:**
+- ИН-15А (sourced, not ordered) and **ИН-15Б (a handful now secured on Meshok, 28.08.26,
+  enough for one prototype unit — ten-unit-batch depth is a separate, later sourcing task,
+  not a P6a blocker anymore)**
+- **Two MCP23017 I²C GPIO expanders** — U3 (address 0x20, all three address pins to GND)
+  drives ИН-15Б's 8 cathodes via 8 MPSA42 transistors (VT2–VT9); U4 (address 0x21, A0 to
+  +5V, A1/A2 to GND) drives ИН-15А's 10 cathodes via 10 MPSA42 transistors (VT10–VT19).
+  Both ride the same A4/A5 bus as the DS3231 — zero additional Nano pins for 18 switched
+  cathodes, versus the single-PCF8574/2-channel design this plan used to describe.
+- **18 MPSA42 (300 V)** total for the pair, one per cathode, 10 kΩ base resistor each —
+  not the 2–3 this plan previously listed. Same 300 V rule as everywhere else on the HV
+  side — no 2N5551.
+- **One shared anode resistor per tube (8.2 kΩ, R38/R39), not per cathode** — same
+  principle as any other shared-anode digit tube, since only one cathode per tube is ever
+  grounded at a time.
+**Bench steps, in order:**
+1. Wire both expanders onto the A4/A5 bus alongside the DS3231. Confirm all three devices
+   answer at their own I²C addresses (0x68 RTC, 0x20 U3, 0x21 U4) with a simple bus-scan
+   sketch before building anything else on top of it.
+2. One ИН-15 tube on flying leads at a time, its own shared anode resistor (bench-determine
+   the value — same process as ИН-17 in P4, no known-good starting point yet since this
+   tube type wasn't in the original scope).
+3. Sweep every cathode on that tube through its expander one at a time, and write down which
+   physical cathode lead lights which glyph — same discipline as J-MAP for the seconds tube,
+   and for the same reason: this is invisible until HV is on, and wrong here means a
+   respin later.
+4. Confirm the two glyphs that matter functionally — ИН-15Б's 'A' and ИН-15А's 'Р' — light
+   correctly and that both tubes can show any glyph independently of each other.
+5. Repeat for the second tube. Idle-cycling itself (rotary position 1 sweeping through all
+   18 glyphs as an ambient animation) is a firmware behaviour, not a bench step — it comes
+   later, at P8, once the expander driver exists and there's a real panel to test the
+   "does cycling ever land mid-animation when someone glances at the clock" question spec §3
+   raises but doesn't answer yet.
+**"m" indicator (HL3) — wire the easy part now, leave the disputed part open.** Whichever
+way the always-on-vs-12h-mode question resolves, HL3 is a plain 5 mm amber LED with a
+220 Ω series resistor (R26) off +5V/GND, no HV, no ballast — that much is decided and can be
+built either way. What's **not** decided is whether it stops there (always-on, per the
+current spec text) or gets a transistor gated by a diode-OR of the two expander lines
+meaning "showing A" / "showing Р" (12h-mode-conditional, per what you told this chat
+earlier). Cheapest way to keep this open on the bench: wire HL3 to a jumper or small switch
+instead of soldering it permanently to +5V, so either behaviour can be tried once the
+expander firmware exists, without having to re-open the board to add the transistor later
+if the conditional answer wins. **Decide this before it goes into any board for real** —
+see the Status section above.
+ 
+## P7 — freeze and order TS06-SEC
+ 
+With P4–P6 (and P6a, if it changes the connector) measured, the SEC board is fully
+determined. Order from Rezonit — **15 off**, 1.6 mm, black mask (surcharge + longer lead,
+budget for it). The fascia does **not** go in this order; it waits on the rotary's
+remaining low-priority measurements (P1) and on the Rev D physical-layout decision.
+ 
+## P8 — rotary is characterised: pick up the last few numbers, then order the fascia
+ 
+**Renamed 28.08.26 — the rotary landed**, and as of the same day, the dial-critical
+measurements are done: **body ⌀ 26.94 mm, shaft ⌀ 6 mm, 6 positions across a ~160° arc
+(~32°/step), pin layout documented (2 inner wiper commons + 12 outer taps, 2 poles, only
+one needed).** The dial artwork can be generated from real numbers now, not estimates.
+ 
+- Pick up what's left, whenever convenient, before ordering: overall height, bushing
+  thread size and usable length, and confirming the feature identity behind the 8.59 mm /
+  12.10 mm readings (re-shoot the ~5.8 mm reading right-side-up while at it). None of these
+  block the dial artwork — they matter for the fascia's mounting depth and hardware fit,
+  not its face.
+- Regenerate plate 05 with `dial.py` at the confirmed **~32°/step, 6-position** geometry →
+  fascia artwork
+- Build J-LADDER (known-good fascia mock + serial sketch printing raw A6/A7 codes) with
+  **real wire lengths**
+- Write the A6 mode state machine (five-identical-readings agreement filter), A7 lever
+  decode, six per-screen handlers, EEPROM, **the MCP23017 driver for the two ИН-15
+  expanders (18 cathodes, idle-cycling on position 1), and whichever answer the "m"
+  always-on-vs-12h-mode question got.** 17 KB flash spare, not yet re-measured against any
+  of this new code.
+- Only then order TS06-FASCIA.
+---
+ 
+## Parts to order now (Amperkot — figure below is stale, see note)
+ 
+Everything P4–P6a needs that is not already on the bench. Order spares of each — this is a
+ten-unit batch eventually. **The old ~470–720 ₽ estimate for this table no longer holds** —
+going from a single expander/2-channel AM/PM design to two MCP23017s driving 18 cathodes
+adds real cost (spec §7 puts the batch-level version of this jump at ~878 ₽/unit); get a
+fresh Amperkot quote rather than trusting the old total. **01.09.26: expect one more line
+item once P2's ghosting fix is specified** — whatever active-quench/bleed-resistor
+component the main board's anode drivers turn out to need, not yet chosen.
+ 
+| Part | Qty for P4–P6a | Note |
+|---|---|---|
+| TLP627 optocoupler | 2 + spares | same part the main board uses; PC817 works if CTR is high enough |
+| 220 Ω 0.25 W | 2 + spares | opto LED, ~17 mA |
+| 12 k / 15 k / 10 k / 8.2 k 0.5 W | 2 each | anode series — buy the whole ladder, you are choosing by eye |
+| 1 MΩ 0.5 W | 2 | anode bleed, ghost suppression — **01.09.26: likely also needed on the main board's ИН-12 anodes, see P2** |
+| MPSA42 (**300 V**) | **19 + spares** | colon (1) + ИН-15Б cathodes (8) + ИН-15А cathodes (10) = 18, driven by two MCP23017 expanders. **Not 2N5551** — 160 V fails in a customer's house |
+| 220 kΩ 0.5 W | 2 + spares | colon ballast, one per lamp — **no longer needed for the "m" indicator**, which moved off HV to a plain LED (spec Rev D) |
+| Anode resistor, 8.2 kΩ 0.5 W (R38/R39) | 2 + spares | **shared anode per ИН-15 tube, not per cathode** — value to confirm on bench same as ИН-17's in P4 |
+| 10 kΩ 0.25 W | **19 + spares** | MPSA42 base, one per transistor (colon 1 + 18 cathode switches) |
+| **1N4148-class signal diode** | **2, only if the "m"-indicator 12h-mode-conditional option wins** | Not needed for the always-on option currently in the spec. Diode-OR would gate HL3's transistor base at logic level (5 V), not HV — a different, smaller use than this plan's earlier HV diode-OR design, which no longer applies. Hold off ordering until the Status-section decision is made. |
+| **MCP23017 I²C GPIO expander** | **2 + spares** | **Replaces the single PCF8574-class expander this plan used to list.** U3 @0x20 (ИН-15Б, 8 cathodes), U4 @0x21 (ИН-15А, 10 cathodes), both on the existing A4/A5 bus alongside the DS3231. Check any unit already in hand against a known-good part first — counterfeit/relabelled expanders are a known grey-market problem, and this is going into ten units. |
+| **ИН-15А tube** | **1 + spares** | Sourced: Begrant 35 ₽ б/у ×283 or yg-radio 30 ₽ новые ×25 — not yet ordered |
+| **ИН-15Б tube** | **1 + spares** | **A handful secured on Meshok, 28.08.26, for prototype purposes** — enough for one unit; ten-unit-batch depth is a separate, later sourcing task |
+| **Amber LED 5 mm + 220 Ω (HL3 + R26)** | **1 + spare** | **"m" indicator, spec Rev D** — plain LED off +5V/GND, no HV, no ballast. Wire to a jumper/switch rather than permanently until the always-on-vs-12h-mode question (see Status) is settled |
+| **Rotary switch (SR25-style, Ozon)** | **already in hand** | **Arrived 28.08.26, mostly characterised.** Body ⌀ 26.94 mm, shaft ⌀ 6 mm, 6 positions across a ~160° arc all confirmed. Overall height and bushing thread/length still open, see P1/P8 — neither blocks the dial artwork. |
+| 4.7 kΩ **1 %** | 5 + spares | A6 rotary ladder (needed at P8, order now) |
+| 10 k + 20 k | 2 each | A7 lever ladder |
+| 100 nF ceramic | 2 + spares | **board end** of A6/A7 |
+| Amber 595 nm 5 mm diffused LED + 150 Ω | 6 + spares | backlight trial — separate part from HL3 above, same colour family |
+| JST-XH kit (2/5/6/8-pin) + JST-VH 2-pin + 10-way IDC | — | keyed families so 5 V cannot meet 185 V at 11 pm; XS3 is now 8-pin (spec Rev D) |
+| Perfboard, hookup wire, heatshrink | — | |
+ 
+## Tools
+ 
+Already owned: Vogel digital calipers, soldering iron, Elegoo Neptune 4 Pro, Fusion 360.
+CAD library work (see `TERMINAL-06-cad-component-library.md`) is standardising on FreeCAD
+1.0+ / KiCad / OpenSCAD / Blender / Inkscape instead for its own goal (a reusable parametric
+part library) — worth reconciling with Fusion 360 eventually, but not something this
+prototype plan needs to track closely.
+ 
+Needed or worth confirming:
+ 
+- **Multimeter with a ≥300 V DC range and probes rated for it.** Non-negotiable for P3/P5.
+- **A bleed resistor on a stick** (~100 kΩ 2 W on insulated leads) to discharge the
+  reservoir cap. Build it before P3, not after the first surprise.
+- **JST-XH crimp tool** — soldered pigtails into XH housings fail on vibration.
+- **Contact cleaner** (ДЕОКСИТ-class or equivalent) — refurb step for switchgear, now
+  including the rotary itself since it's in hand — worth a look regardless of it being
+  new stock.
+- **Phone that can shoot 60 fps with locked ISO/shutter** — the banding test in P2/P5 and
+  the neon pairing in P6 both depend on a *fixed* exposure, not auto.
+- Optional: any oscilloscope for the 401 Hz multiplex, the 31 kHz boost node, and the I²C
+  bus once both MCP23017s are on it. **01.09.26: this stopped being purely optional for P2**
+  — if a scope is available, it would directly confirm the anode-quench hypothesis by
+  showing how long a tube's anode/cathode voltage actually takes to decay after switch-off,
+  rather than inferring it from bracketing firmware settings.
+## Jigs to print while parts ship
+ 
+`J-LEAD` (ИН-17 lead comb) · `J-NEON` (ИНС-1 pairing rig) · `J-MAP` sheet ·
+a scrap-PETG fascia mock, drillable to the measured 7.85 mm МТ1/КМД1 bushing ⌀ and the
+now-measured 26.94 mm rotary body ⌀ (plus working clearance), test-fit against the actual
+parts on the bench.
+ 

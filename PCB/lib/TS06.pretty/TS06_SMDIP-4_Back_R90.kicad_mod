@@ -1,0 +1,188 @@
+(footprint "TS06_SMDIP-4_Back_R90"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "DIP-4 with surface-mount lead form, 9.53 mm row spacing (KiCad SMDIP-4_W9.53mm). For TLP627: 1 LED anode, 2 LED cathode, 3 emitter, 4 collector - the same part as the main board's four optos; a through-hole TLP627 lands here with its leads splayed flat. The silk bar marks pin 1. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers. Pre-rotated 90 deg counter-clockwise (front view), per this repo's no-rotation-token convention.")
+	(tags "DIP-4 SMD TLP627 optocoupler back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -6.82 0)
+		(layer "B.Fab")
+		(uuid "b71e657a-6f09-5bb6-a35b-4cbf0f67e7fd")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_SMDIP-4_Back_R90"
+		(at 0 6.82 0)
+		(layer "B.Fab")
+		(uuid "cff6aa08-0338-5f8d-aa27-38b1ef08623b") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "540a3688-d018-5f19-9c23-e6dd3e09af2e") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "820648bc-316b-5bf2-a9e2-eb9cf60b7360") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "4d8abfe4-cdca-5f98-83b8-3f1fa5a3d7c0") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -1.27 -4.765)
+		(size 1.78 2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.140449)
+		(uuid "fa203f49-376d-54b2-986e-f06f9c97fa0a")
+	)
+	(pad "2" smd roundrect
+		(at 1.27 -4.765)
+		(size 1.78 2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.140449)
+		(uuid "23a6362d-0005-5cd5-bdbb-da91789d838e")
+	)
+	(pad "3" smd roundrect
+		(at 1.27 4.765)
+		(size 1.78 2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.140449)
+		(uuid "34659475-8068-5739-a255-b861d2aece07")
+	)
+	(pad "4" smd roundrect
+		(at -1.27 4.765)
+		(size 1.78 2)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.140449)
+		(uuid "34246d4e-4f67-54c2-a7be-e3fcd86d2374")
+	)
+	(fp_line
+		(start -2.79 -6.02)
+		(end -2.79 6.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "9f7a5964-ef38-505c-8692-ea6b6fe27bc4")
+	)
+	(fp_line
+		(start -2.79 6.02)
+		(end 2.79 6.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "22dcebcc-5581-5b44-ba25-9791fda85929")
+	)
+	(fp_line
+		(start 2.79 6.02)
+		(end 2.79 -6.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "144ee930-5593-5aea-896a-e9d9386a9d03")
+	)
+	(fp_line
+		(start 2.79 -6.02)
+		(end -2.79 -6.02)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "4b88224f-9dec-511b-acd5-265b0b039067")
+	)
+	(fp_line
+		(start -2.54 -3.17)
+		(end -2.54 3.17)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "801dc3e6-381c-5dda-a46d-85f3840ce941")
+	)
+	(fp_line
+		(start -2.54 3.17)
+		(end 2.54 3.17)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "78b836cd-54d1-5144-9ecc-28c591e3cf9d")
+	)
+	(fp_line
+		(start 2.54 3.17)
+		(end 2.54 -3.17)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "0b47f5f3-b3f3-5e8a-8332-3347c7d72009")
+	)
+	(fp_line
+		(start 2.54 -3.17)
+		(end -2.54 -3.17)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "f3236e65-feff-5c95-95fa-ac2bbf78cd97")
+	)
+	(fp_line
+		(start -2.55 -5.765)
+		(end -2.55 -3.9)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "8708336a-ff60-51d3-879e-83190381f07d")
+	)
+	(embedded_fonts no)
+)

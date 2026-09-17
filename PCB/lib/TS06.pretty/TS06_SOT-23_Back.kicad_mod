@@ -1,0 +1,181 @@
+(footprint "TS06_SOT-23_Back"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SOT-23, hand-solder land pattern (KiCad SOT-23_Handsoldering). For MMBTA42: pad 1 base, 2 emitter, 3 collector - the SOT-23 twin of MPSA42, same 300 V rating. The silk bar marks pad 1. Mounted on the BACK: geometry mirrored in X from the KiCad library original, graphics on B.* layers.")
+	(tags "SOT-23 MMBTA42 transistor SMD back TERMINAL-06")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -2.55 0)
+		(layer "B.Fab")
+		(uuid "b2d25766-9af3-5651-9bf9-b7df4198efa3")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Value" "TS06_SOT-23_Back"
+		(at 0 2.55 0)
+		(layer "B.Fab")
+		(uuid "047a2c9a-aaf3-5b7c-b0f9-c383fd54950e") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "cbb2bee1-859e-5f1d-aebe-bb3102307468") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "f1efd62e-a5fa-5fdc-b575-873dc8fec25b") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "B.Fab")
+		(uuid "7cfa4ac8-a7b2-5413-b5e5-1d7f07400f78") (hide yes)
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" smd roundrect
+		(at 1.5 -0.95)
+		(size 1.9 0.8)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "0db46e5e-1ad0-5c38-b858-d78bf84e5e21")
+	)
+	(pad "2" smd roundrect
+		(at 1.5 0.95)
+		(size 1.9 0.8)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "3419a789-5666-5ce0-a4c4-1f65e5b5adf4")
+	)
+	(pad "3" smd roundrect
+		(at -1.5 0)
+		(size 1.9 0.8)
+		(layers "B.Cu" "B.Mask" "B.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "3ab15857-cb6d-5136-af17-7817859f8d1b")
+	)
+	(fp_line
+		(start 2.7 -1.75)
+		(end -2.7 -1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "15315bbf-8167-55ce-be33-3d62516cd028")
+	)
+	(fp_line
+		(start -2.7 -1.75)
+		(end -2.7 1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "29e467ab-5131-5fda-bc6e-1b0cfe07e53f")
+	)
+	(fp_line
+		(start -2.7 1.75)
+		(end 2.7 1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "4a48aec9-5530-55ee-bda5-4d15be080c65")
+	)
+	(fp_line
+		(start 2.7 1.75)
+		(end 2.7 -1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "B.CrtYd")
+		(uuid "03f37005-da6d-532b-9c40-f0067c423b69")
+	)
+	(fp_line
+		(start 0.7 -1.52)
+		(end -0.7 -1.52)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "68491776-4645-5742-9f29-f3fbef3c0d95")
+	)
+	(fp_line
+		(start -0.7 -1.52)
+		(end -0.7 1.52)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "92f71a4c-ed26-56eb-a914-ff5f3400f7b3")
+	)
+	(fp_line
+		(start -0.7 1.52)
+		(end 0.7 1.52)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "4c27f43d-6a9e-51e4-94a1-ac8a27db3fd0")
+	)
+	(fp_line
+		(start 0.7 1.52)
+		(end 0.7 -1.52)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "c197a66d-5bd9-52ea-9043-386640d4ecf6")
+	)
+	(fp_line
+		(start 2.45 -1.6)
+		(end 0.6 -1.6)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "f83ee516-c94a-5b1b-8c0a-1e3ad01c188c")
+	)
+	(embedded_fonts no)
+)

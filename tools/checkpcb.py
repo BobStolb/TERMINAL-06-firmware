@@ -87,6 +87,9 @@ for f in fps:
     at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
     if not at: continue
     ox, oy = float(at.group(1)), float(at.group(2))
+    # The face a part mounts on. Back parts are authored directly on B.* layers in this
+    # repo, never flipped, so the footprint's own layer line says which face it is.
+    side = "B" if re.search(r'\n\t\(layer "B\.Cu"\)', f) else "F"
     pads = []
     for pm in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
                           r'\t\t\(size ([\d.]+) ([\d.]+)\)[\s\S]*?\(layers ([^)]*)\)', f):
@@ -94,11 +97,18 @@ for f in fps:
                      "x": ox + float(pm.group(3)), "y": oy + float(pm.group(4)),
                      "w": float(pm.group(5)), "h": float(pm.group(6)),
                      "layers": pm.group(7)})
-    cy = [tuple(map(float, m.groups())) for m in
-          re.finditer(r'\(fp_line\n\t\t\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)'
-                      r'[\s\S]*?\(layer "[FB]\.CrtYd"\)', f)]
-    for cm in re.finditer(r'\(fp_circle\n\t\t\(center ([\d.-]+) ([\d.-]+)\)\n'
-                          r'\t\t\(end ([\d.-]+) ([\d.-]+)\)[\s\S]*?\(layer "[FB]\.CrtYd"\)', f):
+    # Each graphic is read as a whole block before its layer is tested. A non-greedy reach
+    # for the CrtYd layer token runs past the end of a silkscreen circle into the next
+    # courtyard line, and counted a tube's 7.3 mm silk ring as its courtyard.
+    cy = []
+    for blk in re.findall(r'\(fp_line\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if v: cy.append(tuple(map(float, v.groups())))
+    for blk in re.findall(r'\(fp_circle\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        cm = re.search(r'\(center ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if not cm: continue
         ccx, ccy, cex, cey = map(float, cm.groups())
         r = math.hypot(cex - ccx, cey - ccy)
         cy.append((ccx - r, ccy - r, ccx + r, ccy + r))
@@ -106,7 +116,7 @@ for f in fps:
     if cy:
         xs = [p for s in cy for p in (s[0], s[2])]; ys = [p for s in cy for p in (s[1], s[3])]
         box = (ox + min(xs), oy + min(ys), ox + max(xs), oy + max(ys))
-    parts.append({"ref": ref, "x": ox, "y": oy, "pads": pads, "box": box})
+    parts.append({"ref": ref, "side": side, "x": ox, "y": oy, "pads": pads, "box": box})
 
 # 1. pads and courtyards inside the board
 for p in parts:
@@ -124,6 +134,9 @@ for i in range(len(parts)):
     for j in range(i + 1, len(parts)):
         a, b = parts[i]["box"], parts[j]["box"]
         if not a or not b: continue
+        # Same face only. A surface-mount part on the back can sit directly under a tube
+        # on the front; comparing across faces reported that as a collision.
+        if parts[i]["side"] != parts[j]["side"]: continue
         if a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]:
             bad.append(f'COURTYARD OVERLAP  {parts[i]["ref"]} / {parts[j]["ref"]}')
 
@@ -181,14 +194,20 @@ for tx, ty, tw, th in txts:
             bad.append(f'F.Cu LETTERING TOUCHES PAD  {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f}) '
                        f'clearance {clear:+.2f} mm')
 
-# 4. keepout intrusions - nothing on the back inside the rotary body circle
-for p in parts:
-    for d in p["pads"]:
-        if p["ref"] == "SW1" or d["n"] == "":
-            continue          # the rotary owns that keepout; its own bushing hole is fine
-        if "B.Cu" in d["layers"] or "*.Cu" in d["layers"]:
-            if math.hypot(d["x"] - 30.0, d["y"] - 26.0) < 12.5 + 0.5:
-                bad.append(f'IN ROTARY BODY KEEPOUT  {p["ref"]} pad {d["n"]}')
+# 4. keepout intrusions - nothing on the back inside the rotary body circle.
+# The rotary's own anchor (SW1's "at x y") is the keepout center, wherever the board
+# places it - not a hardcoded literal, which breaks the moment the layout legitimately
+# changes (e.g. a height-compressed revision of the same board).
+rotary = next((p for p in parts if p["ref"] == "SW1"), None)
+if rotary is not None:
+    rx, ry = rotary["x"], rotary["y"]
+    for p in parts:
+        for d in p["pads"]:
+            if p["ref"] == "SW1" or d["n"] == "":
+                continue          # the rotary owns that keepout; its own bushing hole is fine
+            if "B.Cu" in d["layers"] or "*.Cu" in d["layers"]:
+                if math.hypot(d["x"] - rx, d["y"] - ry) < 12.5 + 0.5:
+                    bad.append(f'IN ROTARY BODY KEEPOUT  {p["ref"]} pad {d["n"]}')
 
 print(f'{len(parts)} footprints, {sum(len(p["pads"]) for p in parts)} pads, {len(segs)} F.Cu graphics')
 for b in sorted(set(bad)): print("  " + b)
