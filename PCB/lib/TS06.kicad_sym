@@ -27,29 +27,29 @@
 )
 (property "Footprint" "TS06:TS06_R_1206_HandSolder"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Datasheet" ""
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Description" "Resistor"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (symbol "R_0_1"
@@ -129,29 +129,29 @@
 )
 (property "Footprint" "TS06:TS06_Rotary_SR25_PanelMount"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Datasheet" ""
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Description" "SR25-style 6-position galette rotary, one pole of two. 12 taps on D19.99 at 30deg; only pole 1 (COM + T1..T6) is wired. Pole 2 is spare."
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (symbol "SW_Rotary_6P1W_0_1"
@@ -411,29 +411,29 @@
 )
 (property "Footprint" "TS06:TS06_MT1_Lever_PanelMount"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Datasheet" ""
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Description" "MT1/TV1-2 toggle lever wired as SPST - 2 of its 3 lugs used."
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (symbol "SW_Lever_MT1_0_1"
@@ -537,29 +537,29 @@
 )
 (property "Footprint" "TS06:TS06_KMD1_Button_PanelMount"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Datasheet" ""
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Description" "KMD1-1 momentary pushbutton, normally open. Shorts to GND; the Nano supplies the pull-up (GyverButton INPUT_PULLUP)."
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (symbol "SW_Button_KMD1_0_1"
@@ -689,29 +689,29 @@
 )
 (property "Footprint" "TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Datasheet" ""
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (property "Description" "Panel cable to the main board. Pin order is fixed for both builds: +5V, GND, A6, A7, D7, D8 - power first, then the four MCU pins in their own order."
 (at 0 0 0)
+(hide yes)
 (effects
 (font
 (size 1.27 1.27)
 )
-(hide yes)
 )
 )
 (symbol "Conn_JST_PH_6_0_1"

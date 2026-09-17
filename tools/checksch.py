@@ -72,6 +72,8 @@ for j in kids(root, "junction"):
     a = nums(kid(j, "at")); ends.add((round(a[0], 3), round(a[1], 3)))
 for l in kids(root, "label"):
     a = nums(kid(l, "at")); ends.add((round(a[0], 3), round(a[1], 3)))
+for nc in kids(root, "no_connect"):          # a no-connect flag is a deliberate, legal landing
+    a = nums(kid(nc, "at")); ends.add((round(a[0], 3), round(a[1], 3)))
 
 bad = ok = 0
 for s in kids(root, "symbol"):

@@ -26,11 +26,13 @@ SHEET_UUID = "d3920db2-8aa4-4b4d-8e8a-771392dad286"   # from KiCad's own skeleto
 def U(): return str(uuid.uuid4())
 def eff(sz=1.27, hide=False, just=None):
     j = f"\n(justify {just})" if just else ""
-    h = "\n(hide yes)" if hide else ""
-    return f"(effects\n(font\n(size {sz} {sz})\n){j}{h}\n)"
+    return f"(effects\n(font\n(size {sz} {sz})\n){j}\n)"
 
 def prop(k, v, x, y, hide=False, just=None):
-    return f'(property "{k}" "{v}"\n(at {x} {y} 0)\n{eff(1.27, hide, just)}\n)'
+    # KiCad 9+ keeps (hide yes) on the property itself, not inside its effects. With it
+    # inside the effects, KiCad 10 refused to load the file at all (found 18.09.26).
+    h = "\n(hide yes)" if hide else ""
+    return f'(property "{k}" "{v}"\n(at {x} {y} 0){h}\n{eff(1.27, hide, just)}\n)'
 
 def pin(typ, x, y, rot, ln, name, num):
     return (f'(pin {typ} line\n(at {x} {y} {rot})\n(length {ln})\n'
@@ -117,13 +119,12 @@ SYMS["Conn_JST_PH_6"] = symbol("Conn_JST_PH_6", "J", "PH 6 SMT",
     g, pins, 6.35, -16.51)
 
 def qualify(txt, name):
-    """Inside a .kicad_sch, lib_symbols entries are named with the FULL lib_id
-    ("TS06:R"), while a .kicad_sym file names them bare ("R"). Getting this wrong
-    makes KiCad draw every part as a red "??" placeholder - it cannot match the
-    instance's lib_id to any cached definition."""
-    for suffix in ('"', '_0_1"', '_1_1"'):
-        txt = txt.replace(f'(symbol "{name}{suffix}', f'(symbol "TS06:{name}{suffix}')
-    return txt
+    """Inside a .kicad_sch, the lib_symbols entry is named with the FULL lib_id ("TS06:R")
+    while a .kicad_sym file names it bare ("R"). Its unit sub-symbols ("R_0_1", "R_1_1")
+    stay bare in both: that is how KiCad writes them, and with the prefix on the units
+    KiCad 10 refused to load the file (found 18.09.26 - the earlier note here claimed the
+    opposite and had never been tested against KiCad itself)."""
+    return txt.replace(f'(symbol "{name}"', f'(symbol "TS06:{name}"', 1)
 
 SYMS_SCH = {n: qualify(t, n) for n, t in SYMS.items()}
 
