@@ -304,7 +304,13 @@ for i, nm in enumerate(["S10", "S1"]):     # DIP-4s are narrower and sit further
 # it saves, for the same reason as taking them all out: 3 nets unplaced became 13 (18.09.26).
 # The ring keeps its full set and the few stranded pins are the price.
 chan = [(vt, r) for vt, r, *_ in N.CH]
-corners = ((0, -5.5), (0, 5.5)) if THT else ((-2.15, -4.7), (2.15, -4.7), (-2.15, 4.7), (2.15, 4.7))
+# How far out the four in-ring switches sit. TS06_CORNER_DY prices a different spread without
+# editing this: two of the eight emitters (VT10.2, VT11.2) cannot be escaped at 4.7, hemmed in
+# by their own pins and the socket's pin ring, whose cathodes need 0.6 mm. Taking the parts
+# OUT was tried and is much worse (3 nets became 13); moving them a little may not be.
+CDY = _p("corner_dy", 4.7)
+CDX = _p("corner_dx", 2.15)
+corners = ((0, -5.5), (0, 5.5)) if THT else ((-CDX, -CDY), (CDX, -CDY), (-CDX, CDY), (CDX, CDY))
 for tube_x, first in zip(IN15_X, (0, 8)):
     cx, cy = local(tube_x, IN12_WY)
     for j, (dx, dy) in enumerate(corners):
@@ -535,6 +541,30 @@ if ROUTE:
     # it applies to everything that can be negotiated. Only copper that CANNOT be, because its
     # halo is too wide or its reach too long, belongs in this stage.
     t0 = time.time()
+    # ---- stage 1: all the high voltage, the 185 V trunk included, laid first and never moved.
+    # The trunk has 14 pads spread over the whole board and a 0.6 mm halo everywhere; negotiated,
+    # it defeated the through-hole build outright, coming out in 14 pieces and taking seven other
+    # nets with it (18.09.26).
+    # The ten-line cathode spine K0..K9 was tried here too and is a mistake: laid net after net
+    # it fences the rest in, and the negotiation ended with six nets dropped instead of three.
+    # That is TS06-SEC's own lesson - negotiation beats ordering - and it applies to everything
+    # that CAN be negotiated. Only copper that cannot belongs in this stage.
+    #
+    # WHY THE TWO ИН-15 EMITTERS ARE NOT RESCUED HERE, since it looks as though they could be.
+    # VT10.2 and VT11.2 sit inside a socket ring, and this stage's twelve cathode tracks leave
+    # that ring through the gaps in its pin circle carrying a 0.6 mm halo each, after which
+    # there is no way out for a ground pad inside. (The PADS are not the problem: they leave
+    # 1.9 to 2.5 mm and a 0.2 mm track between two 185 V pads needs 1.4. It is the tracks.)
+    # Letting them out FIRST works and was measured twice. All twelve in-ring pads given a stub
+    # before the high voltage: GND whole, and twenty-four signal nets left overlapping. Only the
+    # two that the high voltage actually walls in, found by laying it, testing, and going back:
+    # GND in two pieces instead of three, and SEVEN signal nets lost. Two stubs from the middle
+    # of a tube ring to the edge of the board cross everything, and laying them first fences the
+    # board in exactly as the cathode spine did.
+    # Seven signals for two grounds is a bad trade, so the trade is not made. Those two emitters
+    # need a wire link, or the switches moved out of the ring - which was itself measured and
+    # costs more (3 nets unplaced became 13). tools/placecheck.py has the wider argument: this
+    # block is congested because of where the parts are (18.09.26).
     order = sorted((n for n in pads_of if n in HV), key=lambda n: (span(n), n))
     nf0 = len(rt.failed)
     base, best = rt.snapshot(), None
