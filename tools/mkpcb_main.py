@@ -84,7 +84,9 @@ RP = dict(via_cost=_p("via_cost", 900, int),   # a via, against 10 for a 0.1 mm 
           tighten=_p("tighten", 2, int),       # passes of rip-up-and-reroute for length
           relax=_p("relax", 4, int),           # rounds of failure before a net is let off the grain
           bundle=_p("bundle", 0, int),         # cost of a step away from a net's own bus
-          compact=_p("compact", 0, int))       # cost of a step away from any other net's copper
+          compact=_p("compact", 0, int),       # cost of a step away from any other net's copper
+          cross=_p("cross", 0, int),           # cost of a step over another net on the far face
+          tjoin=_p("tjoin", 1, int))           # 1: a branch may join anywhere; 0: pads and vias
 if os.environ.get("TS06_OUT"):
     OUT = os.environ["TS06_OUT"]
 
@@ -629,6 +631,7 @@ if ROUTE:
                  rounds=RP["rounds"], price=RP["price"], rise=RP["rise"], turn=RP["turn"],
                  bias=RP["bias"], decay=RP["decay"], tighten=RP["tighten"], relax=RP["relax"],
                  groups=GROUPS, bundle=RP["bundle"], compact=RP["compact"],
+                 cross=RP["cross"], tjoin=RP["tjoin"],
                  log=lambda m: print(m, flush=True))
     print(f"stage 3 (everything else, negotiated): {len(order)} nets, {len(rt.failed) - nf0} not routed, "
           f"{time.time() - t0:.0f} s", flush=True)

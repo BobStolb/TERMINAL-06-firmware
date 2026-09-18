@@ -513,7 +513,7 @@ class Router:
                 u[j0:j1, i0:i1] |= D <= KEEP
             self.vuse += sign * u.astype(np.int16)
 
-    def _soft(self, hv, c, box, price, layer_cost=(0, 0), group=None, bundle=0, compact=0):
+    def _soft(self, hv, c, box, price, layer_cost=(0, 0), group=None, bundle=0, compact=0, cross=0):
         i0, i1, j0, j1 = box
         a, b = ("hvL", "lvL") if hv else ("lvS", "hvL")
         cnt = self.use[c, a][:, j0:j1, i0:i1].astype(np.int64) + self.use[c, b][:, j0:j1, i0:i1]
@@ -553,6 +553,15 @@ class Router:
                 d[:, :, k:] |= near[:, :, :-k]
                 d[:, :, :-k] |= near[:, :, k:]
             soft = soft + compact * ~d
+        # THE RETURN-PATH RULE. A track's return current flows in the pour directly beneath it;
+        # where the other face carries a foreign track instead of pour, that return is broken
+        # and has to go round. This prices a step whose opposite face is already taken.
+        # HONESTLY: on this board it buys almost nothing. Nothing here has fast edges except the
+        # boost converter, and the cathode lines switch at kilohertz. It is here to be MEASURED
+        # - what a rule costs in routability is worth knowing even when the rule is not wanted -
+        # and if it is shipped it belongs on the converter's nets alone, not on all of them.
+        if cross:
+            soft = soft + cross * (cnt[::-1] > 0)
         return (np.minimum(soft, cap),
                 np.minimum(10 * price * vcnt * (1 + vhist) + 10 * vhist, cap))
 
@@ -585,7 +594,7 @@ class Router:
         return n
 
     def _route_tree(self, name, width, pads, price, layer_cost=(0, 0), via_cost=1500, turn=15, allow=(0, 1),
-                    bias=0, group=None, bundle=0, compact=0):
+                    bias=0, group=None, bundle=0, compact=0, cross=0, tjoin=1):
         net, hv, c = self.nid(name), name in self.hv, track_class(width)
         targets, inside, todo = [("pad", pads[0][2], pads[0][3])], [pads[0]], list(pads[1:])
         segs, vias, cells, vcells, failed = [], [], [], [], []
@@ -596,7 +605,7 @@ class Router:
             path = None
             for grow in (6.0, 18.0, 1e6):
                 box = self._box((src, near), grow)
-                soft, vsoft = self._soft(hv, c, box, price, layer_cost, group, bundle, compact)
+                soft, vsoft = self._soft(hv, c, box, price, layer_cost, group, bundle, compact, cross)
                 path = self._astar(net, hv, c, box, src, near, targets, via_cost, turn, allow,
                                    soft=soft, vsoft=vsoft, nokeep=vias, bias=bias)
                 if path or box == (0, self.nx, 0, self.ny):
@@ -610,13 +619,18 @@ class Router:
             cells += ce
             vcells += vc
             inside.append(src)
-            targets += [("pad", src[2], src[3])] + [("seg", (L,), ("seg", ax, ay, bx, by, w))
-                                                    for L, ax, ay, bx, by, w in s] + \
+            # tjoin: where a later branch of this net may join what is already laid. 1 lets it
+            # land anywhere along a track, which is what makes spurs sprout from the middle of
+            # a run at arbitrary points; 0 allows only pads and vias, tidier and longer.
+            targets += [("pad", src[2], src[3])] + \
+                       ([("seg", (L,), ("seg", ax, ay, bx, by, w))
+                         for L, ax, ay, bx, by, w in s] if tjoin else []) + \
                        [("via", (0, 1), ("circle", x, y, VIA_D / 2)) for x, y in v]
         return segs, vias, cells, vcells, failed
 
     def negotiate(self, jobs, rounds=60, price=3, rise=1.4, scar=1, layer_cost=(0, 0), bias=0,
-                  turn=15, decay=1.0, tighten=0, relax=0, groups=None, bundle=0, compact=0, log=None):
+                  turn=15, decay=1.0, tighten=0, relax=0, groups=None, bundle=0, compact=0,
+                  cross=0, tjoin=1, log=None):
         """jobs: [(name, width, pads, opts)], routed together against everything already laid.
         layer_cost: extra cost of each step on F.Cu and on B.Cu (a plain step costs 10) - how a
         face kept for a pour is made the second choice rather than forbidden.
@@ -633,13 +647,16 @@ class Router:
         exactly the ones that have to cross the grain, and they are cheaper let off.
         groups: net -> bus name. bundle: what a step away from its own bus costs a net.
         compact: what a step away from any other net's copper costs, which gathers the tracks
-        into channels and leaves the pour between them in one piece."""
+        into channels and leaves the pour between them in one piece.
+        cross: what a step over another net's copper on the far face costs.
+        tjoin: 1 lets a branch join its net anywhere, 0 only at a pad or a via."""
         self.grp, self.bgrp = dict(groups or {}), {}
         self.use = {k: np.zeros(v.shape, np.int16) for k, v in self.maps.items()}
         self.vuse = np.zeros((self.ny, self.nx), np.int16)
         self.hist = np.zeros((2, self.ny, self.nx), np.float64)   # float: a scar may fade by a fraction
         job = {j[0]: (j[0], j[1], j[2], dict(j[3], bias=bias, turn=turn, compact=compact,
-                      group=self.grp.get(j[0]), bundle=bundle)) for j in jobs}
+                      cross=cross, tjoin=tjoin, group=self.grp.get(j[0]), bundle=bundle))
+               for j in jobs}
         routes, todo, t0 = {}, [j[0] for j in jobs], time.time()
         stall, last, best, since, bad = 0, None, None, 0, []
         stuck = {j[0]: 0 for j in jobs}          # consecutive rounds this net has overlapped
