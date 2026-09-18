@@ -45,6 +45,7 @@ SNAP = 0.03                        # a diagonal step sags a few um toward a corn
 CLASSES = {"narrow": 0.1, "wide": 0.175, "via": VIA_D / 2}   # radius of what sits on a free cell
 REACH = HV_CLR + max(CLASSES.values()) + SNAP                 # the widest halo any copper casts
 COMPACT_DIL = 5                    # cells (0.5 mm) each way that count as 'beside something'
+VIA_LATTICE = 10                   # cells (1.0 mm): the pitch vgrid lines vias up on
 BUNDLE = 0.55                      # how near a net has to be to count as following its bus:
                                    # a 0.2 mm track beside a 0.2 mm track at 0.2 mm clearance
                                    # has its centreline 0.4 mm away, so 0.55 takes the next
@@ -288,7 +289,7 @@ class Router:
         return self.connect(name, width, src, None, margin=3.0, to_layer=layer, reach=reach, **kw)
 
     def _astar(self, net, hv, c, box, src, goal, targets, via_cost, turn, allow, to_layer=None, reach=None,
-               soft=None, vsoft=None, nokeep=(), bias=0):
+               soft=None, vsoft=None, nokeep=(), bias=0, vgrid=0):
         """targets: (kind, layers, shape) copper the path may end in. soft, vsoft: extra cost of
         stepping onto a cell and of a via there, while negotiating. nokeep: vias of this net."""
         i0, i1, j0, j1 = box
@@ -389,7 +390,12 @@ class Router:
                     push(heap, (ng + (hk * (10 * max(ax, ay) + 4 * min(ax, ay))) // 10, ng, nk))
             if vok[rem]:
                 nk = k - N if upper else k + N
-                ng = g + via_cost + vs[rem]
+                # vgrid lines vias up on a coarse lattice, so what they take out of the pour is
+                # one tidy row of holes rather than scattered bites. Expected to be WEAK and
+                # measured anyway: 350 vias with their clearance cover about 3% of this board
+                # against 41% for the tracks, so the pour is cut by copper, not by drills.
+                ng = g + via_cost + vs[rem] + (vgrid if vgrid and
+                                               ((i + i0) % VIA_LATTICE or (j + j0) % VIA_LATTICE) else 0)
                 if free[nk] and ng < gcost[nk]:
                     gcost[nk], came[nk], cdir[nk] = ng, k, 255
                     ax, ay = abs(i - ti), abs(j - tj)
@@ -594,7 +600,7 @@ class Router:
         return n
 
     def _route_tree(self, name, width, pads, price, layer_cost=(0, 0), via_cost=1500, turn=15, allow=(0, 1),
-                    bias=0, group=None, bundle=0, compact=0, cross=0, tjoin=1):
+                    bias=0, group=None, bundle=0, compact=0, cross=0, tjoin=1, vgrid=0):
         net, hv, c = self.nid(name), name in self.hv, track_class(width)
         targets, inside, todo = [("pad", pads[0][2], pads[0][3])], [pads[0]], list(pads[1:])
         segs, vias, cells, vcells, failed = [], [], [], [], []
@@ -607,7 +613,7 @@ class Router:
                 box = self._box((src, near), grow)
                 soft, vsoft = self._soft(hv, c, box, price, layer_cost, group, bundle, compact, cross)
                 path = self._astar(net, hv, c, box, src, near, targets, via_cost, turn, allow,
-                                   soft=soft, vsoft=vsoft, nokeep=vias, bias=bias)
+                                   soft=soft, vsoft=vsoft, nokeep=vias, bias=bias, vgrid=vgrid)
                 if path or box == (0, self.nx, 0, self.ny):
                     break
             if not path:
@@ -630,7 +636,7 @@ class Router:
 
     def negotiate(self, jobs, rounds=60, price=3, rise=1.4, scar=1, layer_cost=(0, 0), bias=0,
                   turn=15, decay=1.0, tighten=0, relax=0, groups=None, bundle=0, compact=0,
-                  cross=0, tjoin=1, log=None):
+                  cross=0, tjoin=1, vgrid=0, log=None):
         """jobs: [(name, width, pads, opts)], routed together against everything already laid.
         layer_cost: extra cost of each step on F.Cu and on B.Cu (a plain step costs 10) - how a
         face kept for a pour is made the second choice rather than forbidden.
@@ -649,17 +655,20 @@ class Router:
         compact: what a step away from any other net's copper costs, which gathers the tracks
         into channels and leaves the pour between them in one piece.
         cross: what a step over another net's copper on the far face costs.
-        tjoin: 1 lets a branch join its net anywhere, 0 only at a pad or a via."""
+        tjoin: 1 lets a branch join its net anywhere, 0 only at a pad or a via.
+        vgrid: what a via costs extra when it is not on the VIA_LATTICE pitch."""
         self.grp, self.bgrp = dict(groups or {}), {}
         self.use = {k: np.zeros(v.shape, np.int16) for k, v in self.maps.items()}
         self.vuse = np.zeros((self.ny, self.nx), np.int16)
         self.hist = np.zeros((2, self.ny, self.nx), np.float64)   # float: a scar may fade by a fraction
         # a job's own opts WIN over the negotiation-wide settings, so a caller can exempt one
         # net from the grain or the compaction the way it already exempts it from a dear via
-        job = {j[0]: (j[0], j[1], j[2], dict(bias=bias, turn=turn, compact=compact,
-                      cross=cross, tjoin=tjoin, group=self.grp.get(j[0]), bundle=bundle,
-                      **j[3]))
-               for j in jobs}
+        def _opts(j):
+            o = dict(bias=bias, turn=turn, compact=compact, vgrid=vgrid, cross=cross,
+                     tjoin=tjoin, group=self.grp.get(j[0]), bundle=bundle)
+            o.update(j[3])          # update(), not dict(**), which raises on a duplicate key
+            return o
+        job = {j[0]: (j[0], j[1], j[2], _opts(j)) for j in jobs}
         routes, todo, t0 = {}, [j[0] for j in jobs], time.time()
         stall, last, best, since, bad = 0, None, None, 0, []
         stuck = {j[0]: 0 for j in jobs}          # consecutive rounds this net has overlapped
