@@ -349,5 +349,39 @@ made += rotations("TS06_BatteryHolder_3034_Back", "Keystone 3034 SMD holder for 
                   "centred: the two side tabs are pad 1, positive; the centre disc pad 2, negative. CR2032 for the DS3231. " + BACK,
                   "battery holder CR2032 SMD back TERMINAL-06", batt, rots=(0, 90))
 
+# ---- the stacking pair for the two-board split (tools/ts06split.py)
+# 2 x 12 at 2.54 mm. POSITION 4 HAS NO HOLE AT ALL, and that is the point: the owner chose
+# stacking headers, which are not polarised, and the rail at position 1 is 185 V. Mate the
+# pair one row over and it lands on a logic pin. With the hole simply absent, an unsnipped
+# header cannot be fitted at all - the key cannot be forgotten, only obeyed. The socket has
+# the matching position plugged.
+# The same land pattern serves both boards; what differs is the mirroring, and THAT IS NOT
+# GUESSED. The display board carries the header on its back, the driver board the socket on
+# its front, and tools/checkstack.py proves pin N of one lands on pin N of the other in the
+# FreeCAD assembly's world frame, where no mirroring argument is needed.
+KEYPOS = 4
+hdr2x12 = []
+for k in range(12):
+    for c in (0, 1):
+        n = 2 * k + c + 1
+        if n == KEYPOS:
+            continue
+        hdr2x12.append(("pad", str(n), "thru_hole", "rect" if n == 1 else "circle",
+                        -1.27 + 2.54 * c, -13.97 + 2.54 * k, 1.7, 1.7, 1.0, None))
+hdr2x12 += [("rect", -3.1, -15.8, 3.1, 15.8, "CrtYd", 0.05),
+            ("rect", -2.54, -15.24, 2.54, 15.24, "Fab", 0.1),
+            ("line", -3.3, -15.9, -3.3, -13.0, "SilkS", 0.12),
+            ("circle", -1.27 + 2.54 * ((KEYPOS - 1) % 2), -13.97 + 2.54 * ((KEYPOS - 1) // 2),
+             1.9, "SilkS", 0.12)]
+for nm, back, what in (("TS06_PinHeader_2x12_Back", True, "HEADER, on the display board's back"),
+                       ("TS06_PinHeader_2x12", False, "SOCKET, on the driver board's front")):
+    made += rotations(nm, "2x12 2.54 mm stacking " + what + ". Pin 1 square and at 185 V; "
+                      "position %d HAS NO HOLE - it is the key, snipped on the header and plugged "
+                      "on the socket, and the silkscreen ring marks it. Odd pins in one column, "
+                      "even in the other, rows stepping along y (KiCad PinHeader_2x12_P2.54mm_Vertical "
+                      "numbering)." % KEYPOS + (" " + BACK if back else ""),
+                      "header 2x12 stacking THT TERMINAL-06", hdr2x12, back=back, attr=THT,
+                      rots=(0, 90, 180, 270))
+
 print("wrote %d footprints:" % len(made))
 print("  " + "\n  ".join(made))

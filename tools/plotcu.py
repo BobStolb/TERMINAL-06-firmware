@@ -62,10 +62,7 @@ for m in re.finditer(r'\(segment\s*\(start ([-\d.]+) ([-\d.]+)\)\s*\(end ([-\d.]
 vias = [(float(a), float(b), float(c)) for a, b, c in
         re.findall(r'\(via\s*\(at ([-\d.]+) ([-\d.]+)\)\s*\(size ([-\d.]+)\)', SRC)]
 
-edge = [(float(a), float(b)) for a, b in
-        re.findall(r'\(gr_line\s*\(start ([-\d.]+) ([-\d.]+)\)\s*\(end ([-\d.]+) ([-\d.]+)\)', SRC)] or []
-
-xs = [v for L in seg.values() for t in L for v in (t[0], t[2])]
+xs =[v for L in seg.values() for t in L for v in (t[0], t[2])]
 ys = [v for L in seg.values() for t in L for v in (t[1], t[3])]
 if not xs:
     sys.exit("no copper in " + sys.argv[1])
