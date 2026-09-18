@@ -633,10 +633,19 @@ if ROUTE:
         print(f"  {len(set(GROUPS.values()))} bus(es) over {len(GROUPS)} nets: "
               + " ".join(sorted(set(GROUPS.values()))), flush=True)
 
-    def via_price(n):
-        return min(250, RP["via_cost"]) if len(pads_of[n]) >= 8 else RP["via_cost"]
+    # INFRASTRUCTURE NETS ARE EXEMPT from every convention, not just from the dear via. A net
+    # with pads all over the board has to travel in every direction and be able to change
+    # face; a grain makes half those directions expensive and compaction pins it to whatever
+    # channel it first touched. +5V has 29 pads, more than anything but GND, and it came out
+    # in 29 pieces under the grain alone and again under compaction alone, each time while
+    # every ordinary signal routed (18.09.26). Eight pads is the line: it takes +5V, +12V and
+    # the backlight cathode, and leaves the seven-pad К155ИД1 cathode lines on the tidy price.
+    def opts_for(n):
+        if len(pads_of[n]) >= 8:
+            return {"via_cost": min(250, RP["via_cost"]), "bias": 0, "compact": 0, "bundle": 0}
+        return {"via_cost": RP["via_cost"]}
     rt.negotiate([(n, width(n), sorted(pads_of[n], key=lambda q: q is not hub_pad.get(n)),
-                   {"via_cost": via_price(n)}) for n in order],
+                   opts_for(n)) for n in order],
                  rounds=RP["rounds"], price=RP["price"], rise=RP["rise"], turn=RP["turn"],
                  bias=RP["bias"], decay=RP["decay"], tighten=RP["tighten"], relax=RP["relax"],
                  groups=GROUPS, bundle=RP["bundle"], compact=RP["compact"],

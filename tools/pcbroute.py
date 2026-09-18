@@ -654,8 +654,11 @@ class Router:
         self.use = {k: np.zeros(v.shape, np.int16) for k, v in self.maps.items()}
         self.vuse = np.zeros((self.ny, self.nx), np.int16)
         self.hist = np.zeros((2, self.ny, self.nx), np.float64)   # float: a scar may fade by a fraction
-        job = {j[0]: (j[0], j[1], j[2], dict(j[3], bias=bias, turn=turn, compact=compact,
-                      cross=cross, tjoin=tjoin, group=self.grp.get(j[0]), bundle=bundle))
+        # a job's own opts WIN over the negotiation-wide settings, so a caller can exempt one
+        # net from the grain or the compaction the way it already exempts it from a dear via
+        job = {j[0]: (j[0], j[1], j[2], dict(bias=bias, turn=turn, compact=compact,
+                      cross=cross, tjoin=tjoin, group=self.grp.get(j[0]), bundle=bundle,
+                      **j[3]))
                for j in jobs}
         routes, todo, t0 = {}, [j[0] for j in jobs], time.time()
         stall, last, best, since, bad = 0, None, None, 0, []
