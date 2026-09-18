@@ -560,7 +560,7 @@ class Router:
         self.hist = np.zeros((2, self.ny, self.nx), np.int32)
         job = {j[0]: j for j in jobs}
         routes, todo, t0 = {}, [j[0] for j in jobs], time.time()
-        stall, last = 0, None
+        stall, last, best, since, bad = 0, None, None, 0, []
         for rnd in range(rounds):
             for n in todo:
                 if n in routes:
@@ -572,14 +572,34 @@ class Router:
             if log:
                 log(f"    round {rnd + 1}: {len(todo)} net(s) routed, {len(bad)} overlap, price {price}, "
                     f"{time.time() - t0:.0f} s")
+            if best is None or len(bad) < len(best[1]):
+                best, since = (dict(routes), list(bad)), 0
+            else:
+                since += 1
             if not bad:
                 break
             stall = stall + 1 if bad == last else 0
             last = bad
             if stall >= 12:                # the same nets, round after round: no price will part them
                 break
+            if since >= 8:                 # see the note below: the landscape has gone flat
+                break
             price = int(price * rise) + 1
             todo = [j[0] for j in jobs if j[0] in bad]
+        # KEEP THE BEST ROUND, NOT THE LAST. price * cnt * (1 + hist) saturates the int32 cap
+        # once the price has climbed far enough, and from there every contested cell costs the
+        # same: the search can no longer tell a busy corridor from a quiet one and the count
+        # wanders instead of falling (TS06-MAIN went 11, 11, 11, 12, 13, 13, 17 over rounds
+        # 16-22 while the price ran from 70 thousand to 1.2 million, 18.09.26). Eight rounds
+        # without beating the best is taken as that, and the best round is what gets laid.
+        if best is not None and len(best[1]) < len(bad):
+            for n, r in routes.items():
+                self._stamp(n, r[0], r[1], -1)
+            routes = best[0]
+            for n, r in routes.items():
+                self._stamp(n, r[0], r[1], +1)
+            if log:
+                log(f"    kept the best round: {len(best[1])} overlap, not the last round's {len(bad)}")
         while True:                        # what still overlaps is taken out, worst first
             bad = {n: k for n, r in routes.items() for k in [self._overlaps(n, job[n][1], r[2], r[3])] if k}
             if not bad:

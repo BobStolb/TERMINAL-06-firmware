@@ -31,13 +31,29 @@ THREE BANDS on the back, top to bottom:
     LEDs, the 12 V entry at the left edge, the colon, the fascia connector at the bottom
     edge, the RTC, the two expanders under the ИН-15s with the base resistors above them.
 
-ROUTING is TS06-SEC's recipe (tools/pcbroute.py): the high-voltage locals first, then
-everything else negotiated in one group; GND is a routed tree from the jack AND a pour on
-each face. Clearance classes as SEC: 0.6 mm wherever a high-voltage net is involved.
+ROUTING (tools/pcbroute.py) goes in three stages, with SEC's clearance classes - 0.6 mm
+wherever a high-voltage net is involved - and in the order a board is routed by hand:
+  1. all the high voltage, the 185 V trunk included, laid first and never moved;
+  2. GND, a tree while there is still room, which the pour on each face later fills around;
+  3. everything else, negotiated at once in the manner of PathFinder;
+  4. one more try, alone and against the finished board, at whatever stage 3 had to drop.
+Only copper that cannot be negotiated belongs in stage 1. Putting the cathode spine there too
+was tried and is worse - laid net after net it fences the rest in, and six nets were dropped
+instead of three. Negotiation beats ordering, which is TS06-SEC's lesson and still holds.
+SEC negotiated GND and the trunk along with the signals. Neither carries over to a board this
+size, and both were tried here first (18.09.26). GND is 74 of this board's 483 pads: a tree
+that large crosses nearly every other net, so almost every net gets reported as overlapping
+GND rather than its real neighbour and nothing converges - two runs stuck at ~80 of 98 nets.
+Leaving GND to a pour with stubs is worse, because the signal copper cuts the pour into
+islands: one region reached 37 of 74 pads and 66 stubs could not close the rest. Leaving it
+until after the signals is better but still short, the board being full by then: 21 pads
+unreachable and GND in 11 pieces. The trunk has 14 pads and a wide halo everywhere, and
+negotiated it defeated the through-hole build outright, coming out in 14 pieces and taking
+seven other nets with it.
 
 Regenerate with:  python3 tools/mkpcb_main.py [--tht] [--route]
 """
-import os, re, sys, time, uuid
+import math, os, re, sys, time, uuid
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ts06main as N
 
@@ -221,21 +237,69 @@ for i, nm in enumerate(["S10", "S1"]):     # DIP-4s are narrower and sit further
     x0 = (99.6 + 11.0 * i) if THT else (96.6 + 13.6 * i)
     region(f"opto_{nm}", [(x0, BAND_TOP[0], x0 + (10.9 if THT else 13.4), BAND_TOP[1])],
            [f"U{9 + i}", f"R{25 + i}", f"R{41 + 2 * i}", f"R{42 + 2 * i}"])
-# ---- ИН-15 cathode switches: some inside each ring (clear of the Ø5 pip hole and 0.6 mm from
-# the ring's own pads - four SOT-23s at the corners, or two TO-92s above and below the hole),
-# the rest with all the base resistors above the rings
+# ---- AM/PM: EACH EXPANDER SITS WITH ITS OWN TUBE'S CHANNELS, U3 and ИН-15Б above the rings,
+# U4 and ИН-15А below them. The first layout put every switch and base resistor in one strip
+# above the rings while both expanders sat below, so all eighteen channels crossed the tube
+# band twice - measured as the board's worst congestion on 18.09.26 and, with the coin cell
+# below, the reason the negotiation could not place about a dozen nets. Split this way each
+# channel's three parts and its expander share a band, and only the cathode run enters the
+# ring. Some switches sit inside the ring itself, clear of the Ø5 pip hole and 0.6 mm from the
+# ring's own pads: four SOT-23s at the corners, or two TO-92s above and below the hole. That is
+# what TS06-SEC does, and it earns its place - each collector reaches the pad beside it instead
+# of crossing the ring's edge, which is the one boundary every other net has to cross too.
+# MOVING THEM ALL OUT WAS TRIED AND IS FAR WORSE. The interior is a pocket, so a switch in there
+# does strand the odd base or emitter - three pins on the first board that routed. But put the
+# switches outside and their eighteen collectors have to come back IN through the ring's edge,
+# each with a 0.6 mm high-voltage halo, and they choke the ground the signals need: the
+# negotiation went from 3 nets unplaced to 24 (18.09.26). Three stranded pins is the cheaper
+# defect by a wide margin, and stage 4 clears most of them.
+# Taking even three of them out - the ones whose base or emitter was stranded - costs more than
+# it saves, for the same reason as taking them all out: 3 nets unplaced became 13 (18.09.26).
+# The ring keeps its full set and the few stranded pins are the price.
 chan = [(vt, r) for vt, r, *_ in N.CH]
 corners = ((0, -5.5), (0, 5.5)) if THT else ((-2.15, -4.7), (2.15, -4.7), (-2.15, 4.7), (2.15, 4.7))
 for tube_x, first in zip(IN15_X, (0, 8)):
     cx, cy = local(tube_x, IN12_WY)
     for j, (dx, dy) in enumerate(corners):
         put(chan[first + j][0], cx + dx, cy + dy, 0)
-reg = region("ampm_top", [(127.5, BAND_TOP[0], 169.0, BAND_TOP[1])])
-for vt, r in chan:
-    if vt not in PLACED:
-        reg.add(vt, 90 if THT else 0)
-for vt, r in chan:
-    reg.add(r)
+for rects, exp, cap, anode_r, pullup, group in (
+        ([(124.5, BAND_TOP[0], W - 3.0, BAND_TOP[1]),          # clear of the seconds opto at 123.6
+          (163.5, RING_TOP, W - 3.0, RING_BOT),                # the strip right of the PM ring
+          (142.3, RING_TOP, 148.7, RING_BOT)],                 # and the gap between the two rings
+         "U3", "C1", "R56", "R54", chan[:8]),
+        ([(126.0, BAND_BOT[0], W - 3.0, H - 3.0)]
+         + ([(97.0, 74.0, 124.0, H - 3.0)] if THT else []),    # the through-hole parts need more room;
+         "U4", "C2", "R57", "R55", chan[8:])):                 # in the SMD build the coin cell is there
+    reg = region("ampm_" + exp, rects)
+    reg.add(exp, 90)                        # the expander first: it is much the biggest part here
+    if THT:
+        reg.add(cap)                        # its decoupling beside it, not at the end of the row
+    # WHERE THE BASE RESISTOR GOES depends on how big the parts are, and the two builds differ.
+    # Through-hole: each resistor goes next to its own transistor. Laid in separate rows the two
+    # ends of a base net end up rows apart, and with a TO-92 and an axial resistor at each end
+    # seven of those nets could not be routed at all (18.09.26).
+    # Surface-mount: the transistors keep one row and the resistors another. The parts are small
+    # enough that a base net crosses one row either way, and a contiguous block of resistors
+    # sits close to the expander that drives all eighteen of them - pairing them instead spread
+    # those eighteen outputs over the whole block and cost seven more unrouted nets than it saved.
+    inring = [g for g in group if g[0] in PLACED]      # already placed inside the tube ring
+    for vt, r in group:
+        if vt not in PLACED:
+            reg.add(vt, 90 if THT else 0)
+        if THT:
+            reg.add(r)
+    if not THT:
+        # The resistors of the in-ring transistors go FIRST, at the end of the row nearest the
+        # ring. Left in channel order, R2 landed 30 mm from VT2 and its base net was the last
+        # thing on the board that would not route (18.09.26).
+        for vt, r in inring + [g for g in group if g not in inring]:
+            reg.add(r)
+    for ref in ((anode_r, pullup) if THT else (cap, anode_r, pullup)):
+        reg.add(ref)
+    # NOTE how finely balanced this block is. Moving the decoupling cap from the end of the row
+    # to just after the expander shifts every part after it by one slot, and on the surface-mount
+    # build that alone took +5V from whole to 29 pieces (18.09.26). Change the order here only
+    # with a routing run to show for it.
 # ---- each ИН-12 ring: the bleed pair inside it on the back (upright at x +3.15, y +-3.8: 0.6 mm
 # from the ring's own pads and clear of the Ø5 pip hole), the anode resistor just below it
 for i, nm in enumerate(["H10", "H1", "M10", "M1"]):
@@ -269,12 +333,13 @@ put("U2", 91.0, 77.5, 0)                    # decoder, upright, below the M1 swi
 put("C4", 84.0, 87.5, 90)                   # its decoupling, beside its bottom end
 if THT:
     put("U13", 89.0, 92.5, 90)              # the DS3231 mini module's header, lying along the bottom edge
-    region("ampm_u", [(97.0, BAND_BOT[0] + 0.9, W - 5.0, H - 3.0)], ["U3", "U4", "C1", "C2", "R56", "R57", "R54", "R55"], rot=90)
 else:
-    put("U13", 104.0, 66.0, 0)
-    put("C15", 104.0, 75.0, 90)
-    put("BT1", 119.5, 74.0, 90)
-    region("ampm_u", [(129.0, BAND_BOT[0], W - 5.0, H - 3.0)], ["U3", "U4", "R56", "R57", "C1", "C2", "R54", "R55"], rot=0)
+    # The CR2032 holder's negative contact is a single Ø17.8 mm land - a wall on the back face
+    # wherever it stands. It went in the middle of the power band at first, where it covered a
+    # whole 16 mm tile and blocked every corridor crossing it; here it is against the bottom
+    # edge, below the decoder and left of the AM/PM block, where nothing has to get past.
+    region("rtc", [(97.0, BAND_BOT[0], 123.0, 74.0)], ["U13", "C15"])
+    put("BT1", 110.0, 84.0, 0)
 
 missing = [r for r in PARTS if r not in PLACED]
 assert not missing, f"not placed: {missing}"
@@ -282,7 +347,11 @@ for nm, reg in R.items():
     if reg.over:
         print(f"  REGION {nm} overflows with {reg.over}", file=sys.stderr)
 
-HOLES = [(47.0, 4.0), (125.5, 4.0), (W - 5.0, 4.0), (5.0, H - 4.0), (80.0, H - 4.0), (W - 5.0, H - 4.0)]
+# Mounting holes go where BOTH builds have room: searched over a half-millimetre grid against
+# every pad, track and via of each routed board, then spread out. The first guesses sat inside
+# the AM/PM block, and they were the whole of KiCad's hole-clearance and solder-mask-bridge
+# complaints (18.09.26). No case exists yet, so the case follows these rather than the reverse.
+HOLES = [(4.0, 10.5), (170.0, 12.0), (6.0, 90.0), (170.0, 90.0), (83.0, 22.0), (90.0, 89.5)]
 
 # ---------------------------------------------------------------- emit
 NETS = [""] + sorted({n for p in PARTS.values() for n in p.pins.values() if n},
@@ -362,7 +431,7 @@ text("USB", 4.0, 2.0, "B.SilkS", 1.0, True)
 # ---------------------------------------------------------------- routing
 tracks = vias = 0
 if ROUTE:
-    from pcbroute import Router, VIA_D, VIA_DRILL
+    from pcbroute import Router, VIA_D, VIA_DRILL, G
     PADS = []
     for blk in out:
         if not blk.startswith("(footprint"):
@@ -405,37 +474,136 @@ if ROUTE:
     def width(n):
         return 0.35 if n in POWER else 0.25 if n in HV else 0.2
 
-    STAGES = [("high voltage, local", lambda n: n in HV and n not in ("HV185", "SW")),
-              ("everything else, negotiated", lambda n: n not in HV or n in ("HV185", "SW"))]
-
     def span(n):
         xs, ys = [q[0] for q in pads_of[n]], [q[1] for q in pads_of[n]]
         return (max(xs) - min(xs)) + (max(ys) - min(ys))
 
+    # ---- stage 1: all the high voltage, the 185 V trunk included, laid first and never moved.
+    # The trunk has 14 pads spread over the whole board and a 0.6 mm halo everywhere; negotiated,
+    # it defeated the through-hole build outright, coming out in 14 pieces and taking seven other
+    # nets with it (18.09.26).
+    # The ten-line cathode spine K0..K9 was tried here too, on the same reasoning, and it is a
+    # mistake: laid net after net it fences the rest in, and the negotiation ended with six nets
+    # dropped instead of three. That is TS06-SEC's own lesson - negotiation beats ordering - and
+    # it applies to everything that can be negotiated. Only copper that CANNOT be, because its
+    # halo is too wide or its reach too long, belongs in this stage.
     t0 = time.time()
-    for si, (label, pick) in enumerate(STAGES):
-        order = sorted((n for n in pads_of if pick(n)), key=lambda n: (span(n), n))
-        nf0 = len(rt.failed)
-        if si == 0:
-            base, best = rt.snapshot(), None
-            for attempt in range(8):
-                rt.restore(base)
-                for n in order:
-                    rt.route_net(n, width(n), pads_of[n])
-                lost = list(dict.fromkeys(fl[0] for fl in rt.failed[nf0:]))
-                if best is None or len(rt.failed) < best[1]:
-                    best = (attempt, len(rt.failed), rt.snapshot())
-                again = lost + [n for n in order if n not in lost]
-                if not lost or again == order:
+    order = sorted((n for n in pads_of if n in HV), key=lambda n: (span(n), n))
+    nf0 = len(rt.failed)
+    base, best = rt.snapshot(), None
+    for attempt in range(8):
+        rt.restore(base)
+        for n in order:
+            rt.route_net(n, width(n), pads_of[n])
+        lost = list(dict.fromkeys(fl[0] for fl in rt.failed[nf0:]))
+        if best is None or len(rt.failed) < best[1]:
+            best = (attempt, len(rt.failed), rt.snapshot())
+        again = lost + [n for n in order if n not in lost]
+        if not lost or again == order:
+            break
+        order = again
+    rt.restore(best[2])
+    print(f"stage 1 (high voltage, the 185 V trunk included): {len(order)} nets, "
+          f"{len(rt.failed) - nf0} connection(s) not found (kept attempt {best[0] + 1}), "
+          f"{time.time() - t0:.0f} s", flush=True)
+
+    # ---- stage 2: GND, a tree laid BEFORE the signals, then a pour on both faces.
+    # GND is 74 of this board's 483 pads. It is NOT negotiated with the signals: a tree that
+    # large crosses nearly every other net, so almost every net is then reported as overlapping
+    # GND rather than its real neighbour and nothing converges (two runs stuck at ~80 of 98 nets
+    # overlapping, 18.09.26). Nor is it left to a pour with stubs: the signal copper cuts the
+    # pour into islands, so one region reached 37 of 74 pads and 66 stubs could not close the
+    # rest. Nor last, after the signals: with the board full its tree could not reach 21 pads
+    # and GND came out in 11 pieces.
+    # So it is laid HERE, after the high voltage and before the signals, the way a board is
+    # routed by hand: power and ground while there is room, signals afterwards, and they have
+    # the negotiation to find their way round. The pours then add area over the top.
+    gnd = pads_of["GND"]
+    hub = hub_pad.get("GND", gnd[0])        # the jack's GND pin: the tree grows from the supply
+    nf0, stranded = len(rt.failed), []
+    fails = rt.route_net("GND", 0.3, [hub] + [p for p in gnd if p is not hub], via_cost=250)
+    print(f"stage 2 (GND): {len(gnd)} pads wired as a tree, {fails} connection(s) not found, "
+          f"{time.time() - t0:.0f} s", flush=True)
+    # Whatever will not fit at 0.3 mm is retried at 0.2 mm, and against the three nearest GND
+    # pads rather than only the one the tree picked. The pads that fail are inside the tube
+    # rings, under the expanders and among the ИН-15 switches, where the gap the negotiation
+    # leaves is one narrow track wide; 0.2 mm is this board's signal width and carries the few
+    # milliamps such a leaf returns many times over. Without this the net came out in fourteen
+    # pieces (18.09.26).
+    if fails:
+        lost = [f[1] for f in rt.failed[nf0:] if f[0] == "GND"]
+        del rt.failed[nf0:]
+        at = {(round(p[0], 2), round(p[1], 2)): p for p in gnd}
+        saved, tried = 0, list(dict.fromkeys(lost))
+        for xy in tried:
+            p = at.get(xy)
+            if p is None:
+                continue
+            near = sorted((q for q in gnd if q is not p), key=lambda q: math.hypot(q[0] - p[0], q[1] - p[1]))
+            mark = len(rt.failed)
+            if any(rt.connect("GND", 0.2, p, q, via_cost=250) for q in near[:3]):
+                del rt.failed[mark:]
+                saved += 1
+            else:
+                stranded.append(p)
+        print(f"stage 2 (GND): {saved} of {len(tried)} retried at 0.2 mm, {time.time() - t0:.0f} s", flush=True)
+    # Last resort for a pad the tree cannot reach at any width: a via straight up into the front
+    # face's pour, which the negotiation's layer_cost keeps in one piece. pour_reach() says where
+    # that pour actually joins up, so the via lands somewhere the copper really is.
+    portals = [(p["x"], p["y"]) for p in PADS if p["net"] == "GND" and p["type"] == "thru_hole"]
+    reach = rt.pour_reach("GND", (0, 1), [(hub[0], hub[1])], portals + [(v[0], v[1]) for v in rt.vias if v[2] == "GND"])
+    joined = sum(1 for p in gnd if any(reach[L][int(round(p[1] / G)), int(round(p[0] / G))] for L in reach))
+    print(f"stage 2 (GND): the pours alone join {joined}/{len(gnd)} pads; the tree carries the rest", flush=True)
+    if stranded:
+        mark, stitched = len(rt.failed), 0
+        for p in stranded:
+            for layer in (0, 1):
+                if rt.fanout("GND", 0.2, p, layer, reach=reach[layer], via_cost=250):
+                    stitched += 1
                     break
-                order = again
-            rt.restore(best[2])
-            print(f"stage 1 ({label}): {len(order)} nets, {len(rt.failed) - nf0} connection(s) not found "
-                  f"(kept attempt {best[0] + 1}), {time.time() - t0:.0f} s", flush=True)
-        else:
-            rt.negotiate([(n, width(n), sorted(pads_of[n], key=lambda q: q is not hub_pad.get(n)), {}) for n in order],
-                         log=lambda m: print(m, flush=True))
-            print(f"stage 2 ({label}): {len(order)} nets, {len(rt.failed) - nf0} not routed, {time.time() - t0:.0f} s", flush=True)
+        del rt.failed[mark:]
+        print(f"stage 2 (GND): {stitched} of {len(stranded)} stranded pad(s) stitched into a pour, "
+              f"{time.time() - t0:.0f} s", flush=True)
+
+    # ---- stage 3: everything else, negotiated at once in the manner of PathFinder.
+    # THE PRICE HAS TO BEAT A VIA, and at first it did not. A plain step costs 10, an overlapped
+    # cell costs `price`, and crossing a net on the other face costs two vias, so a net only
+    # stops sharing a corridor once price x (overlap length) exceeds 2 x via_cost. At SEC's
+    # via_cost 1500 and a price starting at 3, a 15-cell overlap costs 45 against 3000 for the
+    # crossing: three runs stalled at 80-89 of ~98 nets overlapping, the count falling by one or
+    # two a round while each round took 2-5 minutes (18.09.26). With a via at 2.5 mm of track
+    # and a price of 60 that same overlap costs 900 against 500, so the router changes face
+    # instead - which is what the nearly empty front is for, the tubes and LEDs being its only
+    # copper. The owner budgets vias deliberately rather than hunting them to zero.
+    # Both faces are priced alike: making the front dearer to keep it clear for the GND pour was
+    # tried and cost three signal nets while leaving GND no better (18.09.26).
+    order = sorted((n for n in pads_of if n != "GND" and n not in HV), key=lambda n: (span(n), n))
+    nf0 = len(rt.failed)
+    rt.negotiate([(n, width(n), sorted(pads_of[n], key=lambda q: q is not hub_pad.get(n)), {"via_cost": 250})
+                  for n in order], price=60, rise=1.6, log=lambda m: print(m, flush=True))
+    print(f"stage 3 (everything else, negotiated): {len(order)} nets, {len(rt.failed) - nf0} not routed, "
+          f"{time.time() - t0:.0f} s", flush=True)
+
+    # ---- stage 4: one more try at whatever the negotiation dropped.
+    # negotiate() takes out the nets that still overlap when the rounds run out, which frees
+    # their copper; a single net routed on its own afterwards, against the finished board and
+    # with cheap vias, sometimes finds the way it could not while everything moved at once.
+    # Nets it could not connect at all are retried here too, for the same reason.
+    # A net is kept only if it routes COMPLETELY - a half-laid net is a split net with extra
+    # copper in the way.
+    dropped = list(dict.fromkeys(f[0] for f in rt.failed[nf0:]))
+    if dropped:
+        saved = []
+        for n in dropped:
+            snap, mark = rt.snapshot(), len(rt.failed)
+            if rt.route_net(n, width(n), pads_of[n], via_cost=150) == 0:
+                del rt.failed[mark:]
+                saved.append(n)
+            else:
+                rt.restore(snap)
+        print(f"stage 4 (dropped nets, retried alone): {len(saved)} of {len(dropped)} placed"
+              + (" - " + " ".join(saved) if saved else "") + f", {time.time() - t0:.0f} s", flush=True)
+
     for fl in rt.failed:
         print("  NOT ROUTED", fl)
     for k, (x1, y1, x2, y2, w, lay, n) in enumerate(rt.segments):
