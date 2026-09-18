@@ -90,6 +90,15 @@ RP = dict(via_cost=_p("via_cost", 900, int),   # a via, against 10 for a 0.1 mm 
 if os.environ.get("TS06_OUT"):
     OUT = os.environ["TS06_OUT"]
 
+# Placement overrides, so a placement PROPOSAL can be priced without editing this file.
+# tools/placecheck.py says the Nano and the decoder are worth 16% of this board's routing
+# floor between them: the Nano sits in a corner with 28 connections reaching across 176 mm,
+# and the decoder sits 40 mm above the row of tubes it drives, so each of its ten cathode
+# lines pays that detour twice (18.09.26). TS06_AT_U1=21.98,66 moves one.
+def _at(ref, x, y):
+    v = os.environ.get("TS06_AT_" + ref)
+    return tuple(float(t) for t in v.split(",")) if v else (x, y)
+
 W, H = 176.0, 96.0                          # the fascia's width; the height the through-hole build needs
 TOP = 100.0                                 # world Y of the top edge; the bottom edge is at world Y 4
 
@@ -249,7 +258,7 @@ def region(name, rects, refs=(), rot=0, upright=True):
 # ---- the logic band: Nano at the top left with its USB 2.4 mm proud of the left edge, the
 # converter next to it, the two ИН-17 anode switches above their tubes, the AM/PM small parts
 # above the ИН-15 rings
-put("U1", 21.98, 14.0, 270)
+put("U1", *_at("U1", 21.98, 14.0), 270)
 reg = region("conv", [(49.5, BAND_TOP[0], 99.3 if THT else 96.0, BAND_TOP[1])], ["L1", "VT21" if not THT else None, "C7"])
 if THT:
     reg.add("VT21", 90)                     # TO-220 lying flat, its body along the band
@@ -353,7 +362,7 @@ region("colon", [(46.5, BAND_BOT[0], 57.0, H - 3.0)], ["R58", "R59", "VT1", "R1"
 region("mid", [(57.5, BAND_BOT[0] + 6.7, 85.0, 84.3), (80.5, BAND_BOT[0], 85.0, BAND_BOT[0] + 6.4)],
        ["U12", "RP1", "R69", "R70", "R65", "R66", "R71", "R62", "R63", "R64"])
 put("J1", 68.0, H - 6.5, 0)                 # fascia cable at the bottom edge, housing toward the edge
-put("U2", 91.0, 77.5, 0)                    # decoder, upright, below the M1 switch
+put("U2", *_at("U2", 91.0, 77.5), 0)        # decoder, upright, below the M1 switch
 put("C4", 84.0, 87.5, 90)                   # its decoupling, beside its bottom end
 if THT:
     put("U13", 89.0, 92.5, 90)              # the DS3231 mini module's header, lying along the bottom edge
@@ -692,6 +701,16 @@ layers = ['\t(layers', '\t\t(0 "F.Cu" signal)', '\t\t(2 "B.Cu" signal)',
 setup = ['\t(setup', '\t\t(pad_to_mask_clearance 0)', '\t\t(allow_soldermask_bridges_in_footprints no)',
          '\t\t(tenting\n\t\t\t(front yes)\n\t\t\t(back yes)\n\t\t)', '\t)']
 nets = ['\t(net %d "%s")' % (i, n) for i, n in enumerate(NETS)]
+# A GUARD, because this generator always writes OUT and a run without --route writes a board
+# with no copper on it. Doing that to the routed board by accident costs an hour of routing,
+# and it happened (18.09.26). Placement-only runs are still fine to a fresh path or with
+# --force; what is refused is quietly throwing away copper that is already there.
+if not ROUTE and "--force" not in sys.argv and os.path.exists(OUT):
+    if "(segment" in open(OUT, encoding="utf8").read():
+        sys.exit(f"refusing to overwrite the ROUTED {os.path.relpath(OUT, ROOT)} with an unrouted"
+                 f" board.{chr(10)}  add --route to route it, --force to discard the copper, or set"
+                 f" TS06_OUT to write somewhere else.")
+
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 with open(OUT, "w", encoding="utf8", newline="\n") as fh:
     fh.write("\n".join(head + layers + setup + nets + out) + "\n\t(embedded_fonts no)\n)\n")
