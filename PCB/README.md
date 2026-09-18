@@ -231,41 +231,79 @@ module net for net** (141 nets in the SMD build). `3d/Clock.FCStd` now carries t
 (`3d/TS06-MAIN.step`, KiCad's export) in the tube plane with the two inherited halves and
 the colon board switched off.
 
-**Routing, 18.09.26.** Three stages and a retry, and the ORDER is the whole of it. High
-voltage first including the 185 V trunk, then GND as a tree while there is still room, then
-everything else negotiated at once, then one more try alone at whatever was dropped. Five
-other orders were tried and every one is worse; each is recorded beside its decision in
-`tools/mkpcb_main.py` with the numbers, so none of them gets tried again.
+**Routing, 18.09.26.** Three stages and a retry, and the ORDER is most of it. High voltage
+first including the 185 V trunk, then GND as a tree while there is still room, then everything
+else negotiated at once, then one more try alone at whatever was dropped. Five other orders were
+tried and every one is worse; each is recorded beside its decision in `tools/mkpcb_main.py`.
+
+The rest is the cost function, and it was rebuilt after the first routed board turned out to be
+legal and badly routed at the same time — 476 vias, no grain at all, a ground pour in 292
+islands, and every checker in this repo quiet. Ten rules were implemented, each switchable, each
+run against a control; twenty-two configurations were measured. `../Claude outputs/TS06-routing-study.md`
+has the table and the reasoning, including the two ideas of mine that turned out to be wrong.
+What is kept: a face grain (F.Cu east-west, B.Cu north-south), a via priced honestly at 9 mm of
+track instead of 2.5, a relaxation that lets a net off the grain when it keeps failing, two
+passes of rip-up-and-reroute for length, and an exemption that frees any net with eight or more
+pads from all of it. What is implemented and off, with numbers: compaction, bundling, the
+return-path rule, T-junction discipline, the via lattice, history decay.
 
 | | TS06-MAIN | TS06-MAIN-THT |
 |---|---|---|
-| Tracks / vias | 3047 / 476 | 2823 / 271 |
-| Nets not connected | **1** (VT2's base) | **13** |
-| GND | whole | whole |
-| KiCad DRC, zones refilled | 17 items, 2 of them electrical | 125 items, 31 unconnected |
-| `checkmatch.py` | agrees | agrees |
-| `checkcopper.py --hv` | no bare pad pair inside the HV clearance | same |
+| Tracks / vias | 2852 / **339** (was 3047 / 476) | 2340 / **177** (was 2823 / 271) |
+| Nets not connected | **0** (was 1) | **13**, unchanged |
+| Copper | 8726 mm at 1.23× its floor | 7403 mm at 1.30× |
+| Grain, front / back | **49 / 11**, **46 / 13** (was 33 / 25) | **44 / 14**, **43 / 13** (was 26 / 33) |
+| GND through copper alone | 3 pieces; the pour closes one | **whole** |
+| `checkmatch.py` | agrees, 141 nets | agrees, 140 nets |
+| `checkcopper.py --hv` | **clean** | 87 items, all pads of the 13 split nets |
 
-**The surface-mount build is essentially routed.** Its DRC items are the one base net plus
-things that are accepted: the tubes' Ø5 pip holes sitting inside their own courtyards, four
-silkscreen warnings, and the two colon lamps touching the M10 glass courtyard by 0.3 mm at
-their measured positions. KiCad's own zone fill closes the last two GND pads that this repo's
-more conservative pour model leaves stranded.
+**The surface-mount build routes completely.** Every signal net is connected — the VT2 base that
+used to be split is routed — and `checkcopper.py --hv` finds nothing at all. `checkpcb.py` still
+reports the same three intended items as before: the Nano's USB proud of the edge and the two
+colon lamps touching the M10 glass courtyard by 0.3 mm.
 
-**The surface-mount build's one defect:** VT2 sits inside the AM tube ring and its base cannot
-get out. The ring interior is a pocket - twelve pads enclose it and their own cathode tracks
-take the gaps - so a switch in there reaches the pad beside it and little else. It is one
-connection. Moving the switches out is NOT the fix: their eighteen collectors then have to come
-back in through the ring edge with 0.6 mm halos and choke it, which cost 24 unrouted nets when
-all were moved and 13 when only the three with stranded pins were.
+**Its one remaining defect is two ground pads,** and it is now understood. VT10.2 and VT11.2, the
+emitters of two ИН-15 cathode switches, sit inside a socket ring and cannot be reached. The
+ring's PADS are not the fence — they leave 1.9 to 2.5 mm between them and a 0.2 mm track between
+two 185 V pads needs 1.4 — it is stage 1's twelve cathode TRACKS, which leave the ring through
+those same gaps with a 0.6 mm halo each and never move.
 
-**The through-hole build is not routable as placed** and needs a pass of its own before it
-could be fabricated. Through-hole pads block both faces, so there is far less room: 13 nets are
-split, including the I²C pair, the backlight return and one cathode line, and KiCad reports 50
-through-hole pads sitting inside another part's courtyard. It is the alternative build and only
-one gets made, so this does not block the surface-mount board. What it needs is more space
-between the AM/PM parts - the same measurement pass that found the coin cell and the crossing
-channels would find it.
+Letting them out first works and costs too much, measured twice: all twelve in-ring GND pads
+given a stub before the high voltage gives a whole ground and **24** signal nets overlapping;
+only the two the high voltage actually walls in gives a ground in two pieces and **7** signal
+nets lost. Seven signals for two grounds is a bad trade, so it is not made. Those two emitters
+need a wire link, or the switches moved out of the ring — itself measured, and worse (3 nets
+unplaced became 13). Widening the in-ring switch spread does not help either: the escape
+corridor measures the same at 4.7, 5.2 and 5.6 mm, because the barrier is the tracks.
+
+This defect was in every board this project has made. It was hidden by a stage-2 retry that
+offered a stranded pad the three nearest GND pads **regardless of whether they were themselves
+connected**: the two are 4.4 mm apart, each was offered the other, the connection succeeded and
+both were counted saved. The retry now only anchors on pads that reach the hub, and the routing
+log prints how many pieces the copper alone joins GND into before the pour is given any credit.
+
+**The through-hole build is still not routable as placed.** The new rules improve its copper
+markedly — 177 vias against 271, and a grain of 44 / 14 where it used to run more across than
+along — but they do not touch its connectivity: 13 nets are split either way, including the I²C
+pair, the backlight return and one cathode line. Through-hole pads block both faces, so there is
+far less room. It is the alternative build and only one gets made, so this does not block the
+surface-mount board. What it needs is a placement pass, not a router.
+
+**And the router was not the main thing wrong.** `tools/placecheck.py` measures what a placement
+costs before any routing: the Euclidean MST over each net's own pads, which no router can beat.
+The Nano sits in a corner with 28 connections reaching across a 176 mm board, and the decoder
+sits 40 mm above the row of tubes it drives, so each of its ten cathode lines pays that detour
+twice. Sliding the Nano along the edge it is already pinned to — USB unchanged — is worth 7.4 %
+of the floor, and moving the decoder onto the tube row beside it takes it to **16 %**. That is
+five times what every routing rule put together achieved. Both positions collide with tube
+sockets as they stand, so it needs a real placement pass.
+
+`tools/boardsplit.py` prices the other way out, the one the inherited board took: a display board
+and a driver board joined by **18 wires** — three power, four BCD, six ИН-12 anodes, SDA, SCL,
+the backlight cathode and two spare Nano pins. `../Claude outputs/TS06-split-study.md` has the
+curve and the case either way. It agrees with the placement finding: both say the decoder belongs
+beside the tubes.
+
 
 **The bench still owes** the items in `../knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`:
 the stock stage's operating point, the sustaining voltages, the ИН-17 lead order, the ИН-15

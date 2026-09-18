@@ -1,0 +1,91 @@
+stage 1 (high voltage, the 185 V trunk included): 45 nets, 0 connection(s) not found (kept attempt 1), 26 s
+stage 2 (GND): 72 pads wired as a tree, 0 connection(s) not found, 29 s
+stage 2 (GND): the pours alone join 69/72 pads; the tree carries the rest
+stage 2 (GND): the copper alone joins it into 1 piece(s); the pour closes the rest
+routing parameters: via_cost=900  price=60  rise=1.6  rounds=60  turn=15  bias=8  decay=1.0  tighten=2  relax=4  bundle=0  compact=0  cross=0  tjoin=1  vgrid=0
+    round 1: 94 net(s) routed, 48 overlap, price 60, 184 s
+    round 2: 48 net(s) routed, 45 overlap, price 97, 343 s
+    round 3: 45 net(s) routed, 34 overlap, price 156, 507 s
+    round 4: 34 net(s) routed, 24 overlap, price 250, 663 s
+    round 5: 24 net(s) routed, 21 overlap, price 401, 825 s
+    round 6: 21 net(s) routed, 21 overlap, price 642, 986 s
+    round 7: 21 net(s) routed, 20 overlap, price 1028, 1138 s
+    round 8: 20 net(s) routed, 21 overlap, price 1645, 1287 s
+    round 9: 21 net(s) routed, 21 overlap, price 2633, 1435 s
+    round 10: 21 net(s) routed, 21 overlap, price 4213, 1586 s
+    round 11: 21 net(s) routed, 18 overlap, price 6741, 1733 s
+    round 12: 18 net(s) routed, 18 overlap, price 10786, 1876 s
+    round 13: 18 net(s) routed, 18 overlap, price 17258, 2021 s
+    round 14: 18 net(s) routed, 18 overlap, price 27613, 2167 s
+    round 15: 18 net(s) routed, 20 overlap, price 44181, 2311 s
+    round 16: 20 net(s) routed, 18 overlap, price 70690, 2454 s
+    round 17: 18 net(s) routed, 18 overlap, price 113105, 2593 s
+    round 18: 18 net(s) routed, 18 overlap, price 180969, 2733 s
+    round 19: 18 net(s) routed, 18 overlap, price 289551, 2872 s
+    tighten pass 1: 31 net(s) shortened, 1010 mm and 51 via(s) saved, 95 s
+    tighten pass 2: 17 net(s) shortened, 65 mm and 2 via(s) saved, 93 s
+stage 3 (everything else, negotiated): 94 nets, 15 not routed, 3100 s
+stage 4 (dropped nets, retried alone): 2 of 15 placed - K1 K7, 3248 s
+  NOT ROUTED ('SCL', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 144.7, 82.1), ('B.Cu', 144.7, 82.2), ('B.Cu', 144.6, 82.3)])
+  NOT ROUTED ('SDA', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 164.8, 70.8), ('F.Cu', 164.9, 70.7), ('F.Cu', 165.0, 70.6)])
+  NOT ROUTED ('+5V', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 143.5, 83.0), ('B.Cu', 143.6, 83.1), ('B.Cu', 143.7, 83.2)])
+  NOT ROUTED ('K1', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 66.7, 46.5), ('F.Cu', 66.8, 46.4), ('F.Cu', 66.9, 46.3)])
+  NOT ROUTED ('U4_GPA6', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 143.0, 81.6), ('B.Cu', 143.1, 81.7), ('B.Cu', 143.2, 81.8)])
+  NOT ROUTED ('U4_GPA7', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 134.2, 81.2), ('F.Cu', 134.1, 81.3), ('F.Cu', 134.0, 81.4)])
+  NOT ROUTED ('BL_K', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 134.1, 81.6), ('F.Cu', 134.2, 81.7), ('F.Cu', 134.3, 81.8)])
+  NOT ROUTED ('K3', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 92.8, 46.1), ('B.Cu', 92.7, 46.2), ('B.Cu', 92.6, 46.2)])
+  NOT ROUTED ('K0', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 89.8, 46.2), ('F.Cu', 89.9, 46.3), ('F.Cu', 90.0, 46.2)])
+  NOT ROUTED ('B16', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 165.6, 71.2), ('F.Cu', 165.5, 71.1), ('F.Cu', 165.4, 71.0)])
+  NOT ROUTED ('U4_GPB1', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 144.3, 83.8), ('B.Cu', 144.4, 83.9), ('B.Cu', 144.5, 84.0)])
+  NOT ROUTED ('K7', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 47.6, 28.7), ('F.Cu', 47.7, 28.6), ('F.Cu', 47.8, 28.5)])
+  NOT ROUTED ('B12', (129.03, 81.27), (133.14, 82.58))
+  NOT ROUTED ('B10', (156.0, 34.33), (167.16, 64.64))
+  NOT ROUTED ('B3', (135.0, 45.33), (169.26, 7.14))
+wrote PCB\TS06-MAIN-THT\TS06-MAIN-THT.kicad_pcb
+board 176.0 x 96.0 mm, 146 parts, 140 nets, 6 holes, 2340 tracks, 177 vias
+ROUTE DONE exit 0
+pour "GND" on F.Cu: 312 island(s), 51% of the outline is copper, 72 pad(s) of the net
+pour "GND" on B.Cu: 204 island(s), 55% of the outline is copper, 72 pad(s) of the net
+QUALITY - how well routed, as opposed to how legal. None of this is a finding.
+
+  copper          7403 mm   3991 front / 3412 back
+  detour          1.30x    6540 mm of signal against a 5043 mm floor, over 126 nets
+  vias             177     1.4 per net, 80 of 126 nets carry none
+  angles      orthogonal 55%   45 42%   other 3%
+  grain F.Cu       44% east-west,  14% across it, 42% diagonal
+  grain B.Cu       43% north-south, 13% across it, 44% diagonal
+  pour GND F.Cu   312 island(s), the largest holds 29% of its 8558 mm2 of copper, 192 under 1 mm2
+  pour GND B.Cu   204 island(s), the largest holds 55% of its 9189 mm2 of copper, 112 under 1 mm2
+
+  the copper that wanders furthest from its own floor:
+     ratio     laid    floor  vias  net
+       2.5     10.7      4.3     0  B8
+       2.2    144.8     67.0     0  ANODE_PM
+       1.9    282.6    150.1    23  K1
+       1.7      8.9      5.2     0  U4_GPA3
+       1.7     88.3     52.9     0  CAT_A_MINUS
+       1.7     67.8     41.0     1  B2
+       1.7     74.7     45.2     0  CAT_A_P
+       1.6     51.5     31.4     2  U4_GPA1
+
+QSUMMARY cu=7403 detour=1.297 vias=177 islands=312,204
+
+532 pad-layers, 2340 tracks, 177 vias, 4 visible silk texts
+
+  [NET SPLIT] +5V is in 28 pieces: C1.1  ||  C2.1  ||  C3.1  ||  C4.1  ||  C11.1  ||  C13.1  ||  J1.1  ||  R45.1  ||  R46.1  ||  R47.1  ||  R48.1  ||  R49.1  ||  R50.1  ||  R51.1  ||  R52.1  ||  R54.1  ||  R55.1  ||  R69.1  ||  U1.27  ||  U2.5  ||  U3.9  ||  U3.18  ||  U4.9  ||  U4.18  ||  U4.15  ||  U12.8  ||  U13.5  ||  U14.3
+  [NET SPLIT] B10 is in 2 pieces: R10.2  ||  VT10.1
+  [NET SPLIT] B12 is in 2 pieces: R12.2  ||  VT12.1
+  [NET SPLIT] B16 is in 2 pieces: R16.2  ||  VT16.1
+  [NET SPLIT] B3 is in 2 pieces: R3.2  ||  VT3.1
+  [NET SPLIT] BL_K is in 9 pieces: HL1.1  ||  HL2.1  ||  HL3.1  ||  HL4.1  ||  HL5.1  ||  HL6.1  ||  HL7.1  ||  HL8.1  ||  VT20.3
+  [NET SPLIT] K0 is in 7 pieces: U2.10  ||  V1.6  ||  V2.6  ||  V3.6  ||  V4.6  ||  V5.0  ||  V6.0
+  [NET SPLIT] K3 is in 7 pieces: U2.13  ||  V1.11  ||  V2.11  ||  V3.11  ||  V4.11  ||  V5.3  ||  V6.3
+  [NET SPLIT] SCL is in 5 pieces: R55.2  ||  U1.24  ||  U3.12  ||  U4.12  ||  U13.3
+  [NET SPLIT] SDA is in 5 pieces: R54.2  ||  U1.23  ||  U3.13  ||  U4.13  ||  U13.4
+  [NET SPLIT] U4_GPA6 is in 2 pieces: R16.1  ||  U4.27
+  [NET SPLIT] U4_GPA7 is in 2 pieces: R17.1  ||  U4.28
+  [NET SPLIT] U4_GPB1 is in 2 pieces: R19.1  ||  U4.2
+
+13 finding(s) across 1 categories
+PCB/TS06-MAIN-THT/copper.png  1385x1582 px, front 1249 / back 1091 segments, 177 vias.  red high voltage, blue cathodes, yellow power, grey ground, violet backlight, green signal
+ALL DONE
