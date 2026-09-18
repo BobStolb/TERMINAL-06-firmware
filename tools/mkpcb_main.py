@@ -657,8 +657,10 @@ if ROUTE:
         saved = []
         for n in dropped:
             snap, mark = rt.snapshot(), len(rt.failed)
-            if rt.route_net(n, width(n), pads_of[n], via_cost=max(150, RP["via_cost"] // 4),
-                            bias=RP["bias"]) == 0:
+            # NO GRAIN HERE, and the cheapest via. A net that has already failed twice is not
+            # the one to hold to a convention: the grain is what stopped it. The nets that reach
+            # this stage are the few that genuinely have to cross it (18.09.26).
+            if rt.route_net(n, width(n), pads_of[n], via_cost=150, bias=0) == 0:
                 del rt.failed[mark:]
                 saved.append(n)
             else:
