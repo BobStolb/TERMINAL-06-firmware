@@ -1,0 +1,72 @@
+stage 1 (high voltage, the 185 V trunk included): 45 nets, 0 connection(s) not found (kept attempt 1), 21 s
+stage 2 (GND): 74 pads wired as a tree, 2 connection(s) not found, 27 s
+stage 2 (GND): 0 of 2 retried at 0.2 mm, 27 s
+stage 2 (GND): the pours alone join 72/74 pads; the tree carries the rest
+stage 2 (GND): 0 of 2 stranded pad(s) stitched into a pour, 38 s
+stage 2 (GND): the copper alone joins it into 3 piece(s); the pour closes the rest
+routing parameters: via_cost=900  price=60  rise=1.6  rounds=60  turn=15  bias=8  decay=1.0  tighten=2  relax=4  bundle=0  compact=0  cross=0  tjoin=1  vgrid=0
+    round 1: 95 net(s) routed, 69 overlap, price 60, 162 s
+    round 2: 69 net(s) routed, 59 overlap, price 97, 284 s
+    round 3: 59 net(s) routed, 50 overlap, price 156, 382 s
+    round 4: 50 net(s) routed, 25 overlap, price 250, 460 s
+    round 5: 25 net(s) routed, 20 overlap, price 401, 487 s
+    round 6: 20 net(s) routed, 17 overlap, price 642, 507 s
+    round 7: 17 net(s) routed, 15 overlap, price 1028, 523 s
+    round 8: 15 net(s) routed, 10 overlap, price 1645, 531 s
+    round 9: 10 net(s) routed, 10 overlap, price 2633, 536 s
+    round 10: 10 net(s) routed, 8 overlap, price 4213, 541 s
+    round 11: 8 net(s) routed, 8 overlap, price 6741, 546 s
+    round 12: 8 net(s) routed, 6 overlap, price 10786, 551 s
+    round 13: 6 net(s) routed, 6 overlap, price 17258, 552 s
+    round 14: 6 net(s) routed, 6 overlap, price 27613, 554 s
+    round 15: 6 net(s) routed, 6 overlap, price 44181, 556 s
+    round 16: 6 net(s) routed, 2 overlap, price 70690, 557 s
+    round 17: 2 net(s) routed, 2 overlap, price 113105, 557 s
+    round 18: 2 net(s) routed, 2 overlap, price 180969, 558 s
+    round 19: 2 net(s) routed, 2 overlap, price 289551, 558 s
+    round 20: 2 net(s) routed, 0 overlap, price 463282, 559 s
+    tighten pass 1: 36 net(s) shortened, 528 mm and 30 via(s) saved, 90 s
+    tighten pass 2: 12 net(s) shortened, 160 mm and 7 via(s) saved, 86 s
+stage 3 (everything else, negotiated): 95 nets, 0 not routed, 773 s
+  NOT ROUTED ('GND', (154.79, 36.08), (154.79, 45.48))
+  NOT ROUTED ('GND', (154.79, 36.08), (159.09, 45.48))
+  NOT ROUTED ('GND', (154.79, 36.08), (138.09, 36.08))
+  NOT ROUTED ('GND', (159.09, 36.08), (159.09, 45.48))
+  NOT ROUTED ('GND', (159.09, 36.08), (154.79, 45.48))
+  NOT ROUTED ('GND', (159.09, 36.08), (138.09, 36.08))
+wrote PCB\TS06-MAIN\TS06-MAIN.kicad_pcb
+board 176.0 x 96.0 mm, 148 parts, 141 nets, 6 holes, 2852 tracks, 339 vias
+ROUTE DONE exit 0
+pour "GND" on F.Cu: 389 island(s), 57% of the outline is copper, 6 pad(s) of the net
+pour "GND" on B.Cu: 261 island(s), 53% of the outline is copper, 74 pad(s) of the net
+QUALITY - how well routed, as opposed to how legal. None of this is a finding.
+
+  copper          8726 mm   4670 front / 4057 back
+  detour          1.23x    7889 mm of signal against a 6394 mm floor, over 140 nets
+  vias             339     2.4 per net, 45 of 140 nets carry none
+  angles      orthogonal 58%   45 39%   other 3%
+  grain F.Cu       49% east-west,  11% across it, 40% diagonal
+  grain B.Cu       46% north-south, 13% across it, 41% diagonal
+  pour GND F.Cu   389 island(s), the largest holds 73% of its 9423 mm2 of copper, 260 under 1 mm2
+  pour GND B.Cu   261 island(s), the largest holds 52% of its 8770 mm2 of copper, 128 under 1 mm2
+
+  the copper that wanders furthest from its own floor:
+     ratio     laid    floor  vias  net
+       7.1     26.1      3.7     2  U4_GPA3
+       4.9     17.0      3.5     3  BL_A8
+       3.2     40.0     12.4     4  OPT_S1
+       2.7     12.4      4.6     2  U3_GPA6
+       2.2     15.1      6.8     0  U4_GPA4
+       2.1     21.4     10.3     2  U4_GPA5
+       2.1     19.1      9.3     0  U4_GPA0
+       2.0     79.2     39.4     2  B12
+
+QSUMMARY cu=8726 detour=1.234 vias=339 islands=389,261
+
+549 pad-layers, 2852 tracks, 339 vias, 4 visible silk texts
+
+  [POUR SPLIT] GND (poured) is in 2 pieces: BT1.2, C1.2, C10.2, C11.2, C12.2, C13.2, C14.2, C15.2, C2.2, C3.2, C4.2, C5.2, C6.2, C7.2, C8.2, C9.2, HL9.1, J1.2, R34.2, R36.2, R38.2, R40.2, R42.2, R44.2, R61.2, R68.2, R70.2, R71.2, RP1.2, RP1.3, U1.29, U1.4, U10.2, U11.4, U11.5, U12.4, U12.6, U13.13, U14.2, U2.12, U3.10, U3.15, U3.16, U3.17, U4.10, U4.16, U4.17, U5.2, U6.2, U7.2, U8.2, U9.2, VT1.2, VT12.2, VT13.2, VT14.2, VT15.2, VT16.2, VT17.2, VT18.2, VT19.2, VT2.2, VT20.2, VT21.3, VT3.2, VT4.2, VT5.2, VT6.2, VT7.2, VT8.2, VT9.2, XS1.2  ||  VT10.2, VT11.2
+
+1 finding(s) across 1 categories
+PCB/TS06-MAIN/copper.png  1371x1522 px, front 1095 / back 1757 segments, 339 vias.  red high voltage, blue cathodes, yellow power, grey ground, violet backlight, green signal
+ALL DONE

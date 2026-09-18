@@ -149,10 +149,14 @@ exist — which is what the **placement** costs before routing is attempted.
 **Sixteen per cent of the floor from two parts, against about three per cent of the copper from
 every routing rule put together.**
 
-The base-resistor line corrects an obvious guess: only 3.6 %, not because the distances are small
-— there are 583 mm of them — but because the resistor sits *between* the expander and the
-transistor, so shortening one side lengthens the other. Worth doing for routability (the nets no
-configuration could close are long base nets) but not for length.
+The base-resistor line corrects an obvious guess twice over. It is only 3.6 %, not because the
+distances are small — there are 583 mm of them — but because the resistor sits *between* the
+expander and the transistor, so shortening one side lengthens the other. And pairing them is
+**not** a free win for routability either: `mkpcb_main.py` records that it was tried in the
+surface-mount build and cost seven more unrouted nets than it saved, because a contiguous block
+of resistors next to the expander that drives all eighteen beats eighteen resistors scattered
+across the block. Shorter wire, worse routing. The separation is a measured decision, not an
+oversight, and this measurement does not overturn it.
 
 ## What was kept
 

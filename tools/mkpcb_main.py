@@ -583,15 +583,25 @@ if ROUTE:
         del rt.failed[nf0:]
         at = {(round(p[0], 2), round(p[1], 2)): p for p in gnd}
         saved, tried = 0, list(dict.fromkeys(lost))
+        # ONLY WIRE A STRANDED PAD TO ONE THAT IS ACTUALLY CONNECTED. Wiring it to the three
+        # nearest GND pads regardless is how VT10.2 and VT11.2 ended up joined to each other
+        # and to nothing else: they are 4.4 mm apart, both failed the tree, each was offered
+        # the other as its nearest neighbour, the connection succeeded and both were counted
+        # saved. audit.py reported it as a pour split in every run for a day and I read it as
+        # a pour artefact rather than as the two floating emitters it was (18.09.26).
+        unreached = set(tried)
         for xy in tried:
             p = at.get(xy)
             if p is None:
                 continue
-            near = sorted((q for q in gnd if q is not p), key=lambda q: math.hypot(q[0] - p[0], q[1] - p[1]))
+            near = sorted((q for q in gnd if q is not p
+                           and (round(q[0], 2), round(q[1], 2)) not in unreached),
+                          key=lambda q: math.hypot(q[0] - p[0], q[1] - p[1]))
             mark = len(rt.failed)
             if any(rt.connect("GND", 0.2, p, q, via_cost=RP["via_cost"], bias=RP["bias"]) for q in near[:3]):
                 del rt.failed[mark:]
                 saved += 1
+                unreached.discard(xy)      # now a legal anchor for the pads still to come
             else:
                 stranded.append(p)
         print(f"stage 2 (GND): {saved} of {len(tried)} retried at 0.2 mm, {time.time() - t0:.0f} s", flush=True)
@@ -612,6 +622,46 @@ if ROUTE:
         del rt.failed[mark:]
         print(f"stage 2 (GND): {stitched} of {len(stranded)} stranded pad(s) stitched into a pour, "
               f"{time.time() - t0:.0f} s", flush=True)
+
+    # A LOUD CHECK, because the quiet one was not enough. tools/audit.py reported "GND is in
+    # 2 pieces" after every run for a day and it was read as a pour artefact rather than as
+    # two transistor emitters connected to nothing. This counts what the copper actually
+    # joins, before the pour is allowed to take any credit, and says so in the routing log
+    # where it cannot be mistaken for a fill prediction.
+    def gnd_pieces():
+        par = {}
+        def find(a):
+            while par[a] != a:
+                par[a] = par[par[a]]
+                a = par[a]
+            return a
+        def add(k):
+            par.setdefault(k, k)
+            return k
+        def uni(a, b):
+            par[find(add(a))] = find(add(b))
+        def key(x, y):
+            return (round(x, 2), round(y, 2))
+        for x1, y1, x2, y2, w, lay, n in rt.segments:
+            if n == "GND":
+                uni(key(x1, y1), key(x2, y2))
+        for x, y, n in rt.vias:
+            if n == "GND":
+                add(key(x, y))
+        out = []
+        for q in gnd:
+            hit = [k for k in par if abs(k[0] - q[0]) <= 1.2 and abs(k[1] - q[1]) <= 1.2]
+            if hit:
+                for k in hit[1:]:
+                    uni(hit[0], k)
+                out.append(find(hit[0]))
+            else:
+                out.append(("pad",) + key(q[0], q[1]))
+        return out
+    roots = gnd_pieces()
+    pieces = len(set(roots))
+    print(f"stage 2 (GND): the copper alone joins it into {pieces} piece(s); the pour closes"
+          f" the rest", flush=True)
 
     # ---- stage 3: everything else, negotiated at once in the manner of PathFinder.
     # THE PRICE HAS TO BEAT A VIA, and at first it did not. A plain step costs 10, an overlapped
