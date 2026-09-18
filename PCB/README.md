@@ -231,8 +231,41 @@ module net for net** (141 nets in the SMD build). `3d/Clock.FCStd` now carries t
 (`3d/TS06-MAIN.step`, KiCad's export) in the tube plane with the two inherited halves and
 the colon board switched off.
 
-**Routing** is running as this is written; its numbers, `audit.py`, `checkmatch.py` and
-KiCad's DRC go here when it lands.
+**Routing, 18.09.26.** Three stages and a retry, and the ORDER is the whole of it. High
+voltage first including the 185 V trunk, then GND as a tree while there is still room, then
+everything else negotiated at once, then one more try alone at whatever was dropped. Five
+other orders were tried and every one is worse; each is recorded beside its decision in
+`tools/mkpcb_main.py` with the numbers, so none of them gets tried again.
+
+| | TS06-MAIN | TS06-MAIN-THT |
+|---|---|---|
+| Tracks / vias | 3047 / 476 | 2823 / 271 |
+| Nets not connected | **1** (VT2's base) | **13** |
+| GND | whole | whole |
+| KiCad DRC, zones refilled | 17 items, 2 of them electrical | 125 items, 31 unconnected |
+| `checkmatch.py` | agrees | agrees |
+| `checkcopper.py --hv` | no bare pad pair inside the HV clearance | same |
+
+**The surface-mount build is essentially routed.** Its DRC items are the one base net plus
+things that are accepted: the tubes' Ø5 pip holes sitting inside their own courtyards, four
+silkscreen warnings, and the two colon lamps touching the M10 glass courtyard by 0.3 mm at
+their measured positions. KiCad's own zone fill closes the last two GND pads that this repo's
+more conservative pour model leaves stranded.
+
+**The surface-mount build's one defect:** VT2 sits inside the AM tube ring and its base cannot
+get out. The ring interior is a pocket - twelve pads enclose it and their own cathode tracks
+take the gaps - so a switch in there reaches the pad beside it and little else. It is one
+connection. Moving the switches out is NOT the fix: their eighteen collectors then have to come
+back in through the ring edge with 0.6 mm halos and choke it, which cost 24 unrouted nets when
+all were moved and 13 when only the three with stranded pins were.
+
+**The through-hole build is not routable as placed** and needs a pass of its own before it
+could be fabricated. Through-hole pads block both faces, so there is far less room: 13 nets are
+split, including the I²C pair, the backlight return and one cathode line, and KiCad reports 50
+through-hole pads sitting inside another part's courtyard. It is the alternative build and only
+one gets made, so this does not block the surface-mount board. What it needs is more space
+between the AM/PM parts - the same measurement pass that found the coin cell and the crossing
+channels would find it.
 
 **The bench still owes** the items in `../knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`:
 the stock stage's operating point, the sustaining voltages, the ИН-17 lead order, the ИН-15
