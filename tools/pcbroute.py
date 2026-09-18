@@ -44,14 +44,29 @@ SNAP = 0.03                        # a diagonal step sags a few um toward a corn
                                    # clear of at both ends; the halos carry that and float slack
 CLASSES = {"narrow": 0.1, "wide": 0.175, "via": VIA_D / 2}   # radius of what sits on a free cell
 REACH = HV_CLR + max(CLASSES.values()) + SNAP                 # the widest halo any copper casts
+COMPACT_DIL = 5                    # cells (0.5 mm) each way that count as 'beside something'
+BUNDLE = 0.55                      # how near a net has to be to count as following its bus:
+                                   # a 0.2 mm track beside a 0.2 mm track at 0.2 mm clearance
+                                   # has its centreline 0.4 mm away, so 0.55 takes the next
+                                   # lane over and not the one after it
 KEEP = VIA_DRILL / 2 + DRILL_GAP + SNAP                       # a new via centre from a drill's edge
 DIRS = [(1, 0, 10), (-1, 0, 10), (0, 1, 10), (0, -1, 10), (1, 1, 14), (1, -1, 14), (-1, 1, 14), (-1, -1, 14)]
 LAYER = ("F.Cu", "B.Cu")
+# GRAIN, in halves of the bias: F.Cu runs east-west, B.Cu north-south, and a step across a
+# face grain costs `bias` more than one along it, a diagonal half of that. WHY: without it
+# every net finds its own private geodesic and they cross each other everywhere instead of
+# crossing between faces, which is the whole point of having two. The first TS06-MAIN was
+# routed with no grain at all and its ground pour filled as 292 islands (18.09.26).
+GRAIN = ((0, 0, 2, 2, 1, 1, 1, 1), (2, 2, 0, 0, 1, 1, 1, 1))
 
 
 def track_class(width):
     assert width <= 2 * CLASSES["wide"] + 1e-9, width
     return "narrow" if width <= 2 * CLASSES["narrow"] + 1e-9 else "wide"
+
+
+def seg_len(segs):
+    return sum(math.hypot(bx - ax, by - ay) for _, ax, ay, bx, by, _ in segs)
 
 
 def seg_foot(shape, x, y):
@@ -93,6 +108,7 @@ class Router:
                 self.maps[c, key] = m
         self.viakeep = np.zeros((self.ny, self.nx), bool)
         self.ids, self.names = {}, []
+        self.grp, self.bgrp = {}, {}         # net -> bus name, bus name -> where its copper is
         self.segments, self.vias, self.failed = [], [], []
         self.use = None                    # overlap counts, only while negotiate() runs
 
@@ -241,8 +257,8 @@ class Router:
             out.append(((a != -1) & (a != net)) | ((b != -1) & (b != net)))
         return np.stack(out)
 
-    def connect(self, name, width, src, dst, via_cost=1500, turn=15, margin=6.0, allow=(0, 1), to_layer=None,
-                reach=None):
+    def connect(self, name, width, src, dst, via_cost=1500, turn=15, bias=0, margin=6.0, allow=(0, 1),
+                to_layer=None, reach=None):
         """src, dst: pads as (x, y, layers, shape). allow: the layers this net may use.
         A via costs as much as 15 mm of extra track by default, so a same-layer detour of up to
         that length always wins - the repo's standing preference. With dst None and to_layer
@@ -253,7 +269,8 @@ class Router:
         path = None
         for grow in (margin, margin * 3, 1e6):
             box = self._box((src, dst) if dst else (src,), grow)
-            path = self._astar(net, hv, c, box, src, dst, targets, via_cost, turn, allow, to_layer, reach)
+            path = self._astar(net, hv, c, box, src, dst, targets, via_cost, turn, allow, to_layer, reach,
+                               bias=bias)
             if path or box == (0, self.nx, 0, self.ny):
                 break
         if not path:
@@ -271,7 +288,7 @@ class Router:
         return self.connect(name, width, src, None, margin=3.0, to_layer=layer, reach=reach, **kw)
 
     def _astar(self, net, hv, c, box, src, goal, targets, via_cost, turn, allow, to_layer=None, reach=None,
-               soft=None, vsoft=None, nokeep=()):
+               soft=None, vsoft=None, nokeep=(), bias=0):
         """targets: (kind, layers, shape) copper the path may end in. soft, vsoft: extra cost of
         stepping onto a cell and of a via there, while negotiating. nokeep: vias of this net."""
         i0, i1, j0, j1 = box
@@ -337,7 +354,11 @@ class Router:
                     gcost[k] = 0
                     heap.append((0, 0, k))
         heapq.heapify(heap)
-        steps = [(dx + dy * w, dx, dy * w, dx, dy, cst, d) for d, (dx, dy, cst) in enumerate(DIRS)]
+        # one step table per face, the grain already priced in. The heuristic below is weighted
+        # by 1.2 and so was never admissible; a bias only raises real costs, which can only
+        # bring it closer to admissible, so nothing else has to change.
+        stepL = [[(dx + dy * w, dx, dy * w, dx, dy, cst + bias * GRAIN[L][d] // 2, d)
+                  for d, (dx, dy, cst) in enumerate(DIRS)] for L in (0, 1)]
         pop, push = heapq.heappop, heapq.heappush
         while heap:
             _, g, k = pop(heap)
@@ -355,7 +376,7 @@ class Router:
             rem = k - N if upper else k
             j, i = divmod(rem, w)
             d0 = cdir[k]
-            for off, ox, oy, dx, dy, cst, d in steps:
+            for off, ox, oy, dx, dy, cst, d in stepL[1 if upper else 0]:
                 nk = k + off
                 if not free[nk]:
                     continue
@@ -449,8 +470,11 @@ class Router:
         return fails
 
     # ------------------------------------------------------------ negotiation
-    def _stamp(self, name, segs, vias, sign):
-        """Add (+1) or take away (-1) one negotiated net's halos in the overlap counts."""
+    def _stamp(self, name, segs, vias, sign, group=None):
+        """Add (+1) or take away (-1) one negotiated net's halos in the overlap counts, and in
+        its bus's bundle map if it belongs to one."""
+        if group is None:
+            group = self.grp.get(name)
         keys = (("hvL", HV_CLR),) if name in self.hv else (("lvS", LV_CLR), ("lvL", HV_CLR))
         union = {}
         shapes = [((L,), ("seg", ax, ay, bx, by, w)) for L, ax, ay, bx, by, w in segs] + \
@@ -460,6 +484,12 @@ class Router:
             if not win:
                 continue
             j0, j1, i0, i1, D = win
+            if group is not None:
+                for L in layers:
+                    u = union.get(("bundle", group, L))
+                    if u is None:
+                        u = union["bundle", group, L] = np.zeros((self.ny, self.nx), bool)
+                    u[j0:j1, i0:i1] |= D <= BUNDLE
             for c, r in CLASSES.items():
                 for key, clr in keys:
                     m = D <= clr + r + SNAP
@@ -468,8 +498,14 @@ class Router:
                         if u is None:
                             u = union[c, key, L] = np.zeros((self.ny, self.nx), bool)
                         u[j0:j1, i0:i1] |= m
-        for (c, key, L), u in union.items():
-            self.use[c, key][L] += sign * u.astype(np.int16)
+        for k, u in union.items():
+            if k[0] == "bundle":
+                b = self.bgrp.get(k[1])
+                if b is None:
+                    b = self.bgrp[k[1]] = np.zeros((2, self.ny, self.nx), np.int16)
+                b[k[2]] += sign * u.astype(np.int16)
+            else:
+                self.use[k[0], k[1]][k[2]] += sign * u.astype(np.int16)
         if vias:
             u = np.zeros((self.ny, self.nx), bool)
             for x, y in vias:
@@ -477,7 +513,7 @@ class Router:
                 u[j0:j1, i0:i1] |= D <= KEEP
             self.vuse += sign * u.astype(np.int16)
 
-    def _soft(self, hv, c, box, price, layer_cost=(0, 0)):
+    def _soft(self, hv, c, box, price, layer_cost=(0, 0), group=None, bundle=0, compact=0):
         i0, i1, j0, j1 = box
         a, b = ("hvL", "lvL") if hv else ("lvS", "hvL")
         cnt = self.use[c, a][:, j0:j1, i0:i1].astype(np.int64) + self.use[c, b][:, j0:j1, i0:i1]
@@ -486,11 +522,38 @@ class Router:
         # history multiplies the present price (PathFinder): a cell shared round after round
         # becomes dearer than fresh ground, so two nets stuck on one spot are pushed apart
         # instead of keeping the cheapest overlap for ever
-        hist = self.hist[:, j0:j1, i0:i1].astype(np.int64)
+        hist = self.hist[:, j0:j1, i0:i1]
         vhist = hist.max(0)
         cap = 1 << 30                      # stays an int32 inside the search however high the price climbs
         lc = np.array(layer_cost, np.int64)[:, None, None]
-        return (np.minimum(price * cnt * (1 + hist) + 10 * hist + lc, cap),
+        soft = price * cnt * (1 + hist) + 10 * hist + lc
+        # BUNDLE AFFINITY. Ten cathode lines run from one К155ИД1 to one tube and ought to go as a
+        # ribbon; nothing in a plain negotiation makes them, because each net finds its own
+        # geodesic and they only meet at the ends. So a step NOT beside its own bus costs extra -
+        # a discount for following it, written as a surcharge for leaving it, because A* wants
+        # every edge non-negative. A bus in one channel also leaves the pour one region instead
+        # of ten slices.
+        if group is not None and bundle:
+            near = self.bgrp.get(group)
+            if near is not None:
+                soft = soft + bundle * (near[:, j0:j1, i0:i1] == 0)
+        # COMPACTION, the same idea with no regard for whose copper it is: a step that is not
+        # beside SOMETHING costs extra, so tracks gather into channels and leave the space
+        # between them whole. WHY: a pour is cut by tracks, not by vias - 8647 mm of 0.2 mm
+        # track with its clearance covers about 41% of this board against 3% for 356 vias - so
+        # what decides whether the pour is a plane or confetti is whether the tracks run
+        # together or spread out. Aligning vias to a lattice was considered first and dropped
+        # on that arithmetic (18.09.26).
+        if compact:
+            near = cnt > 0
+            d = near.copy()
+            for k in range(1, COMPACT_DIL + 1):
+                d[:, k:, :] |= near[:, :-k, :]
+                d[:, :-k, :] |= near[:, k:, :]
+                d[:, :, k:] |= near[:, :, :-k]
+                d[:, :, :-k] |= near[:, :, k:]
+            soft = soft + compact * ~d
+        return (np.minimum(soft, cap),
                 np.minimum(10 * price * vcnt * (1 + vhist) + 10 * vhist, cap))
 
     def _overlaps(self, name, width, cells, vcells, scar=0, where=None):
@@ -521,7 +584,8 @@ class Router:
                 where += [("via", round(float(ii) * G, 1), round(float(jj) * G, 1)) for jj, ii in zip(j[hit], i[hit])]
         return n
 
-    def _route_tree(self, name, width, pads, price, layer_cost=(0, 0), via_cost=1500, turn=15, allow=(0, 1)):
+    def _route_tree(self, name, width, pads, price, layer_cost=(0, 0), via_cost=1500, turn=15, allow=(0, 1),
+                    bias=0, group=None, bundle=0, compact=0):
         net, hv, c = self.nid(name), name in self.hv, track_class(width)
         targets, inside, todo = [("pad", pads[0][2], pads[0][3])], [pads[0]], list(pads[1:])
         segs, vias, cells, vcells, failed = [], [], [], [], []
@@ -532,9 +596,9 @@ class Router:
             path = None
             for grow in (6.0, 18.0, 1e6):
                 box = self._box((src, near), grow)
-                soft, vsoft = self._soft(hv, c, box, price, layer_cost)
+                soft, vsoft = self._soft(hv, c, box, price, layer_cost, group, bundle, compact)
                 path = self._astar(net, hv, c, box, src, near, targets, via_cost, turn, allow,
-                                   soft=soft, vsoft=vsoft, nokeep=vias)
+                                   soft=soft, vsoft=vsoft, nokeep=vias, bias=bias)
                 if path or box == (0, self.nx, 0, self.ny):
                     break
             if not path:
@@ -551,24 +615,50 @@ class Router:
                        [("via", (0, 1), ("circle", x, y, VIA_D / 2)) for x, y in v]
         return segs, vias, cells, vcells, failed
 
-    def negotiate(self, jobs, rounds=60, price=3, rise=1.4, scar=1, layer_cost=(0, 0), log=None):
+    def negotiate(self, jobs, rounds=60, price=3, rise=1.4, scar=1, layer_cost=(0, 0), bias=0,
+                  turn=15, decay=1.0, tighten=0, relax=0, groups=None, bundle=0, compact=0, log=None):
         """jobs: [(name, width, pads, opts)], routed together against everything already laid.
         layer_cost: extra cost of each step on F.Cu and on B.Cu (a plain step costs 10) - how a
-        face kept for a pour is made the second choice rather than forbidden."""
+        face kept for a pour is made the second choice rather than forbidden.
+        bias: extra cost of a step across the face grain, see GRAIN.
+        decay: what a history scar is worth a round later. At 1.0 it never fades, which is how
+        PathFinder is usually written and is wrong for a board this full: a cell contested in
+        round three is still dear in round twenty, so late nets detour round congestion that
+        has long since moved elsewhere.
+        tighten: passes of rip-up-and-reroute for length once nothing overlaps.
+        relax: rounds of failure after which a net is let off the grain and the dear via
+        altogether. The grain is a PREFERENCE, not a law, and the difference matters: at
+        bias 8 twelve nets were still overlapping when the rounds ran out and at bias 0 only
+        six, so obedience was costing six nets (18.09.26). The few that cannot obey are
+        exactly the ones that have to cross the grain, and they are cheaper let off.
+        groups: net -> bus name. bundle: what a step away from its own bus costs a net.
+        compact: what a step away from any other net's copper costs, which gathers the tracks
+        into channels and leaves the pour between them in one piece."""
+        self.grp, self.bgrp = dict(groups or {}), {}
         self.use = {k: np.zeros(v.shape, np.int16) for k, v in self.maps.items()}
         self.vuse = np.zeros((self.ny, self.nx), np.int16)
-        self.hist = np.zeros((2, self.ny, self.nx), np.int32)
-        job = {j[0]: j for j in jobs}
+        self.hist = np.zeros((2, self.ny, self.nx), np.float64)   # float: a scar may fade by a fraction
+        job = {j[0]: (j[0], j[1], j[2], dict(j[3], bias=bias, turn=turn, compact=compact,
+                      group=self.grp.get(j[0]), bundle=bundle)) for j in jobs}
         routes, todo, t0 = {}, [j[0] for j in jobs], time.time()
         stall, last, best, since, bad = 0, None, None, 0, []
+        stuck = {j[0]: 0 for j in jobs}          # consecutive rounds this net has overlapped
         for rnd in range(rounds):
+            if decay < 1.0:
+                self.hist *= decay
             for n in todo:
                 if n in routes:
                     self._stamp(n, routes[n][0], routes[n][1], -1)
                 _, width, pads, opts = job[n]
+                if relax and stuck[n]:
+                    ease = min(stuck[n], relax) / float(relax)
+                    opts = dict(opts, bias=int(round(opts.get('bias', 0) * (1 - ease))),
+                                via_cost=max(150, int(opts['via_cost'] * (1 - 0.8 * ease))))
                 routes[n] = self._route_tree(n, width, pads, price, layer_cost=layer_cost, **opts)
                 self._stamp(n, routes[n][0], routes[n][1], +1)
             bad = [n for n, r in routes.items() if self._overlaps(n, job[n][1], r[2], r[3], scar)]
+            for n in routes:
+                stuck[n] = stuck[n] + 1 if n in bad else 0
             if log:
                 log(f"    round {rnd + 1}: {len(todo)} net(s) routed, {len(bad)} overlap, price {price}, "
                     f"{time.time() - t0:.0f} s")
@@ -610,7 +700,51 @@ class Router:
             self._stamp(worst, routes[worst][0], routes[worst][1], -1)
             self.failed.append((worst, "still overlapping another net when negotiation ended, e.g. at", spots[:3]))
             del routes[worst]
+        if tighten:
+            self._tighten(job, routes, tighten, log)
         for n, (segs, vias, cells, vcells, failed) in routes.items():
             self.failed += failed
             self._lay(n, segs, vias)
         self.use = None
+        self.grp, self.bgrp = {}, {}
+
+    def _tighten(self, job, routes, passes, log=None, price=10 ** 6, via_cost=2000):
+        """Once nothing overlaps, the negotiation is finished but the copper is not. Each net is
+        taken out of the overlap counts and routed again on its own, at a price no overlap can
+        afford and with a via priced at 20 mm of track, and the new route is kept only if it is
+        shorter - counting each via at its price - and still overlaps nothing.
+
+        WHY: negotiate() stops the moment nothing overlaps, and has no opinion at all about the
+        copper after that. A detour taken in round three round a net that moved away in round
+        nine is otherwise frozen into the board for good. Ripping up is cheap here because a
+        negotiated net lives in self.use rather than in the maps, so _stamp() undoes it exactly.
+        """
+        self.hist[:] = 0.0                 # scars are a device for parting nets, not for judging length
+        worth = via_cost / 100.0           # what a via is worth in mm, for scoring
+        def score(r):
+            return seg_len(r[0]) + worth * len(r[1])
+        for p in range(passes):
+            gain, moved, dv, t0 = 0.0, 0, 0, time.time()
+            for n in sorted(routes, key=lambda k: -score(routes[k])):
+                old = routes[n]
+                if old[4]:                 # a net that never fully routed is left alone
+                    continue
+                _, width, pads, opts = job[n]
+                self._stamp(n, old[0], old[1], -1)
+                new = self._route_tree(n, width, pads, price, **dict(opts, via_cost=via_cost))
+                self._stamp(n, new[0], new[1], +1)
+                keep = (not new[4] and self._overlaps(n, width, new[2], new[3]) == 0
+                        and score(new) < score(old) - 0.05)
+                if keep:
+                    gain += score(old) - score(new)
+                    dv += len(old[1]) - len(new[1])
+                    moved += 1
+                    routes[n] = new
+                else:
+                    self._stamp(n, new[0], new[1], -1)
+                    self._stamp(n, old[0], old[1], +1)
+            if log:
+                log(f"    tighten pass {p + 1}: {moved} net(s) shortened, {gain:.0f} mm and "
+                    f"{dv} via(s) saved, {time.time() - t0:.0f} s")
+            if not moved:
+                break

@@ -1,0 +1,37 @@
+pour "GND" on F.Cu: 250 island(s), 57% of the outline is copper, 6 pad(s) of the net
+pour "GND" on B.Cu: 233 island(s), 54% of the outline is copper, 74 pad(s) of the net
+QUALITY - how well routed, as opposed to how legal. None of this is a finding.
+
+  copper          8390 mm   4371 front / 4018 back
+  detour          1.28x    7530 mm of signal against a 5900 mm floor, over 134 nets
+  vias             329     2.5 per net, 51 of 134 nets carry none
+  angles      orthogonal 58%   45 39%   other 3%
+  grain F.Cu       37% east-west,  21% across it, 42% diagonal
+  grain B.Cu       33% north-south, 30% across it, 37% diagonal
+  pour GND F.Cu   250 island(s), the largest holds 54% of its 9403 mm2 of copper, 110 under 1 mm2
+  pour GND B.Cu   233 island(s), the largest holds 72% of its 8931 mm2 of copper, 112 under 1 mm2
+
+  the copper that wanders furthest from its own floor:
+     ratio     laid    floor  vias  net
+       4.6     15.8      3.5     3  BL_A8
+       2.5     25.4     10.3     2  U4_GPA5
+       2.4    344.9    143.6    23  K9
+       2.2     14.7      6.8     2  U4_GPA4
+       2.1     10.0      4.7     0  U3_GPA4
+       2.0     24.5     12.4     2  OPT_S1
+       2.0     28.5     14.5     0  CAT_B_HERTZ
+       2.0     28.5     14.5     0  CAT_A_PLUS
+
+QSUMMARY cu=8390 detour=1.276 vias=329 islands=250,233
+
+549 pad-layers, 2857 tracks, 329 vias, 4 visible silk texts
+
+  [NET SPLIT] +5V is in 29 pieces: C1.1  ||  C2.1  ||  C3.1  ||  C4.1  ||  C11.1  ||  C13.1  ||  C15.1  ||  J1.1  ||  R45.1  ||  R46.1  ||  R47.1  ||  R48.1  ||  R49.1  ||  R50.1  ||  R51.1  ||  R52.1  ||  R54.1  ||  R55.1  ||  R69.1  ||  U1.27  ||  U2.5  ||  U3.9  ||  U3.18  ||  U4.9  ||  U4.15  ||  U4.18  ||  U12.8  ||  U13.2  ||  U14.3
+  [NET SPLIT] B10 is in 2 pieces: R10.2  ||  VT10.1
+  [NET SPLIT] B3 is in 2 pieces: R3.2  ||  VT3.1
+  [NET SPLIT] U3_GPA5 is in 2 pieces: R7.1  ||  U3.26
+  [NET SPLIT] U4_GPA2 is in 2 pieces: R12.1  ||  U4.23
+  [NET SPLIT] U4_GPA6 is in 2 pieces: R16.1  ||  U4.27
+  [POUR SPLIT] GND (poured) is in 2 pieces: BT1.2, C1.2, C10.2, C11.2, C12.2, C13.2, C14.2, C15.2, C2.2, C3.2, C4.2, C5.2, C6.2, C7.2, C8.2, C9.2, HL9.1, J1.2, R34.2, R36.2, R38.2, R40.2, R42.2, R44.2, R61.2, R68.2, R70.2, R71.2, RP1.2, RP1.3, U1.29, U1.4, U10.2, U11.4, U11.5, U12.4, U12.6, U13.13, U14.2, U2.12, U3.10, U3.15, U3.16, U3.17, U4.10, U4.16, U4.17, U5.2, U6.2, U7.2, U8.2, U9.2, VT1.2, VT12.2, VT13.2, VT14.2, VT15.2, VT16.2, VT17.2, VT18.2, VT19.2, VT2.2, VT20.2, VT21.3, VT3.2, VT4.2, VT5.2, VT6.2, VT7.2, VT8.2, VT9.2, XS1.2  ||  VT10.2, VT11.2
+
+7 finding(s) across 2 categories

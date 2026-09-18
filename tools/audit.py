@@ -358,6 +358,109 @@ for net in sorted(POURED):
         bad("POUR SPLIT", f'{net} (poured) is in {len(groups)} pieces: ' +
             "  ||  ".join(", ".join(sorted(g)) for g in groups.values()))
 
+# ------------------------------------------------------------------ E. is the copper any GOOD?
+# Everything above this line asks whether the board is LEGAL. None of it asks whether it is WELL
+# ROUTED, and the difference is not small: TS06-MAIN reached "2 findings" while carrying 476 vias
+# and a ground pour that filled as 292 islands, because the only number anyone steered by was how
+# many nets were left unrouted (18.09.26). These are the numbers to steer by instead.
+#
+# They are advice, not findings. Nothing in this section touches the exit code, because there is
+# no threshold that is right for every board here - a fascia with nine nets and this one with a
+# hundred and forty cannot share a number. What they can share is being LOOKED at.
+import numpy as _np
+
+def _mst(pts):
+    """Euclidean minimum spanning tree over a net's own pads: the floor for any tree that touches
+    all of them, obstacles, clearances and layers ignored. No real route can beat it, so
+    laid/floor is a detour ratio that means the same thing on any board."""
+    if len(pts) < 2:
+        return 0.0
+    rest, tot = list(pts[1:]), 0.0
+    d = [math.dist(pts[0], q) for q in rest]
+    while rest:
+        k = min(range(len(rest)), key=d.__getitem__)
+        tot += d[k]
+        q = rest.pop(k)
+        d.pop(k)
+        for i, r in enumerate(rest):
+            d[i] = min(d[i], math.dist(q, r))
+    return tot
+
+_len_of, _face, _grain, _ang = defaultdict(float), defaultdict(float), defaultdict(float), defaultdict(float)
+for _t in tracks:
+    (_ax, _ay), (_bx, _by) = _t["a"], _t["b"]
+    _dx, _dy, _L = _bx - _ax, _by - _ay, math.dist(_t["a"], _t["b"])
+    if _L < 1e-9:
+        continue
+    _len_of[_t["net"]] += _L
+    _face[_t["layer"]] += _L
+    # GRAIN: the convention this repo routes to is F.Cu east-west, B.Cu north-south, so that nets
+    # cross between faces instead of fighting on one. A board with no grain reads about a third in
+    # each column and its pour comes out as confetti.
+    _along = abs(_dx) > abs(_dy) if _t["layer"] == "F.Cu" else abs(_dy) > abs(_dx)
+    _grain[_t["layer"], "diagonal" if abs(abs(_dx) - abs(_dy)) < _L * 0.15
+           else "along" if _along else "across"] += _L
+    _a = math.degrees(math.atan2(_dy, _dx)) % 90
+    _ang["orthogonal" if min(_a, 90 - _a) < 0.6 else "45" if abs(_a - 45) < 0.6 else "other"] += _L
+
+_vias_of = defaultdict(int)
+for _v in vias:
+    _vias_of[_v["net"]] += 1
+
+_padpts = defaultdict(set)
+for _p in pads:
+    if _p["net"]:
+        _padpts[_p["net"]].add((round(_p["x"], 3), round(_p["y"], 3)))
+
+_rows = []
+for _nm, _L in _len_of.items():
+    if not _nm or _nm in POURED:
+        continue
+    _floor = _mst(sorted(_padpts.get(_nm, ())))
+    if _floor > 0.2:
+        _rows.append((_L / _floor, _L, _floor, _vias_of.get(_nm, 0), len(_padpts[_nm]), _nm))
+_rows.sort(reverse=True)
+
+_cu = sum(_face.values())
+_sig = sum(r[1] for r in _rows)
+_flr = sum(r[2] for r in _rows)
+print("QUALITY - how well routed, as opposed to how legal. None of this is a finding.")
+print()
+print("  copper      %8.0f mm   %.0f front / %.0f back" % (_cu, _face["F.Cu"], _face["B.Cu"]))
+if _flr:
+    print("  detour      %8.2fx    %.0f mm of signal against a %.0f mm floor, over %d nets"
+          % (_sig / _flr, _sig, _flr, len(_rows)))
+print("  vias        %8d     %.1f per net, %d of %d nets carry none"
+      % (len(vias), len(vias) / max(len(_rows), 1), sum(1 for r in _rows if r[3] == 0), len(_rows)))
+_at = sum(_ang.values()) or 1.0
+print("  angles      " + "   ".join("%s %.0f%%" % (k, 100 * v / _at)
+                                    for k, v in sorted(_ang.items(), key=lambda t: -t[1])))
+for _ly in ("F.Cu", "B.Cu"):
+    _tl = sum(v for (l, _), v in _grain.items() if l == _ly) or 1.0
+    print("  grain %-5s %7.0f%% %-11s %.0f%% across it, %.0f%% diagonal"
+          % (_ly, 100 * _grain[_ly, "along"] / _tl,
+             "east-west," if _ly == "F.Cu" else "north-south,",
+             100 * _grain[_ly, "across"] / _tl, 100 * _grain[_ly, "diagonal"] / _tl))
+_isl = []
+for _z, _PX, _PY, _lab in islands:
+    _sz = _np.bincount(_lab[_lab >= 0].ravel()) if (_lab >= 0).any() else _np.zeros(0, int)
+    _tot = _sz.sum() * G * G or 1.0
+    _isl.append(len(_sz))
+    print('  pour %-3s %-5s %4d island(s), the largest holds %.0f%% of its %.0f mm2 of copper, '
+          "%d under 1 mm2" % (_z["net"], _z["layer"], len(_sz),
+                              100 * (_sz.max() if _sz.size else 0) * G * G / _tot, _tot,
+                              int((_sz * G * G < 1.0).sum())))
+if _rows:
+    print()
+    print("  the copper that wanders furthest from its own floor:")
+    print("     ratio     laid    floor  vias  net")
+    for _r in _rows[:8]:
+        print("    %6.1f %8.1f %8.1f %5d  %s" % (_r[0], _r[1], _r[2], _r[3], _r[5]))
+print()
+print("QSUMMARY cu=%.0f detour=%.3f vias=%d islands=%s"
+      % (_cu, _sig / _flr if _flr else 0.0, len(vias), ",".join(str(i) for i in _isl) or "-"))
+print()
+
 # ------------------------------------------------------------------ report
 print(f'{len(pads)} pad-layers, {len(tracks)} tracks, {len(vias)} vias, '
       f'{len(alltxt)} visible silk texts\n')

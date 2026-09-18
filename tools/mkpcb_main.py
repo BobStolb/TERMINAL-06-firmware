@@ -66,6 +66,28 @@ OUT = os.path.join(ROOT, "PCB", BOARD, BOARD + ".kicad_pcb")
 NS = uuid.UUID("5ec06000-7506-4000-8000-0000000000a1" if BUILD == "smd" else "5ec06000-7506-4000-8000-0000000000a2")
 ROUTE = "--route" in sys.argv
 
+# Routing parameters in one place, overridable from the environment, so a sweep can try others
+# without editing this file and every log records what it ran with. WHY: the first routed board
+# was steered by one number - nets left unrouted - and reached zero while its ground pour filled
+# as 292 islands and it carried 476 vias (18.09.26). tools/audit.py --quality scores the rest.
+def _p(name, default, cast=float):
+    v = os.environ.get("TS06_" + name.upper())
+    return cast(v) if v not in (None, "") else default
+
+RP = dict(via_cost=_p("via_cost", 900, int),   # a via, against 10 for a 0.1 mm step
+          price=_p("price", 60, int),          # first-round cost of sharing a cell
+          rise=_p("rise", 1.6),                # how fast that price climbs
+          rounds=_p("rounds", 60, int),
+          turn=_p("turn", 15, int),            # cost of a change of direction
+          bias=_p("bias", 8, int),             # extra cost of a step across the layer grain
+          decay=_p("decay", 0.9),              # how fast a history scar fades, 1.0 = never
+          tighten=_p("tighten", 2, int),       # passes of rip-up-and-reroute for length
+          relax=_p("relax", 4, int),           # rounds of failure before a net is let off the grain
+          bundle=_p("bundle", 0, int),         # cost of a step away from a net's own bus
+          compact=_p("compact", 0, int))       # cost of a step away from any other net's copper
+if os.environ.get("TS06_OUT"):
+    OUT = os.environ["TS06_OUT"]
+
 W, H = 176.0, 96.0                          # the fascia's width; the height the through-hole build needs
 TOP = 100.0                                 # world Y of the top edge; the bottom edge is at world Y 4
 
@@ -521,7 +543,8 @@ if ROUTE:
     gnd = pads_of["GND"]
     hub = hub_pad.get("GND", gnd[0])        # the jack's GND pin: the tree grows from the supply
     nf0, stranded = len(rt.failed), []
-    fails = rt.route_net("GND", 0.3, [hub] + [p for p in gnd if p is not hub], via_cost=250)
+    fails = rt.route_net("GND", 0.3, [hub] + [p for p in gnd if p is not hub],
+                         via_cost=RP["via_cost"], bias=RP["bias"])
     print(f"stage 2 (GND): {len(gnd)} pads wired as a tree, {fails} connection(s) not found, "
           f"{time.time() - t0:.0f} s", flush=True)
     # Whatever will not fit at 0.3 mm is retried at 0.2 mm, and against the three nearest GND
@@ -541,7 +564,7 @@ if ROUTE:
                 continue
             near = sorted((q for q in gnd if q is not p), key=lambda q: math.hypot(q[0] - p[0], q[1] - p[1]))
             mark = len(rt.failed)
-            if any(rt.connect("GND", 0.2, p, q, via_cost=250) for q in near[:3]):
+            if any(rt.connect("GND", 0.2, p, q, via_cost=RP["via_cost"], bias=RP["bias"]) for q in near[:3]):
                 del rt.failed[mark:]
                 saved += 1
             else:
@@ -558,7 +581,7 @@ if ROUTE:
         mark, stitched = len(rt.failed), 0
         for p in stranded:
             for layer in (0, 1):
-                if rt.fanout("GND", 0.2, p, layer, reach=reach[layer], via_cost=250):
+                if rt.fanout("GND", 0.2, p, layer, reach=reach[layer], via_cost=RP["via_cost"]):
                     stitched += 1
                     break
         del rt.failed[mark:]
@@ -579,8 +602,34 @@ if ROUTE:
     # tried and cost three signal nets while leaving GND no better (18.09.26).
     order = sorted((n for n in pads_of if n != "GND" and n not in HV), key=lambda n: (span(n), n))
     nf0 = len(rt.failed)
-    rt.negotiate([(n, width(n), sorted(pads_of[n], key=lambda q: q is not hub_pad.get(n)), {"via_cost": 250})
-                  for n in order], price=60, rise=1.6, log=lambda m: print(m, flush=True))
+    print("routing parameters: " + "  ".join(f"{k}={v}" for k, v in RP.items()), flush=True)
+    # A NET WITH PADS ALL OVER THE BOARD MUST BE ABLE TO CHANGE FACE. A via cost chosen to
+    # keep signals tidy strands one: +5V has 29 pads, more than anything but GND, and at a via
+    # priced at 9 mm of track it came out of the negotiation in 29 pieces while every ordinary
+    # signal routed (18.09.26). Eight pads is the line - it takes +5V, +12V and the backlight
+    # cathode, and leaves the seven-pad К155ИД1 cathode lines on the tidy price.
+    # BUSES for the bundle rule. Nets whose names differ only in a trailing number come off one
+    # driver and are meant to travel together: the ten К155ИД1 cathode lines K0..K9 to the tubes,
+    # the two expander ports, the Nano pins D2..D13, the eight backlight anodes. Three members is
+    # the smallest thing worth calling a bus. Whether the base nets B1..B20 belong here is a real
+    # question - they are short and local rather than a bus - and the answer is measured, not
+    # assumed: TS06_BUNDLE=0 turns the whole rule off for a control run.
+    grp = {}
+    for nm in order:
+        grp.setdefault(nm.rstrip("0123456789"), []).append(nm)
+    GROUPS = {nm: k for k, v in grp.items() if k and len(v) >= 3 for nm in v}
+    if RP["bundle"]:
+        print(f"  {len(set(GROUPS.values()))} bus(es) over {len(GROUPS)} nets: "
+              + " ".join(sorted(set(GROUPS.values()))), flush=True)
+
+    def via_price(n):
+        return min(250, RP["via_cost"]) if len(pads_of[n]) >= 8 else RP["via_cost"]
+    rt.negotiate([(n, width(n), sorted(pads_of[n], key=lambda q: q is not hub_pad.get(n)),
+                   {"via_cost": via_price(n)}) for n in order],
+                 rounds=RP["rounds"], price=RP["price"], rise=RP["rise"], turn=RP["turn"],
+                 bias=RP["bias"], decay=RP["decay"], tighten=RP["tighten"], relax=RP["relax"],
+                 groups=GROUPS, bundle=RP["bundle"], compact=RP["compact"],
+                 log=lambda m: print(m, flush=True))
     print(f"stage 3 (everything else, negotiated): {len(order)} nets, {len(rt.failed) - nf0} not routed, "
           f"{time.time() - t0:.0f} s", flush=True)
 
@@ -596,7 +645,8 @@ if ROUTE:
         saved = []
         for n in dropped:
             snap, mark = rt.snapshot(), len(rt.failed)
-            if rt.route_net(n, width(n), pads_of[n], via_cost=150) == 0:
+            if rt.route_net(n, width(n), pads_of[n], via_cost=max(150, RP["via_cost"] // 4),
+                            bias=RP["bias"]) == 0:
                 del rt.failed[mark:]
                 saved.append(n)
             else:

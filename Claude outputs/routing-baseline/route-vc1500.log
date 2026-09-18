@@ -1,0 +1,42 @@
+stage 1 (high voltage, the 185 V trunk included): 45 nets, 0 connection(s) not found (kept attempt 1), 18 s
+stage 2 (GND): 74 pads wired as a tree, 1 connection(s) not found, 24 s
+stage 2 (GND): 1 of 1 retried at 0.2 mm, 24 s
+stage 2 (GND): the pours alone join 72/74 pads; the tree carries the rest
+routing parameters: via_cost=1500  price=3  rise=1.4  rounds=10  turn=15  bias=0  decay=1.0  tighten=0
+    round 1: 95 net(s) routed, 84 overlap, price 3, 284 s
+    round 2: 84 net(s) routed, 77 overlap, price 5, 560 s
+    round 3: 77 net(s) routed, 76 overlap, price 8, 812 s
+    round 4: 76 net(s) routed, 68 overlap, price 12, 1029 s
+    round 5: 68 net(s) routed, 66 overlap, price 17, 1253 s
+    round 6: 66 net(s) routed, 70 overlap, price 24, 1466 s
+    round 7: 70 net(s) routed, 65 overlap, price 34, 1699 s
+    round 8: 65 net(s) routed, 62 overlap, price 48, 1930 s
+    round 9: 62 net(s) routed, 53 overlap, price 68, 2144 s
+    round 10: 53 net(s) routed, 52 overlap, price 96, 2341 s
+stage 3 (everything else, negotiated): 95 nets, 23 not routed, 2378 s
+stage 4 (dropped nets, retried alone): 17 of 23 placed - A2 K4 BL_K K2 +12V K7 D12 D2 K3 D5 SDA K9 U4_GPA4 D10 U4_GPB1 K1 D4, 2583 s
+  NOT ROUTED ('+5V', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 51.8, 77.8), ('F.Cu', 51.7, 77.9), ('F.Cu', 51.6, 78.0)])
+  NOT ROUTED ('A2', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 84.6, 74.0), ('F.Cu', 84.5, 73.9), ('F.Cu', 84.4, 73.8)])
+  NOT ROUTED ('K4', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 99.0, 45.4), ('F.Cu', 98.9, 45.5), ('F.Cu', 98.8, 45.6)])
+  NOT ROUTED ('BL_K', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 15.8, 55.0), ('F.Cu', 15.7, 55.1), ('F.Cu', 15.6, 55.2)])
+  NOT ROUTED ('K2', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 84.6, 45.7), ('F.Cu', 84.7, 45.8), ('F.Cu', 84.8, 45.9)])
+  NOT ROUTED ('+12V', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 40.3, 76.1), ('B.Cu', 40.2, 76.2), ('B.Cu', 40.1, 76.3)])
+  NOT ROUTED ('K7', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 93.3, 62.5), ('F.Cu', 93.2, 62.6), ('F.Cu', 93.1, 62.7)])
+  NOT ROUTED ('D12', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 50.1, 23.7), ('F.Cu', 50.2, 23.6), ('F.Cu', 50.3, 23.5)])
+  NOT ROUTED ('D2', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 47.3, 20.9), ('F.Cu', 47.4, 20.8), ('F.Cu', 47.5, 20.7)])
+  NOT ROUTED ('K3', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 85.4, 44.9), ('F.Cu', 85.5, 45.0), ('F.Cu', 85.6, 45.1)])
+  NOT ROUTED ('U4_GPA6', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 127.9, 70.0), ('B.Cu', 127.9, 69.9), ('B.Cu', 127.8, 69.8)])
+  NOT ROUTED ('D5', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 26.6, 25.8), ('F.Cu', 26.7, 25.9), ('F.Cu', 26.8, 26.0)])
+  NOT ROUTED ('SDA', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 142.6, 6.5), ('B.Cu', 142.7, 6.6), ('B.Cu', 142.8, 6.7)])
+  NOT ROUTED ('K9', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 98.6, 81.5), ('F.Cu', 98.5, 81.6), ('F.Cu', 98.4, 81.7)])
+  NOT ROUTED ('U4_GPA4', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 131.1, 72.4), ('B.Cu', 131.1, 72.5), ('B.Cu', 131.1, 72.6)])
+  NOT ROUTED ('B3', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 137.2, 31.7), ('F.Cu', 137.1, 31.6), ('F.Cu', 137.0, 31.5)])
+  NOT ROUTED ('U4_GPA2', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 133.6, 72.4), ('B.Cu', 133.7, 72.5), ('B.Cu', 133.8, 72.6)])
+  NOT ROUTED ('U3_GPA5', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 127.7, 14.9), ('B.Cu', 127.6, 15.0), ('B.Cu', 127.5, 15.1)])
+  NOT ROUTED ('D10', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 36.0, 67.6), ('F.Cu', 36.1, 67.5), ('F.Cu', 36.2, 67.4)])
+  NOT ROUTED ('B10', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 153.2, 29.4), ('F.Cu', 153.1, 29.3), ('F.Cu', 153.0, 29.2)])
+  NOT ROUTED ('U4_GPB1', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 148.1, 78.7), ('B.Cu', 148.2, 78.6), ('B.Cu', 148.3, 78.5)])
+  NOT ROUTED ('K1', 'still overlapping another net when negotiation ended, e.g. at', [('F.Cu', 85.7, 83.7), ('F.Cu', 85.6, 83.8), ('F.Cu', 85.5, 83.9)])
+  NOT ROUTED ('D4', 'still overlapping another net when negotiation ended, e.g. at', [('B.Cu', 27.6, 59.8), ('B.Cu', 27.7, 59.9), ('B.Cu', 27.8, 60.0)])
+wrote Claude outputs\routing-baseline\TS06-MAIN-vc1500.kicad_pcb
+board 176.0 x 96.0 mm, 148 parts, 141 nets, 6 holes, 2857 tracks, 329 vias
