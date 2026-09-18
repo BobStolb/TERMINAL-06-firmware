@@ -455,16 +455,32 @@ class Router:
             self.drill(x, y, VIA_DRILL)
 
     def route_net(self, name, width, pads, **kw):
-        """pads: list of (x, y, layers, shape). Prim's tree on straight-line distance."""
+        """pads: list of (x, y, layers, shape). Prim's tree on straight-line distance.
+
+        A PAD WHOSE CONNECTION FAILED IS NOT AN ATTACHMENT POINT. It used to be added to the
+        grown set regardless, so the next pad could be wired to a pad that reaches nothing,
+        and the result is an island rather than a branch - silently, because every pad has
+        copper on it and the per-pad checker is satisfied. GND on TS06-MAIN came out with
+        VT10.2 and VT11.2 wired to each other and to nothing else for exactly that reason,
+        and it survived every routing configuration tried before anyone looked (18.09.26).
+
+        A pad that cannot reach its nearest connected neighbour is also tried against the
+        next two, which costs little and often finds a way round whatever blocked the first.
+        """
         if len(pads) < 2:
             return 0
-        done, todo, fails = [pads[0]], list(pads[1:]), 0
+        live, todo, fails = [pads[0]], list(pads[1:]), 0
         while todo:
             _, ia, ib = min(((math.hypot(a[0] - b[0], a[1] - b[1]), ia, ib)
-                             for ia, a in enumerate(done) for ib, b in enumerate(todo)))
-            if not self.connect(name, width, todo[ib], done[ia], **kw):
+                             for ia, a in enumerate(live) for ib, b in enumerate(todo)))
+            p, mark = todo.pop(ib), len(self.failed)
+            near = sorted(range(len(live)),
+                          key=lambda k: math.hypot(p[0] - live[k][0], p[1] - live[k][1]))
+            if any(self.connect(name, width, p, live[k], **kw) for k in near[:3]):
+                del self.failed[mark:]        # drop the record of the tries that missed
+                live.append(p)
+            else:
                 fails += 1
-            done.append(todo.pop(ib))
         return fails
 
     def route_star(self, name, width, hub, pads, **kw):

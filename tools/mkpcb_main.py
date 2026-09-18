@@ -80,7 +80,20 @@ RP = dict(via_cost=_p("via_cost", 900, int),   # a via, against 10 for a 0.1 mm 
           rounds=_p("rounds", 60, int),
           turn=_p("turn", 15, int),            # cost of a change of direction
           bias=_p("bias", 8, int),             # extra cost of a step across the layer grain
-          decay=_p("decay", 0.9),              # how fast a history scar fades, 1.0 = never
+          decay=_p("decay", 1.0),              # how fast a history scar fades, 1.0 = never.
+                                               # MEASURED: 1.0 is right, and the 0.9 that was
+                                               # here first was my own idea and a wrong one.
+                                               # PathFinder makes history cumulative on
+                                               # purpose: it is the tie-breaker of last
+                                               # resort, the thing that finally makes one of
+                                               # two nets give up a corridor for good. Let it
+                                               # fade and they swap it for ever. At 1.0 the
+                                               # negotiation reached ZERO overlaps at round 20
+                                               # and every net routed, the first time that has
+                                               # happened on this board; at 0.9 it stalled at
+                                               # two. (With compaction on the sign flips -
+                                               # 0.9 gave one split and 1.0 gave four - so
+                                               # this is not a universal, 18.09.26.)
           tighten=_p("tighten", 2, int),       # passes of rip-up-and-reroute for length
           relax=_p("relax", 4, int),           # rounds of failure before a net is let off the grain
           bundle=_p("bundle", 0, int),         # cost of a step away from a net's own bus
