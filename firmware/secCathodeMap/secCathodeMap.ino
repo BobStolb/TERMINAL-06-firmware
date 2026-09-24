@@ -51,6 +51,8 @@ const byte digitMask[] = {7, 3, 6, 4, 1, 9, 8, 0, 5, 2};
 const byte digitMask[] = {2, 8, 1, 9, 6, 4, 3, 5, 0, 7};
 #elif (BOARD_TYPE == 2)
 const byte digitMask[] = {9, 8, 0, 5, 4, 7, 3, 6, 2, 1};
+#elif (BOARD_TYPE == 4)
+const byte digitMask[] = {1, 0, 5, 4, 6, 7, 3, 2, 9, 8};
 #else
 const byte digitMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 #endif

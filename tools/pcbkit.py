@@ -308,6 +308,7 @@ class Board:
         self.outline = [(0, 0), (w, 0), (w, h), (0, h)]
         self.keepouts = []
         self.hide_refs = True       # references are placed by hand, as text, where they fit
+        self.ref_at = {}            # ref -> (dx, dy, angle, size): a reference shown on the silk
         self.thickness = 1.6
 
     # ------------------------------------------------------------------ nets and classes
@@ -618,7 +619,18 @@ class Board:
                     key = S.unq(c[1])
                     if key == "Reference":
                         c[2] = S.q(ref)
-                        if self.hide_refs and S.find(c, "hide") is None:
+                        if ref in self.ref_at:
+                            # placed by the generator: on the silkscreen of the part's own face,
+                            # at a chosen offset, size and angle
+                            dx, dy, rot, size = self.ref_at[ref]
+                            silk = "B.SilkS" if f.back else "F.SilkS"
+                            th = round(size * 0.15, 3)
+                            eff = ["effects", ["font", ["size", S.num(size), S.num(size)], ["thickness", S.num(th)]]]
+                            if f.back:
+                                eff.append(["justify", "mirror"])
+                            c = ["property", c[1], c[2], ["at", S.num(dx), S.num(dy), S.num(rot)],
+                                 ["layer", S.q(silk)], ["uuid", '""'], eff]
+                        elif self.hide_refs and S.find(c, "hide") is None:
                             c.insert(4, ["hide", "yes"])
                     elif key == "Value":
                         c[2] = S.q(part.value if part is not None else f.name)

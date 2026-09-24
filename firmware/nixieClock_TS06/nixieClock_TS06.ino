@@ -40,6 +40,9 @@
 // 1 - IN-12 (tubes upside down)   <-- AlexGyver IN-12 board as shipped
 // 2 - IN-14
 // 3 - custom
+// 4 - TS06-DISP + TS06-DRV, the through-hole pair (tools/ts06pair.py). IN-12 turned as
+//     type 0; the digit map is the pair's own, chosen so both decoders (U2 for the IN-12
+//     bus, U17 for the IN-17 pair, same A0-A3 lines) fan out without a single via.
 
 #define DUTY 190        // boost PWM duty. Sets HV. 180 ~ 175 V, 190 ~ 185 V.
                         // Six tubes need a little more headroom than four:
@@ -254,6 +257,13 @@ const byte cathodeMask[] = {1, 0, 2, 9, 3, 8, 4, 7, 5, 6};
 const byte digitMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 const byte opts[NUM_INDI] = {KEY0, KEY1, KEY2, KEY3, KEY4, KEY5};
 const byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+#elif (BOARD_TYPE == 4)
+// digit d -> K155ID1 code; the same code on U2 and U17 lights digit d on every tube
+// (tools/ts06pair.py DIGIT_MASK4). cathodeMask is the tube's, as type 0.
+const byte digitMask[] = {1, 0, 5, 4, 6, 7, 3, 2, 9, 8};
+const byte opts[NUM_INDI] = {KEY0, KEY1, KEY2, KEY3, KEY4, KEY5};
+const byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3};
 #endif
 
 /*
