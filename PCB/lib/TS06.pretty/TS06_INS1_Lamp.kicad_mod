@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame.")
+	(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame. Silk outline: the measured 6.97 mm envelope as two arcs that stop short of the pads (the full circle ran through both).")
 	(tags "neon INS1 colon THT wire-landing TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
@@ -31,7 +31,8 @@
 	(property "Footprint" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a03") (hide yes)
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a03")
+		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -42,7 +43,8 @@
 	(property "Datasheet" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a04") (hide yes)
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a04")
+		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -53,7 +55,8 @@
 	(property "Description" ""
 		(at 0 0 0)
 		(layer "F.Fab")
-		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a05") (hide yes)
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a05")
+		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -75,16 +78,27 @@
 		(layers "*.Cu" "*.Mask")
 		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a07")
 	)
-	(fp_circle
-		(center 0 0)
-		(end 0 3.5)
+	(fp_arc
+		(start 1.417477 -3.183706)
+		(mid 3.485 0)
+		(end 1.417477 3.183706)
 		(stroke
 			(width 0.12)
 			(type solid)
 		)
-		(fill no)
 		(layer "F.SilkS")
 		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a08")
+	)
+	(fp_arc
+		(start -1.417477 -3.183706)
+		(mid -3.485 0)
+		(end -1.417477 3.183706)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "1e1a0b0a-2a3a-4a3a-8a3a-1a2a3a4a5a09")
 	)
 	(fp_line
 		(start -3.6 -4.0)
