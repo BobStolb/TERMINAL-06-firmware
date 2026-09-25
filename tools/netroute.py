@@ -146,7 +146,7 @@ class NetRouter:
             return self.clr[self.hv]
         return max(self.clr[c1], self.clr[c2])
 
-    def slack(self, net, layer, w, win, soft_pen=None):
+    def slack(self, net, layer, w, win, soft_pen=None, fixed_only=False):
         """For every cell of the window: how far a track of width w centred there is from
         violating a clearance (negative = blocked), capped at `near`. With soft_pen, the tracks
         of nets that are not locked do not block: they add soft_pen[net] to a second array,
@@ -160,6 +160,8 @@ class NetRouter:
         half = w / 2
         for n, pts, r, kind, obj in self._items(layer):
             if n == net:
+                continue
+            if fixed_only and kind == "trk" and obj not in self.fixed:
                 continue
             is_soft = soft is not None and kind == "trk" and n not in self.locked and obj not in self.fixed
             reach = r + self.need(net, n) + half + self.margin + self.near
@@ -487,3 +489,206 @@ class NetRouter:
                         print(f"  {n}: {L0:.1f} -> {L1:.1f} mm", flush=True)
             if verbose:
                 print(f"polish pass: {better} nets shorter", flush=True)
+
+
+class Negotiator:
+    """Negotiated-congestion routing (PathFinder, McMurchie & Ebeling 1995) on top of NetRouter.
+
+    The greedy rip-up in NetRouter.route_all evicts whole nets and can cycle for ever when a few
+    nets compete for the same gaps. Here every net is routed every round and may overlap other
+    nets' copper, at a price: `pres` for sharing now (raised every round) plus a history cost
+    that grows wherever sharing persists. Nets spread out until nothing is shared. Only what
+    never moves is a hard obstacle - pads, hand-laid copper, holes, the edge, keep-outs - and that
+    is computed once per net and face and cached, so a round costs little more than the searches.
+    Clearance between routed nets is negotiated on a raster; the final result is checked exactly
+    (conflicts()), and Board.check / KiCad's DRC verify it again."""
+
+    def __init__(self, router, order, widths=None, layers=None):
+        self.R, self.B = router, router.B
+        self.order = list(order)
+        self.widths = widths or {}
+        self.layers = layers or {}
+        ny, nx = router.ny, router.nx
+        self.hist = {ly: np.zeros((ny, nx), np.float32) for ly in LAYERS}
+        self.cu = {(ly, g): np.zeros((ny, nx), np.int16) for ly in LAYERS for g in ("std", "hv")}
+        self.cache = {}
+        self.pres = 0.6
+        self.hist_step = 1.0
+
+    def w(self, net):
+        return self.widths.get(net) or self.B.width(net)
+
+    def group(self, net):
+        return "hv" if self.B.cls(net) == self.R.hv else "std"
+
+    # -------------------------------------------------------------- static obstacles
+    def hard(self, net, layer):
+        key = (net, layer)
+        if key not in self.cache:
+            R = self.R
+            s = R.slack(net, layer, self.w(net), (0, 0, R.nx - 1, R.ny - 1), fixed_only=True)
+            self.cache[key] = (np.packbits(s < 0, axis=None), np.packbits(s < R.near / 2, axis=None))
+        pb, pn = self.cache[key]
+        shape, count = (self.R.ny, self.R.nx), self.R.ny * self.R.nx
+        blocked = np.unpackbits(pb, count=count).reshape(shape).astype(bool)
+        near = np.unpackbits(pn, count=count).reshape(shape).astype(np.float32) * (self.R.near_cost * 0.5)
+        return blocked, near
+
+    # -------------------------------------------------------------- routed copper on the raster
+    def paint(self, net, sign):
+        G = self.R.G
+        g = self.group(net)
+        for t in self.B.tracks:
+            n, ly, a, b, w = t
+            if n != net or t in self.R.fixed:
+                continue
+            r = w / 2
+            i0, i1 = int((min(a[0], b[0]) - r) / G) - 1, int((max(a[0], b[0]) + r) / G) + 2
+            j0, j1 = int((min(a[1], b[1]) - r) / G) - 1, int((max(a[1], b[1]) + r) / G) + 2
+            i0, j0 = max(i0, 0), max(j0, 0)
+            i1, j1 = min(i1, self.R.nx), min(j1, self.R.ny)
+            X = (np.arange(i0, i1) * G)[None, :]
+            Y = (np.arange(j0, j1) * G)[:, None]
+            d = K._dist_field(np, np.broadcast_to(X, (j1 - j0, i1 - i0)), np.broadcast_to(Y, (j1 - j0, i1 - i0)), [a, b])
+            self.cu[(ly, g)][j0:j1, i0:i1] += (d <= r + 0.05).astype(np.int16) * sign
+
+    def unroute(self, net):
+        self.paint(net, -1)
+        self.R.unroute(net)
+
+    # -------------------------------------------------------------- one net
+    def join(self, net, src, dst, layer, window):
+        from scipy.ndimage import distance_transform_edt as edt
+        R, G = self.R, self.R.G
+        w = self.w(net)
+        sm = [it[1] for it in src if layer in it[0]]
+        dm = [it[1] for d in dst for it in d if layer in it[0]]
+        if not sm or not dm:
+            return None
+        allp = [p for gg in sm + dm for p in gg[0]]
+        i0 = max(0, int((min(p[0] for p in allp) - window) / G))
+        i1 = min(R.nx - 1, int((max(p[0] for p in allp) + window) / G) + 1)
+        j0 = max(0, int((min(p[1] for p in allp) - window) / G))
+        j1 = min(R.ny - 1, int((max(p[1] for p in allp) + window) / G) + 1)
+        win = (i0, j0, i1, j1)
+        blocked, near = self.hard(net, layer)
+        blocked = blocked[j0:j1 + 1, i0:i1 + 1]
+        cost = near[j0:j1 + 1, i0:i1 + 1].astype(np.float32) + self.hist[layer][j0:j1 + 1, i0:i1 + 1]
+        # sharing with other routed nets: within clearance of their copper
+        mine = self.group(net)
+        c_std = max(R.clr[self.B.cls(net)], max(c for k, c, _ in self.B.classes if k != R.hv)) if mine == "std" else R.clr[R.hv]
+        for g, clr in (("std", c_std), ("hv", R.clr[R.hv])):
+            occ = self.cu[(layer, g)][j0:j1 + 1, i0:i1 + 1] > 0
+            if occ.any():
+                d = edt(~occ) * G
+                cost += self.pres * (d < w / 2 + clr + R.margin + G * 0.75)
+        cost[blocked] = -1
+        smask = R.own(net, layer, win, sm)
+        gmask = R.own(net, layer, win, dm)
+        cost[smask | gmask] = np.maximum(cost[smask | gmask], 0)
+        h = (edt(~gmask) * 1.0).astype(np.float32)
+        wx, wy = i1 - i0 + 1, j1 - j0 + 1
+        cst = np.ascontiguousarray(cost.reshape(-1).astype(np.float32))
+        sr = np.ascontiguousarray(smask.reshape(-1).astype(np.uint8))
+        gl = np.ascontiguousarray(gmask.reshape(-1).astype(np.uint8))
+        hg = np.ascontiguousarray(h.reshape(-1))
+        dmul = np.ascontiguousarray(np.array(R.dirmul.get(layer, [1.0] * 8), np.float32))
+        if _C is not None:
+            out = np.zeros(wx * wy, np.int32)
+            n = _C.astar(wx, wy, cst, sr, gl, hg, 0, 0, wx - 1, wy - 1, R.turn45, dmul, out, len(out))
+            cells = list(out[:n]) if n > 0 else []
+        else:
+            cells = _astar_py(wx, wy, cst, sr, gl, hg, 0, 0, wx - 1, wy - 1, R.turn45, dmul)
+        if not cells:
+            return None
+        pts = [((c % wx + i0) * G, (c // wx + j0) * G) for c in cells]
+        tot = sum(1.0 + cst[c] for c in cells)
+        return tot, R._corners(pts)
+
+    def route(self, net, window=10.0):
+        R = self.R
+        self.unroute(net)
+        layers = self.layers.get(net, LAYERS)
+        for _ in range(300):
+            ps = R.pieces(net)
+            if len(ps) <= 1:
+                break
+            best = None
+            for k in range(len(ps)):
+                src, dst = ps[k], ps[:k] + ps[k + 1:]
+                for ly in layers:
+                    for win in (window, window * 3, 400.0):
+                        r = self.join(net, src, dst, ly, win)
+                        if r is not None:
+                            if best is None or r[0] < best[0]:
+                                best = (r[0], ly, r[1])
+                            break
+                if best is not None:
+                    break
+            if best is None:
+                break
+            pts = R._snap(net, best[1], best[2])
+            self.B.track(net, best[1], pts, self.widths.get(net))
+        self.paint(net, +1)
+        return len(R.pieces(net)) <= 1
+
+    # -------------------------------------------------------------- what is still shared
+    def conflicts(self):
+        """Exact clearance conflicts between routed tracks of different nets: {net: [segments]}."""
+        out = {}
+        R = self.R
+        Gb = 3.0
+        for ly in LAYERS:
+            segs = [t for t in self.B.tracks if t[1] == ly]
+            grid = {}
+            for idx, (n, _, a, b, w) in enumerate(segs):
+                for gx in range(int(min(a[0], b[0]) // Gb) - 1, int(max(a[0], b[0]) // Gb) + 2):
+                    for gy in range(int(min(a[1], b[1]) // Gb) - 1, int(max(a[1], b[1]) // Gb) + 2):
+                        grid.setdefault((gx, gy), []).append(idx)
+            seen = set()
+            for cell in grid.values():
+                for x in range(len(cell)):
+                    for y in range(x + 1, len(cell)):
+                        i, j = cell[x], cell[y]
+                        if (i, j) in seen:
+                            continue
+                        seen.add((i, j))
+                        ti, tj = segs[i], segs[j]
+                        if ti[0] == tj[0] or (ti in R.fixed and tj in R.fixed):
+                            continue
+                        need = R.need(ti[0], tj[0]) + ti[4] / 2 + tj[4] / 2 - 1e-6
+                        if K.dist(([ti[2], ti[3]], 0), ([tj[2], tj[3]], 0)) < need:
+                            for t in (ti, tj):
+                                if t not in R.fixed:
+                                    out.setdefault(t[0], []).append(t)
+        return out
+
+    def run(self, rounds=60, verbose=True):
+        import time
+        t0 = time.time()
+        for n in self.order:
+            self.route(n)
+        for k in range(rounds):
+            con = self.conflicts()
+            unrouted = [n for n in self.order if len(self.R.pieces(n)) > 1]
+            if verbose:
+                print(f"round {k}: {len(con)} nets sharing, {len(unrouted)} unrouted, pres {self.pres:.1f}, "
+                      f"{time.time() - t0:.0f}s", flush=True)
+            if not con and not unrouted:
+                return []
+            # history where sharing persists
+            G = self.R.G
+            for n, ts in con.items():
+                for (_, ly, a, b, w) in ts:
+                    L = max(abs(b[0] - a[0]), abs(b[1] - a[1]))
+                    steps = max(1, int(L / G))
+                    for s_ in range(steps + 1):
+                        x = a[0] + (b[0] - a[0]) * s_ / steps
+                        y = a[1] + (b[1] - a[1]) * s_ / steps
+                        i, j = int(round(x / G)), int(round(y / G))
+                        self.hist[ly][max(0, j - 3):j + 4, max(0, i - 3):i + 4] += self.hist_step
+            self.pres *= 1.5
+            for n in self.order:
+                if n in con or n in unrouted:
+                    self.route(n)
+        return sorted(set(self.conflicts()) | {n for n in self.order if len(self.R.pieces(n)) > 1})
