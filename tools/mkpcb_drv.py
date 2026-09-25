@@ -175,11 +175,25 @@ pl("R70", 88.3, -11.0, rot=90)
 pl("R71", 91.8, -11.0, rot=90)
 pl("R65", 114.5, -22.0)
 pl("C14", 96.5, -20.3)
-# D9's series resistor stands beside the Nano, not in the control block: D9 is a middle pin of the
-# Nano's digital row, boxed in on both faces, and reaches the resistor under the module on the
-# back face; the resistor's far pad is where PWM_G changes to the front face to cross into the
-# control block. A through-hole part is the only via this board has.
-pl("R66", 132.6, 20.3 - Y0, rot=270)
+
+# ======================================================================== where lines change face
+# A through-hole pad is copper on both faces, so a series resistor is the one "via" a zero-via
+# board has. The Nano's lines are placed so that each one changes face at its own resistor, where
+# it has to cross something:
+#  * the four lines that come down the corridor beside the Nano (D9 the converter's PWM, D10 the
+#    colon, D12 the "m" LED, D13 an anode) end in four standing resistors at the corridor's exit,
+#    and what leaves them (PWM_G north to the control block, the rest south) is on the front face;
+#  * the minutes' and S10's anode resistors stand under the Nano's west end, where D2-D4 come
+#    west to them; their outputs drop down that side and run west in lanes under the resistors
+#    at the corridor's exit;
+#  * the hours' anode resistors lie straight above their optos, D5 and D6 coming west to them.
+HOP_Y = 42.3                                # pad 1 of the corridor-exit resistors (DRV frame)
+for ref, x in (("R66", 126.0), ("R1", 122.5), ("R53", 119.0), ("R26", 115.5)):
+    pl(ref, x, HOP_Y - Y0, rot=270)
+for ref, x, y in (("R25", 134.6, 24.0), ("R24", 137.6, 24.0), ("R23", 140.6, 24.0)):
+    pl(ref, x, y - Y0, rot=270)
+pl("R22", 143.1, 35.3 - Y0, rot=270)        # H1
+pl("R21", 148.8, 35.3 - Y0, rot=270)        # H10
 
 # ======================================================================== the bottom band
 # The expander and the LED network, stacked: port B straight up into the network, the network
@@ -189,11 +203,18 @@ pl("U3", 44.5, 60.0, rot=270)
 pl("RN1", 26.72, 56.0, rot=90)
 # The fascia cable plugs in at the bottom edge on the face towards the display, which is the
 # face the fascia sits in front of: the cable goes straight forward, not round the stack.
-pl("J1", 132.0, 67.25, back=True)
-# The clock module, on the I2C lines between the Nano and the expander.
-pl("U13", 60.0, 50.0, rot=90)
-# U2's decoupling capacitor beside it, where U2's 5 V and ground leave it on the back face.
-pl("C4", 153.3, 16.5, rot=180)
+pl("J1", 122.0, 69.0, rot=180, back=True)
+# The I2C pull-ups stand above the LED ribbon between the colon and the hours' cell: SDA and SCL come
+# down beside the cell on the front face and change face in them to cross the ribbon on the back,
+# then again in the clock module's socket on their way to the expander.
+pl("R55", 134.2, 61.2 - Y0, rot=90)         # SCL
+pl("R54", 137.2, 61.2 - Y0, rot=90)         # SDA
+# The fascia's ladder filters between the colon's ballasts and the hours' cell, where A6 and A7 come
+# west on the front face and change face to cross the LED ribbon on their way down to J1.
+pl("C6", 133.9, 49.5 - Y0, rot=270)
+pl("C5", 137.4, 49.5 - Y0, rot=270)
+# U2's decoupling capacitor at the chip's top left, fed from its 5 V pin through the gap above pin 12.
+pl("C4", 157.2, 32.4 - Y0, rot=90)
 
 # ======================================================================== the small parts
 # Each goes to the free spot of its region nearest the pads it connects to (pcbkit.place_near).
@@ -202,6 +223,9 @@ XALANES = (5.0, 17.0, 51.8, 21.3)          # port A's lanes under the two ИН-1
 XALEFT = (4.5, 17.0, 10.0, 74.0)           # ... up the left edge
 XABOT = (5.0, 68.4, 46.5, 74.0)            # ... and under the expander
 BLRIB = (20.0, 42.0, 166.0, 45.9)          # the LED ribbon under the bottom strips
+GAP = (150.0, -1.0, 157.5, 30.0)           # between the hours' cell and U2: the Nano's lines go south
+PLAZA = (132.5, -5.0, 157.5, 21.0)         # under the Nano: its lines fan out here
+OPTLANES = (52.0, 19.2, 136.0, 21.6)       # D2-D4's anode lines run west under the corridor's exit
 XAFAN = (5.0, 17.0, 52.0, 30.5)            # port A's lines rise up the left edge into U16 / U15
 NECK = (78.0, -1.0, 157.5, 21.0)           # the Nano's lines come down through here
 for r in ("C9", "C10", "C11"):
@@ -209,19 +233,19 @@ for r in ("C9", "C10", "C11"):
 for r in ("C12", "R68", "C13", "C3"):
     near(r, 38.0, -25.5, 127.0, -4.6)
 for r in ("R60", "R61"):                    # the reservoir's bleeder, on the 185 V feed between cells
-    near(r, 67.0, 29.0, 100.5, 39.4)
+    near(r, 67.0, 29.0, 100.5, 39.4, keepout=(OPTLANES,))
 for r in ("C15", "C16"):
     near(r, 8.0, 21.4, 46.0, 25.5, rots=(0,), keepout=(XALANES,))
-near("C17", 60.0, 17.4, 80.0, 21.0, rots=(0,))
-for r in ("R21", "R22", "R23", "R24", "R25", "R26", "R1", "R53"):
-    near(r, 8.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK))
-for r in ("VT20", "R20", "R33", "R34", "R35", "R36"):
+near("C17", 58.0, 21.7, 80.0, 26.5, rots=(0,), keepout=(OPTLANES,))
+for r in ("VT20", "R20"):                    # the backlight switch, under U2 beside XS21's BL_K pin
+    near(r, 161.0, 28.8, 170.5, 40.2, keepout=(BLRIB,))
+for r in ("R33", "R34", "R35", "R36"):
     near(r, 140.0, 44.0, 176.0, 74.0, keepout=(BLRIB,))
 for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
-    near(r, 45.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK))
+    near(r, 45.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
 near("C1", 10.0, 44.5, 26.0, 57.5, keepout=(XALEFT, XABOT, BLRIB))   # the expander's own decoupling
-for r in ("R54", "R55", "C5", "C6"):
-    near(r, 10.0, 44.0, 130.0, 74.0, keepout=(XALEFT, XABOT, BLRIB))
+JACK = tuple(v - (Y0 if i % 2 else 0) for i, v in enumerate(B.court("J1")))   # nothing under J1's housing
+near("U13", 55.0, 46.5, 118.0, 66.0, keepout=(XALEFT, XABOT, BLRIB, JACK))   # the clock module
 
 # ======================================================================== hand-laid copper
 # The decoder fans, laid the way a person lays them: every line a straight rise, a 45 degree
@@ -310,18 +334,19 @@ for pin in (29, 27, 26, 25, 24, 23, 22, 21, 20, 19):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
     T(n, "F.Cu", (x, y), (x + 1.27, y + 1.27), (x + 1.27, Y_END), w=W_RAIL if n in ("GND", "+5V") else LV)
-for pin in (4, 5, 6, 7, 8, 9, 10, 11, 13, 14):
+for pin in (4, 5, 6, 7, 8, 9, 10, 11, 14):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
     T(n, "B.Cu", (x, y), (x, Y_END), w=W_RAIL if n == "GND" else LV)
 
-# The U17 branch of A0-A3, with D13 and D12 beside it, leaves under the module, turns down the
+# The U17 branch of A0-A3, with D13, D12, D10 and D9 beside it, leaves under the module, turns down the
 # corridor between the module and the control block, and runs west to U17, entering the chip
 # between its rows from the right: every line then drops into its own input pin from above,
 # and the order the Nano's pins give the bus is exactly the order U17's pins want - which is
 # why this bus goes INTO the chip rather than under it (from below it would arrive mirrored).
-# D9, the converter's PWM, cannot cross this bus on the back face; it comes out under the module
-# to R66 beside the corridor, and PWM_G crosses to the control block on the front face.
+# D9, D10, D12 and D13 come down the corridor on the bus's outside and end in their series resistors
+# at its exit (HOP), where they change face.
+HOP = {"D9": "R66", "D10": "R1", "D12": "R53", "D13": "R26"}   # where the corridor's other lines end
 X_COR = 128.0                               # the corridor's first line (A3)
 PITCH = 0.6
 Y_RUN = 36.5                                # A3's lane between U17's rows
@@ -331,32 +356,33 @@ for k, (pin, dy) in enumerate(((22, 1.9), (21, 2.5), (20, 3.1), (19, 3.7), (16, 
     xc, yl = X_COR + k * PITCH, y + dy
     if n == "D13":                          # down the corridor and west, outside the A0-A3 bus
         yw = Y_RUN + k * PITCH
-        T(n, "B.Cu", (x, y), (x, yl), (xc + 1.0, yl), (xc, yl + 1.0), (xc, yw - 1.0), (xc - 1.0, yw), (110.0, yw))
+        hx, hy = P_(HOP[n], 1)
+        T(n, "B.Cu", (x, y), (x, yl), (xc + 1.0, yl), (xc, yl + 1.0), (xc, yw - 1.0), (xc - 1.0, yw),
+          (hx + 0.5, yw), (hx, yw + 0.5), (hx, hy))
         continue
     yw = Y_RUN + k * PITCH
     xd, yd = P_("U17", {"A0": 7, "A1": 6, "A2": 4, "A3": 3}[n])
     T(n, "B.Cu", (x, y), (x, yl), (xc + 1.0, yl), (xc, yl + 1.0), (xc, yw - 1.0), (xc - 1.0, yw),
       (xd + 0.5, yw), (xd, yw + 0.5), (xd, yd))
-x, y = P_("U1", 15)                         # D12, from the near row up under the module
-xc, yl, yw = X_COR + 5 * PITCH, y - 2.8, Y_RUN + 5 * PITCH
-T("D12", "B.Cu", (x, y), (x, yl), (xc + 1.0, yl), (xc, yl + 1.0), (xc, yw - 1.0), (xc - 1.0, yw), (110.0, yw))
-x, y = P_("U1", 12)                         # D9, likewise, into R66
-r1 = P_("R66", 1)
-T("D9", "B.Cu", (x, y), (x, y - 1.9), (r1[0] + 1.0, y - 1.9), (r1[0], y - 0.9), r1)
+for k, (pin, dy) in ((5, (15, 3.2)), (6, (13, 2.65)), (7, (12, 2.1))):   # D12, D10, D9 from the near row
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    xc, yl, yw = X_COR + k * PITCH, y - dy, Y_RUN + k * PITCH
+    hx, hy = P_(HOP[n], 1)
+    T(n, "B.Cu", (x, y), (x, yl), (xc + 1.0, yl), (xc, yl + 1.0), (xc, yw - 1.0), (xc - 1.0, yw),
+      (hx + 0.5, yw), (hx, yw + 0.5), (hx, hy))
 B.keepouts.append((X_EXIT + 0.5, 0.0, W, Y_END - 0.3, "*"))
 
-# U2's inputs thread the chip on the front face to its far side; its 5 V and ground leave the far
-# side on the back face, straight into C4 beside it.
+# U2's inputs thread the chip on the front face to its far side; its 5 V leaves the far side on the
+# back face through the gap above pin 12 and runs up the chip's edge into C4.
 x_l = P_("U2", 16)[0]
 for pin in (7, 6, 4, 3):
     n = PT["U2"].pins[str(pin)]
     x, y = P_("U2", pin)
     T(n, "F.Cu", (x, y), (x - 1.27, y - 1.27), (x_l - 1.58, y - 1.27))
 x, y = P_("U2", 5)
-c1, c2 = P_("C4", 1), P_("C4", 2)
-T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0] + 0.67, y - 1.27), c1, w=W_RAIL)
-x, y = P_("U2", 12)
-T("GND", "B.Cu", (x, y), (x - 1.18, y + 1.18), (c2[0] + 1.18, y + 1.18), (c2[0], y), c2, w=W_RAIL)
+c1 = P_("C4", 1)
+T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0], y - 1.27), c1, w=W_RAIL)
 c = B.court("U2")
 B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))           # U2's body and its channel to XS11
 
@@ -379,7 +405,7 @@ for i in range(8):
     T(f"XB{i}", "B.Cu", P_("U3", 1 + i), P_("RN1", 8 - i))
 
 # The LED ribbon: from the network's far row up into lanes under the bottom strips and along them
-# on the back face, each line peeling off up into its strip pin - the nearest pin on the top lane.
+# each line peeling off up into its strip pin - the nearest pin on the top lane.
 # BL_A8 is a short diagonal to its pin beside the network; BL_A7 crosses the ribbon on the front.
 BL_DEST = {1: ("XS21", 2), 2: ("XS21", 5), 3: ("XS23", 1), 4: ("XS23", 4), 5: ("XS24", 1), 6: ("XS24", 4)}
 BL_Y = 69.0
@@ -387,7 +413,10 @@ for k, i in enumerate((6, 5, 4, 3, 2, 1)):
     x, y = P_("RN1", 8 + i)
     yl = BL_Y + k * XA_P
     xd, yd = P_(*BL_DEST[i])
-    T(f"BL_A{i}", "B.Cu", (x, y), (x, yl + 0.5), (x + 0.5, yl), (xd - 0.5, yl), (xd, yl - 0.5), (xd, yd))
+    # the two lines that reach the hours' strip run on the front face, so that east of the minutes'
+    # strip the back face under the strips is free for the lines that must cross down to J1
+    T(f"BL_A{i}", "F.Cu" if i in (1, 2) else "B.Cu", (x, y), (x, yl + 0.5), (x + 0.5, yl), (xd - 0.5, yl),
+      (xd, yl - 0.5), (xd, yd))
 x, y = P_("RN1", 16)
 xd, yd = P_("XS25", 6)
 T("BL_A8", "B.Cu", (x, y), (x, yd + (x - xd)), (xd, yd))
@@ -493,11 +522,19 @@ def route_order():
 
 
 def route():
+    """Negotiated routing (netroute.Negotiator) of everything not laid by hand, then a polish pass
+    that re-routes each net alone with the rest in place. A diagonal step is priced above two
+    straight ones and every 45 degrees of turn costs 0.6 mm, so long runs come out straight and
+    square with a 45 degree chamfer at each corner, the way the hand-laid buses are drawn."""
     import netroute as NR
-    R = NR.NetRouter(B)
+    R = NR.NetRouter(B, turn45=6.0)
     R.locked = set(LOCKED)
     R.fixed = set(FIXED)
-    failed = R.route_all(route_order(), widths=WIDTHS)
+    R.dirmul = {ly: [1.0, 1.5, 1.0, 1.5, 1.0, 1.5, 1.0, 1.5] for ly in ("F.Cu", "B.Cu")}
+    N = NR.Negotiator(R, route_order(), widths=WIDTHS)
+    failed = N.run(rounds=60)
+    if not failed:
+        R.polish([n for n in route_order() if n not in LOCKED], widths=WIDTHS, verbose=True)
     with open(ROUTES, "w") as fh:
         json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if (n, ly, a, b, w) not in FIXED], fh, indent=0)
     return failed

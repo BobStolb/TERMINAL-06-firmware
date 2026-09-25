@@ -35,7 +35,7 @@ def kind(p):
     table = {"XS1": "DC jack", "F1": "PTC fuse", "VD2": "Schottky diode", "VD1": "Fast rectifier",
              "U14": "5 V switching regulator", "U1": "Arduino Nano", "L1": "Inductor, radial",
              "VT21": "N-MOSFET 500 V", "U11": "MOSFET driver", "U12": "Dual comparator", "U3": "I2C port expander",
-             "J1": "JST PH, side entry", "U13": "DS3231 mini module (on a 5-way PBS)"}
+             "J1": "JST PH, vertical (top entry)", "U13": "DS3231 mini module (on a 5-way PBS)"}
     if ref in table:
         return table[ref]
     if ref.startswith("VT"):

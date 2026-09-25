@@ -199,11 +199,18 @@ C("C4", "100n", "+5V", "GND", group="decoder")
 C("C17", "100n", "+5V", "GND", group="decoder")
 
 # ---- the six anode channels
+# Which Nano pin drives which anode is the pair's own, and the firmware's opts[] table for
+# BOARD_TYPE 4 follows it ({KEY3, KEY2, KEY1, KEY0, KEY4, KEY5}, the order BOARD_TYPE 1 and 2
+# already use). The Nano's digital row leaves the module D2..D11 west to east; with the hours'
+# optos nearest the module and the minutes' and seconds' further west, the eastern pins must
+# drive the nearer tubes or the lines cross on the one face they have (tools/mkpcb_drv.py).
+TUBE_PIN4 = {"H10": "D6", "H1": "D5", "M10": "D4", "M1": "D3", "S10": "D2", "S1": "D13"}
 for i, nm in enumerate(TUBES):
     u = f"U{i + 5}"
     part(u, "TLP627", DIP4, {1: "OPT_" + nm, 2: "GND", 3: "EMIT_" + nm, 4: "HV185"}, DRV, "anodes",
          f"Anode switch for {nm}: 1 LED anode, 2 LED cathode, 3 emitter, 4 collector.")
-    R(f"R{21 + i}", "470R", M.TUBE_PIN[nm], "OPT_" + nm, group="anodes", note="Opto LED, ~8 mA.")
+    R(f"R{21 + i}", "470R", TUBE_PIN4[nm], "OPT_" + nm, R_V if nm in ("M10", "M1", "S10", "S1") else
+      "TS06_R_Axial_DIN0207_P10.16mm", group="anodes", note="Opto LED, ~8 mA.")
     R(f"R{27 + i}", M.ANODE_R[nm], "EMIT_" + nm, "ANODE_" + nm, R_HV, "anodes",
       "Anode series resistor, one per tube; TBC values wait for bench gate 2.")
     R(f"R{33 + 2 * i}", "510k DNP", "ANODE_" + nm, "BLEED_" + nm, R_V, "anodes",
@@ -259,8 +266,8 @@ C("C15", "100n", "+5V", "GND", group="ampm")
 C("C16", "100n", "+5V", "GND", group="ampm")
 R("R56", "8k2", "ANODE_AM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15Б (bench gate 2 checks it).")
 R("R57", "8k2", "ANODE_PM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15А.")
-R("R54", "4k7", "+5V", "SDA", group="ampm", note="I2C pull-ups.")
-R("R55", "4k7", "+5V", "SCL", group="ampm")
+R("R54", "4k7", "+5V", "SDA", R_V, group="ampm", note="I2C pull-ups.")
+R("R55", "4k7", "+5V", "SCL", R_V, group="ampm")
 
 # ---- backlight: eight addressable LEDs, one switch for brightness
 # The eight current-limiting resistors are ONE part: an isolated 8 x 220R network in DIP-16
@@ -273,18 +280,23 @@ for k in range(8):
 part("RN1", "8x220R isolated DIP-16", DIP16, RN, DRV, "backlight",
      "Isolated resistor network, 8 x 220R (4116R-1-221 class): GPBk -> pin 8-k, resistor to pin 9+k -> its LED.")
 mpsa42("VT20", "B20", "BL_K", "backlight", "Common-cathode switch for all nine LEDs: D11's PWM is the brightness.")
-R("R20", "470R", "D11", "B20", group="backlight")
-R("R53", "220R", "D12", "M_A", group="backlight", note="The m LED, from D12.")
+R("R20", "470R", "D11", "B20", R_V, group="backlight")
+R("R53", "220R", "D12", "M_A", R_V, group="backlight", note="The m LED, from D12. Standing: one of the four series resistors where the Nano's corridor lines end and change face (tools/mkpcb_drv.py).")
 
 # ---- colon
 R("R58", "220k", "HV185", "COLON_U", R_HV, "colon", "Own ballast per lamp, never shared (spec §3).")
 R("R59", "220k", "HV185", "COLON_L", R_HV, "colon")
 mpsa42("VT1", "B1", "COLON_RET", "colon", "Low-side switch for both lamps, PWM-faded from D10.")
-R("R1", "10k", "D10", "B1", group="colon")
+R("R1", "10k", "D10", "B1", R_V, group="colon")
 
 # ---- fascia and RTC
-part("J1", "PH 6 side entry", "TS06_JST_PH_S6B-PH-K_Horizontal", {1: "+5V", 2: "GND", 3: "A6", 4: "A7", 5: "D7", 6: "D8"},
-     DRV, "fascia", "The panel cable; pin order is the specification both fascia builds share.")
+# J1's pin order is the fascia specification (1 +5V, 2 GND, 3 rotary ladder, 4 levers, 5 button -, 6 button +).
+# On this board the rotary ladder (pin 3) reaches the Nano's A7 and the levers (pin 4) its A6: the two
+# lines leave the Nano A7 west of A6 and arrive at J1 in that order, on a face they share with nothing
+# they could cross. The firmware reads A6 and A7 for nothing yet; BOARD_TYPE 4 names the swap.
+part("J1", "PH 6 vertical", "TS06_JST_PH_B6B-PH-K_Vertical", {1: "+5V", 2: "GND", 3: "A7", 4: "A6", 5: "D7", 6: "D8"},
+     DRV, "fascia", "The panel cable; pin order is the specification both fascia builds share. Top entry, "
+     "so the cable leaves towards the fascia.")
 C("C5", "100n", "A6", "GND", group="fascia", note="Ladder filters at the board end (spec §2).")
 C("C6", "100n", "A7", "GND", group="fascia")
 part("U13", "DS3231 mini", "TS06_PinSocket_1x05", {1: "GND", 2: None, 3: "SCL", 4: "SDA", 5: "+5V"}, DRV, "rtc",
@@ -311,7 +323,7 @@ R("R70", "10k 1%", "VREF", "GND", group="hv")
 C("C14", "100n", "VREF", "GND", group="hv")
 R("R65", "1M", "PWM_G", "VREF", group="hv", note="Hysteresis, about 1 V of rail.")
 C("C13", "100n", "+5V", "GND", group="hv")
-R("R66", "2k2", "D9", "PWM_G", group="hv")
+R("R66", "2k2", "D9", "PWM_G", R_V, group="hv")
 R("R71", "10k", "PWM_G", "GND", group="hv")
 part("U11", "TC4420", DIP8, {1: "+12V", 2: "PWM_G", 3: None, 4: "GND", 5: "GND", 6: "GATE_D", 7: "GATE_D", 8: "+12V"}, DRV, "hv",
      "Non-inverting MOSFET driver, 12 V out. MCP1407 is a drop-in.")

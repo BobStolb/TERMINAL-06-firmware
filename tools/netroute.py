@@ -684,6 +684,7 @@ class Negotiator:
             if verbose:
                 print(f"round {k}: {len(con)} nets sharing, {len(unrouted)} unrouted, pres {self.pres:.1f}, "
                       f"{time.time() - t0:.0f}s", flush=True)
+                print("   sharing:", " ".join(sorted(con)), flush=True)
             if not con and not unrouted:
                 return []
             # history where sharing persists
