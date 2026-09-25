@@ -1090,3 +1090,57 @@ def plot_placement(board, path, ppm=6, labels=True):
         d.line([P(*a), P(*b)], fill=(230, 90, 90) if layer == "F.Cu" else (90, 150, 255), width=max(1, int(w * ppm)))
     d.rectangle([P(0, 0), P(board.W, board.H)], outline=(200, 200, 200))
     im.save(path)
+
+
+# ======================================================================== placing the small parts
+def place_near(board, ref, fp, region, rots=(0, 90, 180, 270), grid=0.635, margin=0.25, keepout=(),
+               back=False, weight=None):
+    """Put one part in the free spot of `region` (x0, y0, x1, y1) nearest the copper it connects
+    to: for every candidate position and rotation, the sum over its pads of the distance to the
+    nearest pad already placed on the same net (weight[net] scales a net). Courtyards may not
+    overlap (by `margin`) any part on the same face, nor any `keepout` rectangle. Deterministic:
+    ties go to the first candidate in scan order. Returns (x, y, rot) or None."""
+    part = board.parts.get(ref)
+    weight = weight or {}
+    placed = [(board.court(r), board.placed[r][0].back) for r in board.placed]
+    best = None
+    for rot in rots:
+        f = Footprint(fp, rot, back)
+        c = f.court
+        pins = [(p.x, p.y, part.pins.get(p.name)) for p in f.pads] if part else []
+        targets = {}
+        for _, _, n in pins:
+            if n and n not in targets:
+                targets[n] = [(q.x, q.y) for q in board.pads if q.net == n]
+        x0, y0, x1, y1 = region
+        nx = int((x1 - x0 - (c[2] - c[0])) / grid) + 1
+        ny = int((y1 - y0 - (c[3] - c[1])) / grid) + 1
+        for j in range(max(ny, 0)):
+            for i in range(max(nx, 0)):
+                ox = round(x0 - c[0] + i * grid, 3)
+                oy = round(y0 - c[1] + j * grid, 3)
+                bx = (ox + c[0] - margin, oy + c[1] - margin, ox + c[2] + margin, oy + c[3] + margin)
+                bad = False
+                for (a, b, cc, d), bk in placed:
+                    if bk == back and bx[0] < cc and a < bx[2] and bx[1] < d and b < bx[3]:
+                        bad = True
+                        break
+                if bad:
+                    continue
+                for (a, b, cc, d) in keepout:
+                    if bx[0] < cc and a < bx[2] and bx[1] < d and b < bx[3]:
+                        bad = True
+                        break
+                if bad:
+                    continue
+                s = 0.0
+                for px, py, n in pins:
+                    if n and targets.get(n):
+                        s += weight.get(n, 1.0) * min(((ox + px - tx) ** 2 + (oy + py - ty) ** 2) ** 0.5
+                                                      for tx, ty in targets[n])
+                if best is None or s < best[0] - 1e-9:
+                    best = (s, ox, oy, rot)
+    if best is None:
+        return None
+    board.place(ref, fp, best[1], best[2], best[3], back)
+    return best[1:]
