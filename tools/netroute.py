@@ -109,6 +109,16 @@ def _astar_py(nx, ny, cost, src, goal, hgrid, x0, y0, x1, y1, turn45, dirmul):
     return []
 
 
+def _heuristic(gmask, dmul):
+    """A* lower bound: the distance to the nearest goal cell. When a diagonal step costs at least
+    two straight ones, the taxicab distance is still a lower bound and a far tighter one than the
+    straight line, so the search expands a fraction of the cells."""
+    from scipy.ndimage import distance_transform_edt as edt, distance_transform_cdt as cdt
+    if min(dmul[1::2]) * 1.41421356 >= 2.0 - 1e-6 and min(dmul[0::2]) >= 1.0:
+        return cdt(~gmask, metric="taxicab").astype(np.float32)
+    return edt(~gmask).astype(np.float32)
+
+
 class NetRouter:
     G = 0.1
 
@@ -279,7 +289,7 @@ class NetRouter:
         # a join may start and end inside its own copper, whatever the clearance field says there
         cost[smask | gmask] = np.maximum(cost[smask | gmask], 0)
         from scipy.ndimage import distance_transform_edt as edt
-        h = (edt(~gmask) * 1.0).astype(np.float32)
+        h = _heuristic(gmask, self.dirmul.get(layer, [1.0] * 8))
         wx, wy = i1 - i0 + 1, j1 - j0 + 1
         cst = np.ascontiguousarray(cost.reshape(-1))
         sr = np.ascontiguousarray(smask.reshape(-1).astype(np.uint8))
@@ -586,7 +596,7 @@ class Negotiator:
         smask = R.own(net, layer, win, sm)
         gmask = R.own(net, layer, win, dm)
         cost[smask | gmask] = np.maximum(cost[smask | gmask], 0)
-        h = (edt(~gmask) * 1.0).astype(np.float32)
+        h = _heuristic(gmask, R.dirmul.get(layer, [1.0] * 8))
         wx, wy = i1 - i0 + 1, j1 - j0 + 1
         cst = np.ascontiguousarray(cost.reshape(-1).astype(np.float32))
         sr = np.ascontiguousarray(smask.reshape(-1).astype(np.uint8))
