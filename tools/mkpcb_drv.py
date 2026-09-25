@@ -13,10 +13,10 @@ taller than the strips lives in the 11 mm between the boards.
 
 THE FRAME. Coordinates below are the DISPLAY board's frame seen from this board's component
 side - the clock seen from behind - so a display x becomes 176 - x here, and y is the display's
-y. This board's top edge is Y0 = 22 mm above the display's (pl() adds it). check_mate() proves
+y. This board's top edge is Y0 = 26 mm above the display's (pl() adds it). check_mate() proves
 every socket pin lands on its header pin and every display standoff has its hole.
 
-THE THREE BANDS, 176 x 96 in all (TS06-MAIN's envelope):
+THE THREE BANDS, 176 x 100 in all:
   * the TOP BAND, above the display, carries what switches and what plugs in: the Nano across
     the top right corner, digital row facing down into the board and USB proud of the right
     edge (the clock's left side); the 12 V jack through the left edge; the fuse, the polarity
@@ -48,9 +48,9 @@ NAME = "TS06-DRV"
 OUT = os.environ.get("TS06_OUT") or os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")
 PLACE_ONLY = "--place" in sys.argv
 
-W, H = 176.0, 96.0
+W, H = 176.0, 100.0
 DW = 176.0                                  # the display board's width: x here = DW - x there
-Y0 = 22.0                                   # this board's top edge is 22 mm above the display's
+Y0 = 26.0                                   # this board's top edge is 26 mm above the display's
 YT, YB = 2.2 + Y0, 41.3 + Y0                # the strip rows, shared with TS06-DISP
 CLASSES = [("HV", 0.6, 0.4, P.HV_PATTERNS),
            ("CATH", 0.25, 0.25, P.CATH_PATTERNS),
@@ -93,7 +93,7 @@ XS = {k: socket(k) for k in DISP_STRIP}
 
 # Standoffs: the display's four, mirrored; two more at the bottom corners and two along the top.
 HOLES = [(172.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 5.5),
-         (3.5, 70.5), (172.5, 70.5), (3.5, -18.5), (128.5, -18.5)]
+         (3.5, 70.5), (172.5, 70.5), (3.5, -22.5), (172.5, -3.5)]
 for i, (hx, hy) in enumerate(HOLES):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy + Y0)
     B.holes.append((hx, hy + Y0, 3.2))
@@ -143,26 +143,39 @@ pl("R57", 26.69, 33.2, rot=180)
 # ======================================================================== the top band
 # The Nano lies across the top right corner, its digital row facing down into the board and its
 # USB 2.4 mm proud of the right edge (the clock's left side, seen from the front).
-pl("U1", 136.24, -4.73, rot=90)
+pl("U1", 136.24, -8.73, rot=90)
 
 # The 12 V inlet at the top left, jack mouth through the left edge, then fuse, polarity diode
 # and the 5 V regulator, in the order the current takes them.
-pl("XS1", 14.0, -9.5)
-pl("F1", 24.0, -19.3)
-pl("VD2", 36.24, -13.0, rot=180)
-pl("U14", 21.5, -2.5)
-pl("C8", 40.5, -18.2)
+pl("XS1", 14.0, -13.50)
+pl("F1", 24.0, -23.30)
+pl("VD2", 36.24, -17.00, rot=180)
+pl("U14", 21.5, -6.50)
+pl("C8", 40.5, -22.20)
 
 # The 185 V converter: inductor, switch, catch diode, reservoir in one tight loop; the gate
 # driver beside the switch; the comparator, divider and trimmer beside the driver.
-pl("L1", 47.5, -8.5)
-pl("VT21", 59.0, -3.0)
-pl("VD1", 67.8, -12.0, rot=180)
-pl("C7", 72.5, -16.0)
-pl("U11", 81.0, -1.3, rot=180)
-pl("R67", 69.0, -8.4, rot=180)
-pl("U12", 95.0, -12.0)
-pl("RP1", 92.0, -19.2)
+pl("L1", 47.5, -12.50)
+pl("VT21", 59.0, -7.00)
+pl("VD1", 67.8, -16.00, rot=180)
+pl("C7", 72.5, -20.00)
+pl("U11", 81.0, -5.30, rot=180)
+pl("R67", 69.0, -12.40, rot=180)
+# The control block, laid out by hand: the divider comes down from the 185 V side on the left
+# (R62), turns at FB_MID (R63 standing), and FB meets the comparator's input pin, the 15k and
+# the trimmer on the right; the 2.5 V reference divider and the output pull-down stand in a row
+# on the left, beside the driver input they feed.
+pl("U12", 104.0, -8.0, rot=180)
+pl("R62", 96.0, -23.7)
+pl("R63", 111.6, -23.7, rot=270)
+pl("R64", 114.5, -14.0)
+pl("RP1", 124.5, -8.0)
+pl("R69", 84.8, -11.0, rot=90)
+pl("R70", 88.3, -11.0, rot=90)
+pl("R71", 91.8, -11.0, rot=90)
+pl("R65", 114.5, -22.0)
+pl("R66", 114.5, -18.2)
+pl("C14", 96.5, -20.3)
 
 # ======================================================================== the bottom band
 # The expander and the LED network, stacked: port B straight up into the network, the network
@@ -170,30 +183,35 @@ pl("RP1", 92.0, -19.2)
 # up the left edge to the two ИН-15 decoders.
 pl("U3", 44.5, 60.0, rot=270)
 pl("RN1", 26.72, 56.0, rot=90)
-# The fascia cable, at the top next to the Nano's pins it carries.
-pl("J1", 118.0, -14.8, rot=180)
+# The fascia cable plugs in at the bottom edge on the face towards the display, which is the
+# face the fascia sits in front of: the cable goes straight forward, not round the stack.
+pl("J1", 132.0, 67.25, back=True)
 # The clock module, on the I2C lines between the Nano and the expander.
 pl("U13", 60.0, 50.0, rot=90)
+# U2's decoupling capacitor beside it, where U2's 5 V and ground leave it on the back face.
+pl("C4", 153.3, 16.5, rot=180)
 
 # ======================================================================== the small parts
 # Each goes to the free spot of its region nearest the pads it connects to (pcbkit.place_near).
 FANS = (5.0, -0.6, 80.5, 17.3)             # the hand-laid decoder fans: no part over them
+XAFAN = (5.0, 17.0, 52.0, 30.5)            # port A's lines rise up the left edge into U16 / U15
+NECK = (78.0, -1.0, 157.5, 21.0)           # the Nano's lines come down through here
 for r in ("C9", "C10", "C11"):
-    near(r, 17.0, -21.5, 45.0, -0.6)
-for r in ("C12", "R68", "R60", "R61", "R62", "R63", "R64", "R65", "R66", "R69", "R70", "R71", "C13", "C14"):
-    near(r, 38.0, -21.5, 150.0, 19.0, keepout=(FANS,))
-for r in ("C4",):
-    near(r, 150.0, 0.5, 172.0, 8.0)
+    near(r, 17.0, -25.5, 45.0, -4.6)
+for r in ("C12", "R68", "C13", "C3"):
+    near(r, 38.0, -25.5, 127.0, -4.6)
+for r in ("R60", "R61"):                    # the reservoir's bleeder, on the 185 V feed between cells
+    near(r, 67.0, 29.0, 100.5, 39.4)
 for r in ("C15", "C16", "C17"):
     near(r, 8.0, 17.4, 80.0, 21.0, rots=(0,))
-for r in ("R21", "R22", "R23", "R24", "R25", "R26", "R1", "R53", "C3"):
-    near(r, 8.0, 17.4, 157.0, 40.0)
-for r in ("VT20", "R20"):
-    near(r, 150.0, 44.0, 176.0, 74.0)
-for r in ("R33", "R34", "R35", "R36", "R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
-    near(r, 45.0, 17.4, 176.0, 40.0)
+for r in ("R21", "R22", "R23", "R24", "R25", "R26", "R1", "R53"):
+    near(r, 8.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK))
+for r in ("VT20", "R20", "R33", "R34", "R35", "R36"):
+    near(r, 140.0, 44.0, 176.0, 74.0)
+for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
+    near(r, 45.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK))
 for r in ("C1", "R54", "R55", "C5", "C6"):
-    near(r, 10.0, 44.0, 110.0, 74.0)
+    near(r, 10.0, 44.0, 130.0, 74.0)
 
 # ======================================================================== hand-laid copper
 # The decoder fans, laid the way a person lays them: every line a straight rise, a 45 degree
@@ -266,6 +284,47 @@ for pin in (9, 10, 11, 13, 14, 15, 16):
     else:                                   # the rest through the gap above their own pin
         gy = py - 1.27
         T(n, "B.Cu", (px, py), (px + 1.27, gy), (X_DIAG - abs(ty - gy), gy), (X_DIAG, ty), (tx, ty))
+
+# The Nano's escape. Its far row (the analogue side: A0-A3, I2C, A6/A7, 5 V) drops through the
+# gaps of its near row on the FRONT face; its near row (the digital pins) drops on the BACK face.
+# The lines that head left - the U17 branch of A0-A3, D12, D13 - run in lanes under the module on
+# the back face and leave past its end. The same A0-A3 pads are where the bus splits in two
+# (front to U2, back to U17): a through-hole pad is the layer change. The router starts from the
+# ends of these stubs; the module area itself is kept out of its reach.
+yA, yB = P_("U1", 1)[1], P_("U1", 30)[1]
+Y_END = yA + 3.5
+X_EXIT = P_("U1", 1)[0] - 3.0
+W_RAIL = 0.3
+for pin in (29, 27, 26, 25, 24, 23, 22, 21, 20, 19):
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    T(n, "F.Cu", (x, y), (x + 1.27, y + 1.27), (x + 1.27, Y_END), w=W_RAIL if n in ("GND", "+5V") else LV)
+for pin in (4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14):
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    T(n, "B.Cu", (x, y), (x, Y_END), w=W_RAIL if n == "GND" else LV)
+for pin, dy in ((22, 1.9), (21, 2.5), (20, 3.1), (19, 3.7), (16, 4.3)):
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    T(n, "B.Cu", (x, y), (x, y + dy), (X_EXIT, y + dy))
+x, y = P_("U1", 15)
+T("D12", "B.Cu", (x, y), (x, y - 1.9), (X_EXIT, y - 1.9))
+B.keepouts.append((X_EXIT + 0.5, 0.0, W, Y_END - 0.3, "*"))
+
+# U2's inputs thread the chip on the front face to its far side; its 5 V and ground leave the far
+# side on the back face, straight into C4 beside it.
+x_l = P_("U2", 16)[0]
+for pin in (7, 6, 4, 3):
+    n = PT["U2"].pins[str(pin)]
+    x, y = P_("U2", pin)
+    T(n, "F.Cu", (x, y), (x - 1.27, y - 1.27), (x_l - 1.58, y - 1.27))
+x, y = P_("U2", 5)
+c1, c2 = P_("C4", 1), P_("C4", 2)
+T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0] + 0.67, y - 1.27), c1, w=W_RAIL)
+x, y = P_("U2", 12)
+T("GND", "B.Cu", (x, y), (x - 1.18, y + 1.18), (c2[0] + 1.18, y + 1.18), (c2[0], y), c2, w=W_RAIL)
+c = B.court("U2")
+B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))           # U2's body and its channel to XS11
 
 # ======================================================================== references on the silk
 def place_refs(board, skip=("H",)):
@@ -345,28 +404,33 @@ def check_mate():
 # copper the router found for that placement, and it is thrown away and re-found whenever the
 # placement changes.
 ROUTES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mkpcb_drv_routes.json")
-LOCKED = {t[0] for t in B.tracks}              # the hand-laid fans
+FIXED = set(B.tracks)                          # every hand-laid track: kept, never ripped
+LOCKED = {t[0] for t in B.tracks if t[0].startswith(("K", "CAT_"))}   # nets laid wholly by hand
 WIDTHS = {"+12V": 0.8, "VIN_J": 0.8, "VIN_F": 0.8, "SW": 0.8, "+5V": 0.4, "GND": 0.4}
 
 
 def route_order():
+    """The most constrained first: the A0-A3 bus (two decoders from one set of pads), port A up the
+    left edge, the LED ribbon, I2C and the Nano's digital lines; then the 185 V nets, the rails,
+    everything else, and ground last."""
     nets = sorted({p.net for p in B.pads if p.net})
     hv = [n for n in nets if B.cls(n) == "HV"]
-    order = (["SW", "HV185"] + [n for n in hv if n not in ("SW", "HV185")] +
-             ["+12V", "VIN_J", "VIN_F", "GATE_D", "GATE", "+5V"] +
-             [f"A{i}" for i in range(4)] + [f"XA{i}" for i in range(8)] + [f"XB{i}" for i in range(8)] +
-             [f"BL_A{i}" for i in range(1, 9)] + ["SDA", "SCL"])
+    order = ([f"A{i}" for i in range(4)] + [f"XA{i}" for i in range(8)] + [f"XB{i}" for i in range(8)] +
+             [f"BL_A{i}" for i in range(1, 9)] + ["SDA", "SCL", "A6", "A7"] + [f"D{i}" for i in range(2, 14)] +
+             ["SW", "HV185"] + [n for n in hv if n not in ("SW", "HV185")] +
+             ["+12V", "VIN_J", "VIN_F", "GATE_D", "GATE", "+5V"])
     order += [n for n in nets if n not in order and n != "GND" and n not in LOCKED]
-    return order + ["GND"]
+    return [n for n in order if n in nets] + ["GND"]
 
 
 def route():
     import netroute as NR
     R = NR.NetRouter(B)
     R.locked = set(LOCKED)
+    R.fixed = set(FIXED)
     failed = R.route_all(route_order(), widths=WIDTHS)
     with open(ROUTES, "w") as fh:
-        json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if n not in LOCKED], fh, indent=0)
+        json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if (n, ly, a, b, w) not in FIXED], fh, indent=0)
     return failed
 
 

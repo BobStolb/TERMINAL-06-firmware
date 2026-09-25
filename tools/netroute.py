@@ -121,6 +121,7 @@ class NetRouter:
         self.clr = {k: c for k, c, _ in board.classes}
         self.log = []
         self.locked = set()                 # nets whose copper is never ripped up
+        self.fixed = set()                  # hand-laid tracks: never ripped, always hard
         self.pen0 = 40.0                    # price per cell of passing over a rippable net
         self.dirmul = {}                    # layer -> 8 step-cost multipliers (E SE S SW W NW N NE)
 
@@ -160,7 +161,7 @@ class NetRouter:
         for n, pts, r, kind, obj in self._items(layer):
             if n == net:
                 continue
-            is_soft = soft is not None and kind == "trk" and n not in self.locked
+            is_soft = soft is not None and kind == "trk" and n not in self.locked and obj not in self.fixed
             reach = r + self.need(net, n) + half + self.margin + self.near
             xs = [p[0] for p in pts]
             ys = [p[1] for p in pts]
@@ -368,7 +369,7 @@ class NetRouter:
         segs = list(zip(pts, pts[1:]))
         for t in self.B.tracks:
             n2, ly, a, b, w2 = t
-            if ly != layer or n2 == net:
+            if ly != layer or n2 == net or t in self.fixed:
                 continue
             need = self.need(net, n2) + w / 2 + w2 / 2 - 1e-6
             for c, d in segs:
@@ -424,7 +425,7 @@ class NetRouter:
         return self.pieces(net), ripped
 
     def unroute(self, net):
-        self.B.tracks = [t for t in self.B.tracks if t[0] != net]
+        self.B.tracks = [t for t in self.B.tracks if t[0] != net or t in self.fixed]
 
     def route_all(self, order, layers=None, widths=None, max_rips=400, verbose=True):
         """Route every net in order; a net that will not go through tears up whichever nets

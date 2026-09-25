@@ -1133,6 +1133,16 @@ def place_near(board, ref, fp, region, rots=(0, 90, 180, 270), grid=0.635, margi
                         break
                 if bad:
                     continue
+                # through-hole pads are on both faces: no pad may land on another part's pad
+                for px, py, _n in pins:
+                    for q in board.pads:
+                        if abs(ox + px - q.x) < 2.0 and abs(oy + py - q.y) < 2.0:
+                            bad = True
+                            break
+                    if bad:
+                        break
+                if bad:
+                    continue
                 s = 0.0
                 for px, py, n in pins:
                     if n and targets.get(n):
