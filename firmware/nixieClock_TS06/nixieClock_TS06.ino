@@ -264,7 +264,6 @@ const byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 // The anode pins are the usual six, driving other tubes: hours on D6/D5, minutes on
 // D4/D3, S10 on D2, S1 on D13 (tools/ts06pair.py TUBE_PIN4), so the Nano's digital row
 // fans out on the driver board without crossing itself. The same order as types 1 and 2.
-// The fascia's rotary ladder arrives on A7 and the levers on A6 on this board.
 const byte digitMask[] = {1, 0, 5, 4, 6, 7, 3, 2, 9, 8};
 const byte opts[NUM_INDI] = {KEY3, KEY2, KEY1, KEY0, KEY4, KEY5};
 const byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3};

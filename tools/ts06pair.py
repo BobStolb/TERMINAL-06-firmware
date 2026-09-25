@@ -290,15 +290,11 @@ mpsa42("VT1", "B1", "COLON_RET", "colon", "Low-side switch for both lamps, PWM-f
 R("R1", "10k", "D10", "B1", R_V, group="colon")
 
 # ---- fascia and RTC
-# J1's pin order is the fascia specification (1 +5V, 2 GND, 3 rotary ladder, 4 levers, 5 button -, 6 button +).
-# On this board the rotary ladder (pin 3) reaches the Nano's A7 and the levers (pin 4) its A6: the two
-# lines leave the Nano A7 west of A6 and arrive at J1 in that order, on a face they share with nothing
-# they could cross. The firmware reads A6 and A7 for nothing yet; BOARD_TYPE 4 names the swap.
-part("J1", "PH 6 vertical", "TS06_JST_PH_B6B-PH-K_Vertical", {1: "+5V", 2: "GND", 3: "A7", 4: "A6", 5: "D7", 6: "D8"},
+part("J1", "PH 6 vertical", "TS06_JST_PH_B6B-PH-K_Vertical", {1: "+5V", 2: "GND", 3: "A6", 4: "A7", 5: "D7", 6: "D8"},
      DRV, "fascia", "The panel cable; pin order is the specification both fascia builds share. Top entry, "
      "so the cable leaves towards the fascia.")
-C("C5", "100n", "A6", "GND", group="fascia", note="Ladder filters at the board end (spec §2).")
-C("C6", "100n", "A7", "GND", group="fascia")
+C("C5", "100n", "A6", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="Ladder filters at the board end (spec §2).")
+C("C6", "100n", "A7", "GND", "TS06_C_Disc_P2.50mm", group="fascia")
 part("U13", "DS3231 mini", "TS06_PinSocket_1x05", {1: "GND", 2: None, 3: "SCL", 4: "SDA", 5: "+5V"}, DRV, "rtc",
      "The small DS3231 module plugs in here, pin order - NC C D + as the stock board's RTC MINI header.")
 

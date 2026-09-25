@@ -187,7 +187,7 @@ pl("C14", 96.5, -20.3)
 #    west to them; their outputs drop down that side and run west in lanes under the resistors
 #    at the corridor's exit;
 #  * the hours' anode resistors lie straight above their optos, D5 and D6 coming west to them.
-HOP_Y = 42.3                                # pad 1 of the corridor-exit resistors (DRV frame)
+HOP_Y = 41.9                                # pad 1 of the corridor-exit resistors (DRV frame)
 for ref, x in (("R66", 126.0), ("R1", 122.5), ("R53", 119.0), ("R26", 115.5)):
     pl(ref, x, HOP_Y - Y0, rot=270)
 for ref, x, y in (("R25", 134.6, 24.0), ("R24", 137.6, 24.0), ("R23", 140.6, 24.0)):
@@ -204,17 +204,20 @@ pl("RN1", 26.72, 56.0, rot=90)
 # The fascia cable plugs in at the bottom edge on the face towards the display, which is the
 # face the fascia sits in front of: the cable goes straight forward, not round the stack.
 pl("J1", 122.0, 69.0, rot=180, back=True)
-# The I2C pull-ups stand above the LED ribbon between the colon and the hours' cell: SDA and SCL come
-# down beside the cell on the front face and change face in them to cross the ribbon on the back,
-# then again in the clock module's socket on their way to the expander.
-pl("R55", 134.2, 61.2 - Y0, rot=90)         # SCL
-pl("R54", 137.2, 61.2 - Y0, rot=90)         # SDA
-# The fascia's ladder filters between the colon's ballasts and the hours' cell, where A6 and A7 come
-# west on the front face and change face to cross the LED ribbon on their way down to J1.
-pl("C6", 133.9, 49.5 - Y0, rot=270)
-pl("C5", 137.4, 49.5 - Y0, rot=270)
-# U2's decoupling capacitor at the chip's top left, fed from its 5 V pin through the gap above pin 12.
-pl("C4", 157.2, 32.4 - Y0, rot=90)
+# The fascia's ladder filters and the I2C pull-ups in one column between the colon's ballasts and the
+# hours' cell. A7, A6, SCL and SDA come west through the hours' optos on the front face, in that
+# order top to bottom, and each ends in its own part in the same order; they leave on the back face,
+# the filters' lines down the column's right side to J1, the pull-ups' lines west to the clock module.
+HOP_X = 137.4                               # the column's signal pads
+pl("C6", HOP_X, 48.0 - Y0, rot=180)         # A7: pad 1, the signal, on the right
+pl("C5", HOP_X, 50.5 - Y0, rot=180)         # A6
+pl("R55", HOP_X - 2.54, 53.1 - Y0)          # SCL: pad 2, the signal, on the right
+pl("R54", HOP_X - 2.54, 56.1 - Y0)          # SDA
+# The clock module, turned so that SCL is above SDA as the two lines arrive from the column.
+pl("U13", 115.83, 74.27 - Y0, rot=270)
+# U2's decoupling capacitor beside the chip's left column, fed from its 5 V pin through the gap above
+# pin 12, below where the A0-A3 lines reach U2 and clear of the lines going down the gap.
+pl("C4", 155.5, 48.5 - Y0, rot=270)
 
 # ======================================================================== the small parts
 # Each goes to the free spot of its region nearest the pads it connects to (pcbkit.place_near).
@@ -240,12 +243,11 @@ near("C17", 58.0, 21.7, 80.0, 26.5, rots=(0,), keepout=(OPTLANES,))
 for r in ("VT20", "R20"):                    # the backlight switch, under U2 beside XS21's BL_K pin
     near(r, 161.0, 28.8, 170.5, 40.2, keepout=(BLRIB,))
 for r in ("R33", "R34", "R35", "R36"):
-    near(r, 140.0, 44.0, 176.0, 74.0, keepout=(BLRIB,))
+    near(r, 152.0, 44.0, 176.0, 74.0, keepout=(BLRIB,))
 for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
     near(r, 45.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
 near("C1", 10.0, 44.5, 26.0, 57.5, keepout=(XALEFT, XABOT, BLRIB))   # the expander's own decoupling
 JACK = tuple(v - (Y0 if i % 2 else 0) for i, v in enumerate(B.court("J1")))   # nothing under J1's housing
-near("U13", 55.0, 46.5, 118.0, 66.0, keepout=(XALEFT, XABOT, BLRIB, JACK))   # the clock module
 
 # ======================================================================== hand-laid copper
 # The decoder fans, laid the way a person lays them: every line a straight rise, a 45 degree
@@ -330,14 +332,51 @@ yA, yB = P_("U1", 1)[1], P_("U1", 30)[1]
 Y_END = yA + 3.5
 X_EXIT = P_("U1", 1)[0] - 3.0
 W_RAIL = 0.3
-for pin in (29, 27, 26, 25, 24, 23, 22, 21, 20, 19):
+for pin in (29, 27, 22, 21, 20, 19):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
     T(n, "F.Cu", (x, y), (x + 1.27, y + 1.27), (x + 1.27, Y_END), w=W_RAIL if n in ("GND", "+5V") else LV)
-for pin in (4, 5, 6, 7, 8, 9, 10, 11, 14):
+
+# The digital row fans out on the back face in lanes just below the module, each line on its own
+# level, the westernmost pin on the top lane: D2-D4 west to the minutes' and S10's resistors standing
+# under the module's end, D5 and D6 to the hours' resistors above their optos, D7, D8 and D11 down
+# the gap between the hours' cell and U2 (D7 and D8 to J1, D11 to the backlight switch under U2).
+def fan(n, x, y, lane, x_to, y_to):
+    T(n, "B.Cu", (x, y), (x, lane - 0.5), (x - 0.5, lane), (x_to + 0.5, lane), (x_to, lane + 0.5), (x_to, y_to))
+
+
+for pin, lane, ref in ((5, 21.6, "R25"), (6, 22.25, "R24"), (7, 22.9, "R23"), (8, 24.1, "R22"), (9, 24.75, "R21")):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
-    T(n, "B.Cu", (x, y), (x, Y_END), w=W_RAIL if n == "GND" else LV)
+    fan(n, x, y, lane, *P_(ref, 1))
+GAP_X, GAP_Y = 152.4, 44.0                  # the gap's first line (D7) and where the router takes over
+for k, (pin, lane) in enumerate(((10, 25.9), (11, 26.55), (14, 27.2))):
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    fan(n, x, y, lane, GAP_X + 0.6 * k, GAP_Y)
+
+# The analogue row's A6, A7, SCL and SDA drop through the digital row's gaps on the front face, close
+# up into four lanes down the same gap, and turn west through the hours' optos - between each opto's
+# two rows of pins - to the column of their filters and pull-ups (HOP_X), where they change face.
+F_GAP = (149.95, 150.55, 151.15, 151.75)    # A7 A6 SCL SDA down the gap
+F_LANE = (50.5, 51.1, 51.7, 52.3)           # ... and west between the optos' pin rows
+for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5))):
+    n = PT["U1"].pins[str(pin)]
+    x, y = P_("U1", pin)
+    xs, xg, yl = x + 1.27, F_GAP[k], F_LANE[k]
+    dx = xg - xs
+    pts = [(x, y), (xs, y + 1.27), (xs, jog), (xg, jog + abs(dx)), (xg, yl - 0.6), (xg - 0.6, yl)]
+    pad = P_({"A7": "C6", "A6": "C5", "SCL": "R55", "SDA": "R54"}[n], 1 if n in ("A7", "A6") else 2)
+    if n == "A7":                           # up to the column's top part
+        pts += [(pad[0] + (yl - pad[1]), yl), pad]
+    elif n == "A6":
+        pts += [(pad[0] + 0.6 + (yl - pad[1]), yl), (pad[0] + 0.6, pad[1]), pad]
+    elif n == "SCL":
+        pts += [(pad[0] + (pad[1] - yl), yl), pad]
+    else:                                   # SDA, the lowest, turns down first
+        xt = 139.15
+        pts += [(xt, yl), (xt, pad[1] - (xt - pad[0])), pad]
+    T(n, "F.Cu", *pts)
 
 # The U17 branch of A0-A3, with D13, D12, D10 and D9 beside it, leaves under the module, turns down the
 # corridor between the module and the control block, and runs west to U17, entering the chip
@@ -374,7 +413,7 @@ for k, (pin, dy) in ((5, (15, 3.2)), (6, (13, 2.65)), (7, (12, 2.1))):   # D12, 
 B.keepouts.append((X_EXIT + 0.5, 0.0, W, Y_END - 0.3, "*"))
 
 # U2's inputs thread the chip on the front face to its far side; its 5 V leaves the far side on the
-# back face through the gap above pin 12 and runs up the chip's edge into C4.
+# back face through the gap above pin 12 and runs down beside the chip into C4.
 x_l = P_("U2", 16)[0]
 for pin in (7, 6, 4, 3):
     n = PT["U2"].pins[str(pin)]
@@ -382,7 +421,7 @@ for pin in (7, 6, 4, 3):
     T(n, "F.Cu", (x, y), (x - 1.27, y - 1.27), (x_l - 1.58, y - 1.27))
 x, y = P_("U2", 5)
 c1 = P_("C4", 1)
-T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0], y - 1.27), c1, w=W_RAIL)
+T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0] + 0.55, y - 1.27), (c1[0], y - 0.72), c1, w=W_RAIL)
 c = B.court("U2")
 B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))           # U2's body and its channel to XS11
 
@@ -503,7 +542,7 @@ def check_mate():
 # placement changes.
 ROUTES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mkpcb_drv_routes.json")
 FIXED = set(B.tracks)                          # every hand-laid track: kept, never ripped
-LOCKED = {t[0] for t in B.tracks if t[0].startswith(("K", "CAT_", "XA", "XB", "BL_A"))} | {"D9"}
+LOCKED = {t[0] for t in B.tracks if t[0].startswith(("K", "CAT_", "XA", "XB", "BL_A"))} | {"D2", "D3", "D4", "D5", "D6", "D9"}
 WIDTHS = {"+12V": 0.8, "VIN_J": 0.8, "VIN_F": 0.8, "SW": 0.8, "+5V": 0.4, "GND": 0.4}
 
 
