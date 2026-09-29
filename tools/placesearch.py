@@ -116,8 +116,8 @@ BLOCKS = [
     ("U3RN", _rel([("U3", 44.5, 86.0, 270, False), ("RN1", 26.72, 82.0, 90, False), ("C1", 23.67, 81.53, 180, False)])),
     ("RTC", [("U13", 0, 0, 0, False), ("R55", 6.84, 5.08, 180, False), ("R54", 6.84, 8.62, 180, False)]),
     ("J1", [("J1", 0, 0, 0, True), ("C5", 4.0, 5.0, 0, False), ("C6", 4.0, 7.5, 0, False)]),
-    ("BL", [("VT20", 0, 0, 0, False), ("R20", 2.54, 6.2, 90, False)]),
-    ("COL", [("VT1", 0, 0, 0, False), ("R1", 2.54, 6.2, 90, False)]),
+    ("BL", [("VT20", 0, 0, 0, False), ("R20", 2.54, 7.4, 90, False)]),
+    ("COL", [("VT1", 0, 0, 0, False), ("R1", 2.54, 7.4, 90, False)]),
     ("COLB", [("R59", 0, 0, 0, False), ("R58", 0, 4.0, 0, False)]),
     ("AMPMR", [("R56", 0, 0, 0, False), ("R57", 0, 4.0, 0, False)]),
     ("BLEED", [("R60", 0, 0, 0, False), ("R61", 15.2, 0, 0, False)]),
@@ -169,10 +169,20 @@ def fpgeo(fp, rot, back):
     return _FPC[key]
 
 
-def xform(dx, dy, rot, r, m):
-    """A part's (dx, dy, rot) inside a block, after the block's mirror m and turn r."""
+def _centroid(fp, rot, back):
+    pads = [p for p in fpgeo(fp, rot, back)[0] if p[3] != "np_thru_hole"] or [("", 0.0, 0.0, "")]
+    return sum(p[1] for p in pads) / len(pads), sum(p[2] for p in pads) / len(pads)
+
+
+def xform(dx, dy, rot, r, m, fp=None, back=False):
+    """A part's (dx, dy, rot) inside a block, after the block's mirror m and turn r. A mirror
+    reflects each part's pad centroid (not its origin) and turns the part to the reflected
+    orientation, so the parts keep their places and their spacing."""
     if m:
-        dx, rot = -dx, (180 - rot) % 360
+        cx0, cy0 = _centroid(fp, rot, back)
+        rot = (180 - rot) % 360
+        cx1, cy1 = _centroid(fp, rot, back)
+        dx, dy = -(dx + cx0) - cx1, dy + cy0 - cy1
     x, y = K._rot(dx, dy, r)
     return x, y, (rot + r) % 360
 
@@ -197,7 +207,7 @@ class Model:
                 for m in (0, 1):
                     parts = []
                     for ref, dx, dy, rot, back in ps:
-                        x, y, rr = xform(dx, dy, rot, r, m)
+                        x, y, rr = xform(dx, dy, rot, r, m, fp_of(ref), back)
                         parts.append((ref, x, y, rr, back))
                     self.var[(b, r, m)] = parts
         # the global pad list: fixed pads first, then each block's pads in a fixed order
@@ -220,6 +230,9 @@ class Model:
             self.bslice[b] = (s, len(self.pad_ref))
         self.NP = len(self.pad_ref)
         self.pad_blk = np.array(self.pad_blk)
+        refid = {}
+        self.pad_part = np.array([refid.setdefault(r, len(refid)) for r in self.pad_ref])
+        self.other_part = self.pad_part[:, None] != self.pad_part[None, :]
         # per block variant: pad offsets (in the block's pad order) and courtyards
         self.voff, self.vcourt = {}, {}
         for b, ps in BLOCKS:
@@ -497,8 +510,10 @@ class State:
             pen += max(0, lo_x - a) * (dd - bb) + max(0, cc - hi_x) * (dd - bb) + max(0, lo_y - bb) * (cc - a) + max(0, dd - hi_y) * (cc - a)
             if cref == "J1":                  # the plug must clear the display board
                 pen += max(0.0, DISP_BOTTOM + 1.0 - bb) * (cc - a)
-        if "U1" in refs:                        # the Nano's courtyard is only the module; its pads must stay in too
-            pass
+        # through-hole pads of different parts closer than 2 mm (either face: they go through the board)
+        Q = self.xy
+        dd = np.hypot(Q[:, None, 0] - Q[None, :, 0], Q[:, None, 1] - Q[None, :, 1])
+        pen += 2.0 * float(np.triu(np.clip(2.0 - dd, 0, None) * self.M.other_part, 1).sum())
         return pen
 
     def export(self):
