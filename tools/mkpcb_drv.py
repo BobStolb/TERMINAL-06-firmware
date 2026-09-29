@@ -38,7 +38,7 @@ by hand, one face each where they interleave; everything else is routed one net 
 tools/netroute.py, which never places a via, and its result is saved in mkpcb_drv_routes.json
 so the board regenerates exactly without re-routing.
 """
-import json, os, sys
+import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcbkit as K
 import ts06pair as P
@@ -588,6 +588,52 @@ def load_routes():
             B.tracks.append((n, ly, tuple(a), tuple(b), w))
 
 
+def trim_stubs():
+    """A hand-laid stub ends where the drawing says; the router, on its 0.1 mm grid, joins it a little
+    short, on the stub itself. Cut each stub back to the joint, so no track ends in the air (KiCad
+    reports a dangling end even where the copper overlaps). A stub segment the router joined at its
+    far end goes altogether, and the one before it is looked at again."""
+    def loose(t, e):
+        n, ly = t[0], t[1]
+        if any(u is not t and u[0] == n and u[1] == ly and e in (u[2], u[3]) for u in B.tracks):
+            return False
+        return not any(q.net == n and abs(q.x - e[0]) <= q.w / 2 and abs(q.y - e[1]) <= q.h / 2 for q in B.pads)
+
+    changed = True
+    while changed:
+        changed = False
+        for i, t in enumerate(B.tracks):
+            if t not in FIXED:
+                continue
+            n, ly, a, b, w = t
+            for e, o in ((a, b), (b, a)):
+                if not loose(t, e):
+                    continue
+                L = math.hypot(o[0] - e[0], o[1] - e[1])
+                best = None
+                for u in B.tracks:
+                    if u in FIXED or u[0] != n or u[1] != ly:
+                        continue
+                    for p in (u[2], u[3]):
+                        d = math.hypot(p[0] - e[0], p[1] - e[1])
+                        off = abs((o[0] - e[0]) * (p[1] - e[1]) - (o[1] - e[1]) * (p[0] - e[0])) / L if L else 1
+                        if 0 < d <= L + 1e-6 and off < 1e-3 and (best is None or d < best[0]):
+                            best = (d, p)
+                if best is None:
+                    continue
+                if best[0] >= L - 1e-6:                     # joined at the far end: the whole segment is loose
+                    del B.tracks[i]
+                    FIXED.discard(t)
+                else:
+                    nt = (n, ly, best[1], o, w) if e == a else (n, ly, o, best[1], w)
+                    B.tracks[i] = nt
+                    FIXED.discard(t); FIXED.add(nt)
+                changed = True
+                break
+            if changed:
+                break
+
+
 if __name__ == "__main__":
     placed = set(B.placed)
     missing = sorted(set(PT) - placed, key=K._refkey)
@@ -611,6 +657,7 @@ if __name__ == "__main__":
         print("unrouted:", " ".join(failed) if failed else "none")
     else:
         load_routes()
+    trim_stubs()
     # ground on both faces around everything else; the routed ground tree already joins every
     # ground pad, so the pours only add area and shielding - they carry no connection of their own
     B.zone("GND", "F.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
