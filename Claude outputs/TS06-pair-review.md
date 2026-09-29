@@ -260,6 +260,46 @@ for gates 3 and 4.
   * the trench's left wall is 0.475 mm from H10's glass;
   * the sill is 0.59 mm from the ИН-17 LEDs.
 
+## Placement alternatives, scored
+
+The driver board's placement was challenged by layouts built from different concepts, each
+routed with the same router settings. Each was scored from its board file, with the same script,
+before its author's verdict was read.
+
+**The Nano in the bottom band, USB through the bottom edge** (a local agent; 29.09.26, on the
+176 mm board):
+
+| | Baseline (Nano top right) | Nano in the bottom band |
+|---|---|---|
+| Routing | converged, round 16 | converged, round 13 |
+| Vias | 0 | 0 |
+| Segments (hand-laid + routed) | 1067 (369 + 698) | 1071 (303 + 768) |
+| Signal copper / its floor (MST) | 5608 / 4265 mm = **1.31** | 5129 / 3752 mm = **1.37** |
+| Straight (0°/90°) share | **85.6 %** | 81.5 % |
+| Ground pour islands, front / back | 95 / 137 | 72 / 98 |
+| KiCad 10 DRC | 0 errors, 0 unconnected | 1 error (a starved thermal, fixable), 0 unconnected |
+| Firmware | as is | a new anode table |
+| USB | through the right-hand cheek | through the case's base |
+
+**Rejected for this revision.**
+* **What it gains:** 12 % off the placement's floor, 8.5 % off the copper, 66 fewer hand-laid
+  segments, and fewer ground islands.
+* **Why that isn't enough:** it loses on what the brief puts first, a board that does not look
+  like a router made it. The Nano's escape is the router's, so the copper runs 1.37× its floor
+  instead of 1.31×, a smaller share of it is square, and the tangle round the module is visible
+  on both faces.
+* **Other costs:** it moves the USB into the base of the case and needs a firmware table change.
+* **It stays the fallback.** The widening makes its one hard constraint easier: XS24 and XS23
+  move 7.8 mm further apart, so the slot the Nano stands in grows from 27 to about 35 mm.
+
+**Three more concepts** are being tried in separate cloud sessions, on branches
+`pcb/drv-alt-swap`, `pcb/drv-alt-search` and `pcb/drv-alt-plane`:
+* the bands swapped: logic on top, power at the bottom;
+* a placement optimiser;
+* an unbroken ground plane on the back face, with parts placed as bridges.
+
+They started before the widening, so they are scored against the 176 mm baseline above.
+
 ## What is still open before an order
 
 | Item | Blocks | How |
