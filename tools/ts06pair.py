@@ -29,7 +29,7 @@ tools/ts06main.py:
      changed. The eight LEDs are sourced one each from the MCP23017's port B through their own
      resistor; their cathodes stay common (BL_K) behind the one MPSA42 on D11, so D11 is still
      the global brightness PWM. The "m" LED joins BL_K too, so it dims with the backlight.
-The Nano pin map is unchanged (firmware/nixieClock_TS06): D2..D6, D13 anodes, D7/D8 buttons,
+The Nano pin map is the firmware's BOARD_TYPE 4 (0-3 have SW3 on D12): D2..D6, D13 anodes, D7/D8 buttons,
 D9 HV clock, D10 colon, D11 backlight PWM, D12 "m", A0..A3 decoder, A4/A5 I2C, A6/A7 fascia.
 
 THE HEADERS are a specification shared by the two boards, like the fascia cable. DISP carries

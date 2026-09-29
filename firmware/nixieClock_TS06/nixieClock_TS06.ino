@@ -214,8 +214,19 @@ boolean GLITCH_ALLOWED = 1;
   populated with fewer tubes than there are channels - which is exactly
   what happens during bring-up.
 */
+#if (BOARD_TYPE == 4)
+#define MUX_SLOTS 6         // the pair always carries all six tubes, so no
+                            // slot is ever empty.
+                            // BENCH ITEM, first pair: 6 slots at SLOT_TICKS 26
+                            // is a 7812.5 / 26 / 6 = 50.1 Hz frame (4 slots:
+                            // 75.1 Hz) and 21 / (26 * 6) = 13.5 % per-tube duty
+                            // (4 slots: 20.2 %); the 640 us dead time does not
+                            // change. Confirm ghost-free, no visible flicker,
+                            // and the IN-12s still bright enough at 2/3 duty.
+#else
 #define MUX_SLOTS 4         // slots the ISR visits: set to the number of
                             // tubes ACTUALLY POPULATED, never more
+#endif
 
 // ---------------- pins ----------------
 #define KEY4 2      // anode, seconds TENS   (was PIEZO)
@@ -228,7 +239,13 @@ boolean GLITCH_ALLOWED = 1;
 #define GEN 9       // HV boost oscillator
 #define DOT 10      // neon dot / colon
 #define BACKL 11    // tube backlight PWM
+#if (BOARD_TYPE == 4)
+#define M_LED 12    // the "m" LED: R53 -> HL9 -> BL_K. No SW3 on this board,
+                    // readLever() reads the fascia instead (ts06pair.ino)
+#else
 #define LEVER 12    // SW3 PROGRAM(LOW) / RUN(HIGH)
+#define readLever() digitalRead(LEVER)
+#endif
 #define KEY5 13     // anode, seconds UNITS
 
 // decoder K155ID1 (74141)
@@ -267,6 +284,11 @@ const byte cathodeMask[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 const byte digitMask[] = {1, 0, 5, 4, 6, 7, 3, 2, 9, 8};
 const byte opts[NUM_INDI] = {KEY3, KEY2, KEY1, KEY0, KEY4, KEY5};
 const byte cathodeMask[] = {1, 6, 2, 7, 5, 0, 4, 9, 8, 3};
+// The rest of what is particular to the pair: all six slots scanned (MUX_SLOTS
+// above), D12 the "m" LED rather than SW3, PROGRAM/RUN read from the fascia's
+// MODE rotary on A6, the fascia's "-" (D7) and "+" (D8) as BTN_SET / BTN_ADJ,
+// and the MCP23017 that sources the backlight LEDs and feeds the IN-15
+// decoders. All in ts06pair.ino, with what is not written yet.
 #endif
 
 /*

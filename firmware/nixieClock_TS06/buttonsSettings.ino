@@ -5,6 +5,10 @@
     BTN_SET / BTN_ADJ change meaning with the lever, so two buttons cover
     everything the original three did - and setting the time can never be
     entered by accident, which is what you want in a shipped product.
+
+    BOARD_TYPE 4 has no lever: readLever() reports the fascia's MODE rotary
+    instead, LOW (PROGRAM) on SET TIME and HIGH (RUN) anywhere else. See
+    ts06pair.ino.
 */
 
 // blink the field currently being edited
@@ -65,10 +69,10 @@ void buttonsTick() {
   btnAdj.tick();
 
   // ---- lever: debounced level read ----
-  boolean lv = digitalRead(LEVER);
+  boolean lv = readLever();
   if (lv != leverState) {
     delay(5);
-    if (digitalRead(LEVER) == lv) {
+    if (readLever() == lv) {
       leverState = lv;
       if (leverState) leaveProgram();   // back to RUN
       else            enterProgram();   // into PROGRAM

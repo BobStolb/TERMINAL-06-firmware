@@ -13,7 +13,11 @@ void setup() {
   pinMode(GEN, OUTPUT);
   pinMode(DOT, OUTPUT);
   pinMode(BACKL, OUTPUT);
+#if (BOARD_TYPE == 4)
+  pairInit();                    // "m" LED, I2C bus, MCP23017 (ts06pair.ino)
+#else
   pinMode(LEVER, INPUT_PULLUP);
+#endif
 
   // ---------- precompute the anode port access ----------
   for (byte i = 0; i < NUM_INDI; i++) {
@@ -90,7 +94,7 @@ void setup() {
   indiBrightCounter = indiMaxBright;
   flipTimer.setInterval(FLIP_SPEED[FLIP_EFFECT]);
 
-  leverState = digitalRead(LEVER);
+  leverState = readLever();
   curMode = leverState ? 0 : 1;
   if (curMode == 1) { changeHrs = hrs; changeMins = mins; }
 
