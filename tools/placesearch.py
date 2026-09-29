@@ -713,6 +713,21 @@ if __name__ == "__main__":
         os.makedirs(OUTDIR, exist_ok=True)
         plot(S, os.path.join(OUTDIR, "baseline_mst.png"), "baseline " + str(round(c["total"])))
         sys.exit(0)
+    if "--refine" in A:                     # a cold anneal from a saved candidate, overlaps priced x5
+        fn = A[A.index("--refine") + 1]
+        r = json.load(open(fn))
+        WT["overlap"] *= 5
+        init = dict(poses={b: tuple(v) for b, v in r["poses"].items()}, remap=r["remap"])
+        out = anneal(r["seed"], int(A[A.index("--iters") + 1]) if "--iters" in A else 15000, T0=15.0, T1=0.1, init=init)
+        WT["overlap"] /= 5
+        M = Model()
+        S = State(M, out["poses"], out["remap"])
+        out["cost"] = S.cost(detail=True)
+        fo = fn.replace(".json", "r.json")
+        json.dump(out, open(fo, "w"), indent=1, default=float)
+        plot(S, fo.replace(".json", ".png"), os.path.basename(fo) + " " + str(round(out["cost"]["total"])))
+        print(json.dumps({k: round(v, 1) for k, v in out["cost"].items()}))
+        sys.exit(0)
     if "--show" in A:
         fn = A[A.index("--show") + 1]
         r = json.load(open(fn))
