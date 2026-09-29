@@ -435,12 +435,13 @@ B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))           # U2's body and its
 XA_DEST = {7: ("U16", 3), 6: ("U16", 4), 5: ("U16", 6), 4: ("U16", 7),
            3: ("U15", 3), 2: ("U15", 4), 1: ("U15", 6), 0: ("U15", 7)}
 XA_P, XA_BOT, XA_LEFT, XA_TOP = 0.45, 95.0, 9.0, 43.5
+BUS_W = 0.24                                # 0.45 pitch leaves 0.21 mm, not a rounding error under 0.2
 for i in range(8):
     x, y = P_("U3", 21 + i)
     yb, xl, yt = XA_BOT + i * XA_P, XA_LEFT - i * XA_P, XA_TOP + (7 - i) * XA_P
     xd, yd = P_(*XA_DEST[i])
     T(f"XA{i}", "B.Cu", (x, y), (x, yb - 0.5), (x - 0.5, yb), (xl + 1.0, yb), (xl, yb - 1.0),
-      (xl, yt + 1.0), (xl + 1.0, yt), (xd - 0.5, yt), (xd, yt - 0.5), (xd, yd))
+      (xl, yt + 1.0), (xl + 1.0, yt), (xd - 0.5, yt), (xd, yt - 0.5), (xd, yd), w=BUS_W)
 
 # Port B straight up into the LED network.
 for i in range(8):
@@ -458,13 +459,13 @@ for k, i in enumerate((6, 5, 4, 3, 2, 1)):
     # the two lines that reach the hours' strip run on the front face, so that east of the minutes'
     # strip the back face under the strips is free for the lines that must cross down to J1
     T(f"BL_A{i}", "F.Cu" if i in (1, 2) else "B.Cu", (x, y), (x, yl + 0.5), (x + 0.5, yl), (xd - 0.5, yl),
-      (xd, yl - 0.5), (xd, yd))
+      (xd, yl - 0.5), (xd, yd), w=BUS_W)
 x, y = P_("RN1", 16)
 xd, yd = P_("XS25", 6)
-T("BL_A8", "B.Cu", (x, y), (x, yd + (x - xd)), (xd, yd))
+T("BL_A8", "B.Cu", (x, y), (x, yd + (x - xd)), (xd, yd), w=BUS_W)
 x, y = P_("RN1", 15)
 xd, yd = P_("XS25", 1)
-T("BL_A7", "F.Cu", (x, y), (x + 2.1, y - 2.1), (xd - 2.3, y - 2.1), (xd, y - 4.4), (xd, yd))
+T("BL_A7", "F.Cu", (x, y), (x + 2.1, y - 2.1), (xd - 2.3, y - 2.1), (xd, y - 4.4), (xd, yd), w=BUS_W)
 
 # ======================================================================== references on the silk
 def place_refs(board, skip=("H",)):
@@ -475,6 +476,10 @@ def place_refs(board, skip=("H",)):
     pads = [(p.x - max(p.w, p.h) / 2, p.y - max(p.w, p.h) / 2, p.x + max(p.w, p.h) / 2,
              p.y + max(p.w, p.h) / 2) for p in board.pads]
     holes = [(hx - hd / 2, hy - hd / 2, hx + hd / 2, hy + hd / 2) for hx, hy, hd in board.holes]
+    silk = {}                                   # (layer, 1 mm cell) -> printed outline points, every part's own included
+    for r in board.placed:
+        for sx, sy, ly in board.silk_points(r):
+            silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
 
     def free(bx, back):
         m = 0.2
@@ -483,6 +488,12 @@ def place_refs(board, skip=("H",)):
         for q in pads + holes:
             if bx[0] - m < q[2] and q[0] < bx[2] + m and bx[1] - m < q[3] and q[1] < bx[3] + m:
                 return False
+        ly, g = ("B.SilkS" if back else "F.SilkS"), 0.15 + 0.06
+        for i in range(int((bx[0] - g) // 1), int((bx[2] + g) // 1) + 1):
+            for j in range(int((bx[1] - g) // 1), int((bx[3] + g) // 1) + 1):
+                for sx, sy in silk.get((ly, i, j), ()):
+                    if bx[0] - g < sx < bx[2] + g and bx[1] - g < sy < bx[3] + g:
+                        return False
         for q in boxes:
             if q[4] == back and bx[0] - m < q[2] and q[0] < bx[2] + m and bx[1] - m < q[3] and q[1] < bx[3] + m:
                 return False
@@ -501,8 +512,11 @@ def place_refs(board, skip=("H",)):
             for rot in ((0, 90) if wide else (90, 0)):
                 bw, bh = (tw, th) if rot == 0 else (th, tw)
                 cands.append((cx, cy, rot, size, bw, bh))
-                cands += [(cx, c[1] - bh / 2 - 0.25, rot, size, bw, bh), (cx, c[3] + bh / 2 + 0.25, rot, size, bw, bh),
-                          (c[0] - bw / 2 - 0.25, cy, rot, size, bw, bh), (c[2] + bw / 2 + 0.25, cy, rot, size, bw, bh)]
+                for o in (0.25, 1.0):
+                    cands += [(cx, c[1] - bh / 2 - o, rot, size, bw, bh), (cx, c[3] + bh / 2 + o, rot, size, bw, bh),
+                              (c[0] - bw / 2 - o, cy, rot, size, bw, bh), (c[2] + bw / 2 + o, cy, rot, size, bw, bh),
+                              (c[0] + bw / 2, c[1] - bh / 2 - o, rot, size, bw, bh), (c[2] - bw / 2, c[1] - bh / 2 - o, rot, size, bw, bh),
+                              (c[0] + bw / 2, c[3] + bh / 2 + o, rot, size, bw, bh), (c[2] - bw / 2, c[3] + bh / 2 + o, rot, size, bw, bh)]
         for tx, ty, rot, size, bw, bh in cands:
             bx = (tx - bw / 2, ty - bh / 2, tx + bw / 2, ty + bh / 2)
             if free(bx, f.back):
@@ -662,6 +676,10 @@ if __name__ == "__main__":
     # ground pad, so the pours only add area and shielding - they carry no connection of their own
     B.zone("GND", "F.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
     B.zone("GND", "B.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
+    # three ground pads sit where the back pour is only a sliver fenced in by tracks: a thermal
+    # into it reaches nothing (KiCad: "starved thermal"). They are joined by their tracks, so the
+    # pours leave them alone and the slivers, touching no pad, are removed as islands
+    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12")}
     B.hide_refs = True
     place_refs(B)
     B.text("TS06-DRV rev A", 30.0, 72.3, "F.SilkS", 1.0)

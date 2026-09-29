@@ -309,6 +309,7 @@ class Board:
         self.keepouts = []
         self.hide_refs = True       # references are placed by hand, as text, where they fit
         self.ref_at = {}            # ref -> (dx, dy, angle, size): a reference shown on the silk
+        self.no_zone = set()        # (ref, pad): pads the pours leave alone (their tracks join them)
         self.thickness = 1.6
 
     # ------------------------------------------------------------------ nets and classes
@@ -512,6 +513,44 @@ class Board:
                     bad.append(f"[{ly}] {net}: track end {e} lands on nothing")
         return bad
 
+    def silk_points(self, ref, step=0.2):
+        """Points along every silkscreen line, arc, circle and polygon edge of a placed part, in
+        board coordinates, as (x, y, layer): for keeping printed references off printed outlines."""
+        f, x0, y0 = self.placed[ref]
+        out = []
+
+        def run(a, b, ly):
+            n = max(1, int(math.hypot(b[0] - a[0], b[1] - a[1]) / step))
+            out.extend((x0 + a[0] + (b[0] - a[0]) * i / n, y0 + a[1] + (b[1] - a[1]) * i / n, ly) for i in range(n + 1))
+
+        for n in S.walk(f.tree):
+            if not isinstance(n, list) or n[0] not in ("fp_line", "fp_rect", "fp_circle", "fp_arc", "fp_poly"):
+                continue
+            lyn = S.find(n, "layer")
+            if not lyn or not S.unq(lyn[1]).endswith("SilkS") or self._silk_on_pad(n, f):
+                continue
+            ly = S.unq(lyn[1])
+            P = lambda k: (float(S.find(n, k)[1]), float(S.find(n, k)[2]))
+            if n[0] == "fp_line":
+                run(P("start"), P("end"), ly)
+            elif n[0] == "fp_rect":
+                a, b = P("start"), P("end")
+                for p, q in (((a[0], a[1]), (b[0], a[1])), ((b[0], a[1]), b), (b, (a[0], b[1])), ((a[0], b[1]), a)):
+                    run(p, q, ly)
+            elif n[0] == "fp_circle":
+                c, e = P("center"), P("end")
+                r = math.hypot(e[0] - c[0], e[1] - c[1])
+                k = max(12, int(math.tau * r / step))
+                out.extend((x0 + c[0] + r * math.cos(t * math.tau / k), y0 + c[1] + r * math.sin(t * math.tau / k), ly) for t in range(k))
+            elif n[0] == "fp_arc":
+                pts = [P("start"), P("mid"), P("end")]
+                run(pts[0], pts[1], ly); run(pts[1], pts[2], ly)
+            else:
+                xy = [(float(q[1]), float(q[2])) for q in S.walk(S.find(n, "pts")) if isinstance(q, list) and q[0] == "xy"]
+                for p, q in zip(xy, xy[1:] + xy[:1]):
+                    run(p, q, ly)
+        return out
+
     # ------------------------------------------------------------------ writing
     @staticmethod
     def _silk_on_pad(node, f, clr=0.15):
@@ -644,6 +683,8 @@ class Board:
                         # insert the net right after (layers ...), where KiCad writes it
                         k = next(i for i, x_ in enumerate(c) if isinstance(x_, list) and x_[0] == "layers") + 1
                         c.insert(k, ["net", str(NI[net]), S.q(net)])
+                    if (ref, nm) in self.no_zone:
+                        c.append(["zone_connect", "0"])
                     c.append(["uuid", S.q(self.U(f"{ref}.pad.{nm}.{len(body)}"))])
                 elif isinstance(c, list) and S.find(c, "uuid") is not None:
                     c = _with_uuid([x_ for x_ in c], self.U(f"{ref}.{c[0]}.{len(body)}"))
@@ -804,7 +845,7 @@ class Board:
             ox = k * (H + gap)
             for net, ly, a, b, w in self.tracks:
                 if ly == layer:
-                    seg(ox, a, b, w / 2, color(net))
+                    seg(ox, a, b, w / 2, color(net) or (87, 217, 121))   # None: the default green
             for p in self.pads:
                 if p.kind == "np_thru_hole" or not p.on(layer):
                     continue

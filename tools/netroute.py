@@ -361,11 +361,17 @@ class NetRouter:
         s, pad_s = self._end_on(net, layer, pts[0], pts[1])
         e, pad_e = self._end_on(net, layer, pts[-1], pts[-2])
         pts = list(pts)
-        if pad_s:
+
+        def sideways(q, p, nxt):
+            # q moved off the line the path arrives on: a replaced end would tilt the whole last
+            # run (a 13 mm run 0.1 mm out of true can clip a pad it passed), so jog to q instead
+            return abs((q[0] - p[0]) * (nxt[1] - p[1]) - (q[1] - p[1]) * (nxt[0] - p[0])) > 1e-6
+
+        if pad_s or sideways(s, pts[0], pts[1]):
             pts = [s] + pts
         else:
             pts[0] = s
-        if pad_e:
+        if pad_e or sideways(e, pts[-1], pts[-2]):
             pts = pts + [e]
         else:
             pts[-1] = e

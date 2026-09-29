@@ -82,8 +82,11 @@ issues = []
 def bad(cat, msg): issues.append((cat, msg))
 
 # ------------------------------------------------------------------ parse
-def txtbox(t, x, y, sz):
-    return (x, y, max(len(t),1)*sz*0.78 + sz*0.3, sz*1.35)
+def txtbox(t, x, y, sz, rot=0.0):
+    w, h = max(len(t),1)*sz*0.78 + sz*0.3, sz*1.35
+    if round(float(rot or 0)) % 180 == 90:          # a text turned on its side is tall, not wide
+        w, h = h, w
+    return (x, y, w, h)
 
 pads, silk, refs = [], [], []
 for f in extract_footprints(SRC):
@@ -103,18 +106,18 @@ for f in extract_footprints(SRC):
                      "y": oy+float(m.group(5)), "w": w, "h": h, "net": net, "layers": L,
                      "kind": m.group(2),
                      "round": m.group(3) == "circle" or (m.group(3) == "oval" and w == h)})
-    for pm in re.finditer(r'\(property "(Reference|Value)" "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+)[^)]*\)\n'
+    for pm in re.finditer(r'\(property "(Reference|Value)" "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) ?([\d.-]*)\)\n'
                           r'\t\t\(layer "([^"]+)"\)([\s\S]{0,200}?)\n\t\)', f):
-        if "(hide yes)" in pm.group(6) or not pm.group(2): continue
-        sz = float((re.search(r'\(size ([\d.]+)', pm.group(6)) or [None,"1"])[1])
-        if "SilkS" in pm.group(5):
-            refs.append({"t": pm.group(2), "layer": pm.group(5),
-                         "box": txtbox(pm.group(2), ox+float(pm.group(3)), oy+float(pm.group(4)), sz)})
-for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) [\d.-]+\)\n'
+        if "(hide yes)" in pm.group(7) or not pm.group(2): continue
+        sz = float((re.search(r'\(size ([\d.]+)', pm.group(7)) or [None,"1"])[1])
+        if "SilkS" in pm.group(6):
+            refs.append({"t": pm.group(2), "layer": pm.group(6),
+                         "box": txtbox(pm.group(2), ox+float(pm.group(3)), oy+float(pm.group(4)), sz, pm.group(5) or 0)})
+for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) ([\d.-]+)\)\n'
                      r'\t\t\(layer "([^"]+)"\)[\s\S]{0,160}?\(size ([\d.]+)', SRC):
-    if "SilkS" in m.group(4):
-        silk.append({"t": m.group(1), "layer": m.group(4),
-                     "box": txtbox(m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(5)))})
+    if "SilkS" in m.group(5):
+        silk.append({"t": m.group(1), "layer": m.group(5),
+                     "box": txtbox(m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(6)), m.group(4))})
 
 # A segment/via's (net ...) field is either just a code, resolved through the
 # net table, or - on every save this KiCad setup has actually produced - the
