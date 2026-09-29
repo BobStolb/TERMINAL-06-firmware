@@ -1,11 +1,12 @@
 # TERMINAL-06 — custom PCBs
 
-Two boards go to Rezonit for this run: the fascia and the main board, each in one of its two builds. A third is deliberately deferred.
+The fascia goes to Rezonit with the clock's electronics. For a small production run, the electronics are the through-hole pair **TS06-DISP + TS06-DRV**: tubes on one board, everything else on the one behind it, no vias on either. The one-board TS06-MAIN is kept, with its history. A tube board of the old kind is deliberately deferred.
 
 | Board | Size | Stack | Status |
 |---|---|---|---|
 | **TS06-FASCIA** | 176 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | Routed. The control panel AND the printed product face. One board, not two. Surface-mount build: no solder visible from the front. Height compressed from the original 52mm 2026-09 - see below. |
 | **TS06-FASCIA-THT** | 176 × 52 mm | same stack, ENIG | Second build of the same board, routed. Through-hole, with the A6 divider ON the face. Pick one to fabricate; they are alternatives, not a pair. Not yet height-compressed (the SMD build was chosen for fabrication). |
+| **TS06-DISP** + **TS06-DRV** | 176 × 44 mm + 176 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** See below. |
 | **TS06-MAIN** / **TS06-MAIN-THT** | 176 × 96 mm | 1.6 mm, matte black | **The whole clock on one board**, two builds, one outline, one netlist. Placed and checked; routing in progress — see below. Replaces the inherited AlexGyver board, SEC and COLON. |
 | ~~TS06-SEC~~ | 67 × 55 mm | 1.6 mm, matte black | **Superseded 17.09.26 by TS06-MAIN.** Surface-mount build routed and clean (1159 tracks, 79 vias); kept as the worked example of a hard placement and of the router. |
 | ~~TS06-COLON~~ | 6.5 mm strip | — | **Superseded 17.09.26 by TS06-MAIN**, which carries the two ИНС-1 at the same measured positions. Placement only. |
@@ -69,6 +70,156 @@ to be whatever the surface-mount routing preferred (D8, D7, GND, A7, +5V, A6). T
 through-hole board cannot route to that order, and two builds of one product must not
 need two different cables, so the pin order stopped being a layout convenience and became
 a specification. The legend is printed on the back silkscreen of both boards.
+
+## TS06-DISP + TS06-DRV — the through-hole pair (25.09.26)
+
+**The clock as two stacked boards, the way AlexGyver builds his: a display board with the tubes
+and nothing else, and a driver board behind it with everything else, joined by pin strips.**
+Through-hole throughout, **no vias on either board**. The layout is designed as a whole, not
+packed and then routed. This supersedes TS06-MAIN-THT as the build for a small production
+run. TS06-MAIN (SMD) and its history stay as they are.
+
+A critical review of the pair, and what it means for the case, is in
+`../Claude outputs/TS06-pair-review.md`.
+
+### Why two boards, and why these two
+
+The one-board TS06-MAIN failed on the thing the owner cares most about:
+* 476, then 339, then 177 vias;
+* a ground pour in hundreds of islands;
+* cathode switches squeezed into tube rings.
+
+The split study (`../Claude outputs/TS06-split-study.md`) found an 18-wire cut. The owner chose
+the Gyver cut instead: **tubes only on the display board**. The halves join the way Gyver joins
+his, with a straight pin strip (PLS / рейка штыревая) on one board plugged into a socket strip
+(PBS) on the other. No wires, no cable to make up.
+
+That cut is what makes zero vias possible:
+* The display board has no drivers, so its copper is only the tube wiring. The ИН-12 cathode
+  bus can be threaded through the sockets on one face, as Gyver's tube half does it.
+* The driver board has no tube fields, so every block can sit behind the strip pins it drives.
+
+### Circuit changes for the pair (owner, 24.09.26)
+
+| Change | Why |
+|---|---|
+| **ИН-15 pair on 2 × К155ИД1 + 1 × MCP23017** instead of 18 MPSA42 + 18 base resistors + 2 expanders | A symbol tube lights one glyph at a time, exactly like a digit, so a decoder does the whole job. 37 fewer parts, ~110 fewer joints. Firmware writes a code per tube; 10–15 blanks it. |
+| **Every backlight LED addressable**: one MCP23017 port-B pin and one resistor per LED (RN1, an isolated 8 × 220 R network), cathodes common through the MPSA42 on D11 | A lit LED can show which tube's setting is being changed; D11 stays the global brightness PWM. |
+| **A second К155ИД1 (U17) for the ИН-17 pair**, on the same A0–A3 lines | The display board delivers the ИН-12 bus and the ИН-17 bundle in the orders their tubes impose. One decoder feeding both would need a ten-line permutation, which two layers cannot make without vias. |
+| **`BOARD_TYPE 4`** in the firmware | The pair's own digit map, `digitMask[] = {1, 0, 5, 4, 6, 7, 3, 2, 9, 8}`, and its own anode order `opts[]` (hours on D6/D5, minutes on D4/D3, S10 on D2, S1 on D13: the order types 1 and 2 use). The anode pins are the same six, driving different tubes, so the Nano's digital row fans out without crossing itself. |
+
+Every other Nano pin keeps its function.
+
+### The stack
+
+**TS06-DISP**, 176 × 44 mm.
+* **On its front:** 4 × ИН-12, 2 × ИН-17, 2 × ИН-15, 2 × ИНС-1 and 9 LEDs.
+* **On its back, seven male strips:**
+  * XP11 on the left edge (the ИН-12 bus);
+  * XP12 on the top edge (28 pins: the ИН-17 bundle and both ИН-15);
+  * XP21–XP25 on the bottom edge (anodes, colon, LEDs).
+
+**TS06-DRV**, 176 × 100 mm, sits 11 mm behind the display on M3 standoffs (a standard 8.5 mm
+PBS socket plus a 2.5 mm PLS body). Its seven socket strips are on its **back** face, towards
+the display. Every other part is on its front, towards the back of the case, so nothing taller
+than the strips lives between the boards. It has three bands:
+* **The top band, 26 mm above the display:**
+  * the Nano across the top-right corner, its USB proud of the edge;
+  * the 12 V jack through the other edge;
+  * fuse, polarity diode and 5 V regulator;
+  * the 185 V converter in one tight loop, with its driver and control block beside it.
+* **The tube band, behind the display:**
+  * the three К155ИД1 for the ИН-15 pair and the ИН-17 pair under the top strip;
+  * U2 beside the left strip;
+  * the six anode channels as three identical cells over the bottom strips.
+* **The bottom band, 30 mm below the display:**
+  * the MCP23017 with its LED network stacked on port B;
+  * the RTC module;
+  * J1, the fascia connector. It is top-entry, so the cable leaves straight towards the fascia.
+
+The strip order is a specification shared by both boards (`tools/ts06pair.py HEADERS`).
+`tools/mkpcb_drv.py` proves three things: every XS pin lands on its XP pin, it carries the
+same net, and every display standoff has its hole.
+
+### How the driver board has no vias
+
+A through-hole pad is copper on both faces, so it is the only place a net may change face.
+The driver board is placed so that every crossing happens in a part the circuit already has.
+There are no wire links and no zero-ohm jumpers.
+
+The long buses are laid by hand, each on one face:
+* **Port A of the expander:** out of the bottom of U3, up the left edge, and east under the
+  two ИН-15 decoders, as one eight-line bus. In every bend, the inner line turns first.
+* **The LED ribbon:** from the network up into lanes under the bottom strips. The two lines
+  to the hours' strip run on the front face, so the back face under the strips is free for
+  the button lines to cross on their way to J1.
+* **The U17 branch of A0–A3:** it leaves under the Nano and runs down a corridor beside it.
+  It enters U17 between the chip's rows, the one approach that lands every line on its own
+  pin; from below, the bus would arrive mirrored.
+* **D9, D10, D12 and D13:** they share that corridor and end in four standing resistors at
+  its exit. Their outputs leave on the other face.
+
+The Nano's fan-out below the module is also laid by hand:
+* **The digital row, on the back face,** in lanes just below the module:
+  * D2–D4 go to the minutes' and S10's opto resistors, standing under the module's end;
+  * D5 and D6 go to the hours' opto resistors, lying straight above their optos;
+  * D7, D8 and D11 go down the gap between the hours' cell and U2.
+* **A7, A6, SCL and SDA, on the front face,** come down the same gap and west between the
+  hours' optos' pin rows. They end in one column of their filters and pull-ups, in the order
+  they arrive, and change face there.
+
+Everything else is routed by `tools/netroute.py`, which never places a via. It uses negotiated
+congestion (PathFinder), with diagonals priced above two straight steps, so long runs come out
+square with 45° corners. A polish pass then re-routes each net alone. The result is saved in
+`tools/mkpcb_drv_routes.json`, so the board regenerates exactly.
+
+### Assembly-friendly by design
+
+* **Every part is through-hole**, on standard footprints read out of KiCad 10's own libraries
+  (`PCB/lib/TS06.pretty`). Nothing needs hot air or paste.
+* **Every IC is in a socket and the Nano is on two PBS-15 strips**, so a dead chip or Nano is
+  a swap, not a desolder.
+* **References are on the silkscreen** of TS06-DRV's component face.
+* **No wiring harness between the boards.** The fascia cable (JST PH, spec pin order) is the
+  only cable.
+* **The anode channels are copies of one cell**, so a mistake in one is easy to see in all.
+* **High voltage is kept in its own net class**, with 0.6 mm clearance enforced by KiCad's DRC
+  from the project file. Every bare high-voltage pad keeps 0.8 mm (IPC-2221B A6) from every
+  other part's pad.
+
+**Solder the strips while the two boards are plugged together.** See the review, finding 2.
+
+### Checked
+
+Both boards are generated from `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` and pass every
+checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
+the project file). The results as of 29.09.26:
+
+| | TS06-DISP | TS06-DRV |
+|---|---|---|
+| Tracks / vias | 373 / **0** | 1067 / **0** (369 laid by hand, 698 routed) |
+| Copper, and its ratio to the placement's floor | 2064 mm, 1.07× | 6334 mm: 5608 mm of signals, 1.31× their floor, and 726 mm of ground tracks under the ground pours |
+| Straight (0°/90°) share of the copper | 53 % | 86 % |
+| Routing | drawn by hand | converged in negotiated routing: round 16, 0 nets sharing, 0 unrouted; then polished |
+| `check_mate()` | — | `[]`: all 60 strip pins land on their pins with the same net, all four display standoffs have holes |
+| `checkcopper.py --hv` | clean | clean |
+| `audit.py` | clean | clean |
+| KiCad 10 DRC | **0 unconnected**, 2 warnings: the colon lamps' courtyards overlap the M10 tube's by 0.135 mm | **0 errors, 0 unconnected**, 4 warnings: the Nano's USB outline stands past the edge by design (2); the stock silkscreen of VT21 and XS1 is clipped at their pads, so the board's copies differ from the library files (2) |
+| `checkpcb.py` | H3's courtyard 0.15 mm past the top edge; the two colon overlaps | the Nano's courtyard past the edge (its USB, by design); XS11's 0.17 mm past it (the strip sits where the display's XP11 is) |
+
+The same checks against the display's standoffs caught one thing no courtyard check sees: a
+standoff and a strip body share the 11 mm gap. H4 was moved 2 mm to clear XP12 (review, finding 1).
+
+### Open before fabrication
+
+* **Bench gates:** the ИН-17 lead order, the ИН-15 pinouts, the ИН-17 pip and the RTC module.
+* **Parts to measure:** the PBS and PLS heights of the batch being bought.
+* **Test fit:** the colon lamps against the M10 glass.
+
+Cathode-order surprises are firmware tables. Only anode identity and the RTC pin order are
+copper. On the firmware side, `BOARD_TYPE 4` now runs the pair: six slots, the "m" LED, the
+expander, and the MODE rotary as PROGRAM/RUN. The rotary's other screens, the levers on A7 and
+the ИН-15 content are still to write. The review has the list.
 
 ## TS06-SEC — seconds and AM/PM
 

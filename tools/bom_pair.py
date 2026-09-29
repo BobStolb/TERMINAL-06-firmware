@@ -95,5 +95,5 @@ if __name__ == "__main__":
                                 "the four holes shared with TS06-DRV (11 mm = 8.5 mm PBS + 2.5 mm PLS body)"),
                                (4, "ИН-12 socket pins / panel sockets as the tube requires", "V1–V4")])
     bom(P.DRV, "TS06-DRV", [(2, "Socket strip PBS-15, 2.54 mm", "U1, the Nano stays removable"),
-                             (2, "Mounting screw M3 + standoff to the case", "the two lower holes, H5 and H6"),
-                             (1, "JST PH 6-way housing + crimps, cable to the fascia", "J1")])
+                             (4, "Mounting screw M3 + standoff to the case", "H5-H8, two into each cheek"),
+                             (1, "JST PH 6-way housing + crimps, cable to the fascia, 180-200 mm", "J1")])
