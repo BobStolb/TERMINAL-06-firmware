@@ -343,7 +343,7 @@ if True:
 
     # ---- the Nano's lines that leave by the module's south end, on the back face inside it:
     # from the analogue column A7, A6 and D13 (lowest pad westernmost), from the digital column D8,
-    # D7, D3, D2 (lowest pad easternmost). The router takes them on from below the module.
+    # D7 and D3 (lowest pad easternmost). The router takes them on from below the module.
     Y_OUT = NANO_Y + 3.6
     for pin, xd in ((26, 87.6), (25, 88.2), (16, 90.0)):
         n = PT["U1"].pins[str(pin)]
@@ -352,7 +352,7 @@ if True:
         pts = [(x, y)] if pin != 16 else [(x, y), (x + 1.27, yy)]
         T(n, "B.Cu", *pts, (xd - 0.5, yy), (xd, yy + 0.5), (xd, Y_OUT))
     T("D13", "B.Cu", (90.0, Y_OUT), P_("R25", 1))
-    for pin, xd in ((11, 94.7), (10, 95.3), (6, 97.4), (5, 99.4)):
+    for pin, xd in ((11, 94.7), (10, 95.3), (6, 97.4)):
         n = PT["U1"].pins[str(pin)]
         x, y = P_("U1", pin)
         T(n, "B.Cu", (x, y), (xd + 0.5, y), (xd, y + 0.5), (xd, Y_OUT))
@@ -450,6 +450,9 @@ def route_order():
 
 def route():
     import netroute as NR
+    if os.environ.get("TS06_HVKO"):         # keep the 185 V off the strip between the logic and the cells
+        others = sorted({p.net for p in B.pads if p.net and B.cls(p.net) != "HV"})
+        B.keepouts.append((60.0, 42.0, 157.0, 49.3, "*", others))
     R = NR.NetRouter(B, turn45=6.0)
     R.locked = set(LOCKED)
     R.fixed = set(FIXED)
