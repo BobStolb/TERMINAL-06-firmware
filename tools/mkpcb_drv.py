@@ -681,10 +681,11 @@ if __name__ == "__main__":
     # ground pad, so the pours only add area and shielding - they carry no connection of their own
     B.zone("GND", "F.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
     B.zone("GND", "B.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
-    # three ground pads sit where the back pour is only a sliver fenced in by tracks: a thermal
+    # ground pads that sit where the back pour is only a sliver fenced in by tracks: a thermal
     # into it reaches nothing (KiCad: "starved thermal"). They are joined by their tracks, so the
-    # pours leave them alone and the slivers, touching no pad, are removed as islands
-    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12")}
+    # pours leave them alone and the slivers, touching no pad, are removed as islands. KiCad's DRC
+    # names them after each re-route; the list keeps every one it has named.
+    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12"), ("C16", "2"), ("U5", "2"), ("U16", "12")}
     B.hide_refs = True
     place_refs(B)
     B.text("TS06-DRV rev A", 30.0, 72.3, "F.SilkS", 1.0)

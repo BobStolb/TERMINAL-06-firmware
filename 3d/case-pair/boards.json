@@ -2,7 +2,7 @@
  "_about": "World-frame geometry of TS06-DISP, TS06-DRV and TS06-FASCIA for the case concept. Written by 3d/case-pair/case_pair.py --extract; do not edit by hand.",
  "sources": {
   "tools/mkpcb_disp.py": "376cb286b924",
-  "tools/mkpcb_drv.py": "6a8d9541c3c9",
+  "tools/mkpcb_drv.py": "7bb814d313a4",
   "tools/ts06pair.py": "7f40a291a07f",
   "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb": "146e05151aa2"
  },

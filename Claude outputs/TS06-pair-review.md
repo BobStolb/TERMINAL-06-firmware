@@ -16,12 +16,12 @@ Both boards pass KiCad 10's DRC with no errors and nothing unconnected (see `PCB
 "Checked"). An independent audit traced every anode and every digit through both boards
 and the firmware.
 
-**One finding blocks an order, and it is mechanical:** the two ИН-17 are placed 13 mm apart,
-and their Ø20 stems need 20.5 (next section). It is inherited from the tube coordinates every
-board so far has used, and fixing it means re-spacing the tube row, which is the owner's
-decision.
+**One finding blocked an order, and it was mechanical:** the two ИН-17 were placed 13 mm apart,
+where their Ø20 stems need 20.5. It came from the tube coordinates every board so far had used.
+**It is fixed.** The owner chose to widen the boards to 191.4 mm and keep the Gyver pitch.
+Both boards were then re-placed, re-routed and re-verified (next section).
 
-Everything else that could still go wrong is mechanical too, and none of it needs new copper:
+Everything that could still go wrong is mechanical, and none of it needs new copper:
 * the stack height;
 * the order in which the strips are soldered;
 * a few tall parts;
@@ -69,7 +69,7 @@ Those need an assembly note, a test fit, and the case drawn around the right num
 
 ## Findings, most serious first
 
-### Blocking: the two ИН-17 do not fit 13 mm apart
+### Fixed: the two ИН-17 did not fit 13 mm apart
 
 TS06-DISP puts S10 and S1 at x 104.605 and 117.605: 13.0 mm between centres. It carried that
 from TS06-MAIN, which took it from the FreeCAD assembly. The ИН-17's own record says it cannot
@@ -100,8 +100,19 @@ between M1 and ИН-15Б. There are two ways to find it:
 Either way, the display board's copper and XP12 move, and so do the driver board's XS12 and
 the decoder rows under it, which means a re-route. The layout method here makes that
 routine, but the look is a design decision, so it is left to the owner.
-**Nothing should be ordered before this is settled.**
-Gate 5, a real ИН-17 on calipers, should confirm the stem before the row is redrawn.
+
+**Fixed on 29.09.26: the owner chose to widen the boards and keep the Gyver pitch.**
+* **The display:** S10 and S1 now stand 20.5 apart, each stem 2.2 mm from the glass beside
+  it. The ИН-15 pair moved 15.4 mm right, and both boards are 191.4 mm wide.
+* **XP12:** still one strip, now 31 pins. Three spares take up the 7.62 mm the ИН-15 group
+  moved beyond the ИН-17 group.
+* **The driver board:** re-placed by blocks and re-routed. Round 15 had 0 nets sharing, and it
+  has 0 vias and 0 DRC errors.
+* **The case:** its check now reads 0.5 mm stem to stem, the margin Rev F chose, and the case
+  is 204.4 mm wide, Rev F's face.
+
+Gate 5, a real ИН-17 on calipers, should still confirm the Ø20 stem: one caliper reading gave
+19.30 mm.
 
 ### 1. The 11 mm stack is a sum of two catalogue numbers: check it against the parts in hand
 
@@ -116,7 +127,7 @@ The standoffs share that gap with the strips' plastic, and no courtyard check se
 hole's footprint is on the front, the strip's on the back. The independent check found the
 top-right standoff (display H4) with a hex spacer's corner 0.5 mm from XP12's end and a
 7 mm washer 0.2 mm from it. **Fixed:** H4 moved 2 mm down on both boards, to display
-(172.5, 7.5). A 5.5 mm hex spacer now clears the strip by 1.9 mm and a 7 mm washer by 1.6 mm.
+(172.5, 7.5), now (187.9, 7.5) on the widened board. A 5.5 mm hex spacer clears the strip by 1.9 mm and a 7 mm washer by 1.6 mm.
 
 ### 2. Solder the strips while they are plugged together
 
@@ -298,7 +309,38 @@ before its author's verdict was read.
 * a placement optimiser;
 * an unbroken ground plane on the back face, with parts placed as bridges.
 
-They started before the widening, so they are scored against the 176 mm baseline above.
+They started before the widening, so they are scored against the 176 mm baseline above. For
+comparison, the widened baseline has:
+* 1097 segments (369 hand-laid);
+* 5936 mm of signal copper on a 4479 mm floor (1.33×);
+* 86.1 % square;
+* 0 DRC errors.
+
+**Swap, logic on top and power at the bottom** (cloud session, branch `pcb/drv-alt-swap`), scored
+from its board file first:
+
+| | Baseline (176 mm) | Swap |
+|---|---|---|
+| Routing | converged, round 16 | converged, 12-15 rounds |
+| Vias | 0 | 0 |
+| Segments (hand-laid) | 1067 (369) | 1053 (322) |
+| Signal copper / its floor | 5608 / 4265 = 1.31 | 4660 / 3780 = **1.23** |
+| Straight share | **85.6 %** | 79.1 % |
+| Port A bus | 889 mm, round the board | **98 mm**, eight short diagonals |
+| KiCad 10 DRC | 0 errors | 1 error (a starved thermal, fixable), 0 unconnected |
+| USB / DC jack | right-hand cheek / left-hand cheek, top | **top face** / right-hand cheek, bottom |
+
+**Not adopted for this revision, but the strongest alternative so far.**
+* **What it gains:** it is the shortest layout (17 % less copper), and the expander sits under
+  the decoders it drives.
+* **What it costs:**
+  * its router-drawn lines are less square than the baseline's buses;
+  * the "m" LED's line laps the board (198 mm);
+  * the fascia's four lines run 110 mm down the middle to J1;
+  * the USB moves to the top of the case.
+* **Porting it** to the 191.4 mm row would be a new placement.
+* **The choice:** it is a matter of taste. The owner can have it instead, at the cost of one
+  more re-placement and route.
 
 ## What is still open before an order
 
@@ -310,7 +352,8 @@ They started before the widening, so they are scored against the 176 mm baseline
 | Gate 6, RTC module pin order | U13's socket order | meter the module |
 | PBS + PLS heights | the standoff length | calipers, finding 1 |
 | Colon vs M10 courtyard | nothing electrical | test fit |
-| **ИН-17 pair spacing: 13.0, needs 20.5** | **the order**: both boards' x layout | the owner picks: tighter row or wider boards (the blocking finding) |
+| ~~ИН-17 pair spacing: 13.0, needs 20.5~~ | fixed: boards widened to 191.4, the pair at 20.5 | gate 5 confirms the Ø20 stem |
+| The fascia (176 mm) under a 191.4 mm tube row | the fascia's position only | centre it, or widen the fascia to match: the owner's call |
 | Firmware: 6-slot timing | ghosting, flicker, brightness | bench, first pair |
 | Firmware: `rtc.adjust()` on every boot, stale `.hex` | every board type | a one-line fix and a rebuild (finding 8) |
 
@@ -322,8 +365,8 @@ Y up.
 
 ### The envelope
 
-* **Width:** the boards are 176 mm. With 0.5 mm clearance each side and 6 mm cheeks, the
-  outside is about 189 mm.
+* **Width:** the boards are 191.4 mm. With 0.5 mm clearance each side and 6 mm cheeks, the
+  outside is 204.4 mm: concept Rev F's face width (204.3).
 * **Height:** TS06-DRV spans world Y 4 to 104, 26 mm above the display board and 30 mm below
   it. The case model puts the inside at **114.3 mm**. The extra 8 mm is the floor: the fascia's
   own connector is side-entry, so its cable leaves towards the floor and the floor sits
@@ -340,7 +383,7 @@ Y up.
   | **Total** | **≈ 59–66 mm** |
 
   With 5 mm of air in front of the rear panel, the inside is about 64–71 mm deep. The case
-  model makes it 71.2 mm, from glass front to rear panel, and **189.0 W × 120.3 H × 83.6 D
+  model makes it 71.2 mm, from glass front to rear panel, and **204.4 W × 120.3 H × 83.6 D
   mm** outside. That is 20–28 mm deeper than Rev F's 44 mm cheek. The two-board stack costs
   that depth, and it should be drawn in from the start rather than found later.
 
@@ -353,7 +396,7 @@ dimension comes from.
 1. **Keep Rev F's "cheeks and boards" idea: nothing moulded but the cheeks.**
    * Two cheeks, printed or cut from plywood or aluminium, carry the whole electronics
      stack. Four screws hold it: TS06-DRV's corner holes H6 and H8 on the left cheek
-     (world X 3.5; Y 7.5 and 81.5), and H5 and H7 on the right (world X 172.5; Y 7.5 and
+     (world X 3.5; Y 7.5 and 81.5), and H5 and H7 on the right (world X 187.9; Y 7.5 and
      100.5). Put bosses or a small aluminium angle on each cheek's inner face.
    * The display rides on the driver board through its four standoffs, so the pair lifts
      out as one module.
@@ -365,7 +408,7 @@ dimension comes from.
 
    Hold it with four screws into the cheeks.
 3. **Watch the connector openings: the cheek's thickness eats the plug.**
-   * **DC jack:** its mouth is 0.3 mm inside the right-hand end of the board (world X 176,
+   * **DC jack:** its mouth is 0.3 mm inside the right-hand end of the board (world X 191.4,
      Y ≈ 91.5).
      * A plain 6 mm cheek leaves a 5.5 × 2.1 plug only 2.7 mm of engagement.
      * A pocket from the inside does not help: the plug still stops at the outer face.

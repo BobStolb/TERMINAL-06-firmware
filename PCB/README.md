@@ -6,7 +6,7 @@ The fascia goes to Rezonit with the clock's electronics. For a small production 
 |---|---|---|---|
 | **TS06-FASCIA** | 176 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | Routed. The control panel AND the printed product face. One board, not two. Surface-mount build: no solder visible from the front. Height compressed from the original 52mm 2026-09 - see below. |
 | **TS06-FASCIA-THT** | 176 × 52 mm | same stack, ENIG | Second build of the same board, routed. Through-hole, with the A6 divider ON the face. Pick one to fabricate; they are alternatives, not a pair. Not yet height-compressed (the SMD build was chosen for fabrication). |
-| **TS06-DISP** + **TS06-DRV** | 176 × 44 mm + 176 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** See below. |
+| **TS06-DISP** + **TS06-DRV** | 191.4 × 44 mm + 191.4 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** See below. |
 | **TS06-MAIN** / **TS06-MAIN-THT** | 176 × 96 mm | 1.6 mm, matte black | **The whole clock on one board**, two builds, one outline, one netlist. Placed and checked; routing in progress — see below. Replaces the inherited AlexGyver board, SEC and COLON. |
 | ~~TS06-SEC~~ | 67 × 55 mm | 1.6 mm, matte black | **Superseded 17.09.26 by TS06-MAIN.** Surface-mount build routed and clean (1159 tracks, 79 vias); kept as the worked example of a hard placement and of the router. |
 | ~~TS06-COLON~~ | 6.5 mm strip | — | **Superseded 17.09.26 by TS06-MAIN**, which carries the two ИНС-1 at the same measured positions. Placement only. |
@@ -112,14 +112,14 @@ Every other Nano pin keeps its function.
 
 ### The stack
 
-**TS06-DISP**, 176 × 44 mm.
+**TS06-DISP**, 191.4 × 44 mm.
 * **On its front:** 4 × ИН-12, 2 × ИН-17, 2 × ИН-15, 2 × ИНС-1 and 9 LEDs.
 * **On its back, seven male strips:**
   * XP11 on the left edge (the ИН-12 bus);
   * XP12 on the top edge (28 pins: the ИН-17 bundle and both ИН-15);
   * XP21–XP25 on the bottom edge (anodes, colon, LEDs).
 
-**TS06-DRV**, 176 × 100 mm, sits 11 mm behind the display on M3 standoffs (a standard 8.5 mm
+**TS06-DRV**, 191.4 × 100 mm, sits 11 mm behind the display on M3 standoffs (a standard 8.5 mm
 PBS socket plus a 2.5 mm PLS body). Its seven socket strips are on its **back** face, towards
 the display. Every other part is on its front, towards the back of the case, so nothing taller
 than the strips lives between the boards. It has three bands:
@@ -140,6 +140,17 @@ than the strips lives between the boards. It has three bands:
 The strip order is a specification shared by both boards (`tools/ts06pair.py HEADERS`).
 `tools/mkpcb_drv.py` proves three things: every XS pin lands on its XP pin, it carries the
 same net, and every display standoff has its hole.
+
+**Why 191.4 mm, not 176** (29.09.26). The two ИН-17 were first drawn 13 mm apart, as every board
+before had them, but their Ø20 stems need 20.5 (the tube's outline drawing; concept Rev F). The
+owner chose to widen the boards and keep the Gyver pitch:
+* the ИН-12s and the colon did not move;
+* the seconds pair now stands 20.5 apart, each stem 2.2 mm from the glass beside it;
+* the ИН-15 pair moved 15.4 mm right.
+
+XP12 stays one strip of 31 pins, with three spares where the ИН-15 group moved further than the
+ИН-17 group. On the driver board, what sits behind the ИН-17s moved 7.62 mm, and what sits behind
+the ИН-12s, with the Nano and U2, moved 15.4. It was then re-routed. The review has the finding.
 
 ### How the driver board has no vias
 
@@ -193,19 +204,24 @@ square with 45° corners. A polish pass then re-routes each net alone. The resul
 
 Both boards are generated from `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` and pass every
 checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
-the project file). The results as of 29.09.26:
+the project file). The results as of 29.09.26, on the widened boards:
 
 | | TS06-DISP | TS06-DRV |
 |---|---|---|
-| Tracks / vias | 373 / **0** | 1067 / **0** (369 laid by hand, 698 routed) |
-| Copper, and its ratio to the placement's floor | 2064 mm, 1.07× | 6334 mm: 5608 mm of signals, 1.31× their floor, and 726 mm of ground tracks under the ground pours |
-| Straight (0°/90°) share of the copper | 53 % | 86 % |
-| Routing | drawn by hand | converged in negotiated routing: round 16, 0 nets sharing, 0 unrouted; then polished |
+| Tracks / vias | 373 / **0** | 1097 / **0** (369 laid by hand, 728 routed) |
+| Copper, and its ratio to the placement's floor | 2108 mm, 1.04× | 6663 mm: 5936 mm of signals, 1.33× their 4479 mm floor, and 727 mm of ground tracks under the ground pours |
+| Straight (0°/90°) share of the copper | 49 % | 86 % |
+| Routing | drawn by hand | converged in negotiated routing: round 15, 0 nets sharing, 0 unrouted; then polished |
 | `check_mate()` | — | `[]`: all 60 strip pins land on their pins with the same net, all four display standoffs have holes |
 | `checkcopper.py --hv` | clean | clean |
 | `audit.py` | clean | clean |
 | KiCad 10 DRC | **0 unconnected**, 2 warnings: the colon lamps' courtyards overlap the M10 tube's by 0.135 mm | **0 errors, 0 unconnected**, 4 warnings: the Nano's USB outline stands past the edge by design (2); the stock silkscreen of VT21 and XS1 is clipped at their pads, so the board's copies differ from the library files (2) |
 | `checkpcb.py` | H3's courtyard 0.15 mm past the top edge; the two colon overlaps | the Nano's courtyard past the edge (its USB, by design); XS11's 0.17 mm past it (the strip sits where the display's XP11 is) |
+
+A second, independent model checks the boards as objects too: the case model in `3d/case-pair`
+reads both generators and tests the tubes, strips, standoffs, tall parts and connectors against
+the case. It is what found the ИН-17 spacing. Its check of the pair now reads stem to stem
+0.5 mm, and 2.2 mm to the glass either side.
 
 The same checks against the display's standoffs caught one thing no courtyard check sees: a
 standoff and a strip body share the 11 mm gap. H4 was moved 2 mm to clear XP12 (review, finding 1).
