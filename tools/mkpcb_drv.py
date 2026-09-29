@@ -92,7 +92,7 @@ def socket(k):
 XS = {k: socket(k) for k in DISP_STRIP}
 
 # Standoffs: the display's four, mirrored; two more at the bottom corners and two along the top.
-HOLES = [(172.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 5.5),
+HOLES = [(172.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 7.5),
          (3.5, 70.5), (172.5, 70.5), (3.5, -22.5), (172.5, -3.5)]
 for i, (hx, hy) in enumerate(HOLES):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy + Y0)
@@ -181,12 +181,12 @@ pl("C14", 96.5, -20.3)
 # board has. The Nano's lines are placed so that each one changes face at its own resistor, where
 # it has to cross something:
 #  * the four lines that come down the corridor beside the Nano (D9 the converter's PWM, D10 the
-#    colon, D12 the "m" LED, D13 an anode) end in four standing resistors at the corridor's exit,
+#    colon, D12 the "m" LED, D13 the S1 opto) end in four standing resistors at the corridor's exit,
 #    and what leaves them (PWM_G north to the control block, the rest south) is on the front face;
-#  * the minutes' and S10's anode resistors stand under the Nano's west end, where D2-D4 come
+#  * the minutes' and S10's opto resistors stand under the Nano's west end, where D2-D4 come
 #    west to them; their outputs drop down that side and run west in lanes under the resistors
 #    at the corridor's exit;
-#  * the hours' anode resistors lie straight above their optos, D5 and D6 coming west to them.
+#  * the hours' opto resistors lie straight above their optos, D5 and D6 coming west to them.
 HOP_Y = 41.9                                # pad 1 of the corridor-exit resistors (DRV frame)
 for ref, x in (("R66", 126.0), ("R1", 122.5), ("R53", 119.0), ("R26", 115.5)):
     pl(ref, x, HOP_Y - Y0, rot=270)

@@ -9,7 +9,7 @@ chosen, and the reason is written beside it; tools/pcbkit.py only writes what th
 GEOMETRY. The board stands vertical with the tubes on its front, in the plane the inherited
 tube board occupied. Tube positions are the reviewed assembly's (3d/Clock.FCStd), exactly as
 tools/mkpcb_main.py carried them: board x = world X, board y = TOP - world Y. The board is the
-tube band and no more - 176 x 43 mm, like AlexGyver's 99 x 34 mm tube half.
+tube band and no more - 176 x 44 mm, like AlexGyver's 99 x 34 mm tube half.
 
 WHAT IS ON IT: 4 x ИН-12 (H10 H1 M10 M1), 2 x ИН-17 (S10 S1), 2 x ИН-15 (AM PM), the two
 ИНС-1 of the colon, nine 3 mm LEDs, and the male strips that plug into TS06-DRV behind it.
@@ -109,7 +109,9 @@ XP25 = strip("XP25", M_X - 6.35, YB)                    # AM, m, PM: HL9 sits ex
 
 # Standoff holes (M3), where nothing else is: the two bottom corners, the top right corner, and
 # the top of the colon column - between the H1 and M10 glass, where a screw head clears both.
-for i, (hx, hy) in enumerate(((3.5, 40.5), (172.5, 40.5), (COLON_X, 3.3), (172.5, 5.5))):
+# The top right one sits 7.5 mm down, not 5.5: the standoff shares the gap between the boards
+# with XP12's body, and at 5.5 a hex spacer's corner came within 0.5 mm of the strip's end.
+for i, (hx, hy) in enumerate(((3.5, 40.5), (172.5, 40.5), (COLON_X, 3.3), (172.5, 7.5))):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy)
     B.holes.append((hx, hy, 3.2))
 

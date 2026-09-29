@@ -35,8 +35,9 @@ case drawn around the right numbers.
   is the only place a net may change face, so the driver board is placed around its series
   resistors:
   * the four lines that share the corridor beside the Nano (the converter's PWM, the colon,
-    the "m" LED, one anode) end in four standing resistors at its exit;
-  * the minutes' and S10's anode resistors stand under the Nano;
+    the "m" LED, the S1 opto) end in four standing resistors at its exit;
+  * the opto resistors of the minutes and S10 (the 470 R in series with each opto's LED)
+    stand under the Nano;
   * the I²C pull-ups and the fascia's ladder filters stand in one column beside the hours'
     optos. A7, A6, SCL and SDA reach the column on the front face, threaded between the
     optos' pin rows, and leave it on the back face.
@@ -45,9 +46,10 @@ case drawn around the right numbers.
 * **On the driver board, the long buses are drawn too.** Port A of the expander runs up the
   left edge as one eight-line bus. The LED ribbon runs in lanes under the bottom strips. The
   U17 branch of A0–A3 drops down a corridor beside the Nano and enters U17 between its rows,
-  the one approach that lands every line on its own pin without a crossing. The router fills
-  in the rest: the Nano's digital row, the I²C pair, the rails and the wiring inside each
-  cell.
+  the one approach that lands every line on its own pin without a crossing. The Nano's
+  fan-out is drawn as well: every pin below the module except D7, D8 and D11, which are
+  drawn only as far as the gap beside U2. The router fills in the rest: those three lines
+  onwards, the I²C pair past its pull-ups, the rails and the wiring inside each cell.
 
 ## Findings, most serious first
 
@@ -59,6 +61,12 @@ exists but is uncommon: a 10 mm standoff plus a 1 mm washer does the same job.
 **Before ordering, measure one PBS and one PLS from the batch you will buy, and set the
 standoffs from that.** If they disagree with 11 mm, the strips either do not seat or they
 bend the display board over its four standoffs.
+
+The standoffs share that gap with the strips' plastic, and no courtyard check sees it: the
+hole's footprint is on the front, the strip's on the back. The independent check found the
+top-right standoff (display H4) with a hex spacer's corner 0.5 mm from XP12's end and a
+7 mm washer 0.2 mm from it. **Fixed:** H4 moved 2 mm down on both boards, to display
+(172.5, 7.5). A 5.5 mm hex spacer now clears the strip by 1.9 mm and a 7 mm washer by 1.6 mm.
 
 ### 2. Solder the strips while they are plugged together
 
@@ -80,8 +88,9 @@ The headers sit on TS06-DISP's back face, so their joints are on the front, amon
 tubes. The bottom strips (XP21–XP25) are hidden if the fascia, or the case lip above it,
 rises to world Y ≈ 38. **XP12 across the top and XP11 down the left edge are not hidden by anything but
 the case.** The brow has to cover the top 4 mm of the display board, and the trench wall
-the left 3 mm. The four standoff screws also land on that face, between the tubes: use
-black countersunk or low-head screws.
+the left 3 mm. The four standoff screws land on that face too. Three are in corners; only
+H3, at the top of the colon column, is between tubes. Use black countersunk or low-head
+screws.
 
 ### 4. 185 V is on the driver board's rear-facing side, and C7 stays charged
 
@@ -95,10 +104,10 @@ about 2.7 s, so it is safe after about 15 s, not immediately.
 no wider than 2.5 mm, and it needs a high-voltage mark. The service note should read:
 "unplug, wait 15 s".
 
-### 5. Four chip orientations on one board
+### 5. Three chip orientations on one board
 
-On TS06-DRV, U15, U16, U17 and RN1 have pin 1 to the left. U3 and the six optos have it to
-the right. U2, U11 and U12 have it at the bottom. Each orientation is what made the zero-via
+On TS06-DRV, U15, U16, U17 and RN1 have pin 1 to the left. U3 and the six optos (U5–U10)
+have it to the right. U2, U11 and U12 have it at the bottom. Each orientation is what made the zero-via
 routing possible, but at an assembly bench it is the most likely mistake: a DIP socket
 soldered backwards is caught only when a chip is fitted, and a chip fitted backwards may
 be destroyed.
@@ -146,7 +155,7 @@ with no code to rewrite.
 
 ### 9. Smaller points
 
-* **The colon lamps' courtyards overlap the M10 tube's by 0.3 mm** at their measured
+* **The colon lamps' courtyards overlap the M10 tube's by 0.135 mm** at their measured
   positions. This is inherited from TS06-MAIN and needs a check with a real tube.
 * **A hole courtyard (H3, above the colon) runs 0.15 mm past the display board's top
   edge.** Harmless.
@@ -188,9 +197,9 @@ Y up.
   | The stack gap | 11 mm |
   | TS06-DRV | 1.6 mm |
   | The tallest part (finding 6) | 15–22 mm |
-  | **Total** | **≈ 60–66 mm** |
+  | **Total** | **≈ 59–66 mm** |
 
-  With 5 mm of air in front of the rear panel, the inside is about 65–72 mm deep. That is
+  With 5 mm of air in front of the rear panel, the inside is about 64–71 mm deep. That is
   20–28 mm deeper than Rev F's 44 mm cheek. The two-board stack costs that depth, and it
   should be drawn in from the start rather than found later.
 
