@@ -739,16 +739,19 @@ def checks(G, G_lay):
             "%.2f mm from the hole centre to the body; an M2.5 nut or insert boss needs ~3" % dist,
             "TIGHT" if dist < 3.0 else "OK", "the КМД1's orientation and third dimension are not captured")
 
-    # 9. inherited from the tube layout, shown by the envelopes
+    # 9. the ИН-17 stems against each other and against the glass either side, in the board plane
     p17 = disp["IN17_X"][1] - disp["IN17_X"][0]
-    row("9", "ИН-17 pair: centres %.3f apart vs Ø%g stems" % (p17, v["IN17_STEM"]),
-        "the stems overlap %.1f mm if the Ø%g runs to the leads; S10's stem overlaps M1's glass by %.2f, "
-        "S1's overlaps ИН-15Б's by %.2f"
-        % (v["IN17_STEM"] - p17, v["IN17_STEM"],
-           (disp["IN12_X"][3] + v["IN12_W"] / 2) - (disp["IN17_X"][0] - v["IN17_STEM"] / 2),
-           (disp["IN17_X"][1] + v["IN17_STEM"] / 2) - (disp["IN15_X"][0] - v["IN12_W"] / 2)),
-        "FAIL", "Rev F spaced them 20.5 for this reason; TS06-DISP keeps the FreeCAD 13.0. Not a case "
-                "problem, but it decides whether the pair can be built: check on real tubes (gate 5)")
+    dy = abs(disp["IN12_Y"] - disp["IN17_Y"])
+    rs, rg = v["IN17_STEM"] / 2, v["IN12_W"] / 2
+    g_pair = p17 - 2 * rs
+    g_m1 = math.hypot(disp["IN17_X"][0] - disp["IN12_X"][3], dy) - rs - rg
+    g_15 = math.hypot(disp["IN15_X"][0] - disp["IN17_X"][1], dy) - rs - rg
+    worst = min(g_pair, g_m1, g_15)
+    row("9", "ИН-17 pair: centres %.3f apart, Ø%g stems" % (p17, v["IN17_STEM"]),
+        "stem to stem %.2f mm; S10's stem to M1's glass %.2f; S1's stem to ИН-15Б's glass %.2f" % (g_pair, g_m1, g_15),
+        "FAIL" if worst < 0 else "TIGHT" if worst < 0.5 else "OK",
+        "Rev F's 20.5 (stem + 0.5); TS06-DISP was re-spaced to it on 29.09.26, having carried the "
+        "FreeCAD 13.0 until then. The stem is the drawing's Ø20 (one caliper reading: 19.30): gate 5")
     return R
 
 
@@ -1214,7 +1217,7 @@ def write_checks(G, G_lay, d, R, path):
          "stated), NOTE (a consequence worth knowing).", "",
          "## Envelope", "",
          "| | mm | from |", "|---|---|---|",
-         "| Outside width | %.1f | 176 boards + 2 x 0.5 + 2 x %.0f cheeks |" % (v["OUT_W"], v["CHEEK_T"]),
+         "| Outside width | %.1f | %.1f boards + 2 x 0.5 + 2 x %.0f cheeks |" % (v["OUT_W"], v["OUT_W"] - 1.0 - 2 * v["CHEEK_T"], v["CHEEK_T"]),
          "| Outside height | %.1f | base %.0f + floor to TS06-DRV %.1f + board %.0f + top %.0f + bar %.0f |"
          % (v["OUT_H"], v["BASE_T"], v["DRV_BOT_Y"] - v["Y_FLOOR"], v["DRV_H"], v["TOP_CLR"], v["TOP_T"]),
          "| Outside depth | %.1f | toe %.1f in front of the face + glass-to-rear-panel %.1f + panel %.1f + recess %.1f |"

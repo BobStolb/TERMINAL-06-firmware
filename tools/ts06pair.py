@@ -120,7 +120,10 @@ HEADERS = {
     "11": ["K6", "K5", "K7", "K4", "K8", "K3", "K9", "K2", "K0", "K1"],
     # the top edge, one 28-pin strip: the ИН-17 bundle, then ИН-15Б, then ИН-15А - every line on
     # it is a cathode line (<= 60 V: the К155ИД1 outputs clamp there)
-    "12": ["KS7", "KS6", "KS5", "KS4", "KS3", "KS2", "KS1", "KS0", "KS9", "KS8"]
+    # ten pins over the ИН-17 pair, three spare ones, then the ИН-15 pair: the seconds pair stands
+    # 20.5 apart for its Ø20 stems and the ИН-15 pair moved 15.4 right with it, the ИН-17 group only
+    # 7.78, so the one strip bridges the difference with exactly three pitches (7.62 mm)
+    "12": ["KS7", "KS6", "KS5", "KS4", "KS3", "KS2", "KS1", "KS0", "KS9", "KS8", None, None, None]
           + [IN15B[g] for g in ("AMP", "OHM", "SIEMENS", "VOLT", "HENRY", "HERTZ", "FARAD", "WATT")]
           + [IN15A[g] for g in ("NANO", "PCT", "PI", "KILO", "MEGA", "MILLI", "PLUS", "MINUS", "P", "MICRO")],
     # the bottom edge: anodes, LEDs and the colon, one short strip per pair of tubes

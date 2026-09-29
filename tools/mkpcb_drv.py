@@ -12,11 +12,11 @@ the display; every other part is on the FRONT face, towards the back of the case
 taller than the strips lives in the 11 mm between the boards.
 
 THE FRAME. Coordinates below are the DISPLAY board's frame seen from this board's component
-side - the clock seen from behind - so a display x becomes 176 - x here, and y is the display's
+side - the clock seen from behind - so a display x becomes 191.4 - x here, and y is the display's
 y. This board's top edge is Y0 = 26 mm above the display's (pl() adds it). check_mate() proves
 every socket pin lands on its header pin and every display standoff has its hole.
 
-THE THREE BANDS, 176 x 100 in all:
+THE THREE BANDS, 191.4 x 100 in all:
   * the TOP BAND, above the display, carries what switches and what plugs in: the Nano across
     the top right corner, digital row facing down into the board and USB proud of the right
     edge (the clock's left side); the 12 V jack through the left edge; the fuse, the polarity
@@ -48,8 +48,13 @@ NAME = "TS06-DRV"
 OUT = os.environ.get("TS06_OUT") or os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")
 PLACE_ONLY = "--place" in sys.argv
 
-W, H = 176.0, 100.0
-DW = 176.0                                  # the display board's width: x here = DW - x there
+W, H = 191.4, 100.0
+DW = 191.4                                  # the display board's width: x here = DW - x there
+# The tube row was re-spaced on 29.09.26: the ИН-17 pair from 13.0 to 20.5 apart (their Ø20 stems),
+# the ИН-15 pair 15.4 mm right, the ИН-12s and the colon where they were. This board is the mirror
+# image, so what sits behind the ИН-15 pair stays put, what sits behind the ИН-17 group moved SB
+# and what sits behind the ИН-12s - with the Nano, U2 and the lines between them - moved SC.
+SB, SC = 7.62, 15.4
 Y0 = 26.0                                   # this board's top edge is 26 mm above the display's
 YT, YB = 2.2 + Y0, 41.3 + Y0                # the strip rows, shared with TS06-DISP
 CLASSES = [("HV", 0.6, 0.4, P.HV_PATTERNS),
@@ -77,9 +82,9 @@ def near(ref, x0, y0, x1, y1, rots=(0, 90, 180, 270), keepout=()):
 
 
 # ======================================================================== the strips (back face)
-DISP_STRIP = {"11": (1.6, 4.4, True), "12": (99.57, 2.2, False), "21": (11.94, 41.3, False),
-              "22": (47.99, 41.3, False), "23": (69.28, 41.3, False), "24": (107.335, 41.3, False),
-              "25": (139.15, 41.3, False)}
+DISP_STRIP = {"11": (1.6, 4.4, True), "12": (107.35, 2.2, False), "21": (11.94, 41.3, False),
+              "22": (47.99, 41.3, False), "23": (69.28, 41.3, False), "24": (115.115, 41.3, False),
+              "25": (154.55, 41.3, False)}
 
 
 def socket(k):
@@ -92,8 +97,8 @@ def socket(k):
 XS = {k: socket(k) for k in DISP_STRIP}
 
 # Standoffs: the display's four, mirrored; two more at the bottom corners and two along the top.
-HOLES = [(172.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 7.5),
-         (3.5, 70.5), (172.5, 70.5), (3.5, -22.5), (172.5, -3.5)]
+HOLES = [(W - 3.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 7.5),
+         (3.5, 70.5), (W - 3.5, 70.5), (3.5, -22.5), (W - 3.5, -3.5)]
 for i, (hx, hy) in enumerate(HOLES):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy + Y0)
     B.holes.append((hx, hy + Y0, 3.2))
@@ -103,8 +108,8 @@ for i, (hx, hy) in enumerate(HOLES):
 DEC_Y = 15.62 + Y0
 pl("U16", 12.93, 15.62, rot=90)
 pl("U15", 35.25, 15.62, rot=90)
-pl("U17", 58.65, 15.62, rot=90)
-pl("U2", 166.2, 27.26, rot=180)
+pl("U17", 58.65 + SB, 15.62, rot=90)
+pl("U2", 166.2 + SC, 27.26, rot=180)
 
 # The anode channel cells. Each pair of anode pins gets its two series resistors lying one above
 # the other, each ending straight over its pin, and its two optos standing above them, emitter
@@ -127,14 +132,14 @@ def cell_right(xl, r_up, r_lo, o_up, o_lo):
     pl(o_lo, xl + 21.04, Y3 - 7.62, rot=270)
 
 
-cell_left(63.585, "R31", "R32", "U9", "U10")         # S10 / S1
-cell_right(101.64, "R30", "R29", "U8", "U7")         # M1 / M10
-cell_left(156.44, "R27", "R28", "U5", "U6")          # H10 / H1
+cell_left(63.585 + SB, "R31", "R32", "U9", "U10")         # S10 / S1
+cell_right(101.64 + SC, "R30", "R29", "U8", "U7")         # M1 / M10
+cell_left(156.44 + SC, "R27", "R28", "U5", "U6")          # H10 / H1
 
 # The colon: one ballast per lamp standing over its pin, the return switch beside them.
-pl("R59", 126.5, 24.6, rot=270)                      # COLON_L
-pl("R58", 130.5, 24.6, rot=270)                      # COLON_U
-pl("VT1", 121.0, 33.0, rot=270)
+pl("R59", 126.5 + SC, 24.6, rot=270)                      # COLON_L
+pl("R58", 130.5 + SC, 24.6, rot=270)                      # COLON_U
+pl("VT1", 121.0 + SC, 33.0, rot=270)
 
 # The AM/PM static anode resistors, over their pins.
 pl("R56", 34.31, 37.0, rot=180)
@@ -143,7 +148,7 @@ pl("R57", 26.69, 33.2, rot=180)
 # ======================================================================== the top band
 # The Nano lies across the top right corner, its digital row facing down into the board and its
 # USB 2.4 mm proud of the right edge (the clock's left side, seen from the front).
-pl("U1", 136.24, -8.73, rot=90)
+pl("U1", 136.24 + SC, -8.73, rot=90)
 
 # The 12 V inlet at the top left, jack mouth through the left edge, then fuse, polarity diode
 # and the 5 V regulator, in the order the current takes them.
@@ -189,11 +194,11 @@ pl("C14", 96.5, -20.3)
 #  * the hours' opto resistors lie straight above their optos, D5 and D6 coming west to them.
 HOP_Y = 41.9                                # pad 1 of the corridor-exit resistors (DRV frame)
 for ref, x in (("R66", 126.0), ("R1", 122.5), ("R53", 119.0), ("R26", 115.5)):
-    pl(ref, x, HOP_Y - Y0, rot=270)
+    pl(ref, x + SC, HOP_Y - Y0, rot=270)
 for ref, x, y in (("R25", 134.6, 24.0), ("R24", 137.6, 24.0), ("R23", 140.6, 24.0)):
-    pl(ref, x, y - Y0, rot=270)
-pl("R22", 143.1, 35.3 - Y0, rot=270)        # H1
-pl("R21", 148.8, 35.3 - Y0, rot=270)        # H10
+    pl(ref, x + SC, y - Y0, rot=270)
+pl("R22", 143.1 + SC, 35.3 - Y0, rot=270)        # H1
+pl("R21", 148.8 + SC, 35.3 - Y0, rot=270)        # H10
 
 # ======================================================================== the bottom band
 # The expander and the LED network, stacked: port B straight up into the network, the network
@@ -203,49 +208,49 @@ pl("U3", 44.5, 60.0, rot=270)
 pl("RN1", 26.72, 56.0, rot=90)
 # The fascia cable plugs in at the bottom edge on the face towards the display, which is the
 # face the fascia sits in front of: the cable goes straight forward, not round the stack.
-pl("J1", 122.0, 69.0, rot=180, back=True)
+pl("J1", 122.0 + SC, 69.0, rot=180, back=True)
 # The fascia's ladder filters and the I2C pull-ups in one column between the colon's ballasts and the
 # hours' cell. A7, A6, SCL and SDA come west through the hours' optos on the front face, in that
 # order top to bottom, and each ends in its own part in the same order; they leave on the back face,
 # the filters' lines down the column's right side to J1, the pull-ups' lines west to the clock module.
-HOP_X = 137.4                               # the column's signal pads
+HOP_X = 137.4 + SC                          # the column's signal pads
 pl("C6", HOP_X, 48.0 - Y0, rot=180)         # A7: pad 1, the signal, on the right
 pl("C5", HOP_X, 50.5 - Y0, rot=180)         # A6
 pl("R55", HOP_X - 2.54, 53.1 - Y0)          # SCL: pad 2, the signal, on the right
 pl("R54", HOP_X - 2.54, 56.1 - Y0)          # SDA
 # The clock module, turned so that SCL is above SDA as the two lines arrive from the column.
-pl("U13", 115.83, 74.27 - Y0, rot=270)
+pl("U13", 115.83 + SC, 74.27 - Y0, rot=270)
 # U2's decoupling capacitor beside the chip's left column, fed from its 5 V pin through the gap above
 # pin 12, below where the A0-A3 lines reach U2 and clear of the lines going down the gap.
-pl("C4", 155.5, 48.5 - Y0, rot=270)
+pl("C4", 155.5 + SC, 48.5 - Y0, rot=270)
 
 # ======================================================================== the small parts
 # Each goes to the free spot of its region nearest the pads it connects to (pcbkit.place_near).
-FANS = (5.0, -0.6, 80.5, 17.3)             # the hand-laid decoder fans: no part over them
+FANS = (5.0, -0.6, 80.5 + SB, 17.3)             # the hand-laid decoder fans: no part over them
 XALANES = (5.0, 17.0, 51.8, 21.3)          # port A's lanes under the two ИН-15 decoders
 XALEFT = (4.5, 17.0, 10.0, 74.0)           # ... up the left edge
 XABOT = (5.0, 68.4, 46.5, 74.0)            # ... and under the expander
-BLRIB = (20.0, 42.0, 166.0, 45.9)          # the LED ribbon under the bottom strips
-GAP = (150.0, -1.0, 157.5, 30.0)           # between the hours' cell and U2: the Nano's lines go south
-PLAZA = (132.5, -5.0, 157.5, 21.0)         # under the Nano: its lines fan out here
-OPTLANES = (52.0, 19.2, 136.0, 21.6)       # D2-D4's anode lines run west under the corridor's exit
+BLRIB = (20.0, 42.0, 166.0 + SC, 45.9)          # the LED ribbon under the bottom strips
+GAP = (150.0 + SC, -1.0, 157.5 + SC, 30.0)           # between the hours' cell and U2: the Nano's lines go south
+PLAZA = (132.5 + SC, -5.0, 157.5 + SC, 21.0)         # under the Nano: its lines fan out here
+OPTLANES = (52.0 + SB, 19.2, 136.0 + SC, 21.6)       # D2-D4's anode lines run west under the corridor's exit
 XAFAN = (5.0, 17.0, 52.0, 30.5)            # port A's lines rise up the left edge into U16 / U15
-NECK = (78.0, -1.0, 157.5, 21.0)           # the Nano's lines come down through here
+NECK = (78.0 + SB, -1.0, 157.5 + SC, 21.0)           # the Nano's lines come down through here
 for r in ("C9", "C10", "C11"):
     near(r, 17.0, -25.5, 45.0, -4.6)
 for r in ("C12", "R68", "C13", "C3"):
     near(r, 38.0, -25.5, 127.0, -4.6)
 for r in ("R60", "R61"):                    # the reservoir's bleeder, on the 185 V feed between cells
-    near(r, 67.0, 29.0, 100.5, 39.4, keepout=(OPTLANES,))
+    near(r, 67.0 + SB, 29.0, 100.5 + SC, 39.4, keepout=(OPTLANES,))
 for r in ("C15", "C16"):
     near(r, 8.0, 21.4, 46.0, 25.5, rots=(0,), keepout=(XALANES,))
-near("C17", 58.0, 21.7, 80.0, 26.5, rots=(0,), keepout=(OPTLANES,))
+near("C17", 58.0 + SB, 21.7, 80.0 + SB, 26.5, rots=(0,), keepout=(OPTLANES,))
 for r in ("VT20", "R20"):                    # the backlight switch, under U2 beside XS21's BL_K pin
-    near(r, 161.0, 28.8, 170.5, 40.2, keepout=(BLRIB,))
+    near(r, 161.0 + SC, 28.8, 170.5 + SC, 40.2, keepout=(BLRIB,))
 for r in ("R33", "R34", "R35", "R36"):
-    near(r, 152.0, 44.0, 176.0, 74.0, keepout=(BLRIB,))
+    near(r, 152.0 + SC, 44.0, 176.0 + SC, 74.0, keepout=(BLRIB,))
 for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
-    near(r, 45.0, 17.4, 157.0, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
+    near(r, 45.0, 17.4, 157.0 + SC, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
 near("C1", 10.0, 44.5, 26.0, 57.5, keepout=(XALEFT, XABOT, BLRIB))   # the expander's own decoupling
 JACK = tuple(v - (Y0 if i % 2 else 0) for i, v in enumerate(B.court("J1")))   # nothing under J1's housing
 
@@ -274,7 +279,7 @@ def P_(ref, pin):
     return B.P(ref, pin)
 
 
-XS12 = {PT["XS12"].pins[str(i + 1)]: B.P("XS12", i + 1) for i in range(28)}
+XS12 = {n: B.P("XS12", int(k)) for k, n in PT["XS12"].pins.items() if n}      # pins 11-13 are spare
 
 # U16 (ИН-15А), back face.
 for pin in (16, 15, 14, 13, 11, 10, 9):
@@ -299,18 +304,18 @@ for pin in (14, 13, 11, 10, 9, 16):
     n = PT["U17"].pins[str(pin)]
     rise(n, "B.Cu", P_("U17", pin), XS12[n][0])
 rise("KS0", "F.Cu", P_("U17", 15), XS12["KS0"][0])
-T("KS7", "F.Cu", P_("U17", 8), (78.97, DEC_Y - 2.54), (78.97, YT + 2.54), XS12["KS7"])
-T("KS9", "B.Cu", P_("U17", 1), (56.11, DEC_Y - 2.54), XS12["KS9"])
-T("KS8", "B.Cu", P_("U17", 2), (59.92, DEC_Y + 1.27), (54.9, DEC_Y + 1.27), (54.9, YT + 1.33), XS12["KS8"])
+T("KS7", "F.Cu", P_("U17", 8), (78.97 + SB, DEC_Y - 2.54), (78.97 + SB, YT + 2.54), XS12["KS7"])
+T("KS9", "B.Cu", P_("U17", 1), (56.11 + SB, DEC_Y - 2.54), XS12["KS9"])
+T("KS8", "B.Cu", P_("U17", 2), (59.92 + SB, DEC_Y + 1.27), (54.9 + SB, DEC_Y + 1.27), (54.9 + SB, YT + 1.33), XS12["KS8"])
 
 # U2 (ИН-12 bus), beside XS11. The column facing the strip (K7 K8 K9) goes straight across on the
 # front; the far column threads through the chip on the back, each line through the gap above
 # its own pin, and lands on the strip in order.
 XS11 = {PT["XS11"].pins[str(i + 1)]: B.P("XS11", i + 1) for i in range(10)}
 T("K7", "F.Cu", P_("U2", 8), XS11["K7"])
-T("K8", "F.Cu", P_("U2", 2), (169.3, P_("U2", 2)[1]), (169.3, XS11["K3"][1]), (171.84, XS11["K8"][1]), XS11["K8"])
-T("K9", "F.Cu", P_("U2", 1), (171.8, P_("U2", 1)[1]), (171.8, XS11["K2"][1] + 0.06), XS11["K9"])
-X_DIAG = 172.6                              # where each back-face line finishes its 45 degree run
+T("K8", "F.Cu", P_("U2", 2), (169.3 + SC, P_("U2", 2)[1]), (169.3 + SC, XS11["K3"][1]), (171.84 + SC, XS11["K8"][1]), XS11["K8"])
+T("K9", "F.Cu", P_("U2", 1), (171.8 + SC, P_("U2", 1)[1]), (171.8 + SC, XS11["K2"][1] + 0.06), XS11["K9"])
+X_DIAG = 172.6 + SC                         # where each back-face line finishes its 45 degree run
 for pin in (9, 10, 11, 13, 14, 15, 16):
     n = PT["U2"].pins[str(pin)]
     px, py = P_("U2", pin)
@@ -352,7 +357,7 @@ for pin, lane, ref in ((5, 21.6, "R25"), (6, 22.25, "R24"), (7, 22.9, "R23"), (8
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
     fan(n, x, y, lane, *P_(ref, 1))
-GAP_X, GAP_Y = 152.4, 44.0                  # the gap's first line (D7) and where the router takes over
+GAP_X, GAP_Y = 152.4 + SC, 44.0                  # the gap's first line (D7) and where the router takes over
 for k, (pin, lane) in enumerate(((10, 25.9), (11, 26.55), (14, 27.2))):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
@@ -361,7 +366,7 @@ for k, (pin, lane) in enumerate(((10, 25.9), (11, 26.55), (14, 27.2))):
 # The analogue row's A6, A7, SCL and SDA drop through the digital row's gaps on the front face, close
 # up into four lanes down the same gap, and turn west through the hours' optos - between each opto's
 # two rows of pins - to the column of their filters and pull-ups (HOP_X), where they change face.
-F_GAP = (149.95, 150.55, 151.15, 151.75)    # A7 A6 SCL SDA down the gap
+F_GAP = tuple(x + SC for x in (149.95, 150.55, 151.15, 151.75))    # A7 A6 SCL SDA down the gap
 F_LANE = (50.5, 51.1, 51.7, 52.3)           # ... and west between the optos' pin rows
 for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5))):
     n = PT["U1"].pins[str(pin)]
@@ -377,7 +382,7 @@ for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5)))
     elif n == "SCL":
         pts += [(pad[0] + (pad[1] - yl), yl), pad]
     else:                                   # SDA, the lowest, turns down first
-        xt = 139.15
+        xt = 139.15 + SC
         pts += [(xt, yl), (xt, pad[1] - (xt - pad[0])), pad]
     T(n, "F.Cu", *pts)
 
@@ -389,7 +394,7 @@ for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5)))
 # D9, D10, D12 and D13 come down the corridor on the bus's outside and end in their series resistors
 # at its exit (HOP), where they change face.
 HOP = {"D9": "R66", "D10": "R1", "D12": "R53", "D13": "R26"}   # where the corridor's other lines end
-X_COR = 128.0                               # the corridor's first line (A3)
+X_COR = 128.0 + SC                          # the corridor's first line (A3)
 PITCH = 0.6
 Y_RUN = 36.5                                # A3's lane between U17's rows
 for k, (pin, dy) in enumerate(((22, 1.9), (21, 2.5), (20, 3.1), (19, 3.7), (16, 4.3))):

@@ -9,7 +9,10 @@ chosen, and the reason is written beside it; tools/pcbkit.py only writes what th
 GEOMETRY. The board stands vertical with the tubes on its front, in the plane the inherited
 tube board occupied. Tube positions are the reviewed assembly's (3d/Clock.FCStd), exactly as
 tools/mkpcb_main.py carried them: board x = world X, board y = TOP - world Y. The board is the
-tube band and no more - 176 x 44 mm, like AlexGyver's 99 x 34 mm tube half.
+tube band and no more - 191.4 x 44 mm, like AlexGyver's 99 x 34 mm tube half. It was 176 wide
+until the ИН-17 pair was found 13 mm apart where their Ø20 stems need 20.5 (29.09.26): the
+ИН-12s and the colon kept the Gyver pitch, the seconds pair was re-spaced and the ИН-15 pair
+moved 15.4 mm right with it.
 
 WHAT IS ON IT: 4 x ИН-12 (H10 H1 M10 M1), 2 x ИН-17 (S10 S1), 2 x ИН-15 (AM PM), the two
 ИНС-1 of the colon, nine 3 mm LEDs, and the male strips that plug into TS06-DRV behind it.
@@ -48,19 +51,24 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 NAME = "TS06-DISP"
 OUT = os.environ.get("TS06_OUT") or os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")
 
-W, H = 176.0, 44.0
+W, H = 191.4, 44.0                          # 176 + 15.4: the seconds pair at 20.5, see IN17_X
 TOP = 78.0                                  # world Y of the top edge: 1 mm above the ИН-15 glass courtyards
 IN12_WY = 40.10 + 20.066                    # the inherited board's tube centre height, world Y
 Y12 = round(TOP - IN12_WY, 4)               # 16.834: ИН-12 and ИН-15 centres
 Y17 = round(Y12 + 5.375, 4)                 # ИН-17 centres sit 5.375 below
 IN12_X = [13.21, 36.57, 63.99, 87.37]
-IN17_X = [104.605, 117.605]
-IN15_X = [135.0, 156.0]
+# The seconds pair: centres 20.5 apart, as concept Rev F set them off the ИН-17's Ø20 stem
+# (knowledge/TERMINAL-06-measurements-IN17 Rev 5; 13.0, as TS06-MAIN had it, puts the stems 7 mm
+# into each other). Each stem also clears the ИН-12 / ИН-15 glass beside it (Ø19.47) by 2.2 mm,
+# 21.265 from M1 in x - a spacing picked so the ИН-15 pair moves exactly three strip pitches more
+# than the ИН-17 group, and XP12 stays one strip with three spare pins (see XP12).
+IN17_X = [108.635, 129.135]
+IN15_X = [150.4, 171.4]                     # 15.4 right of where they were, pitch 21.0 as before
 COLON_X = 50.535
 COLON_Y = [TOP - 66.5, TOP - 52.5]          # lamp centres (FreeCAD)
 LED_Y = round(TOP - (IN12_WY - 17.67), 4)   # 34.504, as TS06-MAIN had it
 LED17_Y = round(TOP - (IN12_WY - 5.375 - 13.3), 4)
-M_X = 145.5                                 # the "m" LED, beneath the AM/PM pair
+M_X = 160.9                                 # the "m" LED, beneath the AM/PM pair (midway)
 YT = 2.2                                    # top strips
 YB = 41.3                                   # bottom strips
 LV = 0.25                                   # cathode-line width and clearance
@@ -96,22 +104,23 @@ def strip(ref, x0, y, vertical=False):
 
 # XP11 down the left edge, one pin per strand, level with the strand's entry into H10.
 XP11 = strip("XP11", 1.6, 4.4, vertical=True)
-# XP12 along the top: ten pins over the ИН-17 pair, eight over ИН-15Б, ten over ИН-15А.
-_XP12 = strip("XP12", 99.57, YT)
-XP12, XP13, XP14 = _XP12[:10], _XP12[10:18], _XP12[18:]
+# XP12 along the top: ten pins centred over the ИН-17 pair, three spare, eight over ИН-15Б, ten
+# over ИН-15А. The spares are the 7.62 mm the ИН-15 pair moved beyond the ИН-17 group.
+_XP12 = strip("XP12", 107.35, YT)          # 99.57 + 7.78: the ИН-15 group then moves exactly 15.4
+XP12, XP13, XP14 = _XP12[:10], _XP12[13:21], _XP12[21:]
 # The bottom strips, under the tubes they serve (see the routing of each).
 LX = lambda i: IN12_X[i] + 1.27
 XP21 = strip("XP21", 11.94, YB)                         # BL_K under HL1's cathode, BL_A1 under its anode, then H10's anode...
 XP22 = strip("XP22", 47.99, YB)                         # the colon, F.Cu
 XP23 = strip("XP23", 69.28, YB)                         # M10 / M1
-XP24 = strip("XP24", 107.335, YB)                       # S10 / S1
+XP24 = strip("XP24", round((IN17_X[0] + IN17_X[1]) / 2 - 3.77, 3), YB)   # S10 / S1, centred under the pair
 XP25 = strip("XP25", M_X - 6.35, YB)                    # AM, m, PM: HL9 sits exactly over pins 3 and 4
 
 # Standoff holes (M3), where nothing else is: the two bottom corners, the top right corner, and
 # the top of the colon column - between the H1 and M10 glass, where a screw head clears both.
 # The top right one sits 7.5 mm down, not 5.5: the standoff shares the gap between the boards
 # with XP12's body, and at 5.5 a hex spacer's corner came within 0.5 mm of the strip's end.
-for i, (hx, hy) in enumerate(((3.5, 40.5), (172.5, 40.5), (COLON_X, 3.3), (172.5, 7.5))):
+for i, (hx, hy) in enumerate(((3.5, 40.5), (W - 3.5, 40.5), (COLON_X, 3.3), (W - 3.5, 7.5))):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy)
     B.holes.append((hx, hy, 3.2))
 
@@ -227,38 +236,43 @@ def top_down(net, layer, pin, pad, turn_y=3.6):
 
 S10, S1 = ("V5", IN17_X[0], Y17), ("V6", IN17_X[1], Y17)
 KB = dict(zip(P.HEADERS["12"][:10], XP12))
+# Every lane is set from its own tube's centre, so the bundles follow the tubes. The pins sit
+# centred between the two tubes; each bundle leaves them at 45 degrees and keeps its order, so
+# no line crosses another on its face.
 # S10 on the back: 7 6 5 4 down its left side, 3 2 1 0 from above, 9 8 down its right side
 # past the anode, which is 185 V and gets 0.6 mm.
-for d, lane in (("7", 99.0), ("6", 99.5), ("5", 100.0), ("4", 100.5)):
-    wrap("KS" + d, "B.Cu", KB["KS" + d], lane, B.P("V5", d))
+s10, s1 = IN17_X
+for d, lane in (("7", -5.605), ("6", -5.105), ("5", -4.605), ("4", -4.105)):
+    wrap("KS" + d, "B.Cu", KB["KS" + d], s10 + lane, B.P("V5", d))
 for d in ("3", "2", "1", "0"):
     top_down("KS" + d, "B.Cu", KB["KS" + d], B.P("V5", d))
-for d, lane in (("9", 109.0), ("8", 109.5)):
-    wrap("KS" + d, "B.Cu", KB["KS" + d], lane, B.P("V5", d))
+for d, lane in (("9", 4.395), ("8", 4.895)):
+    wrap("KS" + d, "B.Cu", KB["KS" + d], s10 + lane, B.P("V5", d))
 # S1 on the front: the same pins, mirrored logic - 7 6 5 4 come down between the tubes, right of
 # S10's anode line; 3 2 1 0 from above; 9 8 down S1's right side.
-for d, lane in (("7", 111.9), ("6", 112.4), ("5", 112.9), ("4", 113.4)):
-    wrap("KS" + d, "F.Cu", KB["KS" + d], lane, B.P("V6", d))
+for d, lane in (("7", -5.705), ("6", -5.205), ("5", -4.705), ("4", -4.205)):
+    wrap("KS" + d, "F.Cu", KB["KS" + d], s1 + lane, B.P("V6", d))
 for d in ("3", "2", "1", "0"):
     top_down("KS" + d, "F.Cu", KB["KS" + d], B.P("V6", d))
-for d, lane in (("9", 122.0), ("8", 122.5)):
-    wrap("KS" + d, "F.Cu", KB["KS" + d], lane, B.P("V6", d))
+for d, lane in (("9", 4.395), ("8", 4.895)):
+    wrap("KS" + d, "F.Cu", KB["KS" + d], s1 + lane, B.P("V6", d))
 
 # ======================================================================== the ИН-15 pair (XP13, XP14)
-AM = dict(zip(P.HEADERS["12"][10:18], XP13))
-PM = dict(zip(P.HEADERS["12"][18:], XP14))
+AM = dict(zip(P.HEADERS["12"][13:21], XP13))
+PM = dict(zip(P.HEADERS["12"][21:], XP14))
+b15, a15 = IN15_X                           # the lanes below are set from each tube's centre
 pad_of = lambda ref, net: next(B.P(ref, k) for k, v in PT[ref].pins.items() if v == net)
-for net, lane in ((P.IN15B["AMP"], 126.9), (P.IN15B["OHM"], 127.4), (P.IN15B["SIEMENS"], 127.9)):
+for net, lane in ((P.IN15B["AMP"], b15 - 8.1), (P.IN15B["OHM"], b15 - 7.6), (P.IN15B["SIEMENS"], b15 - 7.1)):
     wrap(net, "B.Cu", AM[net], lane, pad_of("V9", net))
 for g in ("VOLT", "HENRY", "HERTZ"):
     top_down(P.IN15B[g], "B.Cu", AM[P.IN15B[g]], pad_of("V9", P.IN15B[g]))
-for net, lane in ((P.IN15B["FARAD"], 142.2), (P.IN15B["WATT"], 142.7)):
+for net, lane in ((P.IN15B["FARAD"], b15 + 7.2), (P.IN15B["WATT"], b15 + 7.7)):
     wrap(net, "B.Cu", AM[net], lane, pad_of("V9", net))
-for net, lane in ((P.IN15A["NANO"], 147.3), (P.IN15A["PCT"], 147.8), (P.IN15A["PI"], 148.3), (P.IN15A["KILO"], 148.85)):
+for net, lane in ((P.IN15A["NANO"], a15 - 8.7), (P.IN15A["PCT"], a15 - 8.2), (P.IN15A["PI"], a15 - 7.7), (P.IN15A["KILO"], a15 - 7.15)):
     wrap(net, "B.Cu", PM[net], lane, pad_of("V10", net))
 for g in ("MEGA", "MILLI", "PLUS"):
     top_down(P.IN15A[g], "B.Cu", PM[P.IN15A[g]], pad_of("V10", P.IN15A[g]))
-for net, lane in ((P.IN15A["MINUS"], 163.1), (P.IN15A["P"], 163.6), (P.IN15A["MICRO"], 164.1)):
+for net, lane in ((P.IN15A["MINUS"], a15 + 7.1), (P.IN15A["P"], a15 + 7.6), (P.IN15A["MICRO"], a15 + 8.1)):
     wrap(net, "B.Cu", PM[net], lane, pad_of("V10", net))
 
 # ======================================================================== anodes, LEDs, colon
@@ -281,7 +295,8 @@ for i, (refV, tube) in enumerate((("V1", "H10"), ("V2", "H1"), ("V3", "M10"), ("
     down_to(f"BL_A{i + 1}", "B.Cu", B.P(f"HL{i + 1}", 2), hub[f"BL_A{i + 1}"], RUN_L)
 # S10: anode on the FRONT (the back is S10's own wrap), a jog right past pad 9, then down
 a = B.P("V5", "A")
-B.track("ANODE_S10", "F.Cu", [a, (a[0] + 1.6, a[1] + 1.6), (a[0] + 1.6, YB - 5.1), (X24["ANODE_S10"][0], YB - 4.1), X24["ANODE_S10"]])
+xa, pa = a[0] + 1.6, X24["ANODE_S10"]
+B.track("ANODE_S10", "F.Cu", [a, (xa, a[1] + 1.6), (xa, YB - 3.6 - abs(pa[0] - xa)), (pa[0], YB - 3.6), pa])
 down_to("BL_A5", "B.Cu", B.P("HL5", 2), X24["BL_A5"], RUN_L)
 # S1: anode on the back, out to the right, down, and back under the tube
 a = B.P("V6", "A")
@@ -316,7 +331,7 @@ B.text("TERMINAL-06  display", 35.0, H - 0.9, "B.SilkS", 0.8)
 for ref, pins in (("XP21", XP21), ("XP22", XP22), ("XP23", XP23), ("XP24", XP24), ("XP25", XP25)):
     B.text(ref, pins[0][0] - 3.1, YB, "B.SilkS", 0.8)                          # beside pin 1, clear of the outline
 B.text("XP11", XP11[-1][0] + 0.3, XP11[-1][1] + 2.3, "B.SilkS", 0.8)
-B.text("XP12", XP12[0][0] + 27 * 2.54 + 3.15, YT, "B.SilkS", 0.8)              # past its pin 28
+B.text("XP12", _XP12[-1][0] + 3.15, YT, "B.SilkS", 0.8)                        # past its last pin
 
 if __name__ == "__main__":
     bad = B.check()
