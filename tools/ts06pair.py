@@ -49,6 +49,11 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ts06main as M
 
+# TS06_DRV_VARIANT=swap selects the firmware-only remaps of the alternative driver layout
+# (tools/mkpcb_drv_swap.py): which Nano pin drives which anode, which port-B bit feeds which
+# LED through which RN1 element. The default is the baseline's (tools/mkpcb_drv.py).
+SWAP = os.environ.get("TS06_DRV_VARIANT") == "swap"
+
 DISP, DRV = "disp", "drv"
 
 
@@ -205,11 +210,13 @@ C("C17", "100n", "+5V", "GND", group="decoder")
 # optos nearest the module and the minutes' and seconds' further west, the eastern pins must
 # drive the nearer tubes or the lines cross on the one face they have (tools/mkpcb_drv.py).
 TUBE_PIN4 = {"H10": "D6", "H1": "D5", "M10": "D4", "M1": "D3", "S10": "D2", "S1": "D13"}
+if SWAP:        # the swap layout: S on the Nano's analogue end, M under the module, H to the east
+    TUBE_PIN4 = {"H10": "D6", "H1": "D5", "M10": "D2", "M1": "D4", "S10": "D13", "S1": "D3"}
 for i, nm in enumerate(TUBES):
     u = f"U{i + 5}"
     part(u, "TLP627", DIP4, {1: "OPT_" + nm, 2: "GND", 3: "EMIT_" + nm, 4: "HV185"}, DRV, "anodes",
          f"Anode switch for {nm}: 1 LED anode, 2 LED cathode, 3 emitter, 4 collector.")
-    R(f"R{21 + i}", "470R", TUBE_PIN4[nm], "OPT_" + nm, R_V if nm in ("M10", "M1", "S10", "S1") else
+    R(f"R{21 + i}", "470R", TUBE_PIN4[nm], "OPT_" + nm, R_V if SWAP or nm in ("M10", "M1", "S10", "S1") else
       "TS06_R_Axial_DIN0207_P10.16mm", group="anodes", note="Opto LED, ~8 mA.")
     R(f"R{27 + i}", M.ANODE_R[nm], "EMIT_" + nm, "ANODE_" + nm, R_HV, "anodes",
       "Anode series resistor, one per tube; TBC values wait for bench gate 2.")
@@ -220,6 +227,8 @@ for i, nm in enumerate(TUBES):
 # Which LED each port-B bit lights - free for the firmware, chosen so the eight lines leave the
 # network in the order the strips want them (tools/mkpcb_drv.py). GPBk lights HL{BL_OF_GPB[k]}.
 BL_OF_GPB = [1, 2, 3, 4, 5, 6, 7, 8]
+if SWAP:        # RN1 stands at the left edge: GPB0 on its top element, which feeds the nearest strip pin
+    BL_OF_GPB = [8, 7, 6, 5, 4, 3, 2, 1]
 
 # ---- AM/PM: one expander, two decoders
 MCP = {9: "+5V", 10: "GND", 11: None, 12: "SCL", 13: "SDA", 14: None, 15: "GND", 16: "GND", 17: "GND",
@@ -275,6 +284,10 @@ R("R55", "4k7", "+5V", "SCL", R_V, group="ampm")
 # expander's port B, pin for pin, and is one placement instead of eight.
 RN = {}
 for k in range(8):
+    if SWAP:                                # element k between pins 1+k and 16-k, GPBk on pin 1+k
+        RN[1 + k] = f"XB{k}"
+        RN[16 - k] = f"BL_A{BL_OF_GPB[k]}"
+        continue
     RN[8 - k] = f"XB{k}"                    # the expander side: GPBk lands on pin 8-k, directly above it
     RN[9 + k] = f"BL_A{BL_OF_GPB[k]}"       # the LED side, pin 9+k, the other end of the same resistor
 part("RN1", "8x220R isolated DIP-16", DIP16, RN, DRV, "backlight",
