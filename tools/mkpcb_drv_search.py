@@ -38,7 +38,7 @@ CAND = A[A.index("--cand") + 1] if "--cand" in A else os.path.join(ROOT, "PCB", 
 TAG = A[A.index("--tag") + 1] if "--tag" in A else ""
 OUTDIR = os.path.join(ROOT, "PCB", NAME) if not TAG else os.path.join(ROOT, "PCB", NAME, TAG)
 OUT = os.path.join(OUTDIR, NAME + ".kicad_pcb")
-ROUTES = CAND.replace(".json", ".routes.json")
+ROUTES = CAND.replace(".json", ".routes.json") if not os.environ.get("ORDER") else CAND.replace(".json", f".{os.environ['ORDER']}.routes.json")
 PLACE_ONLY = "--place" in A
 
 W, H = 176.0, 100.0
@@ -220,7 +220,19 @@ def route():
     import netroute as NR
     R = NR.NetRouter(B, turn45=6.0)
     R.dirmul = {ly: [1.0, 1.5] * 4 for ly in ("F.Cu", "B.Cu")}
-    N = NR.Negotiator(R, route_order(), widths=WIDTHS)
+    order = route_order()
+    if os.environ.get("ORDER") == "dec":     # variant: the decoder fans (the structural hot spot) first
+        dec = [n for n in order if B.cls(n) == "CATH"]
+        order = dec + [n for n in order if n not in dec]
+    N = NR.Negotiator(R, order, widths=WIDTHS)
+    conflicts = N.conflicts
+
+    def checkpoint():                        # conflicts() runs once a round: save the copper each time,
+        c = conflicts()                      # so a recycled container loses at most one round
+        with open(ROUTES + ".partial", "w") as fh:
+            json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks], fh, indent=0)
+        return c
+    N.conflicts = checkpoint
     failed = N.run(rounds=int(os.environ.get("ROUNDS", 60)))
     if not failed:
         R.polish(route_order(), widths=WIDTHS, verbose=True)
@@ -241,7 +253,6 @@ def scorecard(check_bad, failed):
     L = [math.hypot(b[0] - a[0], b[1] - a[1]) for _, _, a, b, _ in segs]
     axis = sum(l for l, (_, _, a, b, _) in zip(L, segs) if abs(a[0] - b[0]) < 1e-3 or abs(a[1] - b[1]) < 1e-3)
     dips = [r for r in B.placed if "DIP" in B.placed[r][0].name]
-    fronts = [B.court(r) for r in B.placed if not r.startswith("H") and r not in PS.PT or True]
     parts = [r for r in B.placed if not r.startswith("H")]
     ys = [B.court(r) for r in parts]
     usb = B.court("U1")
