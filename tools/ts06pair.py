@@ -284,9 +284,9 @@ R("R55", "4k7", "+5V", "SCL", R_V, group="ampm")
 # expander's port B, pin for pin, and is one placement instead of eight.
 RN = {}
 for k in range(8):
-    if SWAP:                                # element k between pins 1+k and 16-k, GPBk on pin 1+k
-        RN[1 + k] = f"XB{k}"
-        RN[16 - k] = f"BL_A{BL_OF_GPB[k]}"
+    if SWAP:                                # element k between pins 9+k and 8-k, GPBk on pin 9+k
+        RN[9 + k] = f"XB{k}"
+        RN[8 - k] = f"BL_A{BL_OF_GPB[k]}"
         continue
     RN[8 - k] = f"XB{k}"                    # the expander side: GPBk lands on pin 8-k, directly above it
     RN[9 + k] = f"BL_A{BL_OF_GPB[k]}"       # the LED side, pin 9+k, the other end of the same resistor

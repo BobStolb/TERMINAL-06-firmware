@@ -85,8 +85,8 @@ U3_X, U3_Y = 25.4, 59.0                     # pin 1; the top row (GPA7..GPA0, le
 pd("U3", U3_X, U3_Y, rot=90)
 # The LED network standing at the left edge, left of the AM/PM strip: port B reaches it in lanes
 # under the expander, and its right column feeds the LED ribbon under the bottom strips.
-RN_X, RN_Y = 9.0, 65.0                      # pin 1 (top of the left column)
-pd("RN1", RN_X, RN_Y, rot=0)
+RN_X, RN_Y = 9.0, 65.0                      # the top of its left column (pin 9); notch down, as U2's
+pd("RN1", RN_X + 7.62, RN_Y + 17.78, rot=180)
 
 # The anode cells over the bottom strips (the baseline's cells): two stacked anode resistors ending
 # straight over their pins, the two optos standing above them, 185 V between.
@@ -185,7 +185,7 @@ near("C15", 7.8, 43.0, 12.5, 58.0, rots=(90, 270), keepout=(DLEFT2,))
 pd("C16", 56.2, 48.1)
 near("C17", 60.0, 46.5, 64.5, 58.5, rots=(90, 270))
 near("C1", 44.0, 59.5, 62.0, 66.0, keepout=KO)
-near("C4", 150.0, 30.0, 158.0, 58.0, keepout=KO)
+pd("C4", 155.5, 48.5, rot=270)             # U2's decoupling, fed through the gap above its pin 12
 near("R53", 8.0, 85.5, 24.0, 99.5)
 for r in ("VT20", "R20"):
     near(r, 158.0, 73.8, 176.0, 84.0, keepout=KO)
@@ -193,7 +193,10 @@ for r in ("C8", "C9", "C10", "C11"):
     near(r, 128.0, 73.8, 160.0, 99.5, keepout=KO)
 for r in ("C12", "R68", "R67"):
     near(r, 100.5, 73.8, 160.0, 99.5, keepout=KO)
-for r in ("R66", "R71", "R65", "R69", "R70", "C14", "C13", "R64"):
+# D9 comes down east of J1's lines on the back face and ends in its series resistor there: PWM_G
+# crosses J1's lines on the front face to the comparator.
+near("R66", 96.5, 73.8, 135.0, 99.5, keepout=KO)
+for r in ("R71", "R65", "R69", "R70", "C14", "C13", "R64"):
     near(r, 38.0, 73.8, 85.0, 99.5, keepout=KO)
 for r in ("R33", "R34", "R35", "R36", "R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
     near(r, 60.0, 47.0, 157.0, 66.0, keepout=KO)
@@ -269,6 +272,9 @@ if True:
         x, y = P_("U2", pin)
         U2_IN[n] = (x_l - 1.58, y - 1.27)
         T(n, "F.Cu", (x, y), (x - 1.27, y - 1.27), U2_IN[n])
+    x, y = P_("U2", 5)
+    c1 = P_("C4", 1)
+    T("+5V", "B.Cu", (x, y), (x - 1.27, y - 1.27), (c1[0] + 0.55, y - 1.27), (c1[0], y - 0.72), c1, w=0.3)
     c = B.court("U2")
     B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))
 
@@ -290,7 +296,7 @@ if True:
         x, y = P_("U3", 1 + k)
         yl = XB_LANE + k * XB_P
         xd = XB_DESC + k * XB_P
-        px, py = P_("RN1", 1 + k)
+        px, py = P_("RN1", 9 + k)
         T(f"XB{k}", "B.Cu", (x, y), (x, yl - 0.5), (x - 0.5, yl), (xd + 0.5, yl), (xd, yl + 0.5),
           (xd, py - (xd - px)), (px, py))
 
@@ -299,9 +305,9 @@ if True:
     BL_DEST = {8: ("XS25", 6), 7: ("XS25", 1), 6: ("XS24", 4), 5: ("XS24", 1),
                4: ("XS23", 4), 3: ("XS23", 1), 2: ("XS21", 5), 1: ("XS21", 2)}
     BL_Y, BL_P = 68.6, 0.5
-    TURN = {16: 18.6, 15: 18.1, 14: 19.1, 13: 19.6, 12: 20.1, 11: 20.6, 10: 21.1, 9: 21.6}
+    TURN = {8: 18.6, 7: 18.1, 6: 19.1, 5: 19.6, 4: 20.1, 3: 20.6, 2: 21.1, 1: 21.6}
     for j in range(8):                      # lane j, top first: BL_A8, BL_A7 ... BL_A1
-        pin = 16 - j
+        pin = 8 - j
         n = PT["RN1"].pins[str(pin)]
         x, y = P_("RN1", pin)
         yl = BL_Y + j * BL_P
@@ -434,9 +440,10 @@ WIDTHS = {"+12V": 0.8, "VIN_J": 0.8, "VIN_F": 0.8, "SW": 0.8, "+5V": 0.4, "GND":
 def route_order():
     nets = sorted({p.net for p in B.pads if p.net})
     hv = [n for n in nets if B.cls(n) == "HV"]
-    order = (["SDA", "SCL", "A6", "A7"] + [f"D{i}" for i in range(2, 14)] + [f"OPT_{t}" for t in P.TUBES] +
-             ["SW", "HV185"] + [n for n in hv if n not in ("SW", "HV185")] +
+    head = (["SDA", "SCL", "A6", "A7"] + [f"D{i}" for i in range(2, 14)] + [f"OPT_{t}" for t in P.TUBES])
+    power = (["SW", "HV185"] + [n for n in hv if n not in ("SW", "HV185")] +
              ["+12V", "VIN_J", "VIN_F", "GATE_D", "GATE", "+5V"])
+    order = power + head if os.environ.get("TS06_ORDER") == "power" else head + power
     order += [n for n in nets if n not in order and n != "GND" and n not in LOCKED]
     return [n for n in order if n in nets and n not in LOCKED] + ["GND"]
 
@@ -448,6 +455,14 @@ def route():
     R.fixed = set(FIXED)
     R.dirmul = {ly: [1.0, 1.5, 1.0, 1.5, 1.0, 1.5, 1.0, 1.5] for ly in ("F.Cu", "B.Cu")}
     N = NR.Negotiator(R, route_order(), widths=WIDTHS)
+    conflicts = N.conflicts
+
+    def watched():                          # each round: save the copper so far, for inspection
+        c = conflicts()
+        with open(ROUTES + ".partial", "w") as fh:
+            json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if (n, ly, a, b, w) not in FIXED], fh)
+        return c
+    N.conflicts = watched
     failed = N.run(rounds=int(os.environ.get("TS06_ROUNDS", "60")))
     with open(ROUTES, "w") as fh:
         json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if (n, ly, a, b, w) not in FIXED], fh, indent=0)
@@ -505,4 +520,4 @@ if __name__ == "__main__":
     B.write_library()
     print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
     png = os.path.join(os.path.dirname(OUT), "copper.png")
-    B.plot(png, ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else None))
+    B.plot(png, ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else (87, 217, 121)))
