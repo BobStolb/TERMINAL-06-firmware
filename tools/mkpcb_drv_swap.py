@@ -450,7 +450,7 @@ def route_order():
 
 def route():
     import netroute as NR
-    if os.environ.get("TS06_HVKO"):         # keep the 185 V off the strip between the logic and the cells
+    if os.environ.get("TS06_HVKO", "1") != "0":   # keep the 185 V off the strip between the logic and the cells
         others = sorted({p.net for p in B.pads if p.net and B.cls(p.net) != "HV"})
         B.keepouts.append((60.0, 42.0, 157.0, 49.3, "*", others))
     R = NR.NetRouter(B, turn45=6.0)
