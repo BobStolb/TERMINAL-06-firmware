@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297.6 234.3" width="1191" height="937">
+<rect x="0" y="0" width="297.6" height="234.3" fill="#FFFFFF"/>
+<text x="8" y="10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="5" font-weight="700" fill="#1F2328">EXPLODED SIDE VIEW - WHAT COMES APART, AND WITH WHAT</text>
+<text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">cheeks carry everything; the module (TS06-DISP + TS06-DRV) lifts out backwards as one piece</text>
+<polygon points="64.00,186.30 146.04,186.30 146.04,66.00 81.20,66.00 73.84,100.60 73.84,137.00 64.00,183.30" fill="#F3F5F7" stroke="#6E7781" stroke-width="0.30" stroke-linejoin="round"/>
+<text x="94.84" y="160.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#6E7781" text-anchor="middle" font-weight="400">cheek x2, 6 mm - the only structure</text>
+<polygon points="64.00,212.30 146.04,212.30 146.04,209.30 66.04,209.30 67.48,202.54 65.52,202.13 64.00,209.30" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="43.84,141.00 35.52,180.13 37.48,180.54 45.80,141.42" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="60.09,139.00 86.34,139.00 86.34,137.00 60.09,137.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="57.84,137.00 86.34,137.00 86.34,100.60 57.84,100.60" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="73.84,70.60 81.20,36.00 146.04,36.00 146.04,39.00 83.63,39.00 77.33,68.60 102.34,68.60 102.34,70.60" fill="#F59E42" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="198.04,186.30 199.64,186.30 199.64,66.00 198.04,66.00" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="126.84,142.00 128.44,142.00 128.44,98.00 126.84,98.00" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="139.44,172.00 141.04,172.00 141.04,72.00 139.44,72.00" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="96.84,130.26 122.34,130.26 122.34,101.40 96.84,101.40" fill="#FFE3C2" stroke="#D9822B" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="141.04,83.25 161.04,83.25 161.04,72.75 141.04,72.75" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="141.04,91.75 157.04,91.75 157.04,79.25 141.04,79.25" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="141.04,90.80 157.64,90.80 157.64,72.52 141.04,72.52" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="141.04,148.04 163.04,148.04 163.04,144.50 141.04,144.50" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="141.04,92.50 160.04,92.50 160.04,87.60 141.04,87.60" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<text x="104.84" y="217.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">base + kick strip: 2 x M3 per cheek</text>
+<text x="40.84" y="186.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">TS06-FASCIA: 4 x M2.5 into cheek bosses</text>
+<text x="71.84" y="96.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">trench frame (sill + walls): 1 x M3 per wall</text>
+<text x="104.84" y="32.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">brow + top bar (orange): 2 x M3 per cheek</text>
+<text x="140.84" y="178.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">module: 4 x M3 (H5-H8) into cheek bosses, from behind</text>
+<text x="202.64" y="126.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">rear panel (FR4 blank):</text>
+<text x="202.64" y="130.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">4 x M2.5 into the cheeks' rear edges</text>
+<text x="8" y="226.9" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Service (review 7): unplug, wait 15 s; 4 screws off the rear panel; 4 module screws; draw the module back ~30 mm and unplug J1 from below; lift out.</text>
+<text x="8" y="230.3" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">The display pulls straight off TS06-DRV (seven strip pairs) - pull both ends evenly.</text>
+</svg>
