@@ -79,8 +79,8 @@ ROT = FASCIA_CTRL[0];                               // ["SW1", x, y, hole]
 ROT_T_TOP = ROT[2] - ROTARY_D / 2;
 ROT_S_CLR = (SILL_TOP_Y - ROT_T_TOP * cos(r) - (SILL_TOP_Y - SILL_T - 0.5)) / sin(r);
 SILL_NOTCH_Z  = round(max(Z_SILL_F, fpt(ROT_T_TOP, ROT_S_CLR)[1]) * 100) / 100;
-SILL_NOTCH_X0 = ROT[1] - ROTARY_D / 2 - 1;
-SILL_NOTCH_X1 = ROT[1] + ROTARY_D / 2 + 1;
+SILL_NOTCH_X0 = FASCIA_X0 + ROT[1] - ROTARY_D / 2 - 1;     // world X: the fascia is centred
+SILL_NOTCH_X1 = FASCIA_X0 + ROT[1] + ROTARY_D / 2 + 1;
 
 module check(name, a, b) echo(str(name, " scad=", a, " py=", b, abs(a - b) < 0.01 ? "  ok" : "  MISMATCH"));
 check("Z_DISP_F", Z_DISP_F, PY_Z_DISP_F);
@@ -102,8 +102,8 @@ module xprism(x0, x1, prof) multmatrix([[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0
 module xcyl(x0, x1, y, z, d) translate([x0, z, y]) rotate([0, 90, 0]) cylinder(h = x1 - x0, d = d);
 module zcyl(x, y, z0, z1, d, fn = 0) translate([x, z0, y]) rotate([-90, 0, 0])
     cylinder(h = z1 - z0, d = d, $fn = fn > 0 ? fn : $fn);
-// the fascia's frame: local x = X, local y = t (down the face), local z = s (into the case)
-module fframe() multmatrix([[1, 0, 0, 0], [0, -sin(r), cos(r), Z_FACE], [0, -cos(r), -sin(r), SILL_TOP_Y], [0, 0, 0, 1]])
+// the fascia's frame: local x = X - FASCIA_X0 (centred under the tube row), local y = t (down the face), local z = s
+module fframe() multmatrix([[1, 0, 0, FASCIA_X0], [0, -sin(r), cos(r), Z_FACE], [0, -cos(r), -sin(r), SILL_TOP_Y], [0, 0, 0, 1]])
     children();
 module ex(v) translate(EXPLODE * [v[0], v[2], v[1]]) children();   // v = [dX, dY, dZ]
 
@@ -136,8 +136,8 @@ module drv_boss(h) {                                // [X, Y] of a TS06-DRV case
 
 module fascia_boss(h) {                             // [x, y, drill] in the fascia's frame
     left = h[0] < FASCIA_W / 2;
-    x0 = left ? X_IN_L : h[0] - 3.5;
-    x1 = left ? h[0] + 3.5 : X_IN_R;
+    x0 = left ? X_IN_L - FASCIA_X0 : h[0] - 3.5;     // the fascia frame is FASCIA_X0 right of world X
+    x1 = left ? h[0] + 3.5 : X_IN_R - FASCIA_X0;
     difference() {
         fframe() translate([x0, h[1] - 3.5, FASCIA_T]) cube([x1 - x0, 7, FBOSS_D]);
         fframe() translate([h[0], h[1], FASCIA_T - 1]) cylinder(h = FBOSS_D - 1, d = 3.5);   // M2.5 insert

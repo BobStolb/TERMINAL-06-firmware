@@ -33,7 +33,7 @@ ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 TOOLS = os.path.join(ROOT, "tools")
 OUTDIR = os.path.join(HERE, "out")
 BOARDS = os.path.join(HERE, "boards.json")
-FASCIA_PCB = os.path.join(ROOT, "PCB", "TS06-FASCIA", "TS06-FASCIA.kicad_pcb")
+FASCIA_PCB = os.environ.get("FASCIA_PCB") or os.path.join(ROOT, "PCB", "TS06-FASCIA", "TS06-FASCIA.kicad_pcb")   # a variant can be tried in its place
 
 
 # ============================================================================ extraction
@@ -167,6 +167,8 @@ def dims(B):
     d("PCB_T", 1.6, "board", "tools/pcbkit.py Board.thickness (both boards)", g)
     d("FASCIA_W", fas["W"], "board", "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts", g)
     d("FASCIA_H", fas["H"], "board", "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts (was 52, PCB/README.md)", g)
+    d("FASCIA_X0", float(os.environ.get("FASCIA_X0", round((disp["W"] - fas["W"]) / 2, 3))), "design",
+      "the owner, 29.09.26: the fascia centred under the tube row, (board width - fascia width) / 2", g)
     d("FASCIA_T", 2.0, "doc", "PCB/README.md: TS06-FASCIA 2.0 mm FR4", g)
     d("FASCIA_HOLE_D", fas["holes"][0][2], "board", "TS06-FASCIA.kicad_pcb mounting holes (M2.5)", g)
 
@@ -359,7 +361,7 @@ def derive(B, d, lay_down=False):
     v["Z_SILL_F"] = round(v["Z_FACE"] + v["FASCIA_T"] / math.cos(r) + 0.2, 3)
     # --- the fascia's own connector: side entry, the lead leaves towards the fascia's bottom edge
     fj = fas["parts"]["J1"]
-    v["FJ_X"] = fj["at"][0]
+    v["FJ_X"] = fj["at"][0] + v["FASCIA_X0"]                   # world X: the fascia is centred
     v["FJ_MOUTH_T"] = fj["box"][3]                              # courtyard edge nearest the bottom
     ex_y, ex_z = fpt(v["FJ_MOUTH_T"] + v["FJ_PLUG_OUT"], v["FASCIA_T"] + v["FJ_HDR_H"] / 2)
     cy, cz = ex_y - v["CABLE_R"] * math.sin(r), ex_z + v["CABLE_R"] * math.cos(r)   # bend centre, + normal
@@ -443,7 +445,7 @@ def profiles(G):
             a, b, dep = v["MT1_L"], v["MT1_W"], v["MT1_DEPTH"]
         else:
             a, b, dep = v["KMD1_A"], v["KMD1_B"], v["KMD1_DEPTH"]
-        G["bodies"].append((ref, x, t, a, b, dep))
+        G["bodies"].append((ref, x + v["FASCIA_X0"], t, a, b, dep))   # x in world X
     # the rotary's rim comes within 0.5 mm of the fascia's top edge: the sill steps back over it
     ref, x, t, a, b, dep = G["bodies"][0]
     t_top = t - b / 2
@@ -693,7 +695,7 @@ def checks(G, G_lay):
         "fascia's bottom edge %.1f above the floor" % (v["FJ_LOW_Y"], v["Y_FLOOR"], -v["Y_FLOOR"],
                                                         v["FAS_BOT_Y"] - v["Y_FLOOR"]), "NOTE",
         "this costs %.1f mm of height; a trough %.0f mm deep in the base under X %.0f-%.0f would save it"
-        % (-v["Y_FLOOR"], -v["Y_FLOOR"] + 1, fas["parts"]["J1"]["box"][0] - 2, fas["parts"]["J1"]["box"][1] + 2))
+        % (-v["Y_FLOOR"], -v["Y_FLOOR"] + 1, v["FASCIA_X0"] + fas["parts"]["J1"]["box"][0] - 2, v["FASCIA_X0"] + fas["parts"]["J1"]["box"][1] + 2))
     kick_clr = (v["FASCIA_T"] + 0.5) - v["KICK_T"]            # plug's near face 0.5 off the fascia's back
     row("8", "kick strip (%.1f thick) vs the mated fascia plug below the fascia's edge" % v["KICK_T"],
         "%.1f mm (plug's near face assumed 0.5 off the fascia's back)" % kick_clr,
@@ -926,19 +928,21 @@ def draw_front(G):
     S.box(v["X_IN_L"], v["X_IN_R"], v["Y_BOT"], v["Y_FLOOR"], fill=CASE)
     S.box(v["X_IN_L"], v["X_IN_R"], v["Y_FLOOR"], v["FAS_BOT_Y"], fill="#BFC7CF")
     # fascia, projected (raked 12°: 40 along the face is 39.1 tall)
-    S.box(0, v["FASCIA_W"], v["FAS_BOT_Y"], v["SILL_TOP_Y"], fill=BOARD, stroke=BOARD_E)
+    X0 = v["FASCIA_X0"]
+    S.box(X0, X0 + v["FASCIA_W"], v["FAS_BOT_Y"], v["SILL_TOP_Y"], fill=BOARD, stroke=BOARD_E)
     names = {"SW1": "MODE", "SW2": "FIELD", "SW3": "SUB", "SW4": "−", "SW5": "+"}
     for ref, p in sorted(fas["parts"].items()):
         if not ref.startswith("SW"):
             continue
         fx, fy = p["at"]
+        fx += X0
         yy = v["SILL_TOP_Y"] - fy * math.cos(r)
         S.circle(fx, yy, (p["panel_hole"] or 8) / 2 + (4.5 if ref == "SW1" else 1.2), fill="#57606A", stroke="#8C959F")
         S.text(fx, yy - 11.5 if ref != "SW1" else yy - 16, "%s %s" % (ref, names[ref]), 2.2, "#E6EDF3", "middle")
     for hx, hy, dd in fas["holes"]:
-        S.circle(hx, v["SILL_TOP_Y"] - hy * math.cos(r), dd / 2, fill="#1F2328", stroke="#8C959F", sw=0.2)
+        S.circle(X0 + hx, v["SILL_TOP_Y"] - hy * math.cos(r), dd / 2, fill="#1F2328", stroke="#8C959F", sw=0.2)
     fj = fas["parts"]["J1"]["box"]
-    S.box(fj[0], fj[1], v["SILL_TOP_Y"] - fj[3] * math.cos(r), v["SILL_TOP_Y"] - fj[2] * math.cos(r),
+    S.box(X0 + fj[0], X0 + fj[1], v["SILL_TOP_Y"] - fj[3] * math.cos(r), v["SILL_TOP_Y"] - fj[2] * math.cos(r),
           stroke=PHANTOM, dash="1 0.8", sw=0.25)
     # the window: TS06-DISP behind the tubes
     S.box(v["TRENCH_L_X"], v["TRENCH_R_X"], v["SILL_TOP_Y"], v["SOFFIT_Y"], fill=BOARD, stroke=BOARD_E)

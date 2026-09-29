@@ -53,8 +53,8 @@
 <polygon points="224.40,60.85 233.90,60.85 233.90,55.35 224.40,55.35" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.6"/>
 <polygon points="233.90,63.10 255.90,63.10 255.90,53.10 233.90,53.10" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.6"/>
 <text x="256.90" y="57.10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="start" font-weight="400">5.5/2.1 plug</text>
-<polyline points="89.50,75.70 89.50,78.70 89.50,78.70 89.50,81.70 192.50,111.19 192.50,114.12" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
-<text x="140.50" y="92.95" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="middle" font-weight="400">fascia lead on the floor, 135 mm</text>
+<polyline points="89.50,75.70 89.50,78.70 89.50,78.70 89.50,81.70 200.20,111.19 200.20,114.12" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
+<text x="140.50" y="92.95" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="middle" font-weight="400">fascia lead on the floor, 142 mm</text>
 <polygon points="40.50,109.80 231.90,109.80 231.90,117.80 40.50,117.80" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
 <text x="128.50" y="114.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#6E7781" text-anchor="middle" font-weight="400">TS06-FASCIA below (raked)</text>
 <line x1="238.40" y1="51.10" x2="246.40" y2="51.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>

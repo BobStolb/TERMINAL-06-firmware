@@ -15,6 +15,7 @@ DRV_Y0             = 26;  // [board] tools/mkpcb_drv.py Y0: TS06-DRV's top edge 
 PCB_T              = 1.6;  // [board] tools/pcbkit.py Board.thickness (both boards)
 FASCIA_W           = 176;  // [board] PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts
 FASCIA_H           = 40;  // [board] PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts (was 52, PCB/README.md)
+FASCIA_X0          = 7.7;  // [design] the owner, 29.09.26: the fascia centred under the tube row, (board width - fascia width) / 2
 FASCIA_T           = 2;  // [doc] PCB/README.md: TS06-FASCIA 2.0 mm FR4
 FASCIA_HOLE_D      = 2.7;  // [board] TS06-FASCIA.kicad_pcb mounting holes (M2.5)
 
@@ -226,7 +227,7 @@ J1_BOX    = [41.55, 56.45, 6.8, 12.3];  // board: DRV J1 courtyard (display face
 FASCIA_HOLES = [[4.5, 4.5, 2.7], [4.5, 35.5, 2.7], [171.5, 4.5, 2.7], [171.5, 35.5, 2.7]];  // board: TS06-FASCIA [x, y, drill], fascia frame (y down from top)
 FASCIA_CTRL  = [["SW1", 30, 14, 8.8], ["SW2", 95, 14, 8], ["SW3", 118, 14, 8], ["SW4", 146, 14, 8], ["SW5", 164, 14, 8]];  // board: SW1-SW5 [ref, x, y, panel hole]
 FJ_BOX       = [143.4, 160.6, 28.3, 38.5];  // board: fascia J1 courtyard [x0, x1, y0, y1], back face
-LEAD = [[49, 9, 33.1], [49, 9, 30.1], [49, -3.65, 30.1], [49, -6.65, 27.1], [152, -6.65, -2.39], [152, -2.51, -5.32]];  // derived: fascia lead centre line [X, Y, Z]
+LEAD = [[49, 9, 33.1], [49, 9, 30.1], [49, -3.65, 30.1], [49, -6.65, 27.1], [159.7, -6.65, -2.39], [159.7, -2.51, -5.32]];  // derived: fascia lead centre line [X, Y, Z]
 
 // ---- derived in case_pair.py; case.scad derives the same and echoes it for comparison
 PY_Z_DISP_F     = 30;
