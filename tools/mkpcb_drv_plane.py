@@ -164,9 +164,12 @@ pl("U13", 128.0, 11.0, rot=0)
 # ======================================================================== the bottom band
 pl("U3", 44.5, 86.0, rot=270)
 pl("RN1", 26.72, 82.0, rot=90)
-# the fascia connector on the display-facing side, in the pocket between XS22 and XS21, above the
-# LED ribbon: the lines that reach it come down through the strip gap and never meet an LED line
-pl("J1", 136.0, 74.5, rot=180, back=True)
+# The fascia connector at the west end of the street, on the front face. Its four signal lines
+# (D7, D8, A6, A7) have no series part to bridge with, so wherever they had to go down to the bottom
+# band they cut every bridge-row output heading west (run v1: the bundle shared copper with B1,
+# PWM_G, OPT_M10 and M_A). Here they simply run west along the street and stop. The cost is
+# mechanical: the fascia lead leaves the rear-facing side and runs round the board's bottom edge.
+pl("J1", 108.0, 26.5, rot=0)
 pl("C4", 152.5, 38.5, rot=270)
 
 JACK = B.court("J1")
@@ -188,9 +191,9 @@ for r in ("R33", "R34", "R35", "R36"):
 for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
     near(r, 45.0, 44.0, 120.0, 66.0)
 for r in ("R54", "R55"):
-    near(r, 110.0, 0.5, 132.0, 20.0)
+    near(r, 118.0, 0.5, 132.0, 21.0)
 for r in ("C5", "C6"):
-    near(r, 128.0, 72.5, 150.0, 82.0, keepout=(RIB, JACK))
+    near(r, 100.0, 29.5, 122.0, 36.0)
 near("C1", 10.0, 72.5, 26.0, 83.5, keepout=(RIB,))
 
 
@@ -279,17 +282,52 @@ def route_order():
     return [n for n in order if n in nets]
 
 
+HOP_R = float(os.environ.get("HOP_R", "3.0"))     # a hop stays within this of some part's pad
+
+
+def hop_windows():
+    """Where back-face copper may go: within HOP_R of a pad of a part in the circuit (not the
+    strips, whose rows would otherwise make a 70 mm corridor). A hop can therefore only join two
+    pads of its net that stand close together - the part makes the jump, as the concept asks."""
+    import numpy as np
+    G = 0.1
+    nx, ny = int(round(W / G)) + 1, int(round(H / G)) + 1
+    ok = np.zeros((ny, nx), bool)
+    X = np.arange(nx) * G
+    Y = np.arange(ny) * G
+    for p in B.pads:
+        if p.ref.startswith(("XS", "H")) or p.kind == "np_thru_hole":
+            continue
+        r = HOP_R + max(p.w, p.h) / 2
+        i0, i1 = max(0, int((p.x - r) / G)), min(nx - 1, int((p.x + r) / G) + 1)
+        j0, j1 = max(0, int((p.y - r) / G)), min(ny - 1, int((p.y + r) / G) + 1)
+        d = np.hypot(X[None, i0:i1 + 1] - p.x, Y[j0:j1 + 1, None] - p.y)
+        ok[j0:j1 + 1, i0:i1 + 1] |= d <= r
+    return ~ok
+
+
 def route():
     import netroute as NR
+
+    NOHOP = hop_windows()
+
+    class PlaneNegotiator(NR.Negotiator):
+        def hard(self, net, layer):
+            blocked, near = super().hard(net, layer)
+            if layer == "B.Cu":
+                blocked = blocked | NOHOP
+            return blocked, near
+
     R = NR.NetRouter(B, turn45=6.0)
     R.fixed = set(FIXED)
     R.dirmul = {ly: [1.0, 1.5] * 4 for ly in ("F.Cu", "B.Cu")}
     order = route_order()
-    N = NR.Negotiator(R, order, widths=WIDTHS)
+    N = PlaneNegotiator(R, order, widths=WIDTHS)
     N.hist["B.Cu"] += HOP_COST                  # the plane's price: back-face copper only where it must
     failed = N.run(rounds=ROUNDS)
     if not failed:
-        R.polish(order, widths=WIDTHS, verbose=True)
+        # the polish may only shorten front-face copper: a hop is never re-laid outside its window
+        R.polish(order, layers={n: ("F.Cu",) for n in order}, widths=WIDTHS, verbose=True)
     with open(ROUTES, "w") as fh:
         json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks if (n, ly, a, b, w) not in FIXED], fh, indent=0)
     return failed
@@ -338,4 +376,4 @@ if __name__ == "__main__":
     B.write_project(OUT.replace(".kicad_pcb", ".kicad_pro"))
     B.write_library()
     print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
-    B.plot(os.path.join(os.path.dirname(OUT), "copper.png"), ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else None))
+    B.plot(os.path.join(os.path.dirname(OUT), "copper.png"), ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else (87, 217, 121)))

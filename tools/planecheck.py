@@ -154,6 +154,16 @@ if __name__ == "__main__":
         else:                                   # the baseline pours both faces at 0.5 / 0.3
             B.zone("GND", "F.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
             B.zone("GND", "B.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.5)
+    if "--score" in sys.argv:
+        L = sum(math.dist(a, b) for _, _, a, b, _ in B.tracks)
+        ax = sum(math.dist(a, b) for _, _, a, b, _ in B.tracks if abs(a[0] - b[0]) < 1e-3 or abs(a[1] - b[1]) < 1e-3)
+        byl = {}
+        for _, ly, a, b, _ in B.tracks:
+            byl[ly] = byl.get(ly, 0) + math.dist(a, b)
+        dips = {(f.rot % 360) for r, (f, x, y) in B.placed.items() if "DIP" in f.name}
+        print(f"track length {L:.0f} mm ({', '.join(f'{k} {v:.0f}' for k, v in sorted(byl.items()))}), "
+              f"{len(B.tracks)} segments, axis-aligned {100 * ax / L:.1f}%, hand-laid {len(getattr(m, 'FIXED', ()))}, "
+              f"DIP rotations {sorted(dips)}")
     r = report(B, layer)
     for k, v in r.items():
         if k == "hop runs":
