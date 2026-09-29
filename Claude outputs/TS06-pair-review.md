@@ -37,8 +37,9 @@ case drawn around the right numbers.
   * the four lines that share the corridor beside the Nano (the converter's PWM, the colon,
     the "m" LED, one anode) end in four standing resistors at its exit;
   * the minutes' and S10's anode resistors stand under the Nano;
-  * the I²C pull-ups and the fascia's ladder filters sit just above the LED ribbon, where
-    those lines must cross it.
+  * the I²C pull-ups and the fascia's ladder filters stand in one column beside the hours'
+    optos. A7, A6, SCL and SDA reach the column on the front face, threaded between the
+    optos' pin rows, and leave it on the back face.
 
   No wire links and no zero-ohm jumpers.
 * **On the driver board, the long buses are drawn too.** Port A of the expander runs up the
@@ -131,14 +132,11 @@ It passes, but only just. A solder bridge there puts 185 V into the MCP23017's p
 ### 8. The firmware must be told which board it is on
 
 The pair needs `BOARD_TYPE 4`, which is in the firmware but not the default (0). That type
-carries three things of the pair's own:
+carries two things of the pair's own:
 * its digit map;
 * its anode order: hours on D6/D5, minutes on D4/D3, S10 on D2, S1 on D13. This is the order
   types 1 and 2 already use, and it is what lets the Nano's digital row fan out without
-  crossing itself;
-* a note that the fascia's rotary ladder reaches the Nano's A7 and the levers A6. The spec
-  has them the other way round, but no firmware reads either yet. Whoever writes the fascia
-  code must read the rotary on A7 when `BOARD_TYPE` is 4.
+  crossing itself.
 
 A clock built with these boards and flashed with the default shows scrambled digits. For a batch,
 either change the default on a pair branch or put it at the top of the build sheet. As

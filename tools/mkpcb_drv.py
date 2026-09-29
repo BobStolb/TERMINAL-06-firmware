@@ -336,6 +336,9 @@ for pin in (29, 27, 22, 21, 20, 19):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
     T(n, "F.Cu", (x, y), (x + 1.27, y + 1.27), (x + 1.27, Y_END), w=W_RAIL if n in ("GND", "+5V") else LV)
+x, y = P_("U1", 4)                          # the digital row's GND joins the analogue row's on the front
+xg = P_("U1", 29)[0] + 1.27
+T("GND", "F.Cu", (x, y), (x, y + 2.0), (xg, y + 2.0), w=W_RAIL)
 
 # The digital row fans out on the back face in lanes just below the module, each line on its own
 # level, the westernmost pin on the top lane: D2-D4 west to the minutes' and S10's resistors standing
