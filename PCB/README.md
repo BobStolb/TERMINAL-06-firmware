@@ -240,15 +240,15 @@ The results as of 29.09.26, on the widened boards:
 
 | | TS06-DISP | TS06-DRV |
 |---|---|---|
-| Tracks / vias | 373 / **0** | 1097 / **0** (369 laid by hand, 728 routed) |
-| Copper, and its ratio to the placement's floor | 2108 mm, 1.04× | 6663 mm: 5936 mm of signals, 1.33× their 4479 mm floor, and 727 mm of ground tracks under the ground pours |
-| Straight (0°/90°) share of the copper | 49 % | 86 % |
-| Routing | drawn by hand | converged in negotiated routing: round 15, 0 nets sharing, 0 unrouted; then polished |
+| Tracks / vias | rev B (30.09.26): 388 / **0** | 1097 / **0** (369 laid by hand, 728 routed) |
+| Copper, and its ratio to the placement's floor | 2125 mm, 1.15× its 1851 mm floor. Like for like with TS06-DRV: signals only, since BL_K is poured and has no tracks (the 1.04× given before counted BL_K's 164 mm in the floor; rev A was 1.14× on this basis) | 6663 mm: 5936 mm of signals, 1.33× their 4479 mm floor, and 727 mm of ground tracks under the ground pours |
+| Straight (0°/90°) share of the copper | 53 % | 86 % |
+| Routing | drawn by hand; every bare 185 V pad 0.8 mm from other copper (IPC-2221B A6), every cathode pad 0.5 mm, no copper within 3.8 mm of a standoff hole | converged in negotiated routing: round 15, 0 nets sharing, 0 unrouted; then polished |
 | `check_mate()` | — | `[]`: all 63 strip pins (59 carry a net) land on their pins with the same net, all four display standoffs have holes |
 | `checkcopper.py --hv` | clean | clean |
-| `audit.py` | clean | clean |
-| KiCad 10 DRC | **0 unconnected**, 2 errors, both courtyard overlaps: the colon lamps' courtyards overlap the M10 tube's by 0.135 mm | **0 errors, 0 unconnected**, 4 warnings: the Nano's USB outline stands past the edge by design (2); the stock silkscreen of VT21 and XS1 is clipped at their pads, so the board's copies differ from the library files (2) |
-| `checkpcb.py` | H3's courtyard 0.15 mm past the top edge; the two colon overlaps | the Nano's courtyard past the edge (its USB, by design); XS11's 0.17 mm past it (the strip sits where the display's XP11 is) |
+| `audit.py` | clean; BL_K in one piece | clean |
+| KiCad 10 DRC | **0 unconnected**, 0 warnings, 2 errors, accepted, awaiting the test fit: the colon lamps' courtyards overlap the M10 tube's by 0.135 mm. Run with `TS06-DISP.kicad_dru`, the A6 rule (0.8 mm, HV pad to any other net), which the pour fill honours too | **0 errors, 0 unconnected**, 4 warnings: the Nano's USB outline stands past the edge by design (2); the stock silkscreen of VT21 and XS1 is clipped at their pads, so the board's copies differ from the library files (2) |
+| `checkpcb.py` | H3's courtyard 0.15 mm past the top edge; XP11's 0.17 mm past the left edge (the mirror of XS11); the two colon overlaps | the Nano's courtyard past the edge (its USB, by design); XS11's 0.17 mm past it (the strip sits where the display's XP11 is) |
 
 A second, independent model checks the boards as objects too: the case model in `3d/case-pair`
 reads both generators and tests the tubes, strips, standoffs, tall parts and connectors against
