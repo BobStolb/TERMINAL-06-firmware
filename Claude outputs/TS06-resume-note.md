@@ -37,6 +37,9 @@ The rules, from the owner (30.09.26):
 shared repo, reachable from here with push rights, and replaces the mailbox branch once it has
 carried one round trip. See grill G21. xstream.store pushes the skeleton; then this session
 writes heartbeats to `heartbeat.md` and reads `mailbox/to-nixie.md` at each turn.
+**Live since 30.09 ~02:55 UTC:** first round trip done (xstream PING ab00eaf, answer 5969970); the TS06
+`mailbox` branch is closed with a final pointer entry. Read `leak_check.py` before its first run: read-only,
+flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 
 ## Launch log (UTC)
 
