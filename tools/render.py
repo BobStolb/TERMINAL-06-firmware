@@ -131,8 +131,13 @@ def collect(side):
         col = GOLD if ly == side + ".Mask" else SILK if ly == side + ".SilkS" else None
         if ly == side + ".Cu": continue                # under mask, invisible
         if not col: continue
+        # the justify token comes AFTER the font block, past where the match stops, so it is
+        # looked for in the rest of this gr_text; reading only the match drew every
+        # left-justified label centred on its anchor
+        blk = m.group(0) + SRC[m.end():SRC.find("\n\t)", m.end())]
         anch = "middle"
-        if "(justify left" in m.group(0): anch = "start"
+        if "(justify left" in blk: anch = "start"
+        elif "(justify right" in blk: anch = "end"
         mirror = ' transform="scale(-1,1)"' if side == "B" else ""
         silk.add(f'<g transform="translate({x},{y})"><text x="0" y="{sz*0.36}" '
                  f'font-family="DejaVu Sans Mono,monospace" font-size="{sz*1.05}" '
