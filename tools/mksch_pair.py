@@ -585,6 +585,8 @@ class Sheet:
         a, b = (self.res(x) if isinstance(x, str) else x for x in (a, b))
         via = tuple(self.res(v) if isinstance(v, str) else v for v in via)
         if any(isinstance(x, str) and x not in self.pins for x in (a, b)):
+            if any(isinstance(x, str) and x.split(".")[0] in self.parts for x in (a, b)):
+                self.skipped.append((a, b))     # a placed part no longer has a pin on that net
             return False
         nets = {self.net(x) for x in (a, b) if isinstance(x, str)}
         if None in nets or len(nets) > 1:
@@ -1190,6 +1192,7 @@ def layout(sid, board, paper="A3"):
 @layout("power-in", "drv", "A4")
 def _power_in(s):
     y = 71.12
+    flagged = set()
     s.put("XS1", 33.02, y + 2.54)                       # pins 1 / 3 / 2 at x 38.1, y 71.12 / 73.66 / 76.2
     s.h2("F1", 53.34, y, "VIN_J")
     if s.link("XS1:VIN_J", "F1:VIN_J"):
@@ -1197,16 +1200,30 @@ def _power_in(s):
     s.h2("VD2", 73.66, y, "VIN_F")
     if s.link("F1:VIN_F", "VD2:VIN_F"):
         s.name((67.31, y), "F1:VIN_F")
-    if s.link("VD2:+12V", (137.16, y)):
-        s.pwr_at((137.16, y), "VD2:+12V")
-        s.pflag(88.9, y)                                # the 12 V really comes from the jack, through VD2
+    # the 12 V rail, from the flag where the jack's 12 V arrives through VD2, past the bulk capacitors
+    if s.net("C8:+12V") == "+12V" or s.net("C9:+12V") == "+12V":
+        s.wire((88.9, y), (137.16, y))
+        s.power(137.16, y, "+12V")
+        s.pflag(88.9, y)
+        flagged.add("+12V")
+        s.link("VD2:+12V", (88.9, y))
         s.shunt("C8", 101.6, y, "+12V")
         s.shunt("C9", 116.84, y, "+12V")
-    if s.link("XS1.3", "XS1.2", (43.18, y + 2.54), (43.18, y + 5.08)):
+    if s.link("XS1.3", "XS1.2", (43.18, y + 2.54), (43.18, y + 5.08)) and s.net("XS1.2") == "GND":
         s.wire((43.18, y + 5.08), (43.18, y + 10.16))
         s.pwr_at((43.18, y + 10.16), "XS1.2")
         s.wire((43.18, y + 7.62), (50.8, y + 7.62))
-        s.pflag(50.8, y + 7.62)                         # ...and so does ground, on the sleeve
+        s.pflag(50.8, y + 7.62)                         # ...and ground comes from the sleeve
+        flagged.add("GND")
+    for i, net in enumerate(sorted({"+12V", "GND"} - flagged)):
+        x0 = 160.02 + i * 12.7                          # the drawing above could not carry this flag
+        s.wire((x0, y), (x0, y + 5.08))
+        if net == "GND":
+            s.pflag(x0, y)
+            s.power(x0, y + 5.08, net)
+        else:
+            s.power(x0, y, net)
+            s.pflag(x0, y + 5.08, "down")
     s.foot = 92
     s.notes_at = (20.32, 100.33, 115)
 
@@ -1692,6 +1709,9 @@ def draw(board, sec, refs, page, holes=(), labels_only=False):
         s.note("\n".join(f"{r}: {n}" for r, n in nts), nx, y, 1.27, width=nw)
     s.normalise()
     bad, bynet = s.trace()
+    if fn and not labels_only and not bad and (s.skipped or rest):
+        print(f"  note {BOARDS[board][0]} / {sec['title']}: layout partly stale - {len(s.skipped)} wire(s) not drawn "
+              f"(the nets differ now), labelled instead; parts added below the drawing: {' '.join(rest) or 'none'}")
     if bad and not labels_only:
         print(f"  WARNING {BOARDS[board][0]} / {sec['title']}: the hand layout no longer matches ts06pair.py "
               f"({len(bad)} problems, first: {bad[0]}); drawn as a labelled netlist instead - update its layout.")
@@ -1763,6 +1783,11 @@ def build(board):
             fh.write(txt)
         boxes.append((s, suuid))
     write_root(board, boxes, root_uuid)
+    keep = {sheet_file(board, s) for s in sheets}       # a section that moved or went away leaves no file behind
+    for fn in sorted(os.listdir(d)):
+        if re.match(re.escape(proj) + r"-\d\d-[a-z0-9-]+\.kicad_sch$", fn) and fn not in keep:
+            os.remove(os.path.join(d, fn))
+            print(f"  removed PCB/{proj}/{fn}: no section draws it now")
     with open(os.path.join(d, "sym-lib-table"), "w", encoding="utf8", newline="\n") as fh:
         fh.write('(sym_lib_table\n  (version 7)\n  (lib (name "TS06_pair")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06_pair.kicad_sym")'
                  '(options "")(descr "TERMINAL-06 THT pair symbols, written by tools/mksch_pair.py"))\n)\n')
