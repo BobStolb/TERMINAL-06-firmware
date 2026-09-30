@@ -362,12 +362,12 @@ check out against their datasheets:
 | P4 | The fascia was centred on the board, not on the tubes; its controls sit 0.1–9 mm off the tube centres | Centring **fixed** a7c3660 (X 4.305). Alignment: **open**, the variants |
 | P5 | Open slots beside the fascia show TS06-DRV | **open**: the full-width fascia or the frame closes them |
 | P6 | A fascia boss lands on R5's pad (−1.2 mm to its courtyard) | The check now FAILs. **open**: variant |
-| P7 | The brow top, the base and the left wall can't take their screws; the left screw points at H10's glass | **case** |
-| P8 | The module goes in blind past square-edged sub-millimetre clearances | **case**: lead-ins |
-| P9 | Printed parts set the spacing that precise FR4 hole patterns span | **case** |
+| P7 | The brow top, the base and the left wall can't take their screws; the left screw points at H10's glass | **fixed** 84b9511: M3 inserts in ≥8 mm end blocks, screw lengths on the drawings, no shank within 2.5 mm of glass or a board. The top plate's lip costs 2.5 mm of height: 122.8 mm |
+| P8 | The module goes in blind past square-edged sub-millimetre clearances | **fixed** 84b9511: 45° × 3 lead-ins on the soffit, the left wall, and the sill where HL5/HL6 pass. A swept-module collision test is empty |
+| P9 | Printed parts set the spacing that precise FR4 hole patterns span | **fixed** 84b9511: the rear panel's holes are slotted ±0.6. The assembly order screws the module first, and the slicer scale is set to +0.4 % |
 | P10 | Every pass through SET TIME rewrote the clock and lost the date. "−" never decrements | Rewrite **fixed** d7aafdc. "−" is **open** (a UX decision) |
 | P11 | The spec's assembly time and PCB cost no longer describe this build | **open**: re-cost |
-| m1–m5 | The rotary modelled at the withdrawn Ø26.94; legends too small (1.5–1.7 mm); the rear panel held only at its corners, with vents over the switch node; the whole top orange | m1, m4, m5: **case**. m2: **open**, after the fascia variant |
+| m1–m5 | The rotary modelled at the withdrawn Ø26.94; legends too small (1.5–1.7 mm); the rear panel held only at its corners, with vents over the switch node; the whole top orange | m1, m4, m5 **fixed** 84b9511: Ø25.00 × 22 deep; six rear fixings, with vents over the Nano and none within 5 mm of 185 V; a separate black top plate. m2: **open**, after the fascia variant |
 
 ### Red-team of the checks
 

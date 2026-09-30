@@ -11,23 +11,24 @@ Every number below was measured here, not taken from an author's report. The too
 
 | | **A · centred** | **W · full width** | **R · on the tube grid** | **F · frame** |
 |---|---|---|---|---|
-| Board | `PCB/TS06-FASCIA` | `PCB/TS06-FASCIA-wide` | `PCB/TS06-FASCIA-rhythm` | case model only (`FASCIA_FRAME=1`), in progress |
+| Board | `PCB/TS06-FASCIA` | `PCB/TS06-FASCIA-wide` | `PCB/TS06-FASCIA-rhythm` | case model only (`FASCIA_FRAME=1`); renders in `3d/case-pair/variant-D/` |
 | Size | 176 × 40 | 191.4 × 40 | 191.4 × 40 | a 179 × 40 panel in a printed frame |
 | Where, world X | 4.3–180.3, on the middle of H10 and ИН-15А (92.3) | 0–191.4, cheek to cheek | 0–191.4, cheek to cheek | 3.0–182.0, the trench window |
-| How it was made | the committed board, moved | the same 64 tracks, translated; holes to the new corners | re-placed and re-routed: 53 tracks | — |
+| How it was made | the committed board, moved | the same 64 tracks, translated; holes to the new corners | re-placed and re-routed: 53 tracks | a raked frame between the cheeks, pocket X 3.0–182.0, rabbet ledge, ribs at X 71.8 and 134.7; modelled with the 176 board as a stand-in |
 | Controls vs the tube above (mm) | SW1 −2.3 (H1) · SW2 −9.3 (S10) · SW3 −6.8 (S1) · SW4 −0.1 (ИН-15Б) · SW5 −3.1 (ИН-15А) | +1.1 · −5.9 · −3.4 · +3.3 · +0.3 | **0 for all five**: dial under the hours pair, FIELD/SUB under M10/M1, −/+ under the ИН-15s | as A |
-| Checkers | clean | clean | clean | — |
-| KiCad DRC | 0 violations, 0 unconnected | 0 violations, 0 unconnected | 0 violations, 0 unconnected | — |
-| Fascia boss vs R5's pad | **FAIL**, −1.2 mm (the boss lands on it) | OK, 6.5 mm | OK, 1.7 mm | the frame replaces the bosses |
-| SW5 vs the top-right boss | TIGHT, 1.2 / 2.6 mm | OK, 8.4 / 7.2 mm | OK, 9.2 / 8.4 mm | frame: no boss there |
+| Checkers | clean | clean | clean | the 179 board isn't drawn yet |
+| KiCad DRC | 0 violations, 0 unconnected | 0 violations, 0 unconnected | 0 violations, 0 unconnected | the 179 board isn't drawn yet |
+| Fascia boss vs R5's pad | **FAIL**, −1.2 mm (the boss lands on it) | OK, 6.5 mm | OK, 1.7 mm | OK, 1.86 mm (the frame's fixing) |
+| SW5 vs the top-right boss | TIGHT, 1.2 / 2.6 mm | OK, 8.4 / 7.2 mm | OK, 9.2 / 8.4 mm | no fixing there; 1.0 / 2.6 mm to the frame's top rail (OK) |
 | Rotary vs the sill | TIGHT (the sill needs a notch) | TIGHT (notch) | **OK** (no notch) | as A |
-| Open slots beside it, where TS06-DRV shows | 4.8 mm left, 11.6 mm right | none (0.5 mm to each cheek) | none | none |
+| Open slots beside it, where TS06-DRV shows | 4.8 mm left, 11.6 mm right | none (0.5 mm to each cheek) | none | none: 1.3 / 1.7 mm round the stand-in, with the ledge behind; a 179 panel fits with 0.02 mm a side (TIGHT: draw it 178.6, or ease the pocket) |
 | Lead path | 139 mm | 142 mm | 138 mm | as A |
-| Area, cost | 7040 mm² | 7656 mm², +8.75 %, about +70–90 ₽ | 7656 mm², +8.75 %, about +60–90 ₽ | a printed part |
+| Area, cost | 7040 mm² | 7656 mm², +8.75 %, about +70–90 ₽ | 7656 mm², +8.75 %, about +60–90 ₽ | a printed frame, and a new 178.6–179 board whose top holes sit over the ribs |
 | Reach | one hand | one hand | two hands: 86 mm from FIELD to − | one hand |
 
-All four keep the case's outside at 204.4 × 120.3 × 83.6 mm, and the fascia lead is specified
-at 180–200 mm in every case.
+All four keep the same case outside, now 204.4 × 122.8 × 83.6 mm after the case review's fixes
+(its top plate grew a screw lip). The fascia lead is 190 mm in the model and 180–200 mm in the
+BOM for every variant.
 
 ## The approaches
 
@@ -57,10 +58,14 @@ B gives the cleanest case checks: the rotary clears the sill without a notch. It
 two-handed reach. `python3 tools/mkpcb_fascia_rhythm.py` rebuilds it byte for byte from its
 saved route, and `composite-{0-centred,A,B,C}.png` show each alignment against the tubes.
 
-**F · frame.** A case change rather than a board. It is a printed frame between the cheeks that
-continues the trench walls, with the fascia dropped into a rabbet. It closes the slots, carries
-the panel along its length instead of at four corner bosses, and removes the boss problems.
-It can hold A's board as it is. It is being modelled now.
+**F · frame.** A case change rather than a board: `FASCIA_FRAME=1` in `3d/case-pair`, off by
+default. The frame between the cheeks is raked 12° and continues the trench walls. The fascia
+drops into a rabbet, with ribs under it, and the sill is screwed down into the rib heads. It
+closes the slots and carries the panel along its length instead of at four corner bosses.
+
+It needs a new board of about 178.6 × 40, with its top holes over the ribs rather than at the
+corners, clear of SW5. The 176 board in the renders is a stand-in; its holes don't match the
+frame's.
 
 ## Recommendation
 
@@ -71,8 +76,9 @@ as well as the outline:
 * the sill loses its notch;
 * it costs the same as W.
 
-If one-handed reach matters more than the rhythm, take **W**. Take **F** only if the fascia
-should stay a small panel.
+If one-handed reach matters more than the rhythm, take **W**. **F** suits a small panel with a
+visible frame, but it needs a new board as well as the frame, so it is the most work of the
+four.
 
 Whichever is chosen still needs two things:
 * **Larger legends:** the dial's labels are about 1.5 mm, and the product review asks for at
