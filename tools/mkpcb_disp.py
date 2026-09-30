@@ -2,6 +2,9 @@
 """TS06-DISP: the display board of the through-hole pair - tubes, colon, backlight, headers.
 
     python3 tools/mkpcb_disp.py            # PCB/TS06-DISP/TS06-DISP.kicad_pcb (+ .kicad_pro, .kicad_dru, copper.png)
+    python3 tools/mkpcb_disp.py --art engraving --out /tmp/art/TS06-DISP.kicad_pcb
+                                           # a candidate: rev B + one silkscreen art direction (tools/disp_art.py:
+                                           # engraving, constructivist, circuit), written beside, never over, the board
 
 Nothing on this board is placed by a packer or routed by a router. Every coordinate below is
 chosen, and the reason is written beside it; tools/pcbkit.py only writes what this file says.
@@ -703,9 +706,8 @@ def keepouts():
     return "\n".join(out) + "\n"
 
 
-def write_all(out):
-    n = B.write(out, title="TS06-DISP", rev="B", date="2026-09-30",
-                comment="TERMINAL-06 display board, THT pair with TS06-DRV")
+def write_all(out, comment="TERMINAL-06 display board, THT pair with TS06-DRV"):
+    n = B.write(out, title="TS06-DISP", rev="B", date="2026-09-30", comment=comment)
     with open(out, encoding="utf8") as fh:
         text = fh.read()
     tail = "\t(embedded_fonts no)\n)\n"
@@ -738,19 +740,39 @@ def write_all(out):
 
 
 if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser(description="TS06-DISP: the board, its project, rules and copper.png.")
+    ap.add_argument("--art", choices=("engraving", "constructivist", "circuit"),
+                    help="draw one silkscreen art direction (tools/disp_art.py) over rev B's silkscreen, into a "
+                         "candidate board at --out. Without it the board is rev B, as committed")
+    ap.add_argument("--out", help="the board file to write (default $TS06_OUT, else PCB/TS06-DISP/TS06-DISP.kicad_pcb)")
+    args = ap.parse_args()
+    out = os.path.abspath(args.out) if args.out else OUT
+    comment = "TERMINAL-06 display board, THT pair with TS06-DRV"
+    if args.art:
+        # a candidate until the owner picks one: it never lands on the committed board
+        if os.path.abspath(out) == os.path.abspath(os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")):
+            ap.error("--art writes a candidate board: give --out a path of its own")
+        import disp_art
+        art = disp_art.draw(args.art, sys.modules[__name__])
+        nl, nt, by = art.summary()
+        print(f"art '{args.art}': {nl} lines, {nt} texts (front {by['F']}, back {by['B']})")
+        for s in art.skipped:
+            print("  [art] did not fit, left out:", s)
+        comment += f"; candidate silkscreen art '{args.art}' (tools/disp_art.py), not chosen"
     bad = B.check()
     mine = copper_problems() + silk_problems()
     for b in mine:
         print("  [CHECK]", b)
-    n, text = write_all(OUT)
+    n, text = write_all(out, comment)
     late = written_silk_problems(text)
     for b in late:
         print("  [CHECK]", b)
-    png = os.path.join(os.path.dirname(OUT), "copper.png")
+    png = os.path.join(os.path.dirname(out), "copper.png")
     B.plot(png, ppm=8, color=lambda n: ((255, 90, 90) if n.startswith(("ANODE", "COLON")) else
                                          (80, 170, 255) if n.startswith(("K", "CAT")) else
                                          (180, 110, 255) if n.startswith(("BL", "M_A")) else (90, 220, 120)))
-    print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
+    print(f"wrote {os.path.relpath(out, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
     total = len(bad) + len(mine) + len(late)
     print(f"check: {total} problem(s)")
     sys.exit(1 if total else 0)
