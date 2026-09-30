@@ -24613,10 +24613,10 @@
 			)
 		)
 	)
-	(gr_text "1 +5V 2 GND 3 A6 4 A7 5 D7 6 D8"
+	(gr_text "6 D8 5 D7 4 A7 3 A6 2 GND 1 +5V"
 		(at 141.4 91 0)
 		(layer "B.SilkS")
-		(uuid "372d241a-3a07-51f8-a49f-be0417523a1a")
+		(uuid "9125bfee-b5a8-53e8-868a-75dccd35d13c")
 		(effects
 			(font
 				(size 1 1)

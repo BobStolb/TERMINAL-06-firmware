@@ -794,10 +794,11 @@ def legends(board):
     for ref in ("VT1", "VT2", "VT20"):
         x, y = B.P(ref, 1)
         put("E", x, y, 1.0, reach=2.6, courts=False)
-    # on the face towards the display: J1's pinout and every strip's pin 1
+    # on the face towards the display: J1's pinout and every strip's pin 1. Seen from that face J1's
+    # pin 1 is on the right, so the pinout reads 6 to 1, each name over its own end of the row.
     x0, y0 = B.P("J1", 1)
     x6, y6 = B.P("J1", 6)
-    put("1 +5V 2 GND 3 A6 4 A7 5 D7 6 D8", (x0 + x6) / 2, y0 - 3.0, 1.0, back=True, reach=6.0, courts=False)
+    put("6 D8 5 D7 4 A7 3 A6 2 GND 1 +5V", (x0 + x6) / 2, y0 - 3.0, 1.0, back=True, reach=6.0, courts=False)
     for k in DISP_STRIP:
         x, y = B.P(f"XS{k}", 1)
         x2, y2 = B.P(f"XS{k}", 2)
