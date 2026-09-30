@@ -1,8 +1,8 @@
 # TS06-DRV rev B: status
 
-Resume here: watch run r3 (scratchpad revb2/r3/log.txt, state.json); on "0 nets sharing, 0 unrouted" copy its routes.json to tools/mkpcb_drv_routes.json and regenerate.
+Resume here: watch runs r3 (option 3, tree placement) and r4 (variant: R73/R74 standing in line on the gap's descent, scratch revb2/v4/tools); take the first that ends "0 nets sharing, 0 unrouted", copy its routes.json to tools/mkpcb_drv_routes.json (for r4 also its 4 pl() lines into tools/mkpcb_drv.py) and regenerate.
 
-Updated: 30.09.26 05:08 UTC. Last routing line: r3 launched 05:03 (PID 4708), round 0 not yet out. Predecessor r2: round 15, 4 nets sharing: +5V D8 GND SCL.
+Updated: 30.09.26 05:10 UTC. Last routing line: r3 round 1: 28 nets sharing, 0 unrouted, 277s (PID 4708); r4 launched 05:07 (PID 5089), round 0 not out.
 
 ## Plan (written before the first edit)
 1. Apply the recovered patches (done: b4d187a, 13c6c29, 335f537).
@@ -28,6 +28,7 @@ Updated: 30.09.26 05:08 UTC. Last routing line: r3 launched 05:03 (PID 4708), ro
 * Now: R72-R74, C18, C19 placed by hand in mkpcb_drv.py, because near() had fenced the funnel.
 * Now: Negotiator.run(state=...) writes the round's line, sharing, unrouted and tracks after every round (TS06_STATE), because a stopped run must lose nothing.
 * Now: run r3 (option 3 placement, PYTHONHASHSEED=0), nohup, PID 4708, because the placement changed.
+* Now: run r4 (PID 5089) from a scratch copy of tools/ (revb2/v4/tools, PCB symlinked): R73/R74 standing N-S in line on D7/D8's rev A descent (x 165.1/168.2, pad 1 on top at y 74/76), C18 west of R73's pad 2, C19 east of R74's; same R72. Because a hedge on the RC block's shape costs nothing while r3 runs (2 routing processes max).
 
 ## Checks (command: last count)
 * `python3 tools/mkpcb_drv.py --place`: runs, no overlap printed (option 3 placement).
