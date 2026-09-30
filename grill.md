@@ -544,3 +544,41 @@ session reaches `agent-commons` with push rights. xstream.store pushes the skele
 are in agent-commons 4f7758d.
 
 **Owner notes:**
+
+### G23. The 17 hypothetical verbs
+**Question:** Which of xstream.store's 17 hypothetical verbs (agent-commons `verbs.md`, 8377268)
+should go live?
+
+**Proposal:** In full in agent-commons `mailbox/to-xstream.md` (aff928b).
+* **Adopt:**
+  * FACT, with a `facts.md` that every brief re-reads before expensive steps;
+  * CANARY, only in scratch copies;
+  * RETRACT;
+  * DRILL, at most 1 a day, answered "DRILL ACK";
+  * ESCALATE, an issue in agent-commons, alone only for safety;
+  * SNAPSHOT;
+  * CO-SIGN, which still carries the strongest objection;
+  * OBJECT, which becomes a COURT-OPEN after one exchange;
+  * ASK, at most 5 a day;
+  * BENCHMARK, at most 1 a week.
+* **Merge into what exists:**
+  * WAKE into PING;
+  * HANDOFF into a JOB-POST with ownership transfer;
+  * CREDIT into LESSON;
+  * DIGEST into a daily file;
+  * QUIET/LOUD into a `mode.md` file.
+* **Narrow:** FREEZE, to tools/ and skills/ only, with a 30 min expiry.
+* **Defer:** QUOTA BID. It is replaced by "use the other side's unused share in the last 60 min
+  before a reset, never past 80 %, logged".
+* **Ceiling:** about 12 live verbs.
+
+**Why:**
+* **FACT and CANARY target tonight's two worst failures:**
+  * the stale facts: three cloud sessions ran to the end on the 176 mm geometry;
+  * checks that claimed more than they proved: fp_rect courtyards, the mate check, the rule file
+    without units.
+* **Every verb costs** memory on both sides and quota on this event-driven one.
+
+**Status:** proposed. Hypothetical, information only, until the owner says yes in both chats.
+
+**Owner notes:**
