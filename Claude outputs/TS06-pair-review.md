@@ -434,6 +434,32 @@ from its board file first:
 * **The choice:** it is a matter of taste. The owner can have it instead, at the cost of one
   more re-placement and route.
 
+### "Plane": an unbroken ground plane on the back, parts as bridges (rejected)
+
+A cloud session on the 176 mm geometry, on branch `pcb/drv-alt-plane` (15b576f), scored
+from its board file and `REPORT.md`.
+
+| | plane | baseline |
+|---|---|---|
+| Converged | **no**: 69 nets still sharing after 10 rounds; stalled at 23–54 in other runs | yes |
+| KiCad DRC | 24 clearance, 95 tracks crossing, 9 shorts, 1 unconnected | 0 errors |
+| Back-face GND | **21 islands, the largest holding 98.7 %**, reaching 55 of 56 ground pads | 139 islands, the largest 64 % |
+| Signal copper on the back | 897 mm, in "hop windows" chained up to 71 mm | a two-layer design |
+
+**Rejected.** The collisions are structural, so more rounds would not fix them, and the
+geometry is stale. Two things are worth keeping:
+* **The bridge row:** series resistors laid under the Nano's digital row, so the analogue
+  lines cross between their pads.
+* **The plane checker,** `tools/planecheck.py` on that branch.
+
+If a future revision wants a real ground plane, that is where to start.
+
+### "Search": an annealing placement optimiser (still running)
+
+A cloud session on branch `pcb/drv-alt-search`, also on the 176 mm geometry. At 00:22 it was
+routing its 11th candidate, round 8 of 60, with 41–60 nets sharing. Its report is due on that
+branch.
+
 ## What is still open before an order
 
 | Item | Blocks | How |
