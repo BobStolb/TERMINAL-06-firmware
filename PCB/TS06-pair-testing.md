@@ -95,7 +95,7 @@ The case is in `3d/case-pair/`. It is drawn around these boards, and `checks.md`
   * From a terminal: `openscad -D 'PART="module"' -o module.stl 3d/case-pair/case.scad`.
 * **STL files.** `3d/case-pair/out/*.stl` (cheeks, brow, trench, base, rear panel and a fascia blank) open in any slicer: PrusaSlicer, Cura, Bambu Studio or OrcaSlicer. Windows 3D Viewer and macOS Quick Look also show them. They are exported where they sit in the assembly, not flat on a bed. Lay each one on a face before printing; in PrusaSlicer, use **Place on face**, key F.
 * **Drawings and pictures.** `out/front.svg`, `section.svg`, `plan.svg` and `exploded.svg` are 1:1 drawings. They open in a browser; print at 100 %. There are also PNG views: `iso.png`, `iso_rear.png`, `front.png`, `exploded.png` and `module.png`.
-* **Current numbers.** `checks.md` is regenerated every time the checks run, so it has the current envelope: 204.4 × 120.3 × 83.6 mm. Some tables in the case's own `README.md` still quote the old 176 mm boards.
+* **Current numbers.** `checks.md` is regenerated every time the checks run, so it has the current envelope: 204.4 × 122.8 × 81.6 mm (TS06-DRV rev B's real part heights). Some tables in the case's own `README.md` still quote the old 176 mm boards.
 
 ---
 
@@ -115,32 +115,43 @@ tools/verify_pair.sh --keep       # keep the logs and DRC reports, and print whe
   * On Windows, run it from Git Bash, which comes with Git for Windows, or from WSL.
   * For KiCad's DRC, it uses a KiCad 10 `kicad-cli` if one is on the PATH or in the usual install folder. You can also name one with `KICAD_CLI=/path/to/kicad-cli`.
   * Without KiCad, it uses Docker: the image `mirror.gcr.io/kicad/kicad:10.0`, about 1 GB, pulled once.
-  * With neither, the two DRC lines say **SKIP**, and the rest still runs.
+  * With neither, the two DRC lines say **SKIP**, the other KiCad-only checks (pours, HV rule live, erc) are not run, and the rest still runs.
   * If Docker cannot see `/tmp` (a snap-installed Docker), run `TMPDIR=$HOME/tmp tools/verify_pair.sh`.
 * **What it touches.** Nothing in the working tree. Every regeneration goes into a scratch copy that is deleted at the end.
 * **What it prints.** One line per check: **PASS**, **FAIL** or **SKIP**, with the key numbers. On a FAIL, the tool's own output follows, indented. The script exits with 1 if anything failed and 0 otherwise.
 
-This is the output on the committed boards, 30.09.26:
+This is the output on the committed boards, 30.09.26 06:23 UTC (TS06-DRV rev B):
 
 ```
-PASS  netlist                    disp 26 parts/59 nets, drv 95 parts/130 nets, 63 strip pins: consistent
+PASS  netlist                    disp 26 parts/59 nets, drv 108 parts/136 nets, 63 strip pins: consistent
 PASS  mate                       63 strip pins (59 with a net) land on their pins, same net; 4 standoffs have holes
 PASS  firmware tables            BOARD_TYPE 4 digit map, anode order, decoder bits, MCP 0x20; bring-up sketch tables: agree with tools/ts06pair.py
 PASS  TS06-DISP generator        TS06-DISP.kicad_pcb, TS06-DISP.kicad_pro, fp-lib-table, TS06.pretty: identical to a fresh run of tools/mkpcb_disp.py
-PASS  TS06-DISP checkpcb         30 footprints, 189 pads; accepted: H3 standoff above the colon 0.15 mm, colon lamp V7 vs M10, colon lamp V8 vs M10
-PASS  TS06-DISP checkcopper --hv 373 tracks, 0 vias, 378 pad-layers; HV 0.6 mm: clean
-PASS  TS06-DISP audit            copper 2108 mm, 1.14x its floor, 0 vias, pour islands 28: clean
+PASS  TS06-DISP checkpcb         30 footprints, 189 pads; accepted: H3 standoff above the colon 0.15 mm, XP11 at the left edge, its pads inside 0.17 mm, colon lamp V7 vs M10, colon lamp V8 vs M10
+PASS  TS06-DISP checkcopper --hv 388 tracks, 0 vias, 378 pad-layers; HV 0.6 mm: clean
+PASS  TS06-DISP audit            copper 2125 mm, 1.15x its floor, 0 vias, pour islands 1: clean
+PASS  TS06-DISP checksch         179 pins connected, 0 dangling
+PASS  TS06-DISP checkmatch       59 nets in the schematic, 59 on the board: they agree
 PASS  TS06-DRV generator         TS06-DRV.kicad_pcb, TS06-DRV.kicad_pro, fp-lib-table, TS06.pretty: identical to a fresh run of tools/mkpcb_drv.py
-PASS  TS06-DRV checkpcb          103 footprints, 408 pads; accepted: Nano USB proud of the edge 2.40 mm, XS11 behind the display's XP11 0.17 mm
-PASS  TS06-DRV checkcopper --hv  1097 tracks, 0 vias, 816 pad-layers; HV 0.6 mm: clean
-PASS  TS06-DRV audit             copper 6663 mm, 1.32x its floor, 0 vias, pour islands 92,139: clean
+PASS  TS06-DRV checkpcb          116 footprints, 435 pads; accepted: Nano USB proud of the edge 2.40 mm, XS11 behind the display's XP11 0.17 mm
+PASS  TS06-DRV checkcopper --hv  1164 tracks, 0 vias, 870 pad-layers; HV 0.6 mm: clean
+PASS  TS06-DRV audit             copper 6689 mm, 1.30x its floor, 0 vias, pour islands 9,7: clean
+PASS  TS06-DRV checksch          516 pins connected, 0 dangling
+PASS  TS06-DRV checkmatch        136 nets in the schematic, 136 on the board: they agree
 PASS  TS06-DISP drc              KiCad 10.0.6 (docker mirror.gcr.io/kicad/kicad:10.0): 2 errors, 0 warnings, 0 unconnected; all accepted: colon V7 / M10 courtyards, colon V8 / M10 courtyards
-PASS  TS06-DRV drc               KiCad 10.0.6 (docker mirror.gcr.io/kicad/kicad:10.0): 0 errors, 4 warnings, 0 unconnected; all accepted: Nano silk past the edge, VT21 silk clipped at its pads, XS1 silk clipped at its pads
-PASS  bom                        TS06-DISP 26 fitted, TS06-DRV 83 fitted + 12 DNP: identical to tools/bom_pair.py's output
-PASS  case                       envelope 204.4 x 120.3 x 83.6 mm; 43 checks: 28 OK, 10 TIGHT, 3 NOTE, 2 FAIL (both rejected jack-opening alternatives)
+PASS  TS06-DRV drc               KiCad 10.0.6 (docker mirror.gcr.io/kicad/kicad:10.0): 0 errors, 2 warnings, 0 unconnected; all accepted: Nano silk past the edge
+PASS  pair mate (written files)  63 strip pins (59 with a net), 7 strips a side, 4 standoff holes, from the written files: positions, nets, drills and faces agree
+PASS  TS06-DISP pours (KiCad)    BL_K F.Cu: 1 pieces, the largest 100% of 6103 mm2, 0 under 1 mm2
+PASS  TS06-DRV pours (KiCad)     GND F.Cu: 15 pieces, the largest 92% of 12963 mm2, 2 under 1 mm2; GND B.Cu: 10 pieces, the largest 33% of 10721 mm2, 2 under 1 mm2
+PASS  TS06-DISP HV rule live     V1.7 (ANODE_H10): a K2 track 0.70 mm from its edge: DRC reports 'HV pad clearance, IPC-2221B A6'
+PASS  TS06-DRV HV rule live      C7.1 (HV185): a K2 track 0.70 mm from its edge: DRC reports 'HV pad clearance, IPC-2221B A6'
+PASS  TS06-DISP erc              KiCad ERC, all severities: 0 violations
+PASS  TS06-DRV erc               KiCad ERC, all severities: 0 violations
+PASS  bom                        TS06-DISP 26 fitted, TS06-DRV 96 fitted + 12 DNP: identical to tools/bom_pair.py's output
+PASS  case                       envelope 204.4 x 122.8 x 81.6 mm; 81 checks: 62 OK, 9 TIGHT, 7 NOTE, 3 FAIL; known: the two rejected jack-opening alternatives; OPEN: the fascia boss on R5's pad (review P6)
 PASS  case outputs               7 generated files identical to a fresh run
 ----
-16 PASS, 0 FAIL, 0 SKIP
+27 PASS, 0 FAIL, 0 SKIP
 ```
 
 ### B2. What each check means
@@ -154,9 +165,15 @@ PASS  case outputs               7 generated files identical to a fresh run
 | checkpcb | Placement: every pad and courtyard inside the outline, and no two courtyards overlapping on the same face. |
 | checkcopper --hv | Copper clearance. It holds 0.6 mm wherever a high-voltage net is on either side of a gap, keeps copper away from unplated holes, and confirms zero vias. |
 | audit | Per-net connectivity through tracks and pours, which catches a pad that is cut off. It also counts pour islands and checks the silkscreen. |
-| drc | KiCad 10's own DRC with the zones refilled and every severity on, using the HV net class from the project file. |
+| checksch | Every pin in the board's schematic sheets is connected; none is left dangling. |
+| checkmatch | The schematic and the board carry the same nets. |
+| drc | KiCad 10's own DRC with the zones refilled and every severity on, using the HV net class from the project file and the 0.8 mm HV pad rule in the `.kicad_dru`. |
+| pair mate (written files) | The mate check again, read from the files KiCad wrote rather than from the netlist: positions, nets, drills and faces of every strip pin and standoff. |
+| pours (KiCad) | KiCad fills every pour and the script counts its pieces: the largest share, and slivers under 1 mm². |
+| HV rule live | Plants a track 0.70 mm from a 185 V pad in a scratch copy and confirms that KiCad's DRC reports it, so the 0.8 mm rule is really applied. |
+| erc | KiCad's electrical rules check on the schematics, every severity on. |
 | bom | `PCB/TS06-*/bom.md` is exactly what `tools/bom_pair.py` writes from the netlist today. |
-| case | The case model re-reads both boards and the fascia and runs its 43 interference checks. |
+| case | The case model re-reads both boards and the fascia and runs its 81 interference checks. |
 | case outputs | The committed `boards.json`, `params.scad`, `checks.md` and drawings match a fresh run of the case model. |
 
 ### B3. The accepted exceptions
@@ -170,8 +187,8 @@ These items appear in the output but never FAIL. The script's header documents e
 | TS06-DRV checkpcb | U1's courtyard is 2.4 mm past the edge | The Nano's USB socket stands proud of the board on purpose, so the cable can reach it through the case cheek. It FAILs past 2.6 mm. |
 | TS06-DRV checkpcb | XS11's courtyard is 0.17 mm past the edge | The strip must sit exactly behind the display's XP11, which is on the edge. It FAILs past 0.25 mm. |
 | TS06-DRV DRC (2 warnings) | Silkscreen clipped by the board edge, on U1 | This is the Nano's outline around the same USB overhang. |
-| TS06-DRV DRC (2 warnings) | Footprint does not match its library copy, on VT21 and XS1 | The stock silkscreen of the TO-220 and of the DC jack is clipped where it crosses their pads, so the board's copies differ from the library files on purpose. |
-| case | Two rows read FAIL: "plain 6 mm cheek" and "Ø14 pocket from inside" | These are the two rejected ways of passing the DC jack through the cheek, recorded to show why the model counterbores it from the outside. The counterbore row reads OK, with 7.2 mm of plug engagement. |
+| case | Two rows read FAIL: "plain 6 mm cheek" and "Ø14 pocket from inside" | These are the two rejected ways of passing the DC jack through the cheek, recorded to show why the model counterbores it from the outside. The counterbore row reads OK, with 7.2 mm of plug engagement. The power entry is open again: the owner asked for more options (30.09.26). |
+| case | A third row reads FAIL: the fascia boss on R5's pad | An OPEN finding (review P6), on the committed fascia A. It goes when the fascia is chosen (grill G11). |
 
 ### B4. When something FAILs
 
