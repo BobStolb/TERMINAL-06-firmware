@@ -59,6 +59,7 @@ R_V = "TS06_R_Axial_DIN0207_P2.54mm_Vertical"
 
 # ------------------------------------------------------------------ weights (mm-equivalent)
 WT = dict(mst=1.0, gnd=0.3, cross=6.0, cross_near=2.0, frustr=25.0, padhit=3.0, hv=6.0, edge=40.0, overlap=40.0)
+FRUSTR_ALL = os.environ.get("FRUSTR_ALL", "1") == "1"
 HV_NETS = None                               # filled from the board's classes below
 
 # ------------------------------------------------------------------ fixed things
@@ -402,7 +403,11 @@ class State:
         mine = (qn[None, :] == EN[I][:, None]) | (qn[None, :] == EN[J][:, None])
         near = ((d2 < 9.0) & mine).any(1)
         # frustration: greedy two-colouring of the edges over the far (hard) crossings
-        hard = [(int(i), int(j)) for i, j, nr in zip(I, J, near) if not nr]
+        # FRUSTR_ALL (default since the first routing runs): colour over EVERY crossing. The near-pad
+        # discount is right for the plain crossing count but wrong here: an MST edge is one track on one
+        # face whatever pads its net has, so a decoder's ten two-pad lines crossing a strip's pin order
+        # are an odd cycle right beside the pads - the first runs' last stuck pairs (K2/K9) were exactly that.
+        hard = [(int(i), int(j)) for i, j, nr in zip(I, J, near) if FRUSTR_ALL or not nr]
         adj = {}
         for i, j in hard:
             adj.setdefault(i, []).append(j)
@@ -675,7 +680,9 @@ def score_parts(parts, remap):
 
 
 def baseline_remap():
-    return dict(opto=[P.TUBE_PIN4[t] for t in TUBES], bl=list(P.BL_OF_GPB), xaswap=False)
+    """The baseline's own maps, as tools/mkpcb_drv.py was drawn for (fixed here: this branch's
+    ts06pair.py carries the search board's remaps)."""
+    return dict(opto=list(ANODE_PINS), bl=[1, 2, 3, 4, 5, 6, 7, 8], xaswap=False)
 
 
 def plot(S, path, title=""):
