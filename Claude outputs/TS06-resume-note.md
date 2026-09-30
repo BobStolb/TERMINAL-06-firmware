@@ -15,6 +15,17 @@ The rules, from the owner (30.09.26):
 
   It counts as live once the local session sends "QUOTA: RESUME" confirming 50/50. Until then
   nothing new launches here in any case: 6 agents are running, which is the cap.
+* **LIVE since 30.09 ~01:15 UTC: "QUOTA: RESUME 50/50".** The local session confirms the owner
+  agreed.
+  * **The split:** 50 % each of every 5-hour window, and about 7 % of the weekly limit a day
+    each.
+  * **HOLD** comes when the use it can't explain passes 50 % of the current window or 7 % of
+    the week in one day, or when the 5-hour total reaches 80 %.
+  * **Concurrency caps unchanged:** 2 cloud chats, 6 agents, no fan-out wider than 4 while the
+    owner sleeps.
+  * **Its last reading, 01:05 UTC:** 5-hour 54 % (resets 03:10 UTC), weekly 21 %.
+  * **Running now:** 4 local agents (DRV rev B, DISP silk, schematics, viewer v2) and 1 cloud
+    session (search). The case agent finished at 01:12 and is merged (84b9511, a8bd81b).
 
 ## Launch log (UTC)
 
