@@ -548,6 +548,9 @@ for B in TS06-DISP TS06-DRV; do
   mkdir -p "$D/PCB/$B" "$D/out"
   [ -d "$D/PCB/lib" ] || cp -R PCB/lib "$D/PCB/lib"
   cp "PCB/$B/$B.kicad_pcb" "PCB/$B/$B.kicad_pro" "PCB/$B/fp-lib-table" "$D/PCB/$B/"
+  # the board's custom rules (the 0.8 mm HV pad rule). kicad-cli ignores a .kicad_dru it cannot
+  # parse without saying so, so the rule's own effect is proved on the board, not assumed here.
+  [ -f "PCB/$B/$B.kicad_dru" ] && cp "PCB/$B/$B.kicad_dru" "$D/PCB/$B/"
   chmod -R a+rwX "$D" 2>/dev/null
   if [ -n "$KCLI" ]; then
     (cd "$D" && "$KCLI" pcb drc --refill-zones --severity-all --units mm --format json \
