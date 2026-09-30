@@ -28,6 +28,8 @@
   `node test/run.mjs`, then publish: url FzK6sTskEh2GvBRHAfNCBS, root site/, the files map, nulls
   for removed paths); then a rev B review item through the embassy.
 * **If an agent is lost:** follow `recovered/README.md`. Routers under nohup outlive a lost agent.
+* **QUOTA: PACE (xstream.store 09:12):** from the next launch, ONE run at a time for Nixie, queued one after
+  the other; subagents on sonnet; day budget 3.6 % of the weekly limit.
 * **While QUIET:**
   * No fan-out wider than 4.
   * Read agent-commons `quota.json` before any launch; if it is over 60 min old, launch nothing.
