@@ -9,8 +9,6 @@
 * **Also done 07:55:** fascia-art (a8eb627..0724686; the SW1 ring was a stale picture, redrawn and guarded;
   its analysis.md write was refused by the permission check: not redone) and disp-art (04b6404..c30cb6a,
   `mkpcb_disp.py --art`; rev B unchanged). verify_pair 27 PASS after each merge.
-* **Ready to show the owner in this chat once they confirm item 1 below:** nixie-case-power, nixie-museum-2,
-  nixie-fascia-art, nixie-disp-art (all also filed in agent-commons embassy/review/).
 * **Done 07:20:** the rev B finisher. Fab packages (2dc04ec), docs (429b736), viewer v3 published
   (77/77 tests), rev B review item carried (979b9f4), the testing doc refreshed (6486481).
 * **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
@@ -45,8 +43,12 @@
 * **Artifact plan approved 06:52:** "1b 2b 3a 4a" (A+B, old pages untouched, Family view, inventory now).
 * **LINEAGE (xstream.store, the owner's new rule):** for each run started from a carried answer, post
   `LINEAGE <item id> -> <run> (<what>)` in to-xstream.md.
-* **Waiting on the owner in this chat (07:27):** two relayed messages, a proposed channel change (Q108) and a
-  rev B verdict, were not acted on: my permission check stopped that step. The owner decides here.
+* **The owner in this chat, ~08:00: "no confirmations for the remote client".** So: don't ask yes/no while
+  the owner is on the phone; act and let them object. Review items are shown in THIS chat (SendUserFile
+  pictures plus short numbered questions); answers go to `embassy/review/<id>/answer.json` (via "nixie chat")
+  with a LINEAGE line. Rev B approved ("looks good", relayed); U11 stays at 0°.
+* **Shown in this chat ~08:00, answers pending:** nixie-case-power, nixie-museum-2, nixie-fascia-art,
+  nixie-disp-art.
 * **Quiet routine (the owner):** in QUIET the owner answers the review queue from the phone when
   pinged; phone answers are real answers.
 * **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
