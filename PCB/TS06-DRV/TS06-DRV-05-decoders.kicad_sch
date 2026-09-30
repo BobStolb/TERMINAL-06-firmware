@@ -2685,7 +2685,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_DIP-16_W7.62mm_Socket_R180"
+(property "Footprint" "TS06:TS06_DIP-16_W7.62mm_Socket_Oval_R180"
 (at 88.9 45.72 0)
 (hide yes)
 (effects
@@ -2797,7 +2797,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_DIP-16_W7.62mm_Socket_R90"
+(property "Footprint" "TS06:TS06_DIP-16_W7.62mm_Socket_Oval_R90"
 (at 203.2 45.72 0)
 (hide yes)
 (effects
@@ -2890,7 +2890,7 @@
 (on_board yes)
 (dnp no)
 (uuid "c5284592-461f-59de-8818-8b04e5ea3531")
-(property "Reference" "#PWR038"
+(property "Reference" "#PWR043"
 (at 76.2 46.99 0)
 (hide yes)
 (effects
@@ -2941,7 +2941,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR038")
+(reference "#PWR043")
 (unit 1)
 )
 )
@@ -2956,7 +2956,7 @@
 (on_board yes)
 (dnp no)
 (uuid "029ed415-44e0-508d-9f58-23d4222153c4")
-(property "Reference" "#PWR039"
+(property "Reference" "#PWR044"
 (at 88.9 66.04 0)
 (hide yes)
 (effects
@@ -3006,7 +3006,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR039")
+(reference "#PWR044")
 (unit 1)
 )
 )
@@ -3021,7 +3021,7 @@
 (on_board yes)
 (dnp no)
 (uuid "e7b7f860-01ab-583d-9440-ffcd81be0285")
-(property "Reference" "#PWR040"
+(property "Reference" "#PWR045"
 (at 190.5 46.99 0)
 (hide yes)
 (effects
@@ -3072,7 +3072,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR040")
+(reference "#PWR045")
 (unit 1)
 )
 )
@@ -3087,7 +3087,7 @@
 (on_board yes)
 (dnp no)
 (uuid "e30dcbf9-5b42-5241-95c8-1bfe08069424")
-(property "Reference" "#PWR041"
+(property "Reference" "#PWR046"
 (at 203.2 66.04 0)
 (hide yes)
 (effects
@@ -3137,7 +3137,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR041")
+(reference "#PWR046")
 (unit 1)
 )
 )
@@ -3152,7 +3152,7 @@
 (on_board yes)
 (dnp no)
 (uuid "06a53b7f-76d5-5aa7-8eec-0bcfc1a73522")
-(property "Reference" "#PWR042"
+(property "Reference" "#PWR047"
 (at 88.9 78.74 0)
 (hide yes)
 (effects
@@ -3202,7 +3202,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR042")
+(reference "#PWR047")
 (unit 1)
 )
 )
@@ -3217,7 +3217,7 @@
 (on_board yes)
 (dnp no)
 (uuid "f7b47644-f46c-5b0d-8b89-8bdc4891ae7c")
-(property "Reference" "#PWR043"
+(property "Reference" "#PWR048"
 (at 101.6 46.99 0)
 (hide yes)
 (effects
@@ -3268,7 +3268,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR043")
+(reference "#PWR048")
 (unit 1)
 )
 )
@@ -3283,7 +3283,7 @@
 (on_board yes)
 (dnp no)
 (uuid "03342cec-7269-544f-a1c3-fe3c16e2c93e")
-(property "Reference" "#PWR044"
+(property "Reference" "#PWR049"
 (at 203.2 78.74 0)
 (hide yes)
 (effects
@@ -3333,7 +3333,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR044")
+(reference "#PWR049")
 (unit 1)
 )
 )
@@ -3348,7 +3348,7 @@
 (on_board yes)
 (dnp no)
 (uuid "462710ac-3361-52ed-b46a-f67dab4d8d2f")
-(property "Reference" "#PWR045"
+(property "Reference" "#PWR050"
 (at 215.9 46.99 0)
 (hide yes)
 (effects
@@ -3399,7 +3399,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/d8e7b9af-4d19-586f-ae83-3ca65b61d572"
-(reference "#PWR045")
+(reference "#PWR050")
 (unit 1)
 )
 )

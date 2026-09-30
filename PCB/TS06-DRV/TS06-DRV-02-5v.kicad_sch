@@ -1055,7 +1055,7 @@
 (on_board yes)
 (dnp no)
 (uuid "aa479875-2129-5f92-b26f-10bb8d9daf35")
-(property "Reference" "#PWR005"
+(property "Reference" "#PWR008"
 (at 40.64 38.1 0)
 (hide yes)
 (effects
@@ -1105,7 +1105,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR005")
+(reference "#PWR008")
 (unit 1)
 )
 )
@@ -1120,7 +1120,7 @@
 (on_board yes)
 (dnp no)
 (uuid "9f9395ed-3a7d-5422-88ad-fb3d22f53f28")
-(property "Reference" "#PWR006"
+(property "Reference" "#PWR009"
 (at 137.16 38.1 0)
 (hide yes)
 (effects
@@ -1170,7 +1170,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR006")
+(reference "#PWR009")
 (unit 1)
 )
 )
@@ -1185,7 +1185,7 @@
 (on_board yes)
 (dnp no)
 (uuid "523d29c3-2c6d-5991-8013-4f596cd4bf2f")
-(property "Reference" "#PWR007"
+(property "Reference" "#PWR010"
 (at 55.88 50.8 0)
 (hide yes)
 (effects
@@ -1235,7 +1235,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR007")
+(reference "#PWR010")
 (unit 1)
 )
 )
@@ -1250,7 +1250,7 @@
 (on_board yes)
 (dnp no)
 (uuid "6cc41d77-0444-5f40-8d30-2b5286e14a94")
-(property "Reference" "#PWR008"
+(property "Reference" "#PWR011"
 (at 81.28 48.26 0)
 (hide yes)
 (effects
@@ -1300,7 +1300,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR008")
+(reference "#PWR011")
 (unit 1)
 )
 )
@@ -1315,7 +1315,7 @@
 (on_board yes)
 (dnp no)
 (uuid "0b5b6d6a-1893-55cf-a98b-b6047e9bb083")
-(property "Reference" "#PWR009"
+(property "Reference" "#PWR012"
 (at 104.14 50.8 0)
 (hide yes)
 (effects
@@ -1365,7 +1365,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR009")
+(reference "#PWR012")
 (unit 1)
 )
 )
@@ -1380,7 +1380,7 @@
 (on_board yes)
 (dnp no)
 (uuid "c785f3de-e8c7-50d4-9681-0a555fb8be2e")
-(property "Reference" "#PWR010"
+(property "Reference" "#PWR013"
 (at 119.38 50.8 0)
 (hide yes)
 (effects
@@ -1430,7 +1430,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/17f2c393-aa35-5caa-8614-1f801f5b3de7"
-(reference "#PWR010")
+(reference "#PWR013")
 (unit 1)
 )
 )

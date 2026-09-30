@@ -79,7 +79,7 @@
 )
 )
 )
-(text "C8 C9 F1 VD2 XS1\n\n12 V arrives on a 5.5 x 2.1 mm barrel jack, centre positive; its\nswitch contact is grounded."
+(text "C8 C9 F1 VD2 VD3 VD4 XS1\n\n12 V arrives on a 5.5 x 2.1 mm barrel jack, centre positive; its\nswitch contact is grounded."
 (exclude_from_sim no)
 (at 21.59 52.07 0)
 (effects
@@ -185,7 +185,7 @@
 )
 )
 )
-(text "C7 C12 C13 C14 L1 R60 R61 R62 R63 R64 R65 R66 R67 R68 R69 R70 R71\nRP1 U11 U12 VD1 VT21\n\nL1, the IRF840 and a fast 600 V rectifier boost 12 V to the 185 V\nanode rail, HV185, held in a 4.7 uF 400 V reservoir whose bleeder\nmakes it safe about 10 s after power-off."
+(text "C7 C12 C13 C14 L1 R60 R61 R62 R63 R64 R65 R66 R67 R68 R69 R70 R71\nR75 R76 RP1 U11 U12 VD1 VD5 VD6 VD7 VT2 VT21\n\nL1, the IRF840 and a fast 600 V rectifier boost 12 V to the 185 V\nanode rail, HV185, held in a 4.7 uF 400 V reservoir whose bleeder\nmakes it safe about 10 s after power-off."
 (exclude_from_sim no)
 (at 275.59 52.07 0)
 (effects
@@ -609,7 +609,7 @@
 )
 )
 )
-(text "C5 C6 J1\n\nThe panel cable leaves on a top-entry 6-way JST PH: +5V, GND, A6,\nA7, D7, D8, the pin order both fascia builds share."
+(text "C5 C6 C18 C19 J1 R72 R73 R74\n\nThe panel cable leaves on a top-entry 6-way JST PH: +5V, GND, A6,\nA7, D7, D8, the pin order both fascia builds share."
 (exclude_from_sim no)
 (at 148.59 166.37 0)
 (effects

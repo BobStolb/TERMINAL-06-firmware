@@ -814,7 +814,7 @@
 )
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_DIN0309_P12.70mm_R270"
+(property "Footprint" "TS06:TS06_R_Axial_MLT-0.5_P15.24mm_R270"
 (at 59.69 35.56 0)
 (hide yes)
 (effects
@@ -882,7 +882,7 @@
 )
 )
 )
-(property "Footprint" "TS06:TS06_R_Axial_DIN0309_P12.70mm_R270"
+(property "Footprint" "TS06:TS06_R_Axial_MLT-0.5_P15.24mm_R270"
 (at 59.69 45.72 0)
 (hide yes)
 (effects
@@ -1006,7 +1006,7 @@
 (on_board yes)
 (dnp no)
 (uuid "380ab870-12b5-5716-8a99-25b8317ae1e5")
-(property "Reference" "#PWR058"
+(property "Reference" "#PWR063"
 (at 76.2 78.74 0)
 (hide yes)
 (effects
@@ -1056,7 +1056,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/9a1a64a8-3db4-522f-a34c-c12ebb816af2"
-(reference "#PWR058")
+(reference "#PWR063")
 (unit 1)
 )
 )

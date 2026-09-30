@@ -502,7 +502,7 @@
 )
 (uuid "222a5a3a-51a6-5c84-a8d9-1dddc85972a1")
 )
-(text "U13: The small DS3231 module plugs in here, pin order - NC C D + as the stock board's RTC MINI header."
+(text "U13: A male PLS-5 on the board: the module's own female header plugs onto it and the module lies over it. Pad 1\n(square) is GND (-), then NC, C (SCL), D (SDA); the module's pin 1, +, lands on pad 5."
 (exclude_from_sim no)
 (at 20.32 62.23 0)
 (effects
@@ -541,7 +541,7 @@
 (justify left)
 )
 )
-(property "Footprint" "TS06:TS06_PinSocket_1x05_R270"
+(property "Footprint" "TS06:TS06_PinHeader_1x05_DS3231_R270"
 (at 76.2 40.64 0)
 (hide yes)
 (effects
@@ -601,7 +601,7 @@
 (on_board yes)
 (dnp no)
 (uuid "3974d382-8c8b-51de-a792-dbe7583b3696")
-(property "Reference" "#PWR073"
+(property "Reference" "#PWR078"
 (at 66.04 45.72 0)
 (hide yes)
 (effects
@@ -652,7 +652,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/9a8a918d-3cba-515a-8185-9a53d711dcc0"
-(reference "#PWR073")
+(reference "#PWR078")
 (unit 1)
 )
 )
@@ -667,7 +667,7 @@
 (on_board yes)
 (dnp no)
 (uuid "7c1f44bb-7bae-5dfe-866c-a547d253a751")
-(property "Reference" "#PWR074"
+(property "Reference" "#PWR079"
 (at 66.04 35.56 0)
 (hide yes)
 (effects
@@ -718,7 +718,7 @@
 (instances
 (project "TS06-DRV"
 (path "/581aa1b9-f775-5fe0-87f7-a79eaeda6019/9a8a918d-3cba-515a-8185-9a53d711dcc0"
-(reference "#PWR074")
+(reference "#PWR079")
 (unit 1)
 )
 )
