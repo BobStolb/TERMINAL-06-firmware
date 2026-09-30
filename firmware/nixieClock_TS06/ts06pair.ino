@@ -34,10 +34,9 @@
       in RUN "-" cycles the backlight mode (hold: glitch on/off) and "+"
       cycles the transition effect; in PROGRAM "-" switches HH <-> MM and
       "+" counts up. NORMAL and INFO are meant to ignore every input.
-    * The spec's agreement filter on A6 (five identical readings ~10 ms
-      apart). Only the 5 ms confirm-read of buttonsTick() guards it now.
-      Turning the knob past SET TIME enters and leaves PROGRAM, and leaving
-      writes the RTC with the seconds zeroed, as flicking SW3 does.
+    * Turning the knob past SET TIME still enters and leaves PROGRAM (the
+      agreement filter below needs the knob to rest there ~50 ms). Leaving
+      PROGRAM no longer writes the RTC unless the time was edited.
     * A7 is not read. On SET TIME the spec has FIELD pick HH/MM and the
       buttons count down/up (bumpTime(-1) already exists).
     * IN-15 content: AM/PM from the RTC hour, the NORMAL idle cycle. Port A
@@ -99,11 +98,32 @@ byte rotaryPos() {
   return (analogRead(ROTARY) + 102) / 205 + 1;
 }
 
+// The spec's agreement filter: a position counts only after five identical
+// readings ~10 ms apart. It keeps a knob in transit, a noisy lead, or an
+// unplugged fascia (A6 floating until rev B's 1 M pull-down) from flicking
+// the clock into PROGRAM. Non-blocking: call it as often as you like.
+static byte rotStable = 1, rotCand = 1, rotCount = 0;
+static uint32_t rotT = 0;
+byte rotaryStable() {
+  if (millis() - rotT >= 10) {
+    rotT = millis();
+    byte p = rotaryPos();
+    if (p == rotCand) {
+      if (rotCount < 5) rotCount++;
+    } else {
+      rotCand = p;
+      rotCount = 1;
+    }
+    if (rotCount >= 5) rotStable = rotCand;
+  }
+  return rotStable;
+}
+
 // Same contract as digitalRead(LEVER) on types 0-3: HIGH = RUN, LOW = PROGRAM.
 // The panel has no PROGRAM/RUN lever. Its "set the time" control is the MODE
 // rotary's SET TIME position, so that is PROGRAM and the rest is RUN.
 boolean readLever() {
-  return rotaryPos() != ROT_SET_TIME;
+  return rotaryStable() != ROT_SET_TIME;
 }
 
 #endif
