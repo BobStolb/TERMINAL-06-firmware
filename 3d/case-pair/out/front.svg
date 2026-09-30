@@ -6,23 +6,23 @@
 <polygon points="232.40,146.30 238.40,146.30 238.40,26.00 232.40,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
 <polygon points="40.00,146.30 232.40,146.30 232.40,143.30 40.00,143.30" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
 <polygon points="40.00,143.30 232.40,143.30 232.40,136.13 40.00,136.13" fill="#BFC7CF" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="48.20,136.13 224.20,136.13 224.20,97.00 48.20,97.00" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
-<circle cx="78.20" cy="110.69" r="8.90" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
-<text x="78.20" y="126.69" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW1 MODE</text>
-<circle cx="143.20" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
-<text x="143.20" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW2 FIELD</text>
-<circle cx="166.20" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
-<text x="166.20" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW3 SUB</text>
-<circle cx="194.20" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
-<text x="194.20" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW4 −</text>
-<circle cx="212.20" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
-<text x="212.20" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW5 +</text>
-<circle cx="52.70" cy="101.40" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
-<circle cx="52.70" cy="131.72" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
-<circle cx="219.70" cy="101.40" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
-<circle cx="219.70" cy="131.72" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
-<polygon points="191.60,134.66 208.80,134.66 208.80,124.68 191.60,124.68" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
-<polygon points="43.50,97.00 207.00,97.00 207.00,60.60 43.50,60.60" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="44.80,136.13 220.81,136.13 220.81,97.00 44.80,97.00" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<circle cx="74.81" cy="110.69" r="8.90" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
+<text x="74.81" y="126.69" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW1 MODE</text>
+<circle cx="139.81" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
+<text x="139.81" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW2 FIELD</text>
+<circle cx="162.81" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
+<text x="162.81" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW3 SUB</text>
+<circle cx="190.81" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
+<text x="190.81" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW4 −</text>
+<circle cx="208.81" cy="110.69" r="5.20" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
+<text x="208.81" y="122.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW5 +</text>
+<circle cx="49.30" cy="101.40" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
+<circle cx="49.30" cy="131.72" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
+<circle cx="216.31" cy="101.40" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
+<circle cx="216.31" cy="131.72" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
+<polygon points="188.21,134.66 205.41,134.66 205.41,124.68 188.21,124.68" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
+<polygon points="43.50,97.00 222.53,97.00 222.53,60.60 43.50,60.60" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
 <circle cx="53.71" cy="93.50" r="1.50" fill="#F7C873" stroke="#9A6700" stroke-width="0.20"/>
 <circle cx="77.07" cy="93.50" r="1.50" fill="#F7C873" stroke="#9A6700" stroke-width="0.20"/>
 <circle cx="104.49" cy="93.50" r="1.50" fill="#F7C873" stroke="#9A6700" stroke-width="0.20"/>
@@ -52,7 +52,7 @@
 <polygon points="202.17,90.26 221.63,90.26 221.63,61.40 202.17,61.40" fill="#FFE3C2" stroke="#D9822B" stroke-width="0.35" stroke-linejoin="round" fill-opacity="0.9"/>
 <text x="211.90" y="84.95" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="23.85" fill="#E8590C" text-anchor="middle" font-weight="300">P</text>
 <polygon points="40.00,97.00 43.50,97.00 43.50,60.60 40.00,60.60" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="207.00,97.00 232.40,97.00 232.40,60.60 207.00,60.60" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="222.53,97.00 232.40,97.00 232.40,60.60 222.53,60.60" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
 <polygon points="40.00,60.60 232.40,60.60 232.40,26.00 40.00,26.00" fill="#F59E42" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
 <polygon points="40.50,132.00 231.90,132.00 231.90,32.00 40.50,32.00" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1.2 0.8"/>
 <polygon points="40.50,102.00 231.90,102.00 231.90,58.00 40.50,58.00" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1.2 0.8"/>
@@ -97,11 +97,11 @@
 <circle cx="232.40" cy="161.30" r="0.45" fill="#2F6DB5"/>
 <text x="136.20" y="160.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">192.4 between cheeks</text>
 <line x1="43.50" y1="60.60" x2="43.50" y2="57.60" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="207.00" y1="60.60" x2="207.00" y2="57.60" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="43.50" y1="57.60" x2="207.00" y2="57.60" stroke="#2F6DB5" stroke-width="0.25"/>
+<line x1="222.53" y1="60.60" x2="222.53" y2="57.60" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="43.50" y1="57.60" x2="222.53" y2="57.60" stroke="#2F6DB5" stroke-width="0.25"/>
 <circle cx="43.50" cy="57.60" r="0.45" fill="#2F6DB5"/>
-<circle cx="207.00" cy="57.60" r="0.45" fill="#2F6DB5"/>
-<text x="125.25" y="56.80" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">trench window 163.5 x 36.4</text>
+<circle cx="222.53" cy="57.60" r="0.45" fill="#2F6DB5"/>
+<text x="133.02" y="56.80" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">trench window 179.0 x 36.4</text>
 <line x1="238.40" y1="146.30" x2="247.40" y2="146.30" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="238.40" y1="143.30" x2="247.40" y2="143.30" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="247.40" y1="146.30" x2="247.40" y2="143.30" stroke="#2F6DB5" stroke-width="0.25"/>

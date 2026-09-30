@@ -27,18 +27,18 @@ the back. OpenSCAD maps x = X, y = Z, z = Y, so the clock faces -y.
 
 **Where the board numbers come from.** `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` are
 imported as modules. That runs their placement and hand-laid copper, with no router and no file
-written. `TS06-FASCIA.kicad_pcb` is parsed directly. **The committed
-`PCB/TS06-DRV/TS06-DRV.kicad_pcb` is not used.** It is still the 100 x 70 "driver half" from
-commit 08a9a1c, and the generator no longer matches it.
+written; the same generators write the committed `PCB/TS06-DISP` and `PCB/TS06-DRV` boards.
+`TS06-FASCIA.kicad_pcb` is parsed directly, and `FASCIA_PCB=<board>` puts another fascia in its
+place.
 
-## Envelope: 189.0 W x 120.3 H x 83.6 D (mm, outside)
+## Envelope: 204.4 W x 120.3 H x 83.6 D (mm, outside)
 
 | Width | mm | Source |
 |---|---|---|
-| Boards | 176.0 | `mkpcb_disp.W`, `mkpcb_drv.W` |
+| Boards | 191.4 | `mkpcb_disp.W`, `mkpcb_drv.W` (widened from 176 for the ИН-17 pair's 20.5 mm) |
 | Clearance, 2 x 0.5 | 1.0 | review, envelope |
 | Cheeks, 2 x 6 | 12.0 | review, envelope |
-| **Outside** | **189.0** | |
+| **Outside** | **204.4** | |
 
 | Depth, front to back | mm | Source |
 |---|---|---|
@@ -63,22 +63,22 @@ commit 08a9a1c, and the generator no longer matches it.
 | **Outside** | **120.3** | inside, floor to top bar: 114.3 (review: ~106) |
 
 The front face, bottom up: kick strip 7.2 · TS06-FASCIA 39.1 (40 along the 12° rake) · trench
-window 36.4 · brow 34.6. The trench window is 163.5 wide.
+window 36.4 · brow 34.6. The trench window is 179.0 wide (X 3.0–182.0).
 
 What-ifs are one command each (see "Regenerate"):
 
 | What changes | Outside W x H x D |
 |---|---|
-| This concept | 189.0 x 120.3 x 83.6 |
-| U13, C7 and VT21 laid down (review finding 6) | 189.0 x 120.3 x 78.2 |
-| Tubes soldered straight into the board, no socket seat (`IN12_SEAT=0`) | 189.0 x 120.3 x 79.1 |
-| 7.0 mm PBS instead of 8.5 (`PBS_H=7.0`) | 189.0 x 120.3 x 82.1 |
-| The floor at FreeCAD Y 0, with a trough in the base for the fascia lead | 189.0 x 113.0 x 82.1 |
+| This concept | 204.4 x 120.3 x 83.6 |
+| U13, C7 and VT21 laid down (review finding 6) | 204.4 x 120.3 x 78.2 |
+| Tubes soldered straight into the board, no socket seat (`IN12_SEAT=0`) | 204.4 x 120.3 x 79.1 |
+| 7.0 mm PBS instead of 8.5 (`PBS_H=7.0`) | 204.4 x 120.3 x 82.1 |
+| The floor at FreeCAD Y 0, with a trough in the base for the fascia lead | 204.4 x 113.0 x 82.1 |
 
 ## Review suggestions implemented
 
 1. **Cheeks and boards.** Two 6 mm cheeks. TS06-DRV's H6 and H8 go to the left cheek (world X 3.5;
-   Y 7.5 and 81.5), and H5 and H7 to the right (X 172.5; Y 7.5 and 100.5). Each lands on an 8 mm
+   Y 7.5 and 81.5), and H5 and H7 to the right (X 187.9; Y 7.5 and 100.5). Each lands on an 8 mm
    boss with an M3 heat-set insert, in front of TS06-DRV. The display rides on its four 11 mm
    standoffs, so the pair lifts out as one module.
 2. **The rear panel is a board.** It is a 1.6 mm FR4 blank screwed into the cheeks' rear edges.
@@ -94,15 +94,17 @@ What-ifs are one command each (see "Regenerate"):
    - The soffit is 0.8 mm above the tall glass. Behind the ИН-17 pair a valance rib comes down to
      Y 74.0, the "top 4 mm" of the review, and hides XP12. Over the ИН-12s and ИН-15s the rib
      cannot be there: those tubes would not come out past it.
-   - The left trench wall is at X 3.0 and hides XP11. The right wall is at X 166.5 and hides the
-     H4 screw.
+   - The left trench wall is at X 3.0 and hides XP11. The right wall is at X 182.0: ИН-15А's glass
+     plus the +0.4 allowance plus 0.5. It hides the H4 screw and XP12's last pins (X 183.55). It
+     was at 166.5, left over from the 176 mm boards, and covered ИН-15А from X 166.5 to 181.1.
    - A sill at Y 39.0 hides XP21–25. That is the review's "≥ 38", kept under the ИН-17 LEDs.
    - The brow is safety orange (spec §6).
 5. **Fascia.**
-   - The fascia is tied to the cheeks with four M2.5 bosses at its real holes. It is registered at
-     X 0–176, like the boards.
+   - The fascia is tied to the cheeks with four M2.5 bosses at its real holes. It is centred under
+     the tube row (`FASCIA_X0` 4.305, X 4.3–180.3): on the middle of H10 and ИН-15А, X 92.3, not
+     on the boards' middle, 95.7. TS06-DISP's margins are 3.5 mm left of the glass and 10.3 right.
    - The fascia lead runs from DRV J1 (top entry, X 44–54, Y 9) down to the floor, diagonally
-     across it, and up into the fascia's J1 at X 152.
+     across it, and up into the fascia's J1 at X 156.3.
 6. **Heat.** Top-of-panel vents only, as the review says.
 7. **Service.** Take the rear panel off (4 screws) and the module screws out (4). Draw the module
    back, unplug DRV J1 from below, and lift it out.
@@ -119,12 +121,13 @@ Full table: `checks.md`. What does not simply pass:
 | What the brow hides | XP12 over the ИН-17s is hidden down to 43.6° below. Over the ИН-15s it shows only through the 0.8 mm slot above the glass (±0.8°), or through the glass from below. TS06-DRV's top band and XP21–25 are hidden within ±60°. |
 | Left trench wall vs H10 glass | 0.475 mm nominal, 0.075 mm with the library's +0.4 glass allowance (**tight**; the trench coupon settles it). |
 | Sill vs ИН-17 LEDs | 0.59 mm (**tight**). |
-| SR25 rotary vs sill | The compressed fascia puts the rotary's rim 0.5 mm below its top edge. The sill steps back to Z 8.2 over X 15.5–44.5, which leaves a 7 mm slot behind the fascia's top edge. |
+| Right trench wall vs ИН-15А glass | 0.9 mm nominal, 0.5 mm with the +0.4 glass allowance (ok). The check now fails a negative gap; at 166.5 it had printed OK over −14.6 mm. |
+| SR25 rotary vs sill | The compressed fascia puts the rotary's rim 0.5 mm below its top edge. The sill steps back to Z 8.2 over X 19.8–48.8, which leaves a 7 mm slot behind the fascia's top edge. |
 | Fascia lead vs floor | The fascia's J1 is side-entry and points its lead down the rake. The lead needs the floor **7.3 mm below** the FreeCAD Y 0, and that is where the model puts it. The alternative is a trough 8 mm deep in the base at X 141–163. |
-| Fascia lead length | 135 mm path against a 150 mm lead: 15 mm of slack (**tight**). Make it 180–200 mm. |
+| Fascia lead length | 139 mm path against a 150 mm lead: 11 mm of slack (**tight**). The BOM says 180–200 mm. |
 | КМД1 (SW5) vs the fascia's top-right hole | 1.2 or 2.6 mm from the hole centre, depending on how the body is turned (**tight**). |
-| Fascia boss vs R5 | 0.4 mm (**tight**). |
-| ИН-17 pair (inherited) | Centres 13.0 apart against Ø20 stems: 7.0 mm of overlap if the drawing's Ø20 runs to the leads (**fail**). Rev F spaced them 20.5 for this reason. This is not a case problem, but it decides whether the pair builds. |
+| Fascia boss vs R5 | −1.2 mm to R5's courtyard: the boss lands on R5's pad (**fail**). Measured to the body it read 0.4. Trim the boss, move the hole, or take the full-width fascia (holes at its corners, 6.5 mm clear). |
+| ИН-17 pair | Centres 20.5 apart against Ø20 stems: 0.5 mm stem to stem, 2.2 mm to the glass either side (**tight**). It was 13.0, a 7.0 mm overlap, until the boards were widened. |
 
 ## Still assumed
 
@@ -139,7 +142,7 @@ Full table: `checks.md`. What does not simply pass:
 - The control bodies behind the fascia: rotary 16 deep, МТ1 30 deep, КМД1 20 deep. The КМД1's
   orientation is not known.
 - The LED flange of Ø3.8, the pin tails of 1.5, and low screw heads of 2.0.
-- The fascia's registration in X. The FreeCAD assembly has it about 7 mm off (review 5).
+- The fascia's registration in X: centred under the tube row here; the FreeCAD assembly has it elsewhere (review 5).
 - `PCB/TS06-DRV/bom.md` lists case screws for H5/H6 only. This model uses all four, as the review
   does.
 

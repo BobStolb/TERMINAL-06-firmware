@@ -35,7 +35,7 @@
 <polygon points="68.84,91.21 90.84,91.21 90.84,71.21 68.84,71.21" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1.2 0.6"/>
 <text x="79.84" y="89.71" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.80" fill="#8250DF" text-anchor="middle" font-weight="400">ИН-17 (phantom)</text>
 <polyline points="101.94,127.00 98.94,127.00 98.94,139.65 95.94,142.65 66.45,142.65 63.52,138.51" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
-<text x="83.84" y="141.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.90" fill="#8250DF" text-anchor="start" font-weight="400">fascia lead 142 mm (phantom)</text>
+<text x="83.84" y="141.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.90" fill="#8250DF" text-anchor="start" font-weight="400">fascia lead 139 mm (phantom)</text>
 <polyline points="46.00,56.75 98.84,66.07" fill="none" stroke="#B35900" stroke-width="0.30" stroke-linejoin="round" stroke-dasharray="2 1"/>
 <polyline points="46.00,100.85 98.84,91.53" fill="none" stroke="#B35900" stroke-width="0.30" stroke-linejoin="round" stroke-dasharray="2 1"/>
 <text x="46.00" y="55.25" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#B35900" text-anchor="start" font-weight="400">eye 10° above</text>

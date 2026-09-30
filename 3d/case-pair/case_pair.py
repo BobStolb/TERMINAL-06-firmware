@@ -167,8 +167,12 @@ def dims(B):
     d("PCB_T", 1.6, "board", "tools/pcbkit.py Board.thickness (both boards)", g)
     d("FASCIA_W", fas["W"], "board", "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts", g)
     d("FASCIA_H", fas["H"], "board", "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb Edge.Cuts (was 52, PCB/README.md)", g)
-    d("FASCIA_X0", float(os.environ.get("FASCIA_X0", round((disp["W"] - fas["W"]) / 2, 3))), "design",
-      "the owner, 29.09.26: the fascia centred under the tube row, (board width - fascia width) / 2", g)
+    # the tube row's centre is the middle of H10 and ИН-15А, not of the board: TS06-DISP's margins are
+    # 3.475 left and 10.265 right of the glass. A fascia too wide to centre there stops at the board edge.
+    row_c = (disp["IN12_X"][0] + disp["IN15_X"][1]) / 2
+    d("FASCIA_X0", float(os.environ.get("FASCIA_X0", round(min(max(row_c - fas["W"] / 2, 0.0), disp["W"] - fas["W"]), 3))),
+      "design", "the owner, 29.09.26: the fascia centred under the tube row, on the middle of H10 and "
+      "ИН-15А (X %.3f), kept within the board width" % row_c, g)
     d("FASCIA_T", 2.0, "doc", "PCB/README.md: TS06-FASCIA 2.0 mm FR4", g)
     d("FASCIA_HOLE_D", fas["holes"][0][2], "board", "TS06-FASCIA.kicad_pcb mounting holes (M2.5)", g)
 
@@ -205,7 +209,8 @@ def dims(B):
     d("SILL_T", 2.0, "design", "printed", g)
     d("BACK_GAP", 2.5, "design", "no case part closer than this to TS06-DISP's front face (pin tails, screw heads)", g)
     d("TRENCH_L_X", 3.0, "doc", "pair review 4: the trench's left wall hides XP11, the left 3 mm", g)
-    d("TRENCH_R_X", 166.5, "design", "right wall: clears ИН-15А (V10) glass, hides the H4 standoff screw", g)
+    d("TRENCH_R_X", round(disp["IN15_X"][1] + d.v["IN12_W"] / 2 + d.v["GLASS_ALLOW"] + 0.5, 3), "design",
+      "right wall: ИН-15А (V10) glass + GLASS_ALLOW + 0.5, still hiding the H4 standoff screw and XP12's end", g)
     d("BROW_CLR", 0.8, "design", "soffit above the tall glass: 2 x GLASS_ALLOW", g)
     d("VALANCE_Y0", 74.0, "doc", "pair review 3: the brow covers the display board's top 4 mm (78 - 4)", g)
     d("VALANCE_T", 1.5, "design", "printed rib behind the ИН-17 pair", g)
@@ -654,7 +659,10 @@ def checks(G, G_lay):
     row("6", "left trench wall vs H10 glass", "%.3f mm nominal, %.3f mm with the +%.1f glass allowance"
         % (h10_l - v["TRENCH_L_X"], h10_l - v["TRENCH_L_X"] - v["GLASS_ALLOW"], v["GLASS_ALLOW"]),
         "TIGHT", "set by the review's 3 mm; the trench coupon test (cad library §5) decides it")
-    row("6", "right trench wall vs ИН-15А (V10) glass", "%.3f mm nominal" % (v["TRENCH_R_X"] - v10_r), "OK")
+    gap_r = v["TRENCH_R_X"] - v10_r
+    row("6", "right trench wall vs ИН-15А (V10) glass", "%.3f mm nominal, %.3f mm with the +%.1f glass allowance"
+        % (gap_r, gap_r - v["GLASS_ALLOW"], v["GLASS_ALLOW"]),
+        "FAIL" if gap_r - v["GLASS_ALLOW"] < 0 else "TIGHT" if gap_r - v["GLASS_ALLOW"] < 0.5 - 1e-6 else "OK")
     led_lo = min(p["at"][1] for k, p in disp["parts"].items() if k.startswith("HL")) - v["LED_FLANGE_D"] / 2
     row("6", "sill top vs the lowest LED flange (HL5/HL6, under the ИН-17s)",
         "%.2f mm (flange bottom Y %.2f)" % (led_lo - v["SILL_TOP_Y"], led_lo), "TIGHT" if led_lo - v["SILL_TOP_Y"] < 1 else "OK",
@@ -727,9 +735,13 @@ def checks(G, G_lay):
             "depth assumed")
     fh = [h for h in fas["holes"] if h[0] < 20 and h[1] > 20][0]
     r5 = fas["parts"]["R5"]["at"]
+    # measured to R5's courtyard, which holds its pads and fillets: the boss presses on the fascia's back face
+    r5_box = fas["parts"]["R5"]["box"]
+    gap5 = r5_box[0] - (fh[0] + 3.5)
     row("8", "fascia boss at (%.1f, %.1f) vs R5 (1206, back face) at (%.1f, %.1f)" % (fh[0], fh[1], r5[0], r5[1]),
-        "%.2f mm between a ±3.5 mm boss and R5's body" % ((r5[0] - 1.6) - (fh[0] + 3.5)), "TIGHT",
-        "the boss can be round or trimmed on that side")
+        "%.2f mm between a ±3.5 mm boss and R5's courtyard (pads and fillets)" % gap5,
+        "FAIL" if gap5 < 0 else "TIGHT" if gap5 < 1.0 else "OK",
+        "the boss lands on R5's pad: trim it on that side, move the hole, or move R5" if gap5 < 0 else "")
     # the top-right fascia hole and the КМД1 beside it
     sw5 = fas["parts"]["SW5"]["at"]
     hole = [h for h in fas["holes"] if h[0] > 100 and h[1] < 20][0]

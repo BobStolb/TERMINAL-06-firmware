@@ -65,6 +65,21 @@ footprint's real position instead, since a checker that only works for one speci
 layout isn't a checker. TS06-FASCIA-THT was not touched - the SMD build was the one
 chosen for fabrication.
 
+**Two leftovers of that compression, fixed 30.09.26.**
+* **Five circles moved by half.** The compression moved each circle's end point up 12 mm
+  but not its centre. The rotary's 25 mm body ring, on F.SilkS, would have printed as a
+  34.7 mm ring 12 mm below the knob and run 3.3 mm off the bottom edge. Its four siblings
+  (lever and button keepouts on User.1) had the same fault. These were the board's only 2
+  KiCad DRC warnings. All five centres are moved up 12 mm, so each radius is horizontal
+  again (12.5 and 12.0 mm). The body ring is back on User.1, where `tools/mkpcb.py` drew it.
+* **A stale ground fill.** The stored GND fill reached 11.5 mm above the top edge, and
+  Gerbers plot the stored fill. KiCad 10 refilled the pour and saved the board.
+
+After both fixes:
+* KiCad DRC: 0 violations and 0 unconnected, at every severity.
+* `checkpcb`, `checkcopper` and `audit`: clean.
+* `checkmatch`: agrees with the schematic.
+
 **J1 pin order is fixed for both builds: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8.** It used
 to be whatever the surface-mount routing preferred (D8, D7, GND, A7, +5V, A6). The
 through-hole board cannot route to that order, and two builds of one product must not
