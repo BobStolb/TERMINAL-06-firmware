@@ -45,8 +45,16 @@ THE VARIANTS (one line each; the owner's review has pictures):
   trays     Instrument trays: each group stands on a white rule with its names set in breaks of
             the rule, gold index triangles on a heavy gold arc, bold capitals, heavy gold rule.
 
+ON R. R puts FIELD 39.1 mm from the dial (A: 65 mm), and FORMAT/DATE at 3 mm is ~30 mm long in
+normal capitals, so it runs into FIELD's down-throw. Only plates is laid out for R: its capitals
+are narrowed to 2.0 mm (still 3.2 mm tall), the legend rows open to 5.4 mm, the plates drop
+2.7 mm, and position 5's trace (without a pad, which would sit under FIELD's) drops 45° and
+enters the SUB box from the side. The other three are laid out for A; on R their checks fail.
+
 Every build runs check(): text size, stroke and line widths, spacing between items, the edge,
-the screw heads, the control rings, the knob and the levers' swing. A failure stops the build.
+the screw heads, the control rings, the knob and the levers' swing. Problems are listed and the
+exit status is 1 (the board is still written, to look at). The knob's size is not known: the
+art is kept 9 mm from the dial's shaft, as A's own scale is (A's ticks start at r 9.15).
 """
 import argparse, math, os, re, sys, uuid
 
@@ -235,7 +243,7 @@ def text_box(it):
     return box
 
 
-KO_MARGIN = 0.25          # knockout plate margin per mm of text height (checked against the render)
+KO_MARGIN = 0.15          # knockout plate margin per mm of text height: KiCad 10 draws ~0.11 (0.35 mm at 3.2)
 
 
 def anchor_y(it):
@@ -263,6 +271,13 @@ def sub_rule(A, G, style):
     e0 = (fx, fy + THROW + max(style.get("pads") or 0.0, w / 2))   # the trace's (or pad's) top edge is the throw point
     A.path("gold", [e0, (fx, ey), (x0, ey)], w, g)
     for (px, py), rail, into in ((style["from3"], style["top_y"], y0), (style["from5"], style["bot_y"], y1)):
+        if rail is None:            # into the box's left side, after a 45° drop of style["drop5"]
+            dd = style.get("drop5", 0.0)
+            A.path("gold", [(px, py), (px + dd, py + dd), (x0, py + dd)], w, g)
+            if style.get("arrows"):
+                L, Wd = style["arrows"]
+                A.poly("gold", [(x0, py + dd), (x0 - L, py + dd - Wd / 2), (x0 - L, py + dd + Wd / 2)], g)
+            continue
         d = abs(rail - py)
         up = -1 if rail < py else 1
         if style.get("chamfer_in"):
@@ -321,11 +336,14 @@ def v_ledger(G):
     A.arc("gold", D, 10.0, ANG[0], ANG[-1], 0.5, "scale")
     for a in ANG:
         A.line("gold", P(D, 10.0, a), P(D, 11.6, a), 0.5, "scale")
-    x_num = D[0] + 15.4
+    x_num = D[0] + 16.6
     x_name = x_num + 2.2
     for k, a in enumerate(ANG):
         live = k in LIVE
-        A.line("gold" if live else "silk", P(D, 12.5 if live else 12.4, a), (x_num - 1.9, R[k]), 0.4 if live else 0.2, "lead%d" % k)
+        if live:        # positions 3 and 5: the gold runs on from the tick to the numeral
+            A.line("gold", P(D, 11.6, a), (x_num - 1.9, R[k]), 0.4, "scale")
+        else:
+            A.line("silk", P(D, 12.4, a), (x_num - 1.9, R[k]), 0.2, "lead%d" % k)
         A.text("silk", str(k + 1), x_num, R[k], TX, TT, "num%d" % k, just="center")
         A.text("silk", NAMES[k], x_name, R[k], TX, TT, "name%d" % k)
     A.text("silk", "MODE", D[0] - 12.0, D[1], CT, CTT, "mode", just="right")
@@ -346,27 +364,38 @@ def v_plates(G):
     """Engraved nameplates."""
     A = Art()
     D = G["ctrl"]["SW1"]
-    R = rows(D[1])
+    fx, sx = G["ctrl"]["SW2"][0], G["ctrl"]["SW3"][0]
     TX, TW, TT = 3.2, 2.4, 0.3             # condensed position names
+    R, ny, side5 = rows(D[1]), D[1] + 15.3, False
+    room = fx - D[0]                        # dial to FIELD: 65 mm on A, 39.1 mm on R
+    if room < 50:
+        # R: FORMAT/DATE would reach FIELD's down-throw. Narrower capitals (still 3.2 mm tall),
+        # rows 5.4 mm apart so FORMAT/DATE passes 3.5 mm below FIELD's end, the plates 2.7 mm lower,
+        # and position 5's trace enters the SUB box from the side.
+        TW = 2.0
+        R = [D[1] - 10.7 + 5.4 * k for k in range(6)]
+        ny, side5 = D[1] + 18.0, True
     # the scale: a white hairline arc and six heavy gold index bars
     A.arc("silk", D, 9.2, ANG[0] - 4, ANG[-1] + 4, 0.2, "scale_w")
     for k, a in enumerate(ANG):
         A.line("gold", P(D, 10.2, a), P(D, 12.3, a), 1.0, "bar%d" % k)
-    x_name = D[0] + 15.0
+    x_name = D[0] + 16.2
     for k, a in enumerate(ANG):
         A.line("silk", lead_start(D, 12.3, a, 13.4), (x_name - 0.2, R[k]), 0.2, "lead%d" % k)
         A.text("silk", NAMES[k], x_name, R[k], TX, TT, "name%d" % k, width=TW)
-    ny = D[1] + 15.3                       # the plate row
-    PH, PW, PT = 3.2, 2.6, 0.4
-    fx, sx = G["ctrl"]["SW2"][0], G["ctrl"]["SW3"][0]
+    PH, PW, PT = 3.2, 2.6, 0.4             # the plates
     A.text("silk", "MODE", D[0], ny, PH, PT, "mode", just="center", width=PW, knockout=True)
     A.text("silk", "FIELD", fx, ny, PH, PT, "field", just="center", width=PW, knockout=True)
     A.text("silk", "SUB", sx, ny, PH, PT, "sub", just="center", width=PW, knockout=True)
     e3 = text_right(NAMES[2], x_name, TX, TW) + TT / 2 + 2.2
     e5 = text_right(NAMES[4], x_name, TX, TW) + TT / 2 + 2.2
-    sub_rule(A, G, dict(w=0.6, r=2.0, chamfer=True, chamfer_in=2.4, top_y=D[1] - 11.8, bot_y=D[1] + 21.4,
-                        box=(sx - 11.5, D[1] - 9.0, sx + 11.5, D[1] + 19.0), enable_y=D[1] + 8.4,
-                        from3=(e3, R[2]), from5=(e5, R[4]), pads=0.8))
+    if side5:               # R: DISPLAY's climb starts a mm sooner, to clear FIELD's up-throw; FORMAT/
+        e3 = e3 - 1.0       # DATE's trace has no pad (it would sit under FIELD's) and drops 3.2 mm first
+        e5 = e5 - 1.4
+    sub_rule(A, G, dict(w=0.6, r=2.0, chamfer=True, chamfer_in=2.4, top_y=2.2,
+                        bot_y=None if side5 else D[1] + 21.4,
+                        box=(sx - 11.5, D[1] - 9.0, sx + 11.5, ny + 3.7), enable_y=D[1] + 7.4 if side5 else D[1] + 8.4,
+                        from3=(e3, R[2]), from5=(e5, R[4]), pads=0.8, drop5=3.2))
     plus_minus(A, G, ny, 3.2, 0.7, frame=(6.4, 1.0, 0.5))
     return A
 
@@ -455,7 +484,7 @@ def v_trays(G):
     e3 = text_right(NAMES[2], x_name, TX) + TT / 2 + 1.4
     e5 = text_right(NAMES[4], x_name, TX) + TT / 2 + 1.4
     sub_rule(A, G, dict(w=0.8, r=2.5, top_y=D[1] - 11.8, bot_y=D[1] + 13.8,
-                        box=(sx - 11.2, D[1] - 9.4, sx + 11.2, D[1] + 12.6), enable_y=D[1] + 8.4,
+                        box=(sx - 11.2, D[1] - 9.4, sx + 11.2, D[1] + 11.4), enable_y=D[1] + 8.2,
                         from3=(e3, R[2]), from5=(e5, R[4])))
     return A
 
