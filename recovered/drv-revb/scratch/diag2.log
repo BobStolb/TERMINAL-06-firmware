@@ -1,0 +1,24 @@
+round 0: 21 nets sharing, 0 unrouted, pres 0.6, 152s
+   sharing: +5V A2 A3 A6 A7 ANODE_H1 ANODE_H10 B1 D11 D7 D8 GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA
+round 1: 28 nets sharing, 0 unrouted, pres 0.9, 263s
+   sharing: +5V A0 A1 A2 A6 A7 ANODE_H1 ANODE_H10 ANODE_S1 ANODE_S10 B1 D11 D7 D8 EMIT_H1 EMIT_S10 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA SW
+round 2: 24 nets sharing, 0 unrouted, pres 1.3, 391s
+   sharing: +5V A1 A2 A3 A6 A7 ANODE_S1 ANODE_S10 B1 D11 D7 D8 EMIT_S1 EMIT_S10 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 PWM_G SCL SDA
+round 3: 18 nets sharing, 0 unrouted, pres 2.0, 522s
+   sharing: +5V A2 A3 A6 A7 D7 D8 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA
+round 4: 23 nets sharing, 0 unrouted, pres 3.0, 648s
+   sharing: +12V +5V A2 A3 A6 A7 B1 B20 BLEED_HV D11 D7 EMIT_H10 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S10 OV_B PWM_G SCL SDA
+round 5: 19 nets sharing, 0 unrouted, pres 4.6, 781s
+   sharing: +5V A2 A3 A6 A7 ANODE_M10 B1 BL_K COLON_RET COLON_U D7 GND HV185 OPT_M1 OPT_M10 OPT_S10 PWM_G SCL SDA
+round 6: 18 nets sharing, 0 unrouted, pres 6.8, 921s
+   sharing: +5V A1 A2 A6 A7 ANODE_M10 B1 D11 D7 GND HV185 OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA
+round 7: 14 nets sharing, 0 unrouted, pres 10.3, 1063s
+   sharing: +5V A6 A7 D7 D8 GND HV185 OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA
+round 8: 13 nets sharing, 0 unrouted, pres 15.4, 1196s
+   sharing: +5V A6 A7 D7 D8 GND HV185 OPT_M1 OPT_M10 OPT_S10 PWM_G SCL SDA
+round 9: 11 nets sharing, 0 unrouted, pres 23.1, 1335s
+   sharing: +5V A6 A7 D8 GND HV185 OPT_M1 OPT_M10 OPT_S10 PWM_G SCL
+round 10: 11 nets sharing, 0 unrouted, pres 34.6, 1474s
+   sharing: +5V A6 A7 D7 D8 GND OPT_M1 OPT_M10 OPT_S10 PWM_G SCL
+round 11: 10 nets sharing, 0 unrouted, pres 51.9, 1604s
+   sharing: +5V A6 A7 D7 D8 GND OPT_M1 OPT_M10 PWM_G SCL

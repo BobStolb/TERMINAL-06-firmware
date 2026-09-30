@@ -1,0 +1,239 @@
+#!/usr/bin/env python3
+"""Offline placement check: courtyard overlaps, board-edge escapes, keepout intrusions,
+and F.Cu copper crossing any pad that reaches F.Cu.
+
+The last one is the check that caught the real bug in this board: the decorative gold
+on the face is genuine copper, so a through-hole pad under it is a short, not a graphic.
+
+Usage:  python3 tools/checkpcb.py PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb
+"""
+import re, sys, math
+
+def extract_footprints(src):
+    """Every top-level (footprint ...) block, paren-depth counted so it works
+    regardless of indentation convention - this repo's own generators outdent
+    footprints to column 0, real KiCad indents them normally as a child of
+    kicad_pcb (one tab deeper, and everything inside one tab deeper again).
+    Each block is re-indented back to the column-0 convention the field
+    regexes below are written against, so nothing past this point needs to
+    know or care which convention the file was actually saved in.
+    """
+    out = []
+    key = '(footprint "'
+    i = 0
+    while True:
+        i = src.find(key, i)
+        if i < 0:
+            break
+        line_start = src.rfind('\n', 0, i) + 1
+        base_indent = i - line_start
+        depth, j, in_str, esc = 0, i, False, False
+        while j < len(src):
+            ch = src[j]
+            if in_str:
+                if esc: esc = False
+                elif ch == '\\': esc = True
+                elif ch == '"': in_str = False
+            elif ch == '"': in_str = True
+            elif ch == '(': depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0:
+                    j += 1
+                    break
+            j += 1
+        block = src[i:j]
+        if base_indent > 0:
+            cut = '\t' * base_indent
+            lines = block.split('\n')
+            block = '\n'.join([lines[0]] + [ln[base_indent:] if ln.startswith(cut) else ln
+                                             for ln in lines[1:]])
+        out.append(block)
+        i = j
+    return out
+
+src = open(sys.argv[1], encoding="utf8").read()
+
+def board_extent(src):
+    """Board width/height from whatever Edge.Cuts geometry is actually in the file -
+    gr_rect, gr_line, or gr_arc - rather than a fixed number. Every generator in this
+    repo places the board's own origin at (0,0), so the furthest X/Y over all Edge.Cuts
+    points is the board's W/H. Falls back to the fascia's known 176x52 only if the file
+    has no Edge.Cuts geometry at all (shouldn't happen for a real board)."""
+    xs, ys = [], []
+    for m in re.finditer(r'\(gr_rect\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(end ([\d.-]+) ([\d.-]+)\)'
+                         r'[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, x2, y2 = map(float, m.groups())
+        xs += [x1, x2]; ys += [y1, y2]
+    for m in re.finditer(r'\(gr_line\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(end ([\d.-]+) ([\d.-]+)\)'
+                         r'[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, x2, y2 = map(float, m.groups())
+        xs += [x1, x2]; ys += [y1, y2]
+    for m in re.finditer(r'\(gr_arc\n\t*\(start ([\d.-]+) ([\d.-]+)\)\n\t*\(mid ([\d.-]+) ([\d.-]+)\)\n'
+                         r'\t*\(end ([\d.-]+) ([\d.-]+)\)[\s\S]*?\(layer "Edge\.Cuts"\)', src):
+        x1, y1, mx, my, x2, y2 = map(float, m.groups())
+        xs += [x1, mx, x2]; ys += [y1, my, y2]
+    if not xs:
+        return 176.0, 52.0
+    return max(xs), max(ys)
+
+W, H = board_extent(src)
+bad = []
+
+fps = extract_footprints(src)
+parts = []
+for f in fps:
+    ref = (re.search(r'\(property "Reference" "([^"]+)"', f) or [None, "?"])[1]
+    # A footprint rotated in KiCad's GUI carries its angle, "(at x y a)". An earlier regex
+    # wanted exactly two numbers and silently skipped such parts (red-team, 30.09.26).
+    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)', f)
+    if not at: continue
+    ox, oy = float(at.group(1)), float(at.group(2))
+    ang = math.radians(float(at.group(3) or 0))
+    ca, sa = math.cos(ang), math.sin(ang)
+    def rot(lx, ly):                    # KiCad: positive angles turn counter-clockwise, Y down
+        return lx * ca + ly * sa, -lx * sa + ly * ca
+    # The face a part mounts on. Back parts are authored directly on B.* layers in this
+    # repo, never flipped, so the footprint's own layer line says which face it is.
+    side = "B" if re.search(r'\n\t\(layer "B\.Cu"\)', f) else "F"
+    pads = []
+    for pm in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)\n'
+                          r'\t\t\(size ([\d.]+) ([\d.]+)\)[\s\S]*?\(layers ([^)]*)\)', f):
+        dx, dy = rot(float(pm.group(3)), float(pm.group(4)))
+        # a pad's stored angle is absolute; its bounding box turns with it
+        pa = math.radians(float(pm.group(5) or 0))
+        w0, h0 = float(pm.group(6)), float(pm.group(7))
+        w = abs(w0 * math.cos(pa)) + abs(h0 * math.sin(pa))
+        h = abs(w0 * math.sin(pa)) + abs(h0 * math.cos(pa))
+        pads.append({"n": pm.group(1), "kind": pm.group(2),
+                     "x": ox + dx, "y": oy + dy, "w": w, "h": h,
+                     "layers": pm.group(8)})
+    # Each graphic is read as a whole block before its layer is tested. A non-greedy reach
+    # for the CrtYd layer token runs past the end of a silkscreen circle into the next
+    # courtyard line, and counted a tube's 7.3 mm silk ring as its courtyard.
+    cy = []
+    for blk in re.findall(r'\(fp_line\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if v: cy.append(tuple(map(float, v.groups())))
+    for blk in re.findall(r'\(fp_circle\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        cm = re.search(r'\(center ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if not cm: continue
+        ccx, ccy, cex, cey = map(float, cm.groups())
+        r = math.hypot(cex - ccx, cey - ccy)
+        cy.append((ccx - r, ccy - r, ccx + r, ccy + r))
+    # Rectangles and polygons: 80 of TS06-DRV's 103 footprints draw their courtyard as one
+    # fp_rect, and were never checked against the board edge (red-team, 30.09.26).
+    for blk in re.findall(r'\(fp_rect\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if v: cy.append(tuple(map(float, v.groups())))
+    for blk in re.findall(r'\(fp_poly\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        pts = [tuple(map(float, q)) for q in re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', blk)]
+        for i in range(len(pts)):
+            cy.append(pts[i] + pts[(i + 1) % len(pts)])
+    box = None
+    if cy:
+        # every segment end, turned with the footprint, then boxed
+        pts = [rot(x, y) for s in cy for x, y in ((s[0], s[1]), (s[2], s[3]), (s[0], s[3]), (s[2], s[1]))]
+        xs = [q[0] for q in pts]; ys = [q[1] for q in pts]
+        box = (ox + min(xs), oy + min(ys), ox + max(xs), oy + max(ys))
+    parts.append({"ref": ref, "side": side, "x": ox, "y": oy, "pads": pads, "box": box})
+
+# 1. pads and courtyards inside the board
+for p in parts:
+    for d in p["pads"]:
+        if not (0 < d["x"] - d["w"]/2 and d["x"] + d["w"]/2 < W
+                and 0 < d["y"] - d["h"]/2 and d["y"] + d["h"]/2 < H):
+            bad.append(f'OFF-BOARD  {p["ref"]} pad {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f})')
+    if p["box"]:
+        x1, y1, x2, y2 = p["box"]
+        if x1 < 0 or y1 < 0 or x2 > W or y2 > H:
+            bad.append(f'COURTYARD OFF-BOARD  {p["ref"]}  {p["box"]}')
+
+# 2. courtyard overlaps between parts on the same side
+for i in range(len(parts)):
+    for j in range(i + 1, len(parts)):
+        a, b = parts[i]["box"], parts[j]["box"]
+        if not a or not b: continue
+        # Same face only. A surface-mount part on the back can sit directly under a tube
+        # on the front; comparing across faces reported that as a collision.
+        if parts[i]["side"] != parts[j]["side"]: continue
+        if a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]:
+            bad.append(f'COURTYARD OVERLAP  {parts[i]["ref"]} / {parts[j]["ref"]}')
+
+# 3. F.Cu graphics crossing any pad that reaches F.Cu
+# Read each gr_line as a whole block first. A non-greedy [\s\S]*? reaching for the
+# layer token will happily run past the end of its own block into the next one, which
+# made every F.Mask opening over the ladder read as a piece of front copper.
+segs = []
+for m in re.finditer(r'\(gr_line\n[\s\S]*?\n\t\)', src):
+    blk = m.group(0)
+    if '(layer "F.Cu")' not in blk: continue
+    v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)'
+                  r'\n\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)', blk)
+    if v: segs.append(list(map(float, v.groups())))
+# Arcs and lettering on F.Cu are copper as well. The box corners of the SUB rule are
+# arcs and the plus and minus glyphs are text, so a check that reads only gr_line sees
+# about half of the front copper. Arcs are sampled; text gets a generous box.
+for m in re.finditer(r'\(gr_arc\n[\s\S]*?\n\t\)', src):
+    blk = m.group(0)
+    if '(layer "F.Cu")' not in blk: continue
+    v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(mid ([\d.-]+) ([\d.-]+)\)\n'
+                  r'\t\t\(end ([\d.-]+) ([\d.-]+)\)\n\t\t\(stroke\n\t\t\t\(width ([\d.]+)\)', blk)
+    if not v: continue
+    ax, ay, mx, my, bx, by, aw = map(float, v.groups())
+    pts = [(ax, ay), (mx, my), (bx, by)]
+    for k in range(len(pts) - 1):
+        segs.append([pts[k][0], pts[k][1], pts[k+1][0], pts[k+1][1], aw])
+
+txts = []
+for m in re.finditer(r'\(gr_text "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) [\d.-]+\)\n'
+                     r'\t\t\(layer "F\.Cu"\)[\s\S]*?\(size ([\d.]+)', src):
+    t, tx, ty, sz = m.group(1), float(m.group(2)), float(m.group(3)), float(m.group(4))
+    txts.append((tx, ty, max(len(t), 1) * sz * 0.95 + sz * 0.4, sz * 1.5))
+
+fcu_pads = [d for p in parts for d in p["pads"]
+            if "*.Cu" in d["layers"] or "F.Cu" in d["layers"] or "F&B" in d["layers"]]
+def seg_pt_dist(x1, y1, x2, y2, px_, py_):
+    dx, dy = x2 - x1, y2 - y1
+    L = dx*dx + dy*dy
+    t = 0 if L == 0 else max(0, min(1, ((px_-x1)*dx + (py_-y1)*dy) / L))
+    return math.hypot(px_ - (x1+t*dx), py_ - (y1+t*dy))
+for x1, y1, x2, y2, w in segs:
+    for d in fcu_pads:
+        clear = seg_pt_dist(x1, y1, x2, y2, d["x"], d["y"]) - w/2 - max(d["w"], d["h"])/2
+        if clear < 0.2:
+            bad.append(f'F.Cu ART TOUCHES PAD  {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f}) '
+                       f'clearance {clear:+.2f} mm')
+
+for tx, ty, tw, th in txts:
+    for d in fcu_pads:
+        dx = max(abs(d["x"] - tx) - tw/2, 0.0) - d["w"]/2
+        dy = max(abs(d["y"] - ty) - th/2, 0.0) - d["h"]/2
+        clear = math.hypot(max(dx, 0.0), max(dy, 0.0)) if (dx > 0 or dy > 0) else -1.0
+        if clear < 0.2:
+            bad.append(f'F.Cu LETTERING TOUCHES PAD  {d["n"]} at ({d["x"]:.2f},{d["y"]:.2f}) '
+                       f'clearance {clear:+.2f} mm')
+
+# 4. keepout intrusions - nothing on the back inside the rotary body circle.
+# The rotary's own anchor (SW1's "at x y") is the keepout center, wherever the board
+# places it - not a hardcoded literal, which breaks the moment the layout legitimately
+# changes (e.g. a height-compressed revision of the same board).
+rotary = next((p for p in parts if p["ref"] == "SW1"), None)
+if rotary is not None:
+    rx, ry = rotary["x"], rotary["y"]
+    for p in parts:
+        for d in p["pads"]:
+            if p["ref"] == "SW1" or d["n"] == "":
+                continue          # the rotary owns that keepout; its own bushing hole is fine
+            if "B.Cu" in d["layers"] or "*.Cu" in d["layers"]:
+                if math.hypot(d["x"] - rx, d["y"] - ry) < 12.5 + 0.5:
+                    bad.append(f'IN ROTARY BODY KEEPOUT  {p["ref"]} pad {d["n"]}')
+
+print(f'{len(parts)} footprints, {sum(len(p["pads"]) for p in parts)} pads, {len(segs)} F.Cu graphics')
+for b in sorted(set(bad)): print("  " + b)
+print(("\n%d issue(s)" % len(set(bad))) if bad else "\nclean")
+sys.exit(1 if bad else 0)

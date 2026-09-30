@@ -1,0 +1,520 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TS06 Board Viewer</title>
+<meta name="description" content="TERMINAL-06 nixie clock: the TS06 board pair and fascia in 3D, the assembly in its case, build and bring-up steps, and the schematic sections.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one working stage (3D) with its camera deck and a side rail for steps and facts;
+   the reference material sits below in tabs. Black boards, white silk, nixie-orange accent. */
+:root {
+  --bg: #f4f2ee;
+  --surface: #ffffff;
+  --surface-2: #ebe8e2;
+  --stage: #d9d6cf;
+  --stage-2: #c9c5bc;
+  --text: #1c1a17;
+  --muted: #666057;
+  --line: #d9d4ca;
+  --accent: #c2410c;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbe4d5;
+  --ok: #15803d;
+  --ok-soft: #dcf2e3;
+  --warn: #9a5b00;
+  --warn-soft: #f9ecca;
+  --bad: #b42318;
+  --bad-soft: #fde2df;
+  --code-bg: #efece6;
+  --paper: #ffffff;
+  --shadow: 0 1px 2px rgba(40,30,20,.06), 0 6px 20px rgba(40,30,20,.05);
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131211;
+    --surface: #1c1b19;
+    --surface-2: #262422;
+    --stage: #34312d;
+    --stage-2: #24221f;
+    --text: #ece8e1;
+    --muted: #a39d93;
+    --line: #36332e;
+    --accent: #ff8a3d;
+    --accent-ink: #1a0f06;
+    --accent-soft: #3b2415;
+    --ok: #4ade80;
+    --ok-soft: #173222;
+    --warn: #f5b93a;
+    --warn-soft: #3a2f12;
+    --bad: #ff7b6b;
+    --bad-soft: #3d1c18;
+    --code-bg: #211f1c;
+    --paper: #f7f5f0;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131211;
+  --surface: #1c1b19;
+  --surface-2: #262422;
+  --stage: #34312d;
+  --stage-2: #24221f;
+  --text: #ece8e1;
+  --muted: #a39d93;
+  --line: #36332e;
+  --accent: #ff8a3d;
+  --accent-ink: #1a0f06;
+  --accent-soft: #3b2415;
+  --ok: #4ade80;
+  --ok-soft: #173222;
+  --warn: #f5b93a;
+  --warn-soft: #3a2f12;
+  --bad: #ff7b6b;
+  --bad-soft: #3d1c18;
+  --code-bg: #211f1c;
+  --paper: #f7f5f0;
+  --shadow: none;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.55 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 0 8px; }
+h1, h2, h3 { text-wrap: balance; }
+header.top { padding-block: 26px 6px; display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; }
+header.top > div { min-width: 0; }
+.eyebrow { font: 500 12px/1.4 var(--f-mono); letter-spacing: .05em; color: var(--muted); text-transform: uppercase; }
+h1 { font-size: 30px; line-height: 1.15; margin: 6px 0 8px; font-weight: 600; letter-spacing: -.01em; }
+h1 .glow { color: var(--accent); }
+.lede { color: var(--muted); max-width: 74ch; margin: 0; }
+.lede b { color: var(--text); font-weight: 600; }
+h2 { font-size: 20px; margin: 0 0 6px; font-weight: 600; }
+h3 { font-size: 15px; margin: 0 0 6px; font-weight: 600; }
+p { margin: 0 0 10px; }
+code, pre, kbd { font-family: var(--f-mono); font-size: 13px; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--surface); }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 12px; line-height: 1.5; }
+pre .c { color: var(--muted); }
+a { color: var(--accent); }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; font: 500 12px/1.5 var(--f-mono); padding: 0 7px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.acc { background: var(--accent-soft); color: var(--accent); }
+.themebtn { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 8px; padding: 5px 10px; font: 12px var(--f-body); cursor: pointer; flex: none; }
+
+/* ---------- viewer */
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; margin-top: 14px; }
+.stagecard, .side, .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); min-width: 0; }
+.stagecard { overflow: hidden; }
+.bar { display: flex; gap: 8px 12px; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tab { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 13px; cursor: pointer; font: 500 14px/1.2 var(--f-body); display: inline-flex; gap: 7px; align-items: baseline; }
+.tab small { font: 11.5px var(--f-mono); color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tab[aria-selected="true"] small { color: var(--bg); opacity: .7; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 8px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); padding: 5px 11px; border-radius: 6px; cursor: pointer; font: 500 13px/1.2 var(--f-body); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.14); }
+.seg[hidden] { display: none; }
+#fvtable th:first-child { width: 150px; }
+#fvtable td, #fvtable th { font-size: 13px; }
+#fvtable td { min-width: 150px; }
+.panehead select { font: 12px var(--f-body); max-width: 100%; }
+.stage { position: relative; background: radial-gradient(120% 90% at 50% 35%, var(--stage) 0%, var(--stage-2) 100%); aspect-ratio: 16 / 10; max-width: 100%; }
+.gl { position: absolute; inset: 0; overflow: hidden; }
+.gl canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.gl canvas:active { cursor: grabbing; }
+.gl:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.labels { position: absolute; inset: 0; pointer-events: none; }
+.lbl { font: 600 11px/1 var(--f-mono); color: #fff; background: rgba(194,65,12,.92); padding: 3px 6px; border-radius: 5px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.35); margin-top: -14px; }
+.lbl.out { background: rgba(120,120,120,.92); text-decoration: line-through; }
+.lbl.note { background: rgba(28,26,23,.88); }
+.loading { z-index: 3; position: absolute; left: 12px; right: 12px; bottom: 12px; display: grid; gap: 6px; font: 12px var(--f-mono); color: var(--text); pointer-events: none; }
+.loading .row { display: flex; gap: 8px; align-items: center; background: color-mix(in srgb, var(--surface) 85%, transparent); padding: 4px 8px; border-radius: 6px; }
+.loading .bar2 { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.loading .bar2 i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.stepchip { position: absolute; left: 10px; top: 10px; max-width: calc(100% - 20px); font: 500 12.5px/1.35 var(--f-body); background: color-mix(in srgb, var(--surface) 90%, transparent); color: var(--text); border: 1px solid var(--line); padding: 5px 9px; border-radius: 8px; pointer-events: none; }
+.stepchip b { color: var(--accent); font-family: var(--f-mono); font-weight: 600; margin-right: 6px; }
+.hvflag { display: inline-block; margin-left: 6px; font: 600 11px var(--f-mono); color: var(--bad); }
+.shots { position: absolute; inset: 0; display: none; flex-direction: column; background: var(--stage-2); }
+.stage[data-mode="img"] .shots { display: flex; }
+.stage[data-mode="img"] .gl, .stage[data-mode="img"] .stepchip { visibility: hidden; }
+.shotnav { display: flex; gap: 6px; padding: 8px; flex-wrap: wrap; }
+.shotview { position: relative; flex: 1; min-height: 0; overflow: auto; cursor: zoom-in; }
+.shotview img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.shotview.zoom { cursor: zoom-out; }
+.shotview.zoom img { width: auto; height: auto; max-width: none; object-fit: none; }
+
+.deck { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
+.deck .grp { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.deck .lab { font: 500 11px var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-right: 4px; }
+.cam { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 7px; padding: 5px 9px; min-width: 38px; font: 500 12.5px/1.2 var(--f-body); cursor: pointer; }
+.cam:hover { border-color: var(--accent); }
+.cam:active { transform: translateY(1px); }
+.cam.fit { background: var(--text); color: var(--bg); border-color: var(--text); }
+.cam.z { font: 600 15px/1 var(--f-mono); padding: 4px 10px; }
+.asm { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
+.asm[hidden] { display: none; }
+.slider { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.slider input[type=range] { width: 160px; accent-color: var(--accent); }
+.slider output { font: 12px var(--f-mono); color: var(--text); min-width: 3.5ch; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; user-select: none; position: relative; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle .sw { width: 32px; height: 18px; border-radius: 9px; background: var(--line); position: relative; transition: background .15s; flex: none; }
+.toggle .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+.toggle input:checked + .sw { background: var(--accent); }
+.toggle input:checked + .sw::after { transform: translateX(14px); }
+.toggle input:focus-visible + .sw { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { font-size: 12.5px; color: var(--muted); padding: 8px 12px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- side rail */
+.side { display: flex; flex-direction: column; max-height: 860px; }
+.side .bar { justify-content: flex-start; }
+.sidepanel { padding: 14px 16px; overflow: auto; min-height: 0; }
+.sidepanel[hidden] { display: none; }
+.stephead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.stepgroup { font: 500 11.5px var(--f-mono); color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+.stepnum { font: 12px var(--f-mono); color: var(--muted); }
+.steptitle { font-size: 18px; margin: 4px 0 8px; }
+.stepbody { font-size: 14px; }
+.stepbody ul { margin: 0 0 10px; padding-left: 18px; }
+.stepbody li { margin-bottom: 5px; }
+.stepbody .pass { font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 4px; }
+.stepbody .pass b { color: var(--ok); }
+.danger { border-left: 3px solid var(--bad); background: var(--bad-soft); padding: 8px 12px; border-radius: 0 8px 8px 0; margin: 8px 0 12px; font-size: 13.5px; }
+.caution { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 8px 12px; border-radius: 0 8px 8px 0; margin: 8px 0 12px; font-size: 13.5px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 12px; }
+.chip { appearance: none; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); border-radius: 6px; padding: 2px 7px; font: 500 12px/1.5 var(--f-mono); cursor: pointer; }
+.chip:hover, .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.chip.net { cursor: default; background: transparent; color: var(--muted); }
+.stepnav { display: flex; gap: 8px; margin: 10px 0 14px; }
+.btn { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 8px; padding: 7px 14px; cursor: pointer; font: 500 14px/1.2 var(--f-body); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: .45; cursor: default; }
+.steplist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.steplist .gh { font: 500 11px var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 10px 0 4px; }
+.steplist button { appearance: none; width: 100%; text-align: left; border: 0; background: transparent; color: var(--text); padding: 5px 6px; border-radius: 6px; cursor: pointer; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; font: 13.5px/1.35 var(--f-body); }
+.steplist button span:first-child { font: 500 12px/1.6 var(--f-mono); color: var(--muted); }
+.steplist button:hover { background: var(--surface-2); }
+.steplist button[aria-current="step"] { background: var(--accent-soft); color: var(--accent); }
+.steplist button[aria-current="step"] span:first-child { color: var(--accent); }
+.facts h2 { font-size: 17px; }
+.facts .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+.facts dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 12px; font-size: 13.5px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; }
+.facts .note { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+/* ---------- doc tabs */
+.doctabs { display: flex; gap: 4px; margin: 34px 0 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.doctab { appearance: none; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); padding: 10px 14px; cursor: pointer; font: 600 15px var(--f-body); white-space: nowrap; }
+.doctab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+.docpanel { padding-block: 20px 8px; }
+.docpanel[hidden] { display: none; }
+.lead { color: var(--muted); margin-bottom: 14px; max-width: 78ch; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { padding: 16px; }
+.card .tag { font: 500 11.5px var(--f-mono); color: var(--accent); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+ol.steps { margin: 0; padding-left: 20px; }
+ol.steps li { margin-bottom: 8px; }
+ol.steps li::marker { color: var(--muted); font-family: var(--f-mono); font-size: 13px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 12.5px; }
+td.n, th.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.tablewrap { overflow-x: auto; }
+.stagelist { list-style: none; margin: 0; padding: 0; counter-reset: st; }
+.stagelist > li { counter-increment: st; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+.stagelist > li:first-child { border-top: 0; padding-top: 4px; }
+.stagelist > li::before { content: counter(st); width: 30px; height: 30px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 600 14px var(--f-mono); }
+.stagelist > li > div { min-width: 0; }
+.stagelist .pass { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.stagelist .pass b { color: var(--ok); font-weight: 600; }
+.stagelist ul { margin: 4px 0 6px; padding-left: 18px; }
+.linkbtn { appearance: none; border: 0; background: none; color: var(--accent); cursor: pointer; font: 500 13px var(--f-body); padding: 0; text-decoration: underline; text-underline-offset: 2px; }
+
+/* sections */
+.secwrap { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 16px; align-items: start; }
+.seclist { display: grid; gap: 6px; }
+.secbtn { appearance: none; text-align: left; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px; padding: 9px 12px; cursor: pointer; font: 500 14px/1.3 var(--f-body); }
+.secbtn small { display: block; font: 11.5px var(--f-mono); color: var(--muted); margin-top: 2px; }
+.secbtn[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.secbtn[aria-selected="true"] small { color: var(--accent); }
+.secdetail { min-width: 0; }
+.secpanes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 12px; }
+.pane { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); min-width: 0; }
+.panehead { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; border-bottom: 1px solid var(--line); font: 500 12px var(--f-mono); color: var(--muted); flex-wrap: wrap; }
+.pz { position: relative; height: 420px; overflow: hidden; background: var(--paper); touch-action: none; cursor: grab; }
+.pz.dark { background: #15171a; }
+.pz:active { cursor: grabbing; }
+.pz img { position: absolute; left: 0; top: 0; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; max-width: none; }
+.pztools { display: inline-flex; gap: 4px; }
+.pztools button { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 6px; font: 600 12px var(--f-mono); padding: 2px 8px; cursor: pointer; }
+.stubnote { font-size: 13px; }
+
+footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; border-top: 1px solid var(--line); margin-top: 36px; }
+
+@media (max-width: 1000px) {
+  .viewer { grid-template-columns: minmax(0, 1fr); }
+  .side { max-height: none; }
+  .secwrap { grid-template-columns: minmax(0, 1fr); }
+  .seclist { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+@media (max-width: 760px) {
+  .secpanes { grid-template-columns: minmax(0, 1fr); }
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  h1 { font-size: 24px; }
+  .stage { aspect-ratio: 1 / 1; }
+  .tab small { display: none; }
+  .slider input[type=range] { width: 120px; }
+  .pz { height: 340px; }
+  .cam { padding: 5px 7px; min-width: 34px; }
+  header.top { flex-direction: column-reverse; gap: 6px; }
+  .themebtn { align-self: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">TERMINAL-06 · pcb/kicad-boards · f376a3b · 30.09.26</div>
+      <h1>TS06 <span class="glow">board viewer</span></h1>
+      <p class="lede">An eight-tube nixie clock on two through-hole boards and a printed fascia. The tubes stand on <b>TS06-DISP</b>; <b>TS06-DRV</b> plugs in 11 mm behind it on pin strips, its parts facing the rear panel. All three boards are ordered <b>black soldermask with white silkscreen</b>, and that is how they are drawn here, from each board's own stackup. Turn the model by dragging it, or use the view buttons under it.</p>
+    </div>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Switch between light and dark theme">Theme</button>
+  </header>
+
+  <section class="viewer" id="viewer" aria-label="3D viewer">
+    <div class="stagecard">
+      <div class="bar">
+        <div class="tabs" role="tablist" aria-label="What to show" id="scenes">
+          <button class="tab" role="tab" id="sc-asm" data-scene="asm" aria-selected="true">Assembly <small>stack + case</small></button>
+          <button class="tab" role="tab" id="sc-DRV" data-scene="DRV" aria-selected="false">Driver <small>TS06-DRV</small></button>
+          <button class="tab" role="tab" id="sc-DISP" data-scene="DISP" aria-selected="false">Display <small>TS06-DISP</small></button>
+          <button class="tab" role="tab" id="sc-FASCIA" data-scene="FASCIA" aria-selected="false">Fascia <small>TS06-FASCIA</small></button>
+        </div>
+        <div class="seg" role="group" aria-label="Fascia variant" id="fvseg">
+          <button type="button" data-fv="A" aria-pressed="true" title="A · centred, 176 mm">Fascia A</button>
+          <button type="button" data-fv="W" aria-pressed="false" title="W · full width, 191.4 mm">W</button>
+          <button type="button" data-fv="R" aria-pressed="false" title="R · on the tube grid, 191.4 mm (recommended)">R</button>
+          <button type="button" data-fv="F" aria-pressed="false" title="F · the 176 board in a printed frame (case model only)">F</button>
+        </div>
+        <div class="seg" role="group" aria-label="Model or pictures" id="modeseg">
+          <button type="button" data-mode="3d" aria-pressed="true">3D</button>
+          <button type="button" data-mode="img" aria-pressed="false" id="imgbtn">KiCad renders</button>
+        </div>
+      </div>
+      <div class="stage" id="stage" data-mode="3d">
+        <div class="gl" id="gl" tabindex="0" role="application" aria-roledescription="3D view" aria-label="3D view. Drag to turn, scroll or pinch to zoom. Keys: arrows turn, plus and minus zoom, F fits."></div>
+        <div class="stepchip" id="stepchip" hidden></div>
+        <div class="loading" id="loading" aria-live="polite"></div>
+        <div class="shots" id="shots">
+          <div class="shotnav seg" id="shotnav" role="group" aria-label="Picture"></div>
+          <div class="shotview" id="shotview" title="Click to see it at full size"><img id="shotimg" alt=""></div>
+        </div>
+      </div>
+      <div class="deck" id="deck" role="toolbar" aria-label="Camera views">
+        <div class="grp"><span class="lab">View</span>
+          <button class="cam" type="button" data-view="front" title="Front (1)">Front</button>
+          <button class="cam" type="button" data-view="back" title="Back (2)">Back</button>
+          <button class="cam" type="button" data-view="top" title="Top (3)">Top</button>
+          <button class="cam" type="button" data-view="bottom" title="Bottom (4)">Bottom</button>
+          <button class="cam" type="button" data-view="left" title="Left (5)">Left</button>
+          <button class="cam" type="button" data-view="right" title="Right (6)">Right</button>
+          <button class="cam" type="button" data-view="isoL" title="Iso from the left (7)">Iso L</button>
+          <button class="cam" type="button" data-view="isoR" title="Iso from the right (8)">Iso R</button>
+        </div>
+        <div class="grp">
+          <button class="cam fit" type="button" data-view="fit" title="Fit and reset (F)">Fit</button>
+          <button class="cam z" type="button" data-zoom="out" aria-label="Zoom out" title="Zoom out (−)">−</button>
+          <button class="cam z" type="button" data-zoom="in" aria-label="Zoom in" title="Zoom in (+)">+</button>
+        </div>
+      </div>
+      <div class="asm" id="asmdeck">
+        <label class="slider" for="explode">Explode <input type="range" id="explode" min="0" max="100" step="1" value="0"><output id="explodeout" for="explode">0%</output></label>
+        <label class="toggle" for="caseon"><input type="checkbox" id="caseon" checked><span class="sw" aria-hidden="true"></span><span>Case</span></label>
+        <label class="toggle" for="caseghost"><input type="checkbox" id="caseghost" checked><span class="sw" aria-hidden="true"></span><span>See-through</span></label>
+        <label class="toggle" for="labelson"><input type="checkbox" id="labelson" checked><span class="sw" aria-hidden="true"></span><span>Labels</span></label>
+      </div>
+      <div class="hint"><span id="hint">Drag to turn · right-drag or two fingers to pan · scroll or pinch to zoom</span><span class="num" id="dims"></span></div>
+    </div>
+
+    <aside class="side" aria-label="Steps and facts">
+      <div class="bar">
+        <div class="seg" role="tablist" aria-label="Side panel" id="sidetabs">
+          <button type="button" role="tab" id="st-steps" data-side="steps" aria-selected="true" aria-pressed="true">Build &amp; bring-up</button>
+          <button type="button" role="tab" id="st-facts" data-side="facts" aria-selected="false" aria-pressed="false">Facts</button>
+        </div>
+      </div>
+      <div class="sidepanel" id="panel-steps" role="tabpanel" aria-labelledby="st-steps">
+        <div id="stepcard" aria-live="polite"></div>
+        <ol class="steplist" id="steplist" aria-label="All steps"></ol>
+      </div>
+      <div class="sidepanel facts" id="panel-facts" role="tabpanel" aria-labelledby="st-facts" hidden></div>
+    </aside>
+  </section>
+
+  <nav class="doctabs" role="tablist" aria-label="Reference">
+    <button class="doctab" role="tab" id="dt-sections" data-doc="sections" aria-selected="true">Circuit sections</button>
+    <button class="doctab" role="tab" id="dt-fascia" data-doc="fascia" aria-selected="false">Fascia variants</button>
+    <button class="doctab" role="tab" id="dt-test" data-doc="test" aria-selected="false">Test everything</button>
+    <button class="doctab" role="tab" id="dt-kicad" data-doc="kicad" aria-selected="false">Open in KiCad 10</button>
+    <button class="doctab" role="tab" id="dt-notes" data-doc="notes" aria-selected="false">What the 3D shows</button>
+  </nav>
+
+  <section class="docpanel" id="doc-sections" role="tabpanel" aria-labelledby="dt-sections">
+    <p class="lead">Each section of the circuit, with its schematic sheet and its parts highlighted on the board. <b>Show in 3D</b> lights the same parts in the viewer above.</p>
+    <div id="secnote"></div>
+    <div class="secwrap">
+      <div class="seclist" id="seclist" role="tablist" aria-label="Sections"></div>
+      <div class="secdetail" id="secdetail"></div>
+    </div>
+  </section>
+
+  <section class="docpanel" id="doc-fascia" role="tabpanel" aria-labelledby="dt-fascia" hidden>
+    <p class="lead">The boards grew to 191.4 mm for the ИН-17 pair; the fascia was drawn for 176. Four ways to sit it under the tube row, scored side by side in <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-FASCIA-variants.md" target="_blank" rel="noopener">PCB/TS06-FASCIA-variants.md</a>. <b>R is recommended; the owner chooses.</b> All four keep the same case outside, <span id="fvouter">204.4 × 122.8 × 83.6 mm</span>, and every one still needs larger legends (at least 3 mm caps) and a dry fit of a real КМД1 and МТ1.</p>
+    <div class="tablewrap card" style="padding:0 4px;margin-bottom:16px"><table id="fvtable"></table></div>
+    <div id="fvpics">
+      <div class="pane" id="fvpane">
+        <div class="panehead"><span><select id="fvpic" aria-label="Composite"></select> <span id="fvfrom"></span></span>
+          <span class="pztools"><button type="button" data-act="out" aria-label="Zoom out">−</button><button type="button" data-act="in" aria-label="Zoom in">+</button><button type="button" data-act="fit">Fit</button></span></div>
+        <div class="pz dark" id="fvpz" tabindex="0" aria-label="Composite: drag to pan, scroll or pinch to zoom"><img id="fvimg" alt="" draggable="false"></div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-top:10px">The fascia buttons above the 3D view swap the board in place: X0 4.305 for A, 0 for W and R; F shows the printed frame with the 176 board standing in for its 179 panel. The cheeks drawn are the committed case model's default ones, made for A, so their fascia bosses and the sill notch stay where A needs them, and are still there with F.</p>
+  </section>
+
+  <section class="docpanel" id="doc-test" role="tabpanel" aria-labelledby="dt-test" hidden>
+    <p class="lead">Three layers: check the files before any money is spent, check the bare boards when they arrive, then bring the clock up on the bench one stage at a time, with 185 V left until the converter stage. The full procedure, with every expected value and how it is calculated, is <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-pair-testing.md" target="_blank" rel="noopener">PCB/TS06-pair-testing.md</a>. The <b>Bring-up</b> steps in the rail above show each stage in 3D.</p>
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="tag">1 · The files, with one command</div>
+      <p>From the repository root. It needs Bash, Python 3.8+ with numpy, and for KiCad's DRC either a KiCad 10 <code>kicad-cli</code> or Docker. It writes nothing in the working tree.</p>
+<pre>tools/verify_pair.sh              <span class="c"># everything, a few minutes with Docker</span>
+tools/verify_pair.sh --no-drc     <span class="c"># everything but KiCad's DRC</span>
+tools/verify_pair.sh --keep       <span class="c"># keep the logs and DRC reports</span>
+
+<span class="c"># on the committed boards (30.09.26), with Docker for KiCad:</span>
+PASS  netlist                   disp 26 parts/59 nets, drv 95 parts/130 nets, 63 strip pins
+PASS  mate                      63 strip pins (59 with a net) land on their pins, same net; 4 standoffs have holes
+PASS  TS06-DISP drc             2 errors, 0 warnings, 0 unconnected; all accepted: colon V7 / M10, colon V8 / M10
+PASS  TS06-DRV drc              0 errors, 4 warnings, 0 unconnected; all accepted
+PASS  pair mate (written files) 63 strip pins, 7 strips a side, 4 standoff holes: positions, nets, drills, faces agree
+PASS  TS06-DISP pours (KiCad)   BL_K F.Cu: 1 piece
+PASS  case                      envelope 204.4 x 122.8 x 83.6 mm; OPEN: the fascia boss on R5's pad
+<span class="c">…</span>
+19 PASS, 0 FAIL, 0 SKIP</pre>
+      <p style="font-size:13.5px;color:var(--muted);margin:0">Each line is PASS, FAIL or SKIP. On a FAIL the tool's own words follow, indented. The accepted items are listed in the script's header and in the guide, part B3.</p>
+    </div>
+
+    <div class="grid2" style="margin-bottom:16px">
+      <div class="card">
+        <div class="tag">2 · Bare boards, on arrival</div>
+        <ol class="steps">
+          <li>Look them over against the renders. Under a loupe, check the strip rows XS21, XS23, XS24, XS25 and XP21, XP23, XP24, XP25: a 5 V LED line sits <b>0.84 mm</b> from a 185 V anode pad there. Check VT21's three pads and the empty bleed footprints R33–R44 (0.94 mm).</li>
+          <li>Meter on its highest range: every high-to-low pair in the guide's table 1b reads <b>open</b>. <code>+12V</code>, <code>+5V</code> and <code>HV185</code> are each open to <code>GND</code>.</li>
+          <li>Build, then <b>solder the strips with the two boards screwed together</b> on their nylon standoffs, so all 63 strip pins line up (Build steps 3–4 above).</li>
+          <li>Before any power, with the power off: turn <code>RP1</code> until pin 1 to pin 2 (GND) reads <b>5.0 kΩ</b>, its maximum. That is the lowest set-point, 165 V. C7+ to U12 pin 2 must read 560–615 kΩ; 963 kΩ means R62 or R63 is open, and then the converter must not be powered.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="tag">What you need</div>
+        <ul style="margin:0;padding-left:18px">
+          <li>A 0–15 V bench supply with a current limit, at least 1 A.</li>
+          <li>A meter rated CAT II 600 V DC or better, 10 MΩ input, with insulated micro-grabber clips.</li>
+          <li>A plastic trimming tool for RP1, and a stopwatch.</li>
+          <li>A 100 kΩ 1 W resistor on insulated clip leads, for draining C7.</li>
+          <li>An LED probe (3 mm LED + 1 kΩ) and a stand-in lamp (100 kΩ with two Dupont pins).</li>
+          <li>The bring-up sketch <code>firmware/ts06_bringup</code> (9600 baud), then the clock at <code>BOARD_TYPE 4</code>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tag">3 · Bench bring-up, one stage at a time</div>
+      <div class="danger"><b>185 V DC, stored in C7 (4.7 µF, 0.08 J), can hurt you.</b> With high voltage on: one hand only; clip the meter on with the power off and C7 under 10 V, then power up; never move a probe on a live board. After power-off, <b>wait 15 s and check C7 reads under 10 V</b> before a hand goes near the board. A scope's ground clip goes only to board GND. Fit and pull chips only with the power off.</div>
+      <ol class="stagelist" id="stagelist"></ol>
+    </div>
+  </section>
+
+  <section class="docpanel" id="doc-kicad" role="tabpanel" aria-labelledby="dt-kicad" hidden>
+    <p class="lead">This page shows exported models. The real files open in KiCad 10, where you can click any track, see its net, hide layers and run the same design-rule check. KiCad 9 and older cannot open them.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="tag">Get the files and open them</div>
+        <ol class="steps">
+          <li>Install KiCad 10 from <a href="https://www.kicad.org/download/" target="_blank" rel="noopener">kicad.org/download</a>, with its 3D models (on Linux they are often a separate package, <code>kicad-packages3d</code>).</li>
+          <li>Clone the branch:
+<pre>git clone -b pcb/kicad-boards \
+  https://github.com/BobStolb/TERMINAL-06-firmware
+cd TERMINAL-06-firmware</pre></li>
+          <li><b>File → Open Project</b>: <code>PCB/TS06-DISP/TS06-DISP.kicad_pro</code>, then <code>PCB/TS06-DRV/TS06-DRV.kicad_pro</code>. Double-click the <code>.kicad_pcb</code> to open the PCB Editor. Each project carries its own library table, so the <code>TS06</code> footprints in <code>PCB/lib</code> load with no setup.</li>
+          <li>There is no schematic file for the pair: its netlist is <code>tools/ts06pair.py</code>, and the generators write the boards from it. The <b>Circuit sections</b> tab draws it section by section.</li>
+          <li><b>Do not save the boards.</b> Refilling or running DRC changes the board in memory; answer <b>Discard</b> when KiCad asks. If you saved by accident: <code>git checkout -- PCB/</code>.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="tag">Inside the PCB editor</div>
+        <ol class="steps">
+          <li><b>Fill the pours first:</b> press <kbd>B</kbd>, or <b>Edit → Fill All Zones</b>. The committed boards store no fill, so the ground pours look empty until you do, and the display's LED return (<code>BL_K</code>) exists only as a pour.</li>
+          <li><b>Faces:</b> on TS06-DISP the tubes are on F, the pin strips XP11–XP25 on B. On TS06-DRV the parts are on F (towards the rear panel) and the socket strips XS11–XS25 on B (towards the display). <b>View → Flip Board View</b> shows the back.</li>
+          <li><b>Layers:</b> the Appearance panel's eye icons; <kbd>Ctrl</kbd>+<kbd>H</kbd> dims all but the active layer; <kbd>PgUp</kbd>/<kbd>PgDn</kbd> switch F.Cu and B.Cu.</li>
+          <li><b>Nets:</b> hover a pad to read its net; <kbd>`</kbd> (back-quote) lights the whole net. Try <code>HV185</code>, the 185 V net, and note the 0.6 mm gaps of the HV class.</li>
+          <li><b>Find:</b> <kbd>Ctrl</kbd>+<kbd>F</kbd> finds <code>C7</code>, <code>RP1</code> or <code>XS21</code>. Pin 1 is the square pad.</li>
+          <li><b>DRC:</b> Inspect → Design Rules Checker, tick <i>Refill all zones</i>, Run.
+            <ul>
+              <li><b>TS06-DISP:</b> 0 unconnected; 2 errors, accepted (the colon lamp courtyards overlap M10 by 0.135 mm).</li>
+              <li><b>TS06-DRV:</b> 0 errors, 0 unconnected, 4 accepted warnings (the Nano's silk past the edge ×2; VT21 and XS1 library mismatches).</li>
+            </ul></li>
+          <li><b>3D:</b> <kbd>Alt</kbd>+<kbd>3</kbd>. Drag to turn, scroll to zoom.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="tag">For the fab: refill before plotting</div>
+      <p>The boards are ordered <b>1.6 mm FR4 (the fascia 2.0 mm), black soldermask, white silkscreen, ENIG</b>. The committed files store no zone fill, so Gerbers plotted straight from them would have no ground pours and no <code>BL_K</code> return. Refill first:</p>
+<pre>kicad-cli pcb export gerbers --check-zones -o gerbers/ PCB/TS06-DRV/TS06-DRV.kicad_pcb
+<span class="c"># or in KiCad: File → Fabrication Outputs → Gerbers, with "Check zone fills before plotting" ticked</span></pre>
+    </div>
+  </section>
+
+  <section class="docpanel" id="doc-notes" role="tabpanel" aria-labelledby="dt-notes" hidden>
+    <p class="lead">What the 3D view is made of, and where it is drawn from something other than KiCad's own export.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>You see</th><th>Where it comes from</th></tr></thead>
+        <tbody id="notesbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer id="footer">Built 2026-09-30T02:18Z from commit <span class="num">f376a3b</span> on <span class="num">pcb/kicad-boards</span>. 3D: KiCad 10 glTF exports (board stackup colours), compressed with gltfpack, drawn with three.js. Assembly frame and case parts: <span class="num">3d/case-pair</span>.</footer>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+} }
+</script>
+<script type="module" src="app.js"></script>

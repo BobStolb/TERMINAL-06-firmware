@@ -1,0 +1,92 @@
+round 0: 20 nets sharing, 0 unrouted, pres 0.6, 256s
+   sharing: +5V A2 A3 A6 A7 ANODE_H1 ANODE_H10 B1 D11 D7 D8 GND HV185 M_A OPT_M1 OPT_M10 OPT_S10 PWM_G SCL SDA
+round 1: 24 nets sharing, 0 unrouted, pres 0.9, 392s
+   sharing: +5V A0 A1 A2 A6 A7 ANODE_H1 ANODE_H10 B1 D11 D7 D8 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA SW
+round 2: 26 nets sharing, 0 unrouted, pres 1.3, 532s
+   sharing: +5V A1 A2 A3 A6 A7 ANODE_M10 B1 BLEED_HV D11 D7 D8 EMIT_H10 EMIT_S10 GATE GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 OV_B PWM_G SCL SDA
+round 3: 24 nets sharing, 0 unrouted, pres 2.0, 662s
+   sharing: +5V A2 A3 A6 A7 B1 BLEED_HV D7 D8 EMIT_H10 EMIT_M1 EMIT_S10 GND HV185 OPT_H1 OPT_M1 OPT_M10 OPT_S1 OPT_S10 OV_B PWM_G SCL SDA VREF
+round 4: 22 nets sharing, 0 unrouted, pres 3.0, 790s
+   sharing: +5V A2 A3 A6 A7 B1 BLEED_HV COLON_U D11 D7 EMIT_M1 GND HV185 M_A OPT_M1 OPT_M10 OPT_S1 OPT_S10 PWM_G SCL SDA VREF
+round 5: 15 nets sharing, 0 unrouted, pres 4.6, 926s
+   sharing: +5V A3 A6 A7 B20 D7 EMIT_M1 GND HV185 OPT_M1 OPT_M10 OPT_S10 PWM_G SCL SDA
+round 6: 13 nets sharing, 0 unrouted, pres 6.8, 1063s
+   sharing: +5V A6 A7 COLON_RET D7 D8 GND HV185 OPT_M1 OPT_S10 PWM_G SCL SDA
+round 7: 13 nets sharing, 0 unrouted, pres 10.3, 1200s
+   sharing: +5V A6 A7 B1 D7 D8 GND HV185 OPT_M1 OPT_S10 PWM_G SCL SDA
+round 8: 13 nets sharing, 0 unrouted, pres 15.4, 1345s
+   sharing: +5V A6 A7 B1 D7 D8 GND HV185 OPT_M1 OPT_S10 PWM_G SCL SDA
+round 9: 12 nets sharing, 0 unrouted, pres 23.1, 1494s
+   sharing: +5V A6 A7 COLON_U D7 D8 GND HV185 OPT_M1 PWM_G SCL SDA
+round 10: 9 nets sharing, 0 unrouted, pres 34.6, 1646s
+   sharing: +5V A6 A7 D7 D8 GND HV185 SCL SDA
+round 11: 8 nets sharing, 0 unrouted, pres 51.9, 1795s
+   sharing: +5V A6 A7 D7 D8 GND HV185 SCL
+round 12: 6 nets sharing, 0 unrouted, pres 77.8, 1936s
+   sharing: A6 A7 D7 D8 GND SCL
+round 13: 6 nets sharing, 0 unrouted, pres 116.8, 2029s
+   sharing: A6 A7 D7 D8 GND SCL
+round 14: 6 nets sharing, 0 unrouted, pres 175.2, 2119s
+   sharing: A6 A7 D7 D8 GND SCL
+round 15: 5 nets sharing, 0 unrouted, pres 262.7, 2212s
+   sharing: A6 A7 D7 D8 SCL
+round 16: 5 nets sharing, 0 unrouted, pres 394.1, 2219s
+   sharing: A6 A7 D7 D8 SCL
+round 17: 5 nets sharing, 0 unrouted, pres 591.2, 2227s
+   sharing: A6 A7 D7 D8 SCL
+round 18: 5 nets sharing, 0 unrouted, pres 886.7, 2235s
+   sharing: A6 A7 D7 D8 SCL
+round 19: 5 nets sharing, 0 unrouted, pres 1330.1, 2243s
+   sharing: A6 A7 D7 D8 SCL
+round 20: 5 nets sharing, 0 unrouted, pres 1995.2, 2251s
+   sharing: A6 A7 D7 D8 SCL
+round 21: 5 nets sharing, 0 unrouted, pres 2992.7, 2258s
+   sharing: A6 A7 D7 D8 SCL
+round 22: 5 nets sharing, 0 unrouted, pres 4489.1, 2266s
+   sharing: A6 A7 D7 D8 SCL
+round 23: 5 nets sharing, 0 unrouted, pres 6733.6, 2274s
+   sharing: A6 A7 D7 D8 SCL
+round 24: 5 nets sharing, 0 unrouted, pres 10100.5, 2282s
+   sharing: A6 A7 D7 D8 SCL
+round 25: 5 nets sharing, 0 unrouted, pres 15150.7, 2289s
+   sharing: A6 A7 D7 D8 SCL
+round 26: 5 nets sharing, 0 unrouted, pres 22726.1, 2297s
+   sharing: A6 A7 D7 D8 SCL
+round 27: 5 nets sharing, 0 unrouted, pres 34089.1, 2305s
+   sharing: A6 A7 D7 D8 SCL
+round 28: 5 nets sharing, 0 unrouted, pres 51133.6, 2313s
+   sharing: A6 A7 D7 D8 SCL
+round 29: 5 nets sharing, 0 unrouted, pres 76700.4, 2321s
+   sharing: A6 A7 D7 D8 SCL
+round 30: 5 nets sharing, 0 unrouted, pres 115050.6, 2329s
+   sharing: A6 A7 D7 D8 SCL
+round 31: 5 nets sharing, 0 unrouted, pres 172576.0, 2337s
+   sharing: A6 A7 D7 D8 SCL
+round 32: 5 nets sharing, 0 unrouted, pres 258863.9, 2345s
+   sharing: A6 A7 D7 D8 SCL
+round 33: 5 nets sharing, 0 unrouted, pres 388295.9, 2352s
+   sharing: A6 A7 D7 D8 SCL
+round 34: 5 nets sharing, 0 unrouted, pres 582443.8, 2360s
+   sharing: A6 A7 D7 D8 SCL
+round 35: 5 nets sharing, 0 unrouted, pres 873665.8, 2368s
+   sharing: A6 A7 D7 D8 SCL
+round 36: 5 nets sharing, 0 unrouted, pres 1310498.6, 2376s
+   sharing: A6 A7 D7 D8 SCL
+round 37: 5 nets sharing, 0 unrouted, pres 1965748.0, 2384s
+   sharing: A6 A7 D7 D8 SCL
+round 38: 5 nets sharing, 0 unrouted, pres 2948622.0, 2391s
+   sharing: A6 A7 D7 D8 SCL
+round 39: 5 nets sharing, 0 unrouted, pres 4422932.9, 2398s
+   sharing: A6 A7 D7 D8 SCL
+round 40: 5 nets sharing, 0 unrouted, pres 6634399.4, 2405s
+   sharing: A6 A7 D7 D8 SCL
+round 41: 5 nets sharing, 0 unrouted, pres 9951599.1, 2413s
+   sharing: A6 A7 D7 D8 SCL
+round 42: 5 nets sharing, 0 unrouted, pres 14927398.6, 2428s
+   sharing: A6 A7 D7 D8 SCL
+round 43: 5 nets sharing, 0 unrouted, pres 22391097.9, 2443s
+   sharing: A6 A7 D7 D8 SCL
+round 44: 5 nets sharing, 0 unrouted, pres 33586646.9, 2496s
+   sharing: A6 A7 D7 D8 SCL
+round 45: 5 nets sharing, 0 unrouted, pres 50379970.4, 2863s
+   sharing: A6 A7 D7 D8 SCL

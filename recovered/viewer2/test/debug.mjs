@@ -1,0 +1,34 @@
+import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const server = spawn('python3', [path.join(ROOT, 'test/serve.py'), '8767'], { cwd: path.join(ROOT, 'site'), stdio: 'ignore' });
+await new Promise(r => setTimeout(r, 700));
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const page = await browser.newPage({ viewport: { width: 1000, height: 800 } });
+page.on('console', m => { if (m.type() === 'error') console.log('console', m.text()); });
+await page.route('https://cdn.jsdelivr.net/npm/three@0.186.1/**', r => r.fulfill({ path: path.join(ROOT, 'work/three', r.request().url().split('three@0.186.1/')[1]), contentType: 'application/javascript' }));
+await page.route('https://fonts.googleapis.com/**', r => r.fulfill({ body: '', contentType: 'text/css' }));
+await page.goto('http://127.0.0.1:8767/index.html');
+await page.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 240000 });
+await page.evaluate(() => { window.TS06.animScale = 0; });
+const mats = await page.evaluate(() => {
+  const V = window.TS06, out = {};
+  V.roots.DRV.natives.DRV.traverse(o => {
+    if (!o.isMesh || !o.material || !o.material.color) return;
+    const m = o.material, k = m.name + ' ' + m.color.getHexString() + ' op' + m.opacity + ' tr' + m.transparent + ' side' + m.side;
+    if (!out[k]) out[k] = { n: 0, ymin: 1e9, ymax: -1e9 };
+    out[k].n++;
+    o.geometry.computeBoundingBox();
+    const b = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld.clone().premultiply(V.roots.DRV.natives.DRV.matrixWorld.clone().invert()));
+    out[k].ymin = Math.min(out[k].ymin, +b.min.y.toFixed(3)); out[k].ymax = Math.max(out[k].ymax, +b.max.y.toFixed(3));
+  });
+  return out;
+});
+for (const [k, v] of Object.entries(mats)) if (v.ymax - v.ymin < 3 || v.n > 20) console.log(k, JSON.stringify(v));
+await page.click('#sc-DRV');
+await page.click('#deck [data-view="back"]');
+await page.waitForFunction(() => window.TS06.dirty <= 0);
+await page.waitForTimeout(3000);
+await page.screenshot({ path: path.join(ROOT, 'work/debug-back.png') });
+await browser.close(); server.kill();
