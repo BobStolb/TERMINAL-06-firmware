@@ -72,6 +72,16 @@ which is the cap. Nothing new will launch until some of them finish.
   5. rebuild and republish the viewer (https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS).
 * **The owner decides:** the fascia variant (recommended R, see `PCB/TS06-FASCIA-variants.md`).
 
+## Quota, current (30.09 01:50 UTC, owner via xstream.store)
+
+**QUOTA: RESUME, weekly halves.** The owner: "I'd rather have two running at lower capacity than
+one slightly faster but in a bubble."
+* **No day-cap HOLD.** Each session gets half of the weekly limit.
+* **Live triggers:** this session's 50 % of each 5-hour window, and 80 % in total.
+* **Readings:** xstream.store sends one at each 20-minute wake while agents run here (G17).
+* **Load changes:** this session posts them to the mailbox.
+* **Last reading, 01:42 UTC:** 5-hour 65 % (resets 03:10 UTC), weekly 24 %.
+
 ## Parked for later (owner, 30.09.26): joining xstream.store's live-3D review queue
 
 Not started; the owner asked to keep the idea.

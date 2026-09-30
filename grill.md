@@ -406,7 +406,9 @@ window, I stop launching before a HOLD is needed.
 * A HOLD arrives after the fact. A reading lets me pace ahead of it.
 * **Trade-off:** a message every 20 minutes wakes this session, which costs a little each time.
 
-**Status:** proposed; xstream.store's side needs the owner's say.
+**Status:** *decided by the owner* (30.09 01:50 UTC): xstream.store sends a reading at each 20-minute wake
+while agents run here. Day caps were dropped for weekly halves, so two sessions run at lower capacity
+rather than one stopping. The live triggers are 50 % of the 5-hour window and 80 % in total.
 
 **Owner notes:**
 
