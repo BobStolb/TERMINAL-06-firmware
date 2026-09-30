@@ -621,6 +621,25 @@ if [ -n "$DRC_HOW" ] && [ -z "$KCLI" ]; then
 $lines
 EOF_LINES
   done
+  # Is the HV pad rule live? kicad-cli ignores a .kicad_dru it cannot parse without saying so, and
+  # then a clean DRC proves nothing. A copy with one planted 0.70 mm gap at an HV pad must fail it.
+  for B in TS06-DISP TS06-DRV; do
+    if [ ! -f "PCB/$B/$B.kicad_dru" ]; then report SKIP "$B HV rule live" "no PCB/$B/$B.kicad_dru"; continue; fi
+    cp "PCB/$B/$B.kicad_dru" "$K/PCB/$B/"
+    cp "$K/PCB/$B/$B.kicad_pro" "$K/PCB/$B/${B}_planted.kicad_pro"
+    cp "PCB/$B/$B.kicad_dru" "$K/PCB/$B/${B}_planted.kicad_dru"
+    chmod -R a+rwX "$K" 2>/dev/null
+    # shellcheck disable=SC2086
+    MSYS_NO_PATHCONV=1 docker run --rm $USERFLAG -v "$HOSTK":/w -w /w -e HOME=/tmp "$IMG" sh -c \
+      "python3 tools/kicad_checks.py plant PCB/$B/$B.kicad_pcb PCB/$B/${B}_planted.kicad_pcb && \
+       kicad-cli pcb drc --severity-all --units mm -o /w/$B.planted.rpt PCB/$B/${B}_planted.kicad_pcb" 2>&1 \
+      | grep -v -E "Debug:|^$" > "$TMP/$B.plant.log"
+    if grep -q "HV pad clearance" "$K/$B.planted.rpt" 2>/dev/null; then
+      report PASS "$B HV rule live" "$(grep -m1 '^PASS plant' "$TMP/$B.plant.log" | cut -d' ' -f3-): DRC reports 'HV pad clearance, IPC-2221B A6'"
+    else
+      report FAIL "$B HV rule live" "a planted 0.70 mm gap at an HV pad was NOT reported: the .kicad_dru is not being applied" "$TMP/$B.plant.log"
+    fi
+  done
   # KiCad's ERC on each schematic, with its sub-sheets and symbol library
   for B in TS06-DISP TS06-DRV; do
     [ -f "PCB/$B/$B.kicad_sch" ] || continue

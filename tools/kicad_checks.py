@@ -120,7 +120,44 @@ def fill(paths):
     return 1 if fails else 0
 
 
+def plant(src, dst):
+    """Write a copy of SRC with one planted fault for the HV pad rule: a track of a non-HV net whose
+    edge is 0.70 mm from the first HV-class pad. DRC on the copy must report the rule; KiCad ignores
+    a .kicad_dru it cannot parse without a word (30.09.26), so a clean DRC alone proves nothing."""
+    b = pcbnew.LoadBoard(src)
+    pads = [p for fp in b.GetFootprints() for p in fp.Pads()
+            if p.GetNetClassName() == "HV" and p.IsOnLayer(pcbnew.B_Cu)]
+    other = [n for n in ("K2", "GND", "+5V", "A0") if b.FindNet(n)]
+    if not pads or not other:
+        print("FAIL plant: no HV pad or no low-voltage net on " + src)
+        return 1
+    pad, net, ly = pads[0], b.FindNet(other[0]), pcbnew.B_Cu
+    t = pcbnew.PCB_TRACK(b)
+    t.SetLayer(ly); t.SetNet(net); t.SetWidth(pcbnew.FromMM(0.2)); b.Add(t)
+    pos = pad.GetPosition()
+
+    def put(mm_):
+        x = pos.x + pcbnew.FromMM(mm_)
+        t.SetStart(pcbnew.VECTOR2I(x, pos.y - pcbnew.FromMM(0.4)))
+        t.SetEnd(pcbnew.VECTOR2I(x, pos.y + pcbnew.FromMM(0.4)))
+    lo, hi = 0.0, 5.0
+    for _ in range(40):                                  # bisect to a 0.70 mm edge-to-edge gap
+        mid = (lo + hi) / 2
+        put(mid)
+        if t.GetEffectiveShape(ly).Collide(pad.GetEffectiveShape(ly), pcbnew.FromMM(0.70)):
+            lo = mid
+        else:
+            hi = mid
+    put(hi + 0.001)
+    pcbnew.SaveBoard(dst, b)
+    ref = pad.GetParentFootprint().GetReference()
+    print("PASS plant %s.%s (%s): a %s track 0.70 mm from its edge" % (ref, pad.GetNumber(), pad.GetNetname(), other[0]))
+    return 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 4 and sys.argv[1] == "plant":
+        sys.exit(plant(sys.argv[2], sys.argv[3]))
     if len(sys.argv) >= 4 and sys.argv[1] == "mate":
         sys.exit(mate(sys.argv[2], sys.argv[3]))
     if len(sys.argv) >= 3 and sys.argv[1] == "fill":
