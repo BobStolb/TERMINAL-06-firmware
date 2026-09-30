@@ -56,6 +56,10 @@
 #                       "review's 'Ø14 pocket from inside'". They are the two rejected ways of
 #                       passing the DC jack through the cheek, recorded to show why the model
 #                       counterbores it from the outside (that row is OK, 7.2 mm).
+#                       One more is FAIL and OPEN, not accepted as a design: "fascia boss at (4.5,
+#                       35.5) vs R5": the boss lands on R5's pad (review P6). The fascia variant
+#                       decides it; the row's name carries the positions, so any change to the
+#                       fascia or its holes makes it a new FAIL here.
 # Anything else - a new item, or an accepted one that has grown - is a FAIL.
 set -u
 
@@ -141,7 +145,8 @@ ACCEPT_DRC = {
         ("lib_footprint_mismatch", {"XS1"}, "XS1 silk clipped at its pads"),
     ],
 }
-ACCEPT_CASE = ["12 V plug engagement, plain 6 mm cheek", "review's 'Ø14 pocket from inside'"]
+ACCEPT_CASE = ["12 V plug engagement, plain 6 mm cheek", "review's 'Ø14 pocket from inside'",
+               "fascia boss at (4.5, 35.5) vs R5 (1206, back face) at (10.0, 36.0)"]   # open: review P6
 
 
 def out(status, detail, *more):
@@ -401,7 +406,8 @@ def k_case(log, rc, checks):
          f"{count['OK']} OK, {count['TIGHT']} TIGHT, {count['NOTE']} NOTE, {count['FAIL']} FAIL")
     if new:
         out("FAIL", d + f"; {len(new)} not accepted", *["  " + w for w in new])
-    out("PASS", d + (" (both rejected jack-opening alternatives)" if fails else ""))
+    out("PASS", d + ("; known: the two rejected jack-opening alternatives" if fails else "")
+        + ("; OPEN: the fascia boss on R5's pad (review P6)" if any(w.startswith("fascia boss") for w in fails) else ""))
 
 
 def k_case_fresh(tmp_case):

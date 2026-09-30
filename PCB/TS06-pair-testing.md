@@ -375,10 +375,10 @@ The fascia connector J1, a PH 6-way: pin 1 +5 V (U14.3), 2 GND, 3 A6 (Nano pin 2
 | The nine strip neighbours of 1b | Open. ANODE_x reaches only its anode resistor and an empty opto socket. BL_Ax reaches RN1 and an empty U3 socket. | OL |
 | Each anode strip pin to GND | Open. The bleed pairs R33–R44 are not fitted (DNP). | OL (about 1.0 MΩ if the bleeds are fitted) |
 | Across R27–R30, then R31–R32, in place | 6.8 kΩ, then 12 kΩ. The sockets are empty, so nothing is in parallel. This also proves they are not swapped. | ±5 % |
-| Across R56 and R57, in place | 8.2 kΩ | ±5 % |
-| C7 + to C7 − (HV185 to GND) | The bleeder in parallel with the divider: 940 k ∥ (1.5 M + 15 k + RP1). With RP1 at 10 k: 940 k ∥ 1525 k = **581 kΩ**. It creeps up for a few seconds while the meter charges C7. | 550–600 kΩ (5 % bleeders) |
-| RP1 pin 1 (FB_LOW) to GND | RP1 itself. The path through R64, the divider and the bleeder, 2.4 MΩ, changes it by less than 1 %. **Turn RP1 until it reads 10.0 kΩ.** That is the lowest rail set-point, 152 V, for stage 3. | 10.0 kΩ |
-| C7 + to U12 pin 2 (HV185 to FB) | 1.5 M ∥ (940 k + 15 k + 10 k) = **587 kΩ** with the divider whole. If R62 or R63 is open, it reads 965 kΩ. **Then do not power the converter:** with no feedback it would run away. | 560–615 kΩ |
+| Across R56 and R57, in place | 18 kΩ | ±5 % |
+| C7 + to C7 − (HV185 to GND) | The bleeder in parallel with the divider: 940 k ∥ (1.5 M + 18 k + RP1). With RP1 at 5 k: 940 k ∥ 1523 k = **581 kΩ**. It creeps up for a few seconds while the meter charges C7. | 550–600 kΩ (5 % bleeders) |
+| RP1 pin 1 (FB_LOW) to GND | RP1 itself. The path through R64, the divider and the bleeder, 2.4 MΩ, changes it by less than 1 %. **Turn RP1 until it reads 5.0 kΩ.** That is the lowest rail set-point, 165 V, for stage 3. | 5.0 kΩ |
+| C7 + to U12 pin 2 (HV185 to FB) | 1.5 M ∥ (940 k + 18 k + 5 k) = **587 kΩ** with the divider whole. If R62 or R63 is open, it reads 963 kΩ. **Then do not power the converter:** with no feedback it would run away. | 560–615 kΩ |
 | U14 pin 3 (+5 V) to GND | R69 + R70 = 20 kΩ, in parallel with the regulator's output. | not under 100 Ω |
 | TS06-DISP, diode test: red on XP21.2, black on XP21.1 | HL1 forward: 1.6–2.0 V, and the LED glows faintly. Repeat for each BL_A pin and for M_A (XP25.4) against XP21.1. | LED lights; no LED backwards |
 
@@ -421,7 +421,7 @@ The fascia connector J1, a PH 6-way: pin 1 +5 V (U14.3), 2 GND, 3 A6 (Nano pin 2
 
 **Fit,** with the power off: U11 (TC4420), U12 (LM393) and the flashed Nano. Nothing else. The display stays unplugged.
 
-**Before the first power-up:** stage 1d set RP1 to 10.0 kΩ and proved the divider whole. Do not skip either.
+**Before the first power-up:** stage 1d set RP1 to 5.0 kΩ and proved the divider whole. Do not skip either.
 
 **Instrument:**
 * the meter on 600 V DC, **black clipped to C7 −, red clipped to C7 + (or VD1's band)**, before power;
@@ -439,15 +439,15 @@ which is 20.7 mA at 5 V. At about 80 % efficiency through the regulator, that is
 
 **Pass:** 8–25 mA.
 
-**3b. `H`: the converter starts.** The rail climbs in a fraction of a second to the set-point for RP1 = 10 kΩ:
+**3b. `H`: the converter starts.** The rail climbs in a fraction of a second to the set-point for RP1 = 5 kΩ:
 
-V = VREF × (R62 + R63 + R64 + RP1) / (R64 + RP1) = 2.5 × 1525 k / 25 k = **152.5 V**
+V = VREF × (R62 + R63 + R64 + RP1) / (R64 + RP1) = 2.5 × 1523 k / 23 k = **165.5 V**
 
 **Pass:** 145–160 V. **If it passes 200 V, or keeps climbing, press `h` or switch off at once.** The feedback is open.
 
 **3c. Set 185 V.** With a plastic tool, turn RP1 slowly and watch the meter. If the rail falls, turn the other way. RP1's own pins sit near 0 V, but it stands among 185 V parts.
 
-The target is R64 + RP1 = 1.5 MΩ / (185 / 2.5 − 1) = 20.55 kΩ, so **RP1 ≈ 5.55 kΩ**. Near 185 V, the rail moves 2.5 × 1.5 M / (20.55 k)² = 8.9 V per kΩ, about **3.6 V per turn** of the 25-turn 3296W.
+The target is R64 + RP1 = 1.5 MΩ / (185 / 2.5 − 1) = 20.55 kΩ, so **RP1 ≈ 2.55 kΩ** (R64 is 18 k). Near 185 V, the rail moves 2.5 × 1.5 M / (20.55 k)² = 8.9 V per kΩ, about **1.8 V per turn** of the 25-turn 5 k 3296W. The whole trimmer spans 165–210 V.
 
 **Pass:** 185 ± 1 V now. The production QC figure is **185 ± 8 V warm** (spec §10).
 
@@ -493,7 +493,7 @@ C7 discharges through the bleeder and the divider in parallel: 940 k ∥ 1.52 M 
 
 **4.1 How to flash.** This applies to both the bring-up sketch and the clock.
 
-The Nano can be flashed on the board or off it. On the board, the board's 5 V and the USB's 5 V meet at the Nano's own diode, which is fine.
+The Nano can be flashed on the board or off it. **On the board, keep the 12 V supply on while USB is connected.** With 12 V off, USB power back-feeds the R-78E's output through the Nano's diode, which RECOM warns can damage it (electrical review E5; rev B adds a 1N5819 across U14).
 
 **Arduino IDE 2.x:**
 * **Tools → Board → Arduino AVR Boards → Arduino Nano**; **Tools → Processor → ATmega328P**. On CH340 clones, if the upload times out, choose **ATmega328P (Old Bootloader)**. Pick the Nano's port under **Tools → Port**; Windows and macOS may need the CH340 driver.
@@ -700,8 +700,8 @@ The sustaining voltages are the repository's working figures, and gate 2 is what
 **The ИН-15 pair (V9 ИН-15Б, V10 ИН-15А).** They have no anode switch. R56 and R57 feed them from the rail, so a tube is lit whenever the converter is on and its decoder has a glyph code.
 * **Measure** across R56 for V9 and R57 for V10.
 * **Glyphs:** `a` lights A on V9, `p` lights P on V10, and `g` steps through every glyph. Check each glyph against the table in 5a. This is **gate 4**; a different glyph means a firmware table.
-* **Current:** V_R = 185 − 140 − 1 = **44 V**, so 44 / 8.2 k = **5.4 mA** DC, and R56 dissipates 44 × 5.4 mA = 0.24 W, half its rating. **Pass:** 34–54 V (sustain 130–150 V).
-* **The gates file warns** that 5.4 mA is a lot for this tube. If the glow spills past the glyph, or the tube runs warm, gate 2 moves R56/R57 to 12 k (3.7 mA) or 15 k (2.9 mA). Don't leave an ИН-15 lit for long at this stage.
+* **Current:** V_R = 185 − 140 − 1 = **44 V**, so 44 / 18 k = **2.4 mA** DC, the tube's rated indication current, and R56 dissipates 44 × 2.4 mA = 0.11 W. **Pass:** 34–54 V (sustain 130–150 V).
+* R56/R57 were 8k2 (5.4 mA, twice the rating) until the electrical review (E2). If the glow is patchy at 18 k, gate 2 may lower them to 15 k (2.9 mA).
 
 **The colon.** `k` must strike **both** ИНС-1 together.
 * Each lamp gets (185 − ≈ 65 V burning voltage, assumed) / 220 kΩ = **0.55 mA**.
@@ -809,7 +809,7 @@ The worst gap between two states is 103 codes (spec §2). **The clock does not r
 | R-78E, К155ИД1s | warm | touchable |
 | Anode resistors | ИН-12: 43 V × 6.3 mA × 13.5 % = **37 mW** each | cool |
 | Colon ballasts | 120 V × 0.55 mA = **66 mW** when lit | cool |
-| R56/R57 | 0.24 W each once the ИН-15 is lit; 0 today | warm, not hot |
+| R56/R57 | 0.11 W each once the ИН-15 is lit; 0 today | warm, not hot |
 
 **Over 24 hours** (spec §9 burn-in, §10 QC):
 * no flicker, no ghosting, no dark or stuck numeral;
@@ -828,7 +828,7 @@ These come from `knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`, whose 
 | Gate | What is measured | Where in this plan | What it decides |
 |---|---|---|---|
 | 1. The stock stage's operating point | Rail and input current of the old converter | Stages 3 and 8 measure the pair's own converter instead | The converter's input budget and, with gate 7, the adapter rating |
-| 2. Sustaining voltage of each tube type | Volts across a lit tube | Stage 6, from V_R: V_sustain ≈ 185 − V_R − 2 | The anode resistors: R27–R30 (6k8, "TBC"), R31–R32 (12k) and R56–R57 (8k2) |
+| 2. Sustaining voltage of each tube type | Volts across a lit tube | Stage 6, from V_R: V_sustain ≈ 185 − V_R − 2 | The anode resistors: R27–R30 (6k8, "TBC"), R31–R32 (12k) and R56–R57 (18k) |
 | 3. ИН-17 lead order | One lead at a time on the rig, **before soldering** | Before stage 6; stage 6 confirms the cathodes | Which lead is the anode, which is physical (the footprint's pad names). The cathode order is a firmware table |
 | 4. ИН-15 pinouts | Each pad lit on the rig | Stage 6, `g` | The anode identity, which is physical. The glyph map is `GLYPH_Q`, in firmware |
 | 5. ИН-17 pip projection, and the Ø20 stem | Calipers | Before stage 6 | Pip under 6.4 mm, or the footprint needs a hole. The stem confirms the 20.5 mm pitch the boards were widened for |
@@ -845,4 +845,4 @@ These come from `knowledge/TERMINAL-06-measurements-TS06-MAIN-gates.txt`, whose 
 
 ### A record for each unit
 
-Serial · date · 12 V idle current (stage 2) · HV at RP1 = 10 k and trimmed · RP1's final value (optional, power off: RP1 pin 1 to GND) · no-load current delta · C7 discharge time to 10 V · I²C devices · V_R steady for each tube (H10 H1 M10 M1 S10 S1, ИН-15Б, ИН-15А) · both colon ballasts · the six A6 codes and four A7 codes · full-system current · HV warm · drift over 24 h · tube batch, anode resistor values, colon pair.
+Serial · date · 12 V idle current (stage 2) · HV at RP1 = 5 k and trimmed · RP1's final value (optional, power off: RP1 pin 1 to GND) · no-load current delta · C7 discharge time to 10 V · I²C devices · V_R steady for each tube (H10 H1 M10 M1 S10 S1, ИН-15Б, ИН-15А) · both colon ballasts · the six A6 codes and four A7 codes · full-system current · HV warm · drift over 24 h · tube batch, anode resistor values, colon pair.

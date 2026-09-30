@@ -179,6 +179,10 @@ void setHV(bool on) {
   if (on) {
     steady = false;                     // a burst started with the rail at 12 V ends here
     TCCR1B = (TCCR1B & 0xF8) | 1;       // Timer1 prescaler 1: 16 MHz / 510 = 31.4 kHz
+    for (int d = 20; d < DUTY; d += 2) { // soft start, ~85 ms: L1 would saturate on a step to DUTY
+      analogWrite(PIN_HV, d);
+      delay(1);
+    }
     analogWrite(PIN_HV, DUTY);
   } else {
     analogWrite(PIN_HV, 0);             // pin low, PWM disconnected
