@@ -1,0 +1,92 @@
+round 0: 59 nets sharing, 0 unrouted, pres 0.6, 148s
+   sharing: +12V +5V A0 A1 A2 A3 A6 ANODE_AM ANODE_H1 ANODE_M10 ANODE_PM ANODE_S10 BL_A1 BL_A2 BL_A4 BL_A7 BL_A8 CAT_A_MICRO CAT_A_NANO CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS D10 D13 D4 D5 D6 EMIT_S1 GND HV185 K0 K1 K2 K3 K4 K8 K9 KS0 KS1 KS2 KS8 KS9 PWM_G SCL SDA SW VREF XA0 XA1 XA2 XA4 XA5 XA6 XA7 XB3 XB4 XB5 XB6 XB7
+round 1: 83 nets sharing, 0 unrouted, pres 0.9, 238s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_H10 ANODE_M1 ANODE_M10 ANODE_PM ANODE_S10 BL_A1 BL_A2 BL_A4 BL_A7 BL_A8 CAT_A_MEGA CAT_A_MICRO CAT_A_MILLI CAT_A_MINUS CAT_A_NANO CAT_A_P CAT_A_PCT CAT_A_PI CAT_A_PLUS CAT_B_AMP D11 D13 D2 D3 D4 D5 D6 EMIT_H10 EMIT_S1 FB_LOW GATE GND HV185 K0 K1 K2 K3 K4 K5 K6 K7 K8 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 OPT_H1 OPT_H10 PWM_G SCL SDA SW XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 2: 76 nets sharing, 0 unrouted, pres 1.3, 343s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_PM BLEED_H10 BL_A1 BL_A2 BL_A5 BL_A6 BL_A8 CAT_A_KILO CAT_A_MICRO CAT_A_NANO CAT_A_P CAT_A_PCT CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS COLON_L COLON_U D10 D11 D13 D2 D4 D5 D6 FB GATE GND HV185 K1 K3 K4 K5 K6 K8 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 M_A OPT_H10 PWM_G SCL SDA SW XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 3: 71 nets sharing, 0 unrouted, pres 2.0, 460s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_PM ANODE_S1 BLEED_H10 BL_A1 BL_A2 BL_A3 BL_A6 BL_A7 BL_A8 BL_K CAT_A_MICRO CAT_A_P CAT_B_AMP CAT_B_OHM COLON_L COLON_RET COLON_U D10 D13 D2 D4 D5 D6 GND HV185 K0 K1 K2 K3 K4 K5 K6 K7 K8 K9 KS0 KS1 KS2 KS5 KS6 KS7 KS9 M_A PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 4: 65 nets sharing, 0 unrouted, pres 3.0, 598s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_PM ANODE_S1 BL_A1 BL_A2 BL_A4 BL_A8 CAT_A_MICRO CAT_A_MINUS CAT_A_NANO CAT_A_P CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT D10 D11 D13 D2 D3 D5 D6 D9 GND HV185 K0 K1 K3 K4 K5 K7 K8 KS0 KS1 KS2 KS5 KS7 KS9 PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB5 XB6 XB7
+round 5: 62 nets sharing, 0 unrouted, pres 4.6, 742s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_PM ANODE_S1 BL_A1 BL_A2 BL_A8 CAT_A_MICRO CAT_A_NANO CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT D10 D11 D13 D3 D4 D5 D6 D9 GND HV185 K0 K1 K4 K5 K7 KS0 KS1 KS5 KS6 KS7 KS9 PWM_G SCL SDA VIN_F VIN_J XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 6: 63 nets sharing, 0 unrouted, pres 6.8, 904s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_AM ANODE_H1 ANODE_H10 ANODE_PM BL_A1 BL_A2 BL_A8 BL_K CAT_A_MICRO CAT_A_MINUS CAT_A_NANO CAT_A_P CAT_B_AMP CAT_B_HENRY CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT D10 D11 D13 D4 D5 D6 D7 D9 EMIT_H1 GND HV185 K0 K1 K5 K6 K7 KS4 KS5 KS8 KS9 PWM_G SCL SDA VIN_F VREF XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB6
+round 7: 51 nets sharing, 0 unrouted, pres 10.3, 1073s
+   sharing: +5V A1 A2 A3 A6 A7 ANODE_H1 ANODE_PM BLEED_H10 BL_A1 BL_A8 BL_K CAT_A_MICRO CAT_A_NANO CAT_B_AMP CAT_B_HENRY CAT_B_VOLT D10 D4 D6 GND HV185 K0 K2 K5 K6 K7 KS0 KS1 KS4 KS5 KS8 KS9 PWM_G SCL SDA VIN_F XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB6 XB7
+round 8: 42 nets sharing, 0 unrouted, pres 15.4, 1252s
+   sharing: +5V A0 A1 A2 A3 A7 ANODE_PM BL_A1 BL_A7 BL_A8 BL_K CAT_A_MICRO CAT_A_NANO CAT_B_AMP CAT_B_SIEMENS D4 D6 GND HV185 K3 K7 KS6 KS8 KS9 M_A PWM_G SCL SDA VIN_F XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB6
+round 9: 41 nets sharing, 0 unrouted, pres 23.1, 1427s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_PM BL_A1 BL_A2 BL_A8 CAT_A_MICRO CAT_A_NANO CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS D10 D4 D6 GND HV185 K7 KS4 M_A PWM_G SCL SDA VIN_F XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB5 XB6
+round 10: 31 nets sharing, 0 unrouted, pres 34.6, 1607s
+   sharing: +5V A0 A2 A3 ANODE_PM BL_A1 BL_A8 CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS D11 D6 GND HV185 K7 M_A PWM_G SCL SDA VIN_F XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB5 XB7
+round 11: 20 nets sharing, 0 unrouted, pres 51.9, 1777s
+   sharing: +5V A0 ANODE_PM BL_A1 BL_A2 BL_A8 D6 GND K7 KS6 M_A PWM_G SCL SDA XA2 XA6 XA7 XB0 XB1 XB2
+round 12: 11 nets sharing, 0 unrouted, pres 77.8, 1925s
+   sharing: A2 BL_A1 BL_A8 K7 M_A SDA XA2 XA7 XB0 XB1 XB2
+round 13: 6 nets sharing, 0 unrouted, pres 116.8, 1935s
+   sharing: BL_A8 M_A XA2 XA7 XB0 XB1
+round 14: 4 nets sharing, 0 unrouted, pres 175.2, 1939s
+   sharing: BL_A8 M_A XB0 XB1
+round 15: 4 nets sharing, 0 unrouted, pres 262.7, 1943s
+   sharing: BL_A8 M_A XB0 XB1
+round 16: 4 nets sharing, 0 unrouted, pres 394.1, 1947s
+   sharing: BL_A8 M_A XB0 XB1
+round 17: 4 nets sharing, 0 unrouted, pres 591.2, 1951s
+   sharing: BL_A8 M_A XB0 XB1
+round 18: 4 nets sharing, 0 unrouted, pres 886.7, 1955s
+   sharing: BL_A8 M_A XB0 XB1
+round 19: 4 nets sharing, 0 unrouted, pres 1330.1, 1959s
+   sharing: BL_A8 M_A XB0 XB1
+round 20: 4 nets sharing, 0 unrouted, pres 1995.2, 1963s
+   sharing: BL_A8 M_A XB0 XB1
+round 21: 4 nets sharing, 0 unrouted, pres 2992.7, 1967s
+   sharing: BL_A8 M_A XB0 XB1
+round 22: 4 nets sharing, 0 unrouted, pres 4489.1, 1971s
+   sharing: BL_A8 M_A XB0 XB1
+round 23: 4 nets sharing, 0 unrouted, pres 6733.6, 1975s
+   sharing: BL_A8 M_A XB0 XB1
+round 24: 4 nets sharing, 0 unrouted, pres 10100.5, 1979s
+   sharing: BL_A8 M_A XB0 XB1
+round 25: 4 nets sharing, 0 unrouted, pres 15150.7, 1983s
+   sharing: BL_A8 M_A XB0 XB1
+round 26: 4 nets sharing, 0 unrouted, pres 22726.1, 1987s
+   sharing: BL_A8 M_A XB0 XB1
+round 27: 4 nets sharing, 0 unrouted, pres 34089.1, 1992s
+   sharing: BL_A8 M_A XB0 XB1
+round 28: 4 nets sharing, 0 unrouted, pres 51133.6, 1996s
+   sharing: BL_A8 M_A XB0 XB1
+round 29: 4 nets sharing, 0 unrouted, pres 76700.4, 2000s
+   sharing: BL_A8 M_A XB0 XB1
+round 30: 4 nets sharing, 0 unrouted, pres 115050.6, 2004s
+   sharing: BL_A8 M_A XB0 XB1
+round 31: 4 nets sharing, 0 unrouted, pres 172576.0, 2008s
+   sharing: BL_A8 M_A XB0 XB1
+round 32: 4 nets sharing, 0 unrouted, pres 258863.9, 2012s
+   sharing: BL_A8 M_A XB1 XB2
+round 33: 4 nets sharing, 0 unrouted, pres 388295.9, 2016s
+   sharing: BL_A8 M_A XB0 XB1
+round 34: 4 nets sharing, 0 unrouted, pres 582443.8, 2020s
+   sharing: BL_A8 M_A XB0 XB1
+round 35: 4 nets sharing, 0 unrouted, pres 873665.8, 2025s
+   sharing: BL_A8 M_A XB0 XB1
+round 36: 4 nets sharing, 0 unrouted, pres 1310498.6, 2029s
+   sharing: BL_A8 M_A XB0 XB1
+round 37: 4 nets sharing, 0 unrouted, pres 1965748.0, 2033s
+   sharing: BL_A8 M_A XB0 XB1
+round 38: 4 nets sharing, 0 unrouted, pres 2948622.0, 2037s
+   sharing: BL_A8 M_A XB0 XB1
+round 39: 4 nets sharing, 0 unrouted, pres 4422932.9, 2041s
+   sharing: BL_A8 M_A XB0 XB1
+round 40: 4 nets sharing, 0 unrouted, pres 6634399.4, 2045s
+   sharing: BL_A8 M_A XB0 XB1
+round 41: 4 nets sharing, 0 unrouted, pres 9951599.1, 2049s
+   sharing: BL_A8 M_A XB0 XB1
+round 42: 4 nets sharing, 0 unrouted, pres 14927398.6, 2058s
+   sharing: BL_A8 M_A XB0 XB1
+round 43: 4 nets sharing, 0 unrouted, pres 22391097.9, 2068s
+   sharing: BL_A8 M_A XB0 XB1
+round 44: 4 nets sharing, 0 unrouted, pres 33586646.9, 2167s
+   sharing: BL_A8 M_A XB0 XB1
+round 45: 4 nets sharing, 0 unrouted, pres 50379970.4, 2913s
+   sharing: BL_A8 M_A XB0 XB1
