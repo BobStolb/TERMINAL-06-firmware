@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.4 192.8" width="1210" height="771">
 <rect x="0" y="0" width="302.4" height="192.8" fill="#FFFFFF"/>
 <text x="8" y="10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="5" font-weight="700" fill="#1F2328">TS06 PAIR CASE - FRONT ELEVATION  1:1</text>
-<text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">concept A · outside 204.4 W x 122.8 H x 83.6 D mm · world X/Y of the FreeCAD assembly</text>
+<text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">concept A · outside 204.4 W x 122.8 H x 81.6 D mm · world X/Y of the FreeCAD assembly</text>
 <polygon points="34.00,148.80 40.00,148.80 40.00,26.00 34.00,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
 <polygon points="232.40,148.80 238.40,148.80 238.40,26.00 232.40,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
 <polygon points="40.00,148.80 232.40,148.80 232.40,145.80 40.00,145.80" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
