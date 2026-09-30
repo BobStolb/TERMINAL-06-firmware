@@ -9,6 +9,13 @@ Checks, per layer:
 
 Usage:  python3 tools/checkcopper.py PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb [clearance_mm]
             [--hv HV185,CAT_*] [--hv-clr 0.6]      # a wider gap around high-voltage nets
+            [--hv-pad 0.8]                          # every bare HV pad that far from all other copper
+
+--hv-pad holds IPC-2221B table 6-1 A6 (bare terminations, 171-250 V): a pad on a --hv net keeps the
+distance from every item of another net on its face - tracks, pads of any footprint, its own
+included, and the pours. The pours are measured where the file carries their fill (filled_polygon,
+as KiCad saves a filled board); where it does not, the zone's own clearance must reach the distance,
+or the board's .kicad_dru must carry a rule that gives HV pads at least it, since KiCad fills to that.
 """
 import re, sys, math
 
@@ -61,6 +68,9 @@ if "--hv" in ARGS:                 # net names; a trailing * matches a prefix
     k = ARGS.index("--hv"); HV = [p for p in ARGS[k+1].split(",") if p]; del ARGS[k:k+2]
 if "--hv-clr" in ARGS:
     k = ARGS.index("--hv-clr"); HVCLR = float(ARGS[k+1]); del ARGS[k:k+2]
+HVPAD = None
+if "--hv-pad" in ARGS:
+    k = ARGS.index("--hv-pad"); HVPAD = float(ARGS[k+1]); del ARGS[k:k+2]
 SRC = open(ARGS[0], encoding="utf8").read()
 CLR = float(ARGS[1]) if len(ARGS) > 1 else 0.2
 
@@ -115,27 +125,47 @@ def seg_pad(a, b, p):
         else:
             c1, c2 = (p["x"], p["y"] - p["h"]/2 + r), (p["x"], p["y"] + p["h"]/2 - r)
         return seg_seg(a, b, c1, c2) - r
+    if p["shape"] == "roundrect" and p.get("rr"):          # the inset rectangle grown by its radius
+        r = min(p["w"], p["h"]) * p["rr"]
+        return seg_rect(a, b, p["x"], p["y"], p["w"] - 2 * r, p["h"] - 2 * r) - r
     return seg_rect(a, b, p["x"], p["y"], p["w"], p["h"])
 
 # ---- collect pads
 pads = []
 for f in extract_footprints(SRC):
     ref = (re.search(r'\(property "Reference" "([^"]+)"', f) or [None, "?"])[1]
-    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
+    # A footprint turned in KiCad's GUI carries its angle, "(at x y a)"; a regex that wanted exactly
+    # two numbers skipped such parts altogether (red-team R11, 30.09.26). Pad offsets turn with the
+    # footprint; a pad's own stored angle is absolute and turns its box.
+    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)', f)
     if not at: continue
     ox, oy = float(at.group(1)), float(at.group(2))
-    for m in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
+    ang = math.radians(float(at.group(3) or 0))
+    ca, sa = math.cos(ang), math.sin(ang)
+    for m in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)\n'
                          r'\t\t\(size ([\d.]+) ([\d.]+)\)([\s\S]{0,300}?)\n\t\)', f):
-        body = m.group(7)
+        body = m.group(8)
         net = (re.search(r'\(net (?:\d+ )?"([^"]*)"', body) or [None, None])[1]
         lay = (re.search(r'\(layers ([^)]*)\)', body) or [None, ""])[1]
+        lx, ly_ = float(m.group(3)), float(m.group(4))
+        dx, dy = lx * ca + ly_ * sa, -lx * sa + ly_ * ca     # KiCad: counter-clockwise, Y down
+        pa = math.radians(float(m.group(5) or 0))
+        w0, h0 = float(m.group(6)), float(m.group(7))
+        if abs(math.sin(pa)) < 1e-9 or abs(math.cos(pa)) < 1e-9:
+            w, h = (w0, h0) if abs(math.sin(pa)) < 1e-9 else (h0, w0)
+            shape = re.match(r'\(pad "[^"]*" \w+ (\w+)', m.group(0)).group(1)
+        else:                               # any other angle: its bounding box, the conservative reading
+            w = abs(w0 * math.cos(pa)) + abs(h0 * math.sin(pa))
+            h = abs(w0 * math.sin(pa)) + abs(h0 * math.cos(pa))
+            shape = "rect"
         for L in (["F.Cu","B.Cu"] if ("*.Cu" in lay or "F&B" in lay)
                   else [x for x in ("F.Cu","B.Cu") if x in lay]):
-            pads.append({"ref": f"{ref}.{m.group(1)}", "x": ox+float(m.group(3)),
-                         "y": oy+float(m.group(4)), "w": float(m.group(5)),
-                         "h": float(m.group(6)), "net": net, "layer": L,
+            pads.append({"ref": f"{ref}.{m.group(1)}", "x": ox + dx,
+                         "y": oy + dy, "w": w,
+                         "h": h, "net": net, "layer": L,
                          "thru": m.group(2) == "thru_hole", "fp": ref, "kind": m.group(2),
-                         "shape": re.match(r'\(pad "[^"]*" \w+ (\w+)', m.group(0)).group(1)})
+                         "shape": shape,
+                         "rr": float((re.search(r"\(roundrect_rratio ([\d.]+)\)", body) or [0, 0])[1])})
 
 # A segment/via's (net ...) field is either just a code - (net 3) - resolved
 # through the net table below, or, on every save this KiCad setup has
@@ -264,6 +294,64 @@ for (tx, ty, tw, th) in goldtext:
         g = seg_rect((v["x"],v["y"]), (v["x"],v["y"]), tx, ty, tw, th) - v["d"]/2
         if g < CLR:
             flag(f'VIA/GOLDTEXT  {v["net"]} at ({v["x"]:.1f},{v["y"]:.1f})  gap {g:+.2f}')
+
+# ---- bare high-voltage pads: IPC-2221B A6 against everything of another net
+if HVPAD is not None:
+    def pad_pad(p, q):
+        if p["shape"] == "circle" and q["shape"] == "circle":
+            return math.hypot(p["x"] - q["x"], p["y"] - q["y"]) - p["w"]/2 - q["w"]/2
+        return math.hypot(max(abs(p["x"] - q["x"]) - (p["w"] + q["w"])/2, 0.0),
+                          max(abs(p["y"] - q["y"]) - (p["h"] + q["h"])/2, 0.0))
+    hvp = [p for p in pads if p["kind"] != "np_thru_hole" and is_hv(p["net"])]
+    for p in hvp:
+        for t in tracks:
+            if t["layer"] != p["layer"] or t["net"] == p["net"]: continue
+            m_ = HVPAD + max(p["w"], p["h"]) / 2 + t["w"] / 2 + 0.1
+            if not (min(t["a"][0], t["b"][0]) - m_ < p["x"] < max(t["a"][0], t["b"][0]) + m_ and
+                    min(t["a"][1], t["b"][1]) - m_ < p["y"] < max(t["a"][1], t["b"][1]) + m_): continue
+            g = seg_pad(t["a"], t["b"], p) - t["w"]/2
+            if g < HVPAD - 1e-6:
+                flag(f'HVPAD  {p["ref"]}({p["net"]}) vs track {t["net"]} @{p["layer"]}  gap {g:+.3f} < {HVPAD}')
+        for q in pads:
+            if q is p or q["layer"] != p["layer"] or q["kind"] == "np_thru_hole": continue
+            if q["net"] and q["net"] == p["net"]: continue
+            if abs(q["x"] - p["x"]) > 6 or abs(q["y"] - p["y"]) > 6: continue
+            g = pad_pad(p, q)
+            if g < HVPAD - 1e-6 and not (is_hv(q["net"]) and q["ref"] < p["ref"]):
+                flag(f'HVPAD  {p["ref"]}({p["net"]}) vs pad {q["ref"]}({q["net"]}) @{p["layer"]}  gap {g:+.3f} < {HVPAD}')
+    # the pours: their fill where the file has it, else what KiCad will fill to
+    fills = []
+    for zm in re.finditer(r'\(zone\n[\s\S]*?\n\t\)\n', SRC):
+        z = zm.group(0)
+        zn = (re.search(r'\(net_name "([^"]*)"\)', z) or re.search(r'\(net (?:\d+ )?"([^"]*)"\)', z) or [None, ""])[1]
+        if not zn or "(keepout" in z: continue
+        for fm in re.finditer(r'\(filled_polygon\n\t+\(layer "([^"]+)"\)[\s\S]*?\(pts([\s\S]*?)\n\t+\)', z):
+            pts = [(float(a), float(b)) for a, b in re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', fm.group(2))]
+            fills.append((zn, fm.group(1), pts))
+        if not re.search(r'\(filled_polygon', z):
+            zc = float((re.search(r'\(connect_pads[^\n]*\n\t+\(clearance ([\d.]+)\)', z) or [0, 0])[1])
+            import os
+            dru = os.path.splitext(ARGS[0])[0] + ".kicad_dru"
+            rule_ok = False
+            if os.path.exists(dru):
+                for rm in re.finditer(r'\(rule[\s\S]*?\(constraint clearance \(min ([\d.]+)mm', open(dru, encoding="utf8").read()):
+                    if "hasNetclass('HV')" in rm.group(0) and "Pad" in rm.group(0) and float(rm.group(1)) >= HVPAD - 1e-9:
+                        rule_ok = True
+            if zc < HVPAD - 1e-9 and not rule_ok:
+                flag(f'HVPAD  zone {zn}: clearance {zc} mm and no .kicad_dru rule giving HV pads {HVPAD} mm; '
+                     f'KiCad will fill it that close to them')
+    for zn, zl, pts in fills:
+        edges = list(zip(pts, pts[1:] + pts[:1]))
+        for p in hvp:
+            if p["layer"] != zl or p["net"] == zn: continue
+            r = max(p["w"], p["h"]) / 2 + HVPAD + 0.1
+            g = min((seg_pad(a, b, p) for a, b in edges
+                     if min(a[0], b[0]) - r < p["x"] < max(a[0], b[0]) + r and min(a[1], b[1]) - r < p["y"] < max(a[1], b[1]) + r),
+                    default=99.0)
+            if g < HVPAD - 1e-6:
+                flag(f'HVPAD  {p["ref"]}({p["net"]}) vs pour {zn} @{zl}  gap {g:+.3f} < {HVPAD}')
+    print(f'HV pads: {len(hvp)} pad-layers held to {HVPAD} mm; pours measured from '
+          f'{"their fill" if fills else "the zone clearance and the .kicad_dru rule"}')
 
 # ---- connectivity: every netted pad touched by its own net
 # A board with no tracks at all is not "37 faults", it is one fact. Say it once.

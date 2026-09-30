@@ -174,7 +174,10 @@ class NetRouter:
             if fixed_only and kind == "trk" and obj not in self.fixed:
                 continue
             is_soft = soft is not None and kind == "trk" and n not in self.locked and obj not in self.fixed
-            reach = r + self.need(net, n) + half + self.margin + self.near
+            need = self.need(net, n)
+            if kind == "pad":                   # a pad class may ask more of everything near it (IPC A6)
+                need = max(need, self.B.pad_need("pad", n, net), self.B.soft_need("pad", n, net))
+            reach = r + need + half + self.margin + self.near
             xs = [p[0] for p in pts]
             ys = [p[1] for p in pts]
             a0 = max(i0, int((min(xs) - reach) / G))
@@ -187,7 +190,7 @@ class NetRouter:
             yy = Y[b0 - j0:b1 - j0 + 1, :]
             d = K._dist_field(np, np.broadcast_to(xx, (yy.shape[0], xx.shape[1])),
                               np.broadcast_to(yy, (yy.shape[0], xx.shape[1])), pts) - r
-            v = d - (self.need(net, n) + half + self.margin)
+            v = d - (need + half + self.margin)
             if is_soft:
                 sub = soft[b0 - j0:b1 - j0 + 1, a0 - i0:a1 - i0 + 1]
                 sub[v < 0] = np.maximum(sub[v < 0], soft_pen.get(n, self.pen0))
@@ -198,7 +201,8 @@ class NetRouter:
         e = self.edge + half + self.margin
         s = np.minimum(s, np.minimum(np.minimum(X - e, self.B.W - e - X), np.minimum(Y - e, self.B.H - e - Y)).astype(np.float32))
         for hx, hy, hd in self.B.holes + [(p.x, p.y, p.drill) for p in self.B.pads if p.kind == "np_thru_hole"]:
-            v = np.hypot(X - hx, Y - hy) - (hd / 2 + self.hole_clr + half + self.margin)
+            ko = max(hd / 2 + self.hole_clr, self.B.hole_ko if (hx, hy, hd) in self.B.holes else 0.0)
+            v = np.hypot(X - hx, Y - hy) - (ko + half + self.margin)
             np.minimum(s, v, out=s)
         for ko in self.B.keepouts:
             x0, y0, x1, y1, ly = ko[:5]

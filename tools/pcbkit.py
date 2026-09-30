@@ -311,6 +311,28 @@ class Board:
         self.ref_at = {}            # ref -> (dx, dy, angle, size): a reference shown on the silk
         self.no_zone = set()        # (ref, pad): pads the pours leave alone (their tracks join them)
         self.thickness = 1.6
+        # {net class: mm}: a PAD of that class keeps this much from every other net's copper, tracks,
+        # pads (its own footprint's too) and pours - IPC-2221B A6 for bare high-voltage terminations.
+        # Board.check() and tools/netroute.py hold it; write_rules() gives it to KiCad.
+        self.pad_rules = {}
+        self.soft_pad_rules = {}    # the same, reported by check() as warnings, not errors
+        self.soft = []              # what check() found against soft_pad_rules
+        self.hole_ko = 0.0          # copper keep-out radius round every standoff hole (self.holes)
+        self.rule_areas = []        # KiCad keep-out areas: dict(name, poly, layers, pads)
+        self.dnp = set()            # refs fitted only if the bench asks: KiCad's DNP attribute
+        self.min_text = (0.8, 0.08)             # the project's DRC floor for text (height, stroke)
+        self.min_silk_clearance = 0.0
+
+    def pad_need(self, kind, net, other):
+        """The clearance a pad of this net asks of `other` net's copper, 0 if none (not a pad)."""
+        if kind != "pad" or net == other:
+            return 0.0
+        return self.pad_rules.get(self.cls(net), 0.0)
+
+    def soft_need(self, kind, net, other):
+        if kind != "pad" or net == other:
+            return 0.0
+        return self.soft_pad_rules.get(self.cls(net), 0.0)
 
     # ------------------------------------------------------------------ nets and classes
     def cls(self, net):
@@ -400,8 +422,10 @@ class Board:
 
     def check(self, pad_hv=0.8, hv_class="HV", hole_clr=0.3, edge_clr=0.5, verbose=True):
         """Clearance on each face, hole and edge clearance, and one-piece connectivity of every
-        net that is not carried by a zone. Returns a list of problems."""
+        net that is not carried by a zone. Returns a list of problems. What breaks a soft pad rule
+        (soft_pad_rules) goes to self.soft instead."""
         bad = []
+        self.soft = []
         for layer in ("F.Cu", "B.Cu"):
             its = self.items(layer)
             grid = {}
@@ -432,19 +456,32 @@ class Board:
                         if ki == "pad" and kj == "pad" and (self.cls(ni) == hv_class or self.cls(nj) == hv_class):
                             if li.split(".")[0] != lj.split(".")[0]:
                                 need = max(need, pad_hv)
+                        need = max(need, self.pad_need(ki, ni, nj), self.pad_need(kj, nj, ni))
+                        soft = max(self.soft_need(ki, ni, nj), self.soft_need(kj, nj, ni))
+                        reach = max(need, soft)
                         bi, bj = boxes[i], boxes[j]
-                        if bi[0] - need > bj[2] or bj[0] - need > bi[2] or bi[1] - need > bj[3] or bj[1] - need > bi[3]:
+                        if bi[0] - reach > bj[2] or bj[0] - reach > bi[2] or bi[1] - reach > bj[3] or bj[1] - reach > bi[3]:
                             continue
                         d = dist(gi, gj)
                         if d < need - 1e-6:
                             bad.append(f"[{layer}] {li}  vs  {lj}: {d:.3f} < {need}")
+                        elif d < soft - 1e-6:
+                            self.soft.append(f"[{layer}] {li}  vs  {lj}: {d:.3f} < {soft}")
             # tracks against unplated holes and the board edge
             for net, (pts, r), kind, lab in its:
                 if kind != "trk":
                     continue
                 for hx, hy, hd in self.holes + [(p.x, p.y, p.drill) for p in self.pads if p.kind == "np_thru_hole"]:
-                    if pt_seg((hx, hy), pts[0], pts[1]) - r - hd / 2 < hole_clr - 1e-6:
-                        bad.append(f"[{layer}] {lab} too close to hole at ({hx},{hy})")
+                    ko = max(hd / 2 + hole_clr, self.hole_ko if (hx, hy, hd) in self.holes else 0.0)
+                    if pt_seg((hx, hy), pts[0], pts[1]) - r < ko - 1e-6:
+                        bad.append(f"[{layer}] {lab} inside the {ko:.2f} mm keep-out of the hole at ({hx},{hy})")
+            # pads inside a standoff's keep-out: a washer or a spacer lands there
+            if self.hole_ko:
+                for net, (pts, r), kind, lab in its:
+                    if kind == "pad" and not lab.startswith("H"):
+                        for hx, hy, hd in self.holes:
+                            if dist(([(hx, hy)], 0.0), (pts, r)) < self.hole_ko - 1e-6:
+                                bad.append(f"[{layer}] pad {lab} inside the {self.hole_ko} mm keep-out of the hole at ({hx},{hy})")
                 for (ax, ay), (bx, by) in zip(self.outline, self.outline[1:] + self.outline[:1]):
                     for p in pts:
                         if pt_seg(p, (ax, ay), (bx, by)) - r < edge_clr - 1e-6:
@@ -688,6 +725,8 @@ class Board:
                     c.append(["uuid", S.q(self.U(f"{ref}.pad.{nm}.{len(body)}"))])
                 elif isinstance(c, list) and S.find(c, "uuid") is not None:
                     c = _with_uuid([x_ for x_ in c], self.U(f"{ref}.{c[0]}.{len(body)}"))
+                elif c[0] == "attr" and ref in self.dnp and "dnp" not in c:
+                    c = list(c) + ["dnp"]
                 body.append(c)
             node = ["footprint", S.q("TS06:" + self.libname(f)), ["layer", S.q(layer)], ["uuid", S.q(self.U("fp" + ref))],
                     ["at", S.num(x), S.num(y)]] + body
@@ -751,8 +790,19 @@ class Board:
               f'\t\t(fill\n\t\t\t(thermal_gap {S.num(z["gap"])})\n\t\t\t(thermal_bridge_width {S.num(z["bridge"])})\n'
               f'\t\t\t(island_removal_mode {1 if z["keep"] else 0})\n\t\t)\n'
               f'\t\t(polygon\n\t\t\t(pts\n{pts}\n\t\t\t)\n\t\t)\n\t)')
+        for k, a in enumerate(self.rule_areas):
+            pts = "\n".join("\t\t\t\t(xy %s %s)" % (S.num(x), S.num(y)) for x, y in a["poly"])
+            layers = " ".join(S.q(l) for l in a.get("layers", ("F.Cu", "B.Cu")))
+            o(f'\t(zone\n\t\t(net 0)\n\t\t(net_name "")\n\t\t(layers {layers})\n'
+              f'\t\t(uuid "{self.U("keepout%d" % k)}")\n\t\t(name {S.q(a["name"])})\n\t\t(hatch edge 0.5)\n'
+              f'\t\t(connect_pads\n\t\t\t(clearance 0)\n\t\t)\n\t\t(min_thickness 0.25)\n\t\t(filled_areas_thickness no)\n'
+              f'\t\t(keepout\n\t\t\t(tracks not_allowed)\n\t\t\t(vias not_allowed)\n'
+              f'\t\t\t(pads {"allowed" if a.get("pads", True) else "not_allowed"})\n'
+              f'\t\t\t(copperpour not_allowed)\n\t\t\t(footprints allowed)\n\t\t)\n'
+              f'\t\t(fill\n\t\t\t(thermal_gap 0.5)\n\t\t\t(thermal_bridge_width 0.5)\n\t\t)\n'
+              f'\t\t(polygon\n\t\t\t(pts\n{pts}\n\t\t\t)\n\t\t)\n\t)')
         text = "\n".join(out) + "\n\t(embedded_fonts no)\n)\n"
-        assert "(via" not in text, "this kit never writes a via"
+        assert "\n\t(via\n" not in text and "\n\t(via " not in text, "this kit never writes a via"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf8", newline="\n") as fh:
             fh.write(text)
@@ -807,8 +857,8 @@ class Board:
         pro = {"board": {"design_settings": {"defaults": {}, "rules": {
             "min_clearance": 0.2, "min_copper_edge_clearance": 0.5, "min_hole_clearance": 0.25,
             "min_hole_to_hole": 0.25, "min_track_width": 0.2, "min_through_hole_diameter": 0.3,
-            "min_via_diameter": 0.5, "min_via_annular_width": 0.1, "min_silk_clearance": 0.0,
-            "min_text_height": 0.8, "min_text_thickness": 0.08, "min_resolved_spokes": 2}}},
+            "min_via_diameter": 0.5, "min_via_annular_width": 0.1, "min_silk_clearance": self.min_silk_clearance,
+            "min_text_height": self.min_text[0], "min_text_thickness": self.min_text[1], "min_resolved_spokes": 2}}},
             "meta": {"filename": os.path.basename(path), "version": 3},
             "net_settings": {"classes": classes, "meta": {"version": 5}, "net_colors": None,
                              "netclass_assignments": None, "netclass_patterns": pats}}
@@ -818,6 +868,18 @@ class Board:
         with open(os.path.join(d, "fp-lib-table"), "w", encoding="utf8", newline="\n") as fh:
             fh.write('(fp_lib_table\n  (version 7)\n  (lib (name "TS06")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06.pretty")'
                      '(options "")(descr "TERMINAL-06 project footprints"))\n)\n')
+
+    # IPC-2221B table 6-1, A6 (bare terminations, 171-250 V): 0.8 mm. The text is shared, word for
+    # word, with TS06-DISP's rules file.
+    HV_PAD_RULE = ('(rule "HV pad clearance, IPC-2221B A6"\n'
+                   '  (condition "A.Type == \'Pad\' && A.hasNetclass(\'HV\') && A.Net != B.Net")\n'
+                   '  (constraint clearance (min 0.8mm)))\n')
+
+    def write_rules(self, path, rules):
+        """The project's custom DRC rules (<project>.kicad_dru beside the .kicad_pro): KiCad applies
+        them in its DRC and when it fills the zones."""
+        with open(path, "w", encoding="utf8", newline="\n") as fh:
+            fh.write("(version 1)\n" + "".join(rules))
 
     # ------------------------------------------------------------------ looking
     def plot(self, path, ppm=8, color=None):
