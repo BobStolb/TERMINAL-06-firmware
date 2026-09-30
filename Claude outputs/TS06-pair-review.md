@@ -234,14 +234,19 @@ The fascia has no lever: its A7 carries the FIELD and SUB levers on a ladder.
   tables.
 * **Per-LED backlight.**
 
-**Two older problems the audit found, which affect every board type:**
-* **The RTC is reset to the build time on every boot.** `setup()` calls `rtc.adjust()`
-  unconditionally, so a power cut loses the time. It should only run when the RTC reports
-  it lost power.
+**Older problems the audits found, which affect every board type:**
+* **Fixed 30.09.26: the RTC was reset to the build time on every boot.** `setup()` called
+  `rtc.adjust()` unconditionally, so a power cut lost the time. It now runs only when the
+  DS3231 reports it lost power (`rtc.lostPower()`). After flashing, set the time with SET
+  TIME, as on any shipped unit.
+* **Fixed 30.09.26: leaving PROGRAM rewrote the clock.** `leaveProgram()` wrote
+  `DateTime(2026, 1, 1, hh, mm, 0)` every time, edited or not. On BOARD_TYPE 4 the MODE
+  dial passes SET TIME on its way from NORMAL, so every turn of the dial cost up to 59 s
+  and the date. The RTC is now written only after an edit, and the date is kept.
+  Types 0 and 4 compile (11,850 and 12,072 bytes) with no new warnings.
 * **The committed `nixieClock_TS06.hex` is stale.** It is a BOARD_TYPE 1 build of the
-  first commit, not what the source builds today. Rebuild it before anyone flashes it.
-
-Neither was changed here, because both alter what the owner's bench clock does today.
+  first commit, not what the source builds today. Rebuild it for the board you flash; it
+  is left as it is because the bench clock's type is the owner's to say.
 
 A per-slot digit table for the two ИН-17 slots and the ИН-15 codes is still cheap insurance
 for gates 3 and 4.
@@ -355,7 +360,7 @@ from its board file first:
 | ~~ИН-17 pair spacing: 13.0, needs 20.5~~ | fixed: boards widened to 191.4, the pair at 20.5 | gate 5 confirms the Ø20 stem |
 | The fascia (176 mm) under a 191.4 mm tube row | the fascia's position only | centre it, or widen the fascia to match: the owner's call |
 | Firmware: 6-slot timing | ghosting, flicker, brightness | bench, first pair |
-| Firmware: `rtc.adjust()` on every boot, stale `.hex` | every board type | a one-line fix and a rebuild (finding 8) |
+| ~~Firmware: `rtc.adjust()` on every boot~~, stale `.hex` | every board type | the RTC writes are fixed; rebuild the `.hex` for the board you flash (finding 8) |
 
 ## The case
 

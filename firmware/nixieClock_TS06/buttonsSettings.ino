@@ -26,7 +26,10 @@ void settingsTick() {
   }
 }
 
+static boolean timeEdited = false;      // set by bumpTime(): leaving PROGRAM writes the RTC only then
+
 static void bumpTime(int8_t dir) {
+  timeEdited = true;
   if (!currentDigit) {
     changeHrs += dir;
     if (changeHrs > 23) changeHrs = 0;
@@ -42,6 +45,7 @@ static void bumpTime(int8_t dir) {
 static void enterProgram() {
   curMode = 1;
   currentDigit = false;
+  timeEdited = false;
   changeHrs = hrs;
   changeMins = mins;
   for (byte i = 0; i < NUM_INDI; i++) anodeStates[i] = 1;
@@ -54,10 +58,19 @@ static void enterProgram() {
 
 static void leaveProgram() {
   curMode = 0;
-  hrs = changeHrs;
-  mins = changeMins;
-  secs = 0;
-  rtc.adjust(DateTime(2026, 1, 1, hrs, mins, 0));
+  DateTime now = rtc.now();
+  if (timeEdited) {
+    // Keep the date; only the edited hours and minutes change, and the seconds restart.
+    hrs = changeHrs;
+    mins = changeMins;
+    secs = 0;
+    rtc.adjust(DateTime(now.year(), now.month(), now.day(), hrs, mins, 0));
+  } else {
+    // Passing through PROGRAM without an edit leaves the clock alone.
+    hrs = now.hour();
+    mins = now.minute();
+    secs = now.second();
+  }
   for (byte i = 0; i < NUM_INDI; i++) anodeStates[i] = 1;
   changeBright();
   sendTime(hrs, mins, secs);

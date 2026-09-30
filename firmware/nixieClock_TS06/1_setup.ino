@@ -55,7 +55,10 @@ void setup() {
 
   // ---------- RTC (before the multiplex ISR is armed) ----------
   rtc.begin();
-  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // Set the clock from the build time only when the DS3231 has lost it (a new or flat
+  // battery). Setting it on every boot put the clock back to the compile time at each
+  // power cut.
+  if (rtc.lostPower()) rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   DateTime now = rtc.now();
   secs = now.second();
   mins = now.minute();

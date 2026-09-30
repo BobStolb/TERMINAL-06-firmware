@@ -25,23 +25,32 @@ def kind(p):
     if ref.startswith("RP"):
         return "Trimmer, multi-turn"
     if ref.startswith("R"):
-        return "Resistor, 0.5 W 350 V" if "DIN0309" in fp else "Resistor, 0.25 W"
+        # DIN0309: body <= 3.2 x 9 mm, leads <= 0.6 mm for the 0.8 mm drill. MLT-0.5 / S2-23-0.5 are 4.2 x 10.8
+        # with 0.8 mm leads: they do not go in the holes, and side by side at 3.8 mm they collide.
+        return ("Resistor, 0.5 W 350 V, DIN0309 body (≤ Ø3.2 × 9 mm, leads ≤ 0.6 mm; not МЛТ-0,5 / С2-23-0,5)"
+                if "DIN0309" in fp else "Resistor, 0.25 W")
     if ref.startswith("C"):
         return "Electrolytic capacitor" if "CP_" in fp else "Ceramic capacitor"
     if ref.startswith("XP"):
         return "Pin header, straight (PLS)"
     if ref.startswith("XS") and "PinSocket" in fp:
         return "Socket strip, straight (PBS), 8.5 mm"
-    table = {"XS1": "DC jack", "F1": "PTC fuse", "VD2": "Schottky diode", "VD1": "Fast rectifier",
-             "U14": "5 V switching regulator", "U1": "Arduino Nano", "L1": "Inductor, radial",
+    table = {"XS1": "DC jack", "VD2": "Schottky diode", "VD1": "Fast rectifier",
+             "F1": "PTC fuse, 1.1 A hold, radial, 5.1 mm leads (e.g. Bourns MF-R110; the footprint is the larger "
+                   "MF-RG1100 outline, which is an 11 A part)",
+             "U14": "5 V switching regulator", "U1": "Arduino Nano",
+             "L1": "Inductor, radial: Isat ≥ 1.8 A. **Choose the part first**: Ø12 mm radials of 220 µH saturate "
+                   "well below that (review)",
              "VT21": "N-MOSFET 500 V", "U11": "MOSFET driver", "U12": "Dual comparator", "U3": "I2C port expander",
-             "J1": "JST PH, vertical (top entry)", "U13": "DS3231 mini module (on a 5-way PBS)"}
+             "J1": "JST PH, vertical (top entry)",
+             "U13": "DS3231 mini module on a 5-way **PLS (male)** header: the module's own socket plugs on. "
+                    "Pad 1 (square) is GND; the module's + goes to pad 5"}
     if ref in table:
         return table[ref]
     if ref.startswith("VT"):
         return "NPN 300 V"
     if v == "TLP627":
-        return "Optocoupler, Darlington"
+        return "Optocoupler, Darlington 300 V (TLP627 is obsolete: TLP627MF, from authorised stock)"
     if v == "K155ID1":
         return "Nixie decoder К155ИД1"
     if ref.startswith("HL"):
@@ -91,9 +100,17 @@ def bom(board, name, extra):
 
 
 if __name__ == "__main__":
-    bom(P.DISP, "TS06-DISP", [(4, "Standoff M3, 11 mm, female-female, with 8 M3 × 6 screws",
-                                "the four holes shared with TS06-DRV (11 mm = 8.5 mm PBS + 2.5 mm PLS body)"),
-                               (4, "ИН-12 socket pins / panel sockets as the tube requires", "V1–V4")])
+    bom(P.DISP, "TS06-DISP", [(4, "Standoff M3, 11 mm, female-female, **nylon** (or brass with nylon washers at "
+                                   "both ends), with 8 M3 × 6 screws",
+                                "the four holes shared with TS06-DRV (11 mm = 8.5 mm PBS + 2.5 mm PLS body). Tracks "
+                                "pass 2.2-2.4 mm from H3's centre on both boards, under a metal standoff's 2.75-3.2"),
+                               (72, "Tube socket contact, 12 per tube; its tail must suit the 1.2 mm finished hole "
+                                    "(choose the part, then check)", "V1–V4 (ИН-12), V9–V10 (ИН-15)"),
+                               (2, "ИН-17 spacer, holds the glass ≥ 6.4 mm off the board (the ТУ's 8 mm soldering rule)",
+                                "V5, V6")])
     bom(P.DRV, "TS06-DRV", [(2, "Socket strip PBS-15, 2.54 mm", "U1, the Nano stays removable"),
-                             (4, "Mounting screw M3 + standoff to the case", "H5-H8, two into each cheek"),
-                             (1, "JST PH 6-way housing + crimps, cable to the fascia, 180-200 mm", "J1")])
+                             (4, "Mounting screw M3 + **nylon washer**, to the case", "H5-H8, two into each cheek "
+                                 "(tracks pass 2.2 mm from H5's centre)"),
+                             (1, "Fascia lead, 6-way JST PH, 1:1, 180-200 mm: 2 × PHR-6 housings + 12 × SPH-002T-P0.5S "
+                                 "crimps, or a ready-made lead. Pin 1 = +5V at both ends; beep it out before first power",
+                              "J1 to the fascia's J1")])
