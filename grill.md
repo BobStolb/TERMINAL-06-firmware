@@ -579,6 +579,9 @@ should go live?
     without units.
 * **Every verb costs** memory on both sides and quota on this event-driven one.
 
-**Status:** proposed. Hypothetical, information only, until the owner says yes in both chats.
+**Status:** *decided by the owner* (30.09, about 04:10 UTC): "confirm", with one change of the owner's: ASK stays
+apart from VERIFY. Live now: FACT, CANARY, RETRACT, DRILL, ESCALATE, SNAPSHOT, CO-SIGN, OBJECT, ASK, BENCHMARK and
+FREEZE, plus the merges, QUOTA BID deferred behind the last-hour rule, and `mode.md`. Written up in agent-commons
+6303921.
 
 **Owner notes:**
