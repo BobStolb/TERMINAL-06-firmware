@@ -280,7 +280,24 @@ A's boss sits on R5's pad (FAIL), and A shows the driver board through 4.8 and 1
 **Trade-off:** R needs two hands (86 mm from FIELD to −). W keeps one-handed reach. F needs a new
 board as well as a frame.
 
-**Status:** proposed; the owner decides.
+**Referendum (30.09, about 04:50 UTC; G24): 3–0 for R.** Three independent citizen voters, on a lighter
+model, read-only:
+* **The maker:** "the only variant with no TIGHT or FAIL row … costs the same as W". Against: R is a
+  fresh re-route never built, and its boss clears R5 by only 1.7 mm (W: 6.5 mm).
+* **The user:** "every control sits exactly under a tube centre … no exposed slots". Against: two
+  hands, 86 mm from FIELD to −.
+* **The product designer:** "only R makes the panel continue the tube row". Against: a 60 mm blank
+  under the seconds.
+
+Shared conditions, all to be checked before ordering:
+* legends of at least 3 mm;
+* a dry fit of a real КМД1 and МТ1;
+* the 1.7 mm boss-to-R5 margin checked against fab tolerance.
+
+On the two-hand worry: FIELD and SUB are МТ1 levers, which stay where they are put, so setting the
+clock is sequential (flip, then press − or +). No hold-and-press is needed. The dry fit confirms it.
+
+**Status:** proposed; the owner decides. The leader's recommendation and the referendum agree: R.
 
 **Owner notes:**
 
