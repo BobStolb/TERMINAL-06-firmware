@@ -25,10 +25,10 @@ def kind(p):
     if ref.startswith("RP"):
         return "Trimmer, multi-turn"
     if ref.startswith("R"):
-        # DIN0309: body <= 3.2 x 9 mm, leads <= 0.6 mm for the 0.8 mm drill. MLT-0.5 / S2-23-0.5 are 4.2 x 10.8
-        # with 0.8 mm leads: they do not go in the holes, and side by side at 3.8 mm they collide.
-        return ("Resistor, 0.5 W 350 V, DIN0309 body (≤ Ø3.2 × 9 mm, leads ≤ 0.6 mm; not МЛТ-0,5 / С2-23-0,5)"
-                if "DIN0309" in fp else "Resistor, 0.25 W")
+        # rev B: the footprint is drawn for the part bought in Russia, МЛТ-0,5 / С2-23-0,5 (Ø4.2 x 10.8 mm,
+        # Ø0.8 mm leads) - 1.1 mm holes 15.24 mm apart, parallel rows at least 5.0 mm apart
+        return ("Resistor, 0.5 W 350 V: МЛТ-0,5 or С2-23-0,5 (body ≤ Ø4.2 × 10.8 mm, leads Ø0.8 mm; "
+                "1.1 mm holes at 15.24 mm)" if "MLT-0.5" in fp else "Resistor, 0.25 W")
     if ref.startswith("C"):
         return "Electrolytic capacitor" if "CP_" in fp else "Ceramic capacitor"
     if ref.startswith("XP"):
@@ -39,8 +39,12 @@ def kind(p):
              "F1": "PTC fuse, 1.1 A hold, radial, 5.1 mm leads (e.g. Bourns MF-R110; the footprint is the larger "
                    "MF-RG1100 outline, which is an 11 A part)",
              "U14": "5 V switching regulator", "U1": "Arduino Nano",
-             "L1": "Inductor, radial: Isat ≥ 1.8 A. **Choose the part first**: Ø12 mm radials of 220 µH saturate "
-                   "well below that (review)",
+             "L1": "Choke, axial, lying: **Bourns 5900-221-RC**, 220 µH ±10 %, Isat 1.8 A (Digi-Key; 1.89 A in "
+                   "another distributor's listing), Irated 1.6 A, DCR 0.162 Ω, Ø11.5 × 22.9 mm, Ø0.8 mm leads. The "
+                   "converter peaks at 1.18-1.44 A; no Ø12 radial of 220 µH reaches that (RLB1314-221KL 0.68 A)",
+             "VD3": "Schottky diode, across U14 (5 V back-feed from USB)",
+             "VD4": "TVS diode, unidirectional, 1500 W, DO-201 (1.5KE18A: VBR 17.1-18.9 V): trips F1 on a 19-24 V adapter",
+             "VT2": "NPN small-signal, TO-92, **E-B-C** (2N3904; not a BC547, which is C-B-E): the OV clamp",
              "VT21": "N-MOSFET 500 V", "U11": "MOSFET driver", "U12": "Dual comparator", "U3": "I2C port expander",
              "J1": "JST PH, vertical (top entry)",
              "U13": "DS3231 mini module on a 5-way **PLS (male)** header: the module's own socket plugs on. "
@@ -49,6 +53,8 @@ def kind(p):
         return table[ref]
     if ref.startswith("VT"):
         return "NPN 300 V"
+    if v.startswith("1N47"):
+        return "Zener diode, 1 W, ±5 %, DO-41: the OV clamp's string (82 + 82 + 75 V, clamps 225-270 V)"
     if v == "TLP627":
         return "Optocoupler, Darlington 300 V (TLP627 is obsolete: TLP627MF, from authorised stock)"
     if v == "K155ID1":

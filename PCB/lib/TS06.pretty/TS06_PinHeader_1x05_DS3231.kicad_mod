@@ -1,11 +1,11 @@
-(footprint "TS06_PinSocket_1x05"
+(footprint "TS06_PinHeader_1x05_DS3231"
 	(version 20260206)
 	(generator "kicad-footprint-generator")
 	(layer "F.Cu")
-	(descr "Through hole straight socket strip, 1x05, 2.54mm pitch, single row (from Kicad 4.0.7), script generated. Copied from KiCad 10.0.6's stock library (PinSocket_1x05_P2.54mm_Vertical) for the TERMINAL-06 THT board pair.")
-	(tags "Through hole socket strip THT 1x05 2.54mm single row")
+	(descr "Male PLS-5 (2.54 mm) for the DS3231 mini module, whose own female header plugs on; pads as TS06_PinHeader_1x05, pad 1 (square) is GND. The module (~14 x 16 mm) lies over the board on the outlined side, ~15 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B.")
+	(tags "pin header 1x05 DS3231 RTC module")
 	(property "Reference" "REF**"
-		(at 0 -2.77 0)
+		(at -2.6 -2.4 0)
 		(layer "F.SilkS")
 		(effects
 			(font
@@ -14,20 +14,9 @@
 			)
 		)
 	)
-	(property "Value" "PinSocket_1x05_P2.54mm_Vertical"
-		(at 0 12.93 0)
+	(property "Value" "DS3231_mini_on_PLS-5"
+		(at 8 13.38 0)
 		(layer "F.Fab")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(property "KiLib_Generator" "connector/pin_header_socket"
-		(at 0 0 0)
-		(layer "F.SilkS")
-		(hide yes)
 		(effects
 			(font
 				(size 1 1)
@@ -38,8 +27,8 @@
 	(attr through_hole)
 	(duplicate_pad_numbers_are_jumpers no)
 	(fp_line
-		(start -1.33 1.27)
-		(end -1.33 11.49)
+		(start -1.4 -1.4)
+		(end 1.4 -1.4)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -47,8 +36,8 @@
 		(layer "F.SilkS")
 	)
 	(fp_line
-		(start -1.33 1.27)
-		(end 1.33 1.27)
+		(start -1.4 -1.4)
+		(end -1.4 11.56)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -56,8 +45,8 @@
 		(layer "F.SilkS")
 	)
 	(fp_line
-		(start -1.33 11.49)
-		(end 1.33 11.49)
+		(start -1.4 11.56)
+		(end 1.4 11.56)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -65,8 +54,8 @@
 		(layer "F.SilkS")
 	)
 	(fp_line
-		(start 0 -1.33)
-		(end 1.33 -1.33)
+		(start 1.4 -1.4)
+		(end 1.4 11.56)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -74,8 +63,8 @@
 		(layer "F.SilkS")
 	)
 	(fp_line
-		(start 1.33 -1.33)
-		(end 1.33 0)
+		(start -2 -2)
+		(end -2 -0.6)
 		(stroke
 			(width 0.15)
 			(type solid)
@@ -83,97 +72,56 @@
 		(layer "F.SilkS")
 	)
 	(fp_line
-		(start 1.33 1.27)
-		(end 1.33 11.49)
+		(start -2 -2)
+		(end -0.6 -2)
 		(stroke
 			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
 	)
-	(fp_line
-		(start -1.77 -1.77)
-		(end 1.77 -1.77)
+	(fp_rect
+		(start 2.2 -1.92)
+		(end 16.8 12.08)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+	)
+	(fp_rect
+		(start -1.77 -2.17)
+		(end 17.05 12.33)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
+		(fill no)
 		(layer "F.CrtYd")
 	)
-	(fp_line
-		(start -1.77 11.93)
-		(end -1.77 -1.77)
-		(stroke
-			(width 0.05)
-			(type solid)
-		)
-		(layer "F.CrtYd")
-	)
-	(fp_line
-		(start 1.77 -1.77)
-		(end 1.77 11.93)
-		(stroke
-			(width 0.05)
-			(type solid)
-		)
-		(layer "F.CrtYd")
-	)
-	(fp_line
-		(start 1.77 11.93)
-		(end -1.77 11.93)
-		(stroke
-			(width 0.05)
-			(type solid)
-		)
-		(layer "F.CrtYd")
-	)
-	(fp_line
+	(fp_rect
 		(start -1.27 -1.27)
-		(end 0.635 -1.27)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "F.Fab")
-	)
-	(fp_line
-		(start -1.27 11.43)
-		(end -1.27 -1.27)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "F.Fab")
-	)
-	(fp_line
-		(start 0.635 -1.27)
-		(end 1.27 -0.635)
-		(stroke
-			(width 0.1)
-			(type solid)
-		)
-		(layer "F.Fab")
-	)
-	(fp_line
-		(start 1.27 -0.635)
 		(end 1.27 11.43)
 		(stroke
 			(width 0.1)
 			(type solid)
 		)
+		(fill no)
 		(layer "F.Fab")
 	)
-	(fp_line
-		(start 1.27 11.43)
-		(end -1.27 11.43)
+	(fp_rect
+		(start 1.27 -1.92)
+		(end 16.8 12.08)
 		(stroke
 			(width 0.1)
 			(type solid)
 		)
+		(fill no)
 		(layer "F.Fab")
 	)
 	(fp_text user "${REFERENCE}"
-		(at 0 5.08 90)
+		(at 9 5.08 0)
 		(layer "F.Fab")
 		(effects
 			(font
@@ -218,15 +166,4 @@
 		(remove_unused_layers no)
 	)
 	(embedded_fonts no)
-	(model "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x05_P2.54mm_Vertical.step"
-		(offset
-			(xyz 0 0 0)
-		)
-		(scale
-			(xyz 1 1 1)
-		)
-		(rotate
-			(xyz 0 0 0)
-		)
-	)
 )

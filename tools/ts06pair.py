@@ -39,9 +39,10 @@ arrives in - it was designed, not left to the router - so it must not be edited 
 re-laying tools/mkpcb_disp.py.
   cathode lines only (<= 60 V, the К155ИД1 clamps them):
     XP11  left edge, 10     the ИН-12 bus, one pin per strand, level with its entry into H10
-    XP12  top edge, 28      pins 1-10 the ИН-17 bundle - one pin group feeds BOTH ИН-17s, S10 on
+    XP12  top edge, 31      pins 1-10 the ИН-17 bundle - one pin group feeds BOTH ИН-17s, S10 on
                             the back face and S1 on the front, the pin being the layer change;
-                            11-18 ИН-15Б and 19-28 ИН-15А, each tube wrapped from above
+                            11-13 spare, 14-21 ИН-15Б and 22-31 ИН-15А, each tube wrapped from above
+  63 strip pins in all, 59 of them with a net.
   bottom row, anodes, colon and LEDs:
     XP21  BL_K + H10/H1     XP22 colon     XP23 M10/M1     XP24 S10/S1     XP25 AM/PM + m + BL_K
 """
@@ -79,12 +80,18 @@ def C(ref, value, a, b, fp="TS06_C_Disc_P5.00mm", group="", note=""):
     return part(ref, value, fp, {1: a, 2: b}, DRV, group, note)
 
 
-R_HV = "TS06_R_Axial_DIN0309_P12.70mm"      # 0.5 W, 350 V: anode, ballast, divider
+# 0.5 W, 350 V: anode, ballast, divider. Drawn for the part bought in Russia, МЛТ-0,5 / С2-23-0,5:
+# a Ø4.2 x 10.8 mm body on Ø0.8 mm leads, 1.1 mm finished holes at 15.24 mm (rev B, grill F4).
+R_HV = "TS06_R_Axial_MLT-0.5_P15.24mm"
+DO41 = "TS06_D_DO-41_P10.16mm"
 R_V = "TS06_R_Axial_DIN0207_P2.54mm_Vertical"   # standing 0.25 W: the DNP bleeds
 CP = "TS06_CP_Radial_D6.3mm_P2.50mm"
 NPN = "TS06_TO-92_Inline_Wide"              # MPSA42 E-B-C on a 2.54 mm pitch: 0.94 mm between pads
 DIP16, DIP8, DIP4, DIP28 = ("TS06_DIP-16_W7.62mm_Socket", "TS06_DIP-8_W7.62mm_Socket",
                             "TS06_DIP-4_W7.62mm_Socket", "TS06_DIP-28_W7.62mm_Socket")
+# the decoders' sockets (rev B, grill E10): pads 1.2 mm along the row, so a line threading between
+# two pins keeps 0.5 mm from the cathode outputs either side
+DIP16_OVAL = "TS06_DIP-16_W7.62mm_Socket_Oval"
 
 
 def mpsa42(ref, base, coll, group, note=""):
@@ -118,7 +125,7 @@ IN15A = {g: f"CAT_A_{g}" for g in M.IN15A_PAD.values() if g not in (None, "A")}
 HEADERS = {
     # the left edge: the ИН-12 bus, one pin per strand, top to bottom in strand order
     "11": ["K6", "K5", "K7", "K4", "K8", "K3", "K9", "K2", "K0", "K1"],
-    # the top edge, one 28-pin strip: the ИН-17 bundle, then ИН-15Б, then ИН-15А - every line on
+    # the top edge, one 31-pin strip: the ИН-17 bundle, then ИН-15Б, then ИН-15А - every line on
     # it is a cathode line (<= 60 V: the К155ИД1 outputs clamp there)
     # ten pins over the ИН-17 pair, three spare ones, then the ИН-15 pair: the seconds pair stands
     # 20.5 apart for its Ø20 stems and the ИН-15 pair moved 15.4 right with it, the ИН-17 group only
@@ -161,6 +168,16 @@ C("C9", "1u 50V", "+12V", "GND", group="power")
 part("U14", "R-78E5.0-1.0", "TS06_R-78E_SIP3", {1: "+12V", 2: "GND", 3: "+5V"}, DRV, "power",
      "Switching 5 V regulator, 78xx pinout. Feeds the whole 5 V rail, the Nano through its 5V pin.")
 C("C10", "10u 25V", "+12V", "GND", group="power")
+# Rev B (electrical grill E5): the Nano's USB feeds this board's 5 V rail through the Nano's own
+# diode, and a switching regulator must not see its output above its input. The Schottky across
+# U14 holds Vout no more than ~0.3 V above Vin: anode on pin 3 (Vout), cathode on pin 1 (Vin).
+part("VD3", "1N5819", DO41, {1: "+12V", 2: "+5V"}, DRV, "power",
+     "Across U14: 1 cathode on U14.1 (Vin), 2 anode on U14.3 (Vout). USB must not back-feed the regulator.")
+# Rev B (E8): a 19-24 V adapter in the 12 V jack. U11 (TC4420) is rated 20 V absolute and VT21's
+# gate 20 V. The TVS after F1 conducts from 17.1 V (VBR min) and draws enough to trip F1; a
+# reversed plug makes it a forward diode, which trips F1 too. Stand-off 15.3 V, above any 12 V brick.
+part("VD4", "1.5KE18A", "TS06_D_DO-201AD_P15.24mm", {1: "VIN_F", 2: "GND"}, DRV, "power",
+     "Unidirectional TVS after F1: 1 cathode on VIN_F, 2 anode on GND. VBR 17.1-18.9 V, VRWM 15.3 V.")
 C("C11", "10u", "+5V", "GND", group="power")
 C("C3", "10u", "+5V", "GND", group="power", note="5 V bulk by the Nano and the decoders.")
 
@@ -193,7 +210,7 @@ def digit_decoder(ref, prefix, note):
             pins[pin] = "GND"
         else:
             pins[pin] = M.K155_INPUT[fn]
-    return part(ref, "K155ID1", DIP16, pins, DRV, "decoder", note)
+    return part(ref, "K155ID1", DIP16_OVAL, pins, DRV, "decoder", note)
 
 
 digit_decoder("U2", "K", "ИН-12 bus decoder -> XS11. Digit map BOARD_TYPE 4 (see DIGIT_MASK4).")
@@ -261,9 +278,9 @@ def _decoder(ref, nib, tag, table):
     return pins
 
 
-part("U15", "K155ID1", DIP16, _decoder("U15", 0, "B", GLYPH_Q["U15"]), DRV, "ampm",
+part("U15", "K155ID1", DIP16_OVAL, _decoder("U15", 0, "B", GLYPH_Q["U15"]), DRV, "ampm",
      "ИН-15Б decoder, nibble on GPA3..0 per XA_IN. Codes 10-15 blank the tube.")
-part("U16", "K155ID1", DIP16, _decoder("U16", 4, "A", GLYPH_Q["U16"]), DRV, "ampm",
+part("U16", "K155ID1", DIP16_OVAL, _decoder("U16", 4, "A", GLYPH_Q["U16"]), DRV, "ampm",
      "ИН-15А decoder, nibble on GPA7..4 per XA_IN.")
 C("C15", "100n", "+5V", "GND", group="ampm")
 C("C16", "100n", "+5V", "GND", group="ampm")
@@ -295,24 +312,40 @@ mpsa42("VT1", "B1", "COLON_RET", "colon", "Low-side switch for both lamps, PWM-f
 R("R1", "10k", "D10", "B1", R_V, group="colon")
 
 # ---- fascia and RTC
-part("J1", "PH 6 vertical", "TS06_JST_PH_B6B-PH-K_Vertical", {1: "+5V", 2: "GND", 3: "A6", 4: "A7", 5: "D7", 6: "D8"},
+part("J1", "PH 6 vertical", "TS06_JST_PH_B6B-PH-K_Vertical", {1: "+5V", 2: "GND", 3: "A6", 4: "A7", 5: "D7_J", 6: "D8_J"},
      DRV, "fascia", "The panel cable; pin order is the specification both fascia builds share. Top entry, "
      "so the cable leaves towards the fascia.")
 C("C5", "100n", "A6", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="Ladder filters at the board end (spec §2).")
 C("C6", "100n", "A7", "GND", "TS06_C_Disc_P2.50mm", group="fascia")
-part("U13", "DS3231 mini", "TS06_PinSocket_1x05", {1: "GND", 2: None, 3: "SCL", 4: "SDA", 5: "+5V"}, DRV, "rtc",
-     "The small DS3231 module plugs in here, pin order - NC C D + as the stock board's RTC MINI header.")
+# Rev B (E11): with the fascia lead unplugged A6 floated and the MODE filter read noise; 1M holds
+# it at 0 (the ladder's own divider is far stiffer, so its codes do not move). The two button
+# lines get 1k in series and 10 nF to ground at J1: ESD and cable pick-up stop at the connector.
+R("R72", "1M", "A6", "GND", group="fascia", note="A6 pull-down: a defined 0 with the fascia unplugged.")
+R("R73", "1k", "D7", "D7_J", group="fascia", note="Series resistor on the button line, at J1.")
+R("R74", "1k", "D8", "D8_J", group="fascia")
+C("C18", "10n", "D7_J", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="At J1, on the cable side of R73.")
+C("C19", "10n", "D8_J", "GND", "TS06_C_Disc_P2.50mm", group="fascia")
+part("U13", "DS3231 mini", "TS06_PinHeader_1x05_DS3231", {1: "GND", 2: None, 3: "SCL", 4: "SDA", 5: "+5V"}, DRV, "rtc",
+     "A male PLS-5 on the board: the module's own female header plugs onto it and the module lies over "
+     "it. Pad 1 (square) is GND (-), then NC, C (SCL), D (SDA); the module's pin 1, +, lands on pad 5.")
 
 # ---- 185 V converter, regulated (tools/ts06main.py has the reasoning)
-part("L1", "220u 2A", "TS06_L_Radial_D12.0mm_P5.00mm", {1: "+12V", 2: "SW"}, DRV, "hv",
-     "220 uH, Isat >= 1.8 A (1.3 A peaks at 12 V in, 23.8 us on).")
+# L1 (rev B): the converter model gives steady-state peaks of 1.18-1.44 A, and the firmware's soft
+# start caps the start-up current, so Isat >= 1.5 A is asked. No Ø12 radial reaches it at 220 uH
+# (Bourns RLB1314-221KL saturates at 0.68 A, Würth 7447720221 at ~1.0-1.3 A). Bourns 5900-221-RC
+# does: 220 uH +-10 %, Isat 1.8 A (Digi-Key's listing; another distributor's gives 1.89 A),
+# Irated 1.6 A, DCR 0.162 ohm max, a ferrite bobbin in shrink sleeve, axial, Ø11.5 x 22.9 mm on
+# Ø0.8 mm leads. Lying down it stands 11.5 mm, lower than the Ø12 radial it replaces (16 mm).
+part("L1", "220u 1.8A 5900-221-RC", "TS06_L_Axial_D11.5mm_L22.9mm_P27.94mm", {1: "+12V", 2: "SW"}, DRV, "hv",
+     "Bourns 5900-221-RC: 220 uH, Isat 1.8 A, Irated 1.6 A, DCR 0.162 ohm; axial, lying, 1.1 mm holes 27.94 mm apart.")
 part("VT21", "IRF840", "TS06_TO-220-3_Vertical_HV", {1: "GATE", 2: "SW", 3: "GND"}, DRV, "hv",
-     "500 V switch, G-D-S, standing. Pads narrowed for 0.94 mm drain clearance.")
+     "500 V switch, G-D-S, standing. 1.2 mm holes in 1.7 x 2.4 mm pads: 0.84 mm from the drain to its neighbours.")
 part("VD1", "HER106 / UF4007", "TS06_D_DO-41_P10.16mm", {1: "HV185", 2: "SW"}, DRV, "hv", "Fast 600 V rectifier: 1 cathode, 2 anode.")
 C("C7", "4u7 400V", "HV185", "GND", "TS06_CP_Radial_D10.0mm_P5.00mm", "hv", "The reservoir, 400 V.")
 R("R60", "470k", "HV185", "BLEED_HV", R_HV, "hv", "Bleeder: the reservoir is safe ~10 s after power-off.")
 R("R61", "470k", "BLEED_HV", "GND", R_HV, "hv")
-R("R62", "750k 1%", "HV185", "FB_MID", R_HV, "hv", "Divider top, two in series, each under 100 V.")
+R("R62", "750k 1%", "HV185", "FB_MID", R_HV, "hv", "Divider top, two in series: ~92 V each at 185 V and "
+  "~104 V at the trimmer's 210 V end, against the part's 350 V rating.")
 R("R63", "750k 1%", "FB_MID", "FB", R_HV, "hv")
 # 2.5 V x (1 + 1500k / (R64 + RP1)): 18k + 0..5k sets 165-210 V, 185 V near mid-travel. 15k + 10k
 # reached 252 V at one end of the trimmer (electrical grill E9).
@@ -321,21 +354,51 @@ part("RP1", "5k", "TS06_Trimmer_3296W", {1: "FB_LOW", 2: "GND", 3: "GND"}, DRV, 
      "Rail set-point 165-210 V; wiper on the grounded end, so an open wiper lowers the rail.")
 part("U12", "LM393", DIP8, {1: "PWM_G", 2: "FB", 3: "VREF", 4: "GND", 5: "VREF", 6: "GND", 7: None, 8: "+5V"}, DRV, "hv",
      "Comparator: FB above VREF holds the driver input low. Second half parked.")
-R("R69", "10k 1%", "+5V", "VREF", group="hv", note="2.5 V reference.")
-R("R70", "10k 1%", "VREF", "GND", group="hv")
+R("R69", "10k 1%", "+5V", "VREF", R_V, group="hv", note="2.5 V reference; standing (rev B, to make room for the clamp).")
+R("R70", "10k 1%", "VREF", "GND", R_V, group="hv")
 C("C14", "100n", "VREF", "GND", group="hv")
-R("R65", "1M", "PWM_G", "VREF", group="hv", note="Hysteresis, about 1 V of rail.")
+R("R65", "1M", "PWM_G", "VREF", R_V, group="hv", note="Hysteresis, about 1 V of rail.")
 C("C13", "100n", "+5V", "GND", group="hv")
 R("R66", "2k2", "D9", "PWM_G", R_V, group="hv")
-R("R71", "10k", "PWM_G", "GND", group="hv")
+R("R71", "10k", "PWM_G", "GND", R_V, group="hv")
 part("U11", "TC4420", DIP8, {1: "+12V", 2: "PWM_G", 3: None, 4: "GND", 5: "GND", 6: "GATE_D", 7: "GATE_D", 8: "+12V"}, DRV, "hv",
      "Non-inverting MOSFET driver, 12 V out. MCP1407 is a drop-in.")
 C("C12", "1u 50V", "+12V", "GND", group="hv")
-R("R67", "10R", "GATE_D", "GATE", group="hv")
-R("R68", "10k", "GATE", "GND", group="hv")
+R("R67", "10R", "GATE_D", "GATE", R_V, group="hv", note="Standing, between the driver's output pins and the switch's gate (rev B).")
+R("R68", "10k", "GATE", "GND", R_V, group="hv")
+
+# ---- the independent over-voltage clamp (rev B, electrical grill E1)
+# U12 is the only regulator: with it missing or reversed, or R62 / R63 open, the rail runs away (a
+# model reaches 300 V in 40 ms) and takes the TLP627s (300 V), the MPSA42s (300 V) and C7 (400 V)
+# with it. The clamp needs neither U12 nor the divider: a zener string from HV185 through R75 into
+# VT2's base, VT2 pulling PWM_G - the driver's input - to ground, which stops the switch. D9 drives
+# PWM_G through R66 2k2, so VT2 sinks up to (5 - 0.2) / 2k2 = 2.2 mA; PWM_G is below the TC4420's
+# 0.8 V once VT2 takes 1.83 mA of it (R71 takes the rest).
+# THE ZENERS, 1N4762A + 1N4762A + 1N4761A = 82 + 82 + 75 = 239 V nominal: 1N47xxA +-5 %, +0.1 %/K,
+# and ~1.5 % lower at the clamp's 0.05-0.1 mA than at their test current (the knee); board at
+# 10-60 degC; VBE 0.45 V hot at onset (R76 then carries 45 uA), 0.7 V at full clamp; hFE >= 70.
+#                                    zener string    VT2 starts     clamps fully (PWM_G < 0.8 V)
+#   lowest (-5 %, knee, 10 degC)     220.3 V         225.2 V        -
+#   typical (25 degC, hFE 150)       235.4 V         241.5 V        ~244 V
+#   highest (+5 %, 60 degC)          259.7 V         -              270.2 V
+# The regulator's highest set point is 210.8 V (RP1 at 0, nominal parts) and 223.7 V with 1 % parts
+# and the 5 V rail 3 % high; ripple adds ~1 V. So the clamp never touches a set point (its lowest
+# onset is 225.2 V), and at worst it holds the rail at 270.2 V, 30 V under the 300 V parts.
+# Leakage: 1N47xxA IR <= 5 uA below breakdown, 50 mV across R76, so VT2 stays off. R76 also holds
+# the base down if the string is ever open. 2N3904 is E-B-C like the MPSA42 (a BC547 is C-B-E).
+part("VD5", "1N4762A", DO41, {1: "HV185", 2: "OVZ_1"}, DRV, "hv", "OV clamp zener, 82 V 1 W: 1 cathode, 2 anode.")
+part("VD6", "1N4762A", DO41, {1: "OVZ_1", 2: "OVZ_2"}, DRV, "hv", "OV clamp zener, 82 V 1 W.")
+part("VD7", "1N4761A", DO41, {1: "OVZ_2", 2: "OVZ_3"}, DRV, "hv", "OV clamp zener, 75 V 1 W.")
+R("R75", "100k", "OVZ_3", "OV_B", group="hv", note="OV clamp: base current limit.")
+R("R76", "10k", "OV_B", "GND", group="hv", note="OV clamp: base to emitter, holds VT2 off under zener leakage.")
+part("VT2", "2N3904", NPN, {1: "GND", 2: "OV_B", 3: "PWM_G"}, DRV, "hv",
+     "OV clamp switch, E-B-C: collector on PWM_G, emitter on GND. Not a BC547 (C-B-E).")
 
 # ======================================================================== views
 HV_PATTERNS = ["HV185", "SW", "BLEED_*", "FB_MID", "COLON_*", "ANODE_*", "EMIT_*"]
+# The driver board's own addition: the OV clamp's zener string, whose taps sit at ~60 and ~125 V.
+# Kept out of HV_PATTERNS so that nothing the display board is generated from changes.
+HV_PATTERNS_DRV = HV_PATTERNS + ["OVZ_*"]
 CATH_PATTERNS = ["KS*", "K0", "K1", "K2", "K3", "K4", "K5", "K6", "K7", "K8", "K9", "CAT_*"]
 
 
