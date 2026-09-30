@@ -6,7 +6,8 @@
   rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
   variations as creative as the display art -> run fascia-gold. Subagents default to model sonnet (the
   owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both launched 09:10 (launch log). disp-circuit-art DONE 09:40: 77e3b11/da9dc97/bd113cb,
-  27 PASS, viewer v5 published. fascia-gold still running (worktree; item nixie-fascia-gold, show here).
+  27 PASS, viewer v5 published. fascia-gold DONE 09:55: 3e4df9e..6570311
+  (tools/fascia_gold.py), 27 PASS, item nixie-fascia-gold shown here. No agents running; idle.
 * **Running: none.** Viewer v4 published 08:35 (Front panel view, rev B circuit sections, 112/112 tests;
   source mirrored in recovered/viewer2, b6fea17). Follow-ups, small: the section summaries are still rev A
   text, and rev B's new parts sit in the schematic's "labelled, not wired" row (a generator change).
