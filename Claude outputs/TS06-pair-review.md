@@ -486,11 +486,34 @@ geometry is stale. Two things are worth keeping:
 
 If a future revision wants a real ground plane, that is where to start.
 
-### "Search": an annealing placement optimiser (still running)
+### "Search": an annealing placement optimiser (rejected as a layout, kept as a method)
 
-A cloud session on branch `pcb/drv-alt-search`, also on the 176 mm geometry. At 00:22 it was
-routing its 11th candidate, round 8 of 60, with 41–60 nets sharing. Its report is due on that
-branch.
+A cloud session on the 176 mm geometry, branch `pcb/drv-alt-search` (0eeeba7). It was archived
+on 30.09 at about 01:20 UTC to save quota, after it had pushed its result and report. Its board
+file was scored here before the report was read:
+
+| | search (cand_11fr) | baseline (176 mm, same method) |
+|---|---|---|
+| Converged | yes, round 37; 0 unconnected | yes |
+| Hand-laid segments | **0** | 369 |
+| Segments / vias | 1236 / 0 | 1067 / 0 |
+| MST floor | **3617 mm** (15 % lower) | 4265 mm |
+| Signal copper / floor | 1.32 | 1.31 |
+| Straight share | 77.7 % | 85.6 % |
+| DIP pin-1 orientations | 4 | 3 |
+| KiCad DRC errors | **23**: 14 holes inside another part's courtyard, 7 starved thermals, 2 courtyard overlaps | 0 |
+
+**Rejected as a layout:**
+* its placement is not legal (the 23 DRC errors);
+* it uses all four chip orientations;
+* 185 V and logic are not separated: HV185 runs about 100 mm along the top edge;
+* the jack moves to the bottom edge;
+* it is drawn on the stale 176 mm outline.
+
+**Kept as a method.** It shows that the baseline's hand-laid buses come from its placement,
+not from the circuit. An optimiser placement cuts the floor by 15 % and routes with no hand
+copper at all. With a cost that also prices orientations, HV separation and edge connectors,
+`tools/placesearch.py` on that branch is a good seed for a future revision.
 
 ## What is still open before an order
 

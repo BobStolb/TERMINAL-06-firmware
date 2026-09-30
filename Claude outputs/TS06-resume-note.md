@@ -35,6 +35,7 @@ The rules, from the owner (30.09.26):
 | 29.09 ~23:30 | local agents: fascia variants wide and rhythm; grills of manufacturing, electrical and product; red-team; test plan | 7 (all finished) |
 | 30.09 ~00:12 | local agents: DRV rev B, DISP silkscreen + HV, pair schematics, viewer v2, case fixes | 5 (running) |
 | 30.09 00:25 | scheduled check-in on the search session (send_later, 01:41) | 0 (a check-in, not an agent) |
+| 30.09 ~01:20 | **QUOTA: STOP search** received; the search cloud session archived (it had pushed its report at 00:29), and the 01:41 check-in deleted | −1 |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
