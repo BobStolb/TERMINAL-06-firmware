@@ -39,6 +39,11 @@ nets, and asserts they are GND - R1 - TAP2 - R2 - TAP3 - R3 - TAP4 - R4 - TAP5 -
 equal resistors; SW1's tap pads carry the same six nets; the levers reach A7 through LEVA / LEVB.
 READ (below) is spec section 1's control table: which screens read which control.
 
+ON R. Only divider is laid out for R (the favourite, so the owner can see it on the tube-grid board).
+R puts FIELD 39 mm from the dial, so there position 5's trace drops 45 degrees into the frame's side, as
+in Plates, and takes no pad (it would touch FORMAT/DATE). The other three are laid out for A; on R
+they fail their checks (ladder refuses).
+
 THE VARIANTS (one line each; the owner's review has pictures):
   ladder    the SUB rule as a Soviet relay-logic ladder (GOST-style contacts, an OR join, FIELD's
             gap closed by the lever, SUB as the coil, earth), the dial as a curved ladder, the two
@@ -731,7 +736,10 @@ def build(variant, base="A", out=None):
     A = silk_base(G)
     silk0 = [dict(x) for x in A.items]
     L = layout(G, A)
-    VARIANTS[variant](A, G, L)
+    try:
+        VARIANTS[variant](A, G, L)
+    except AssertionError as e:
+        sys.exit("%s on %s: %s" % (variant, base, e))
     assert [x for x in A.items if x["ink"] == "silk"] == silk0, "the silk changed"
     problems, stats = check(A, G)
     stripped, at = fa.strip_art(src)
@@ -769,11 +777,11 @@ def drc(board, base):
     try:
         proj = os.path.join(tmp, "PCB", "board")
         os.makedirs(proj)
-        shutil.copytree(os.path.join(ROOT, "PCB", "lib"), os.path.join(tmp, "PCB", "lib"))
+        shutil.copytree(os.path.join(fa.ROOT, "PCB", "lib"), os.path.join(tmp, "PCB", "lib"))
         shutil.copy(board, os.path.join(proj, "board.kicad_pcb"))
-        shutil.copy(os.path.join(ROOT, "PCB", bdir, bdir + ".kicad_pro"), os.path.join(proj, "board.kicad_pro"))
+        shutil.copy(os.path.join(fa.ROOT, "PCB", bdir, bdir + ".kicad_pro"), os.path.join(proj, "board.kicad_pro"))
         open(os.path.join(proj, "board.kicad_dru"), "w").write(DRU)
-        shutil.copy(os.path.join(ROOT, "PCB", bdir, "fp-lib-table"), os.path.join(proj, "fp-lib-table"))
+        shutil.copy(os.path.join(fa.ROOT, "PCB", bdir, "fp-lib-table"), os.path.join(proj, "fp-lib-table"))
         for r, ds, fs in os.walk(tmp):
             os.chmod(r, 0o777)
             for f in fs:
@@ -877,9 +885,10 @@ def main():
         ng = len(gold_items(A))
         print("%s on %s: %d gold items, %d silk items (Plates', unchanged), %d other board items identical to the base; %s" % (
             v, a.base, ng, len(A.items) - ng, n, "checks clean" if not problems else "%d problems:" % len(problems)))
-        print("    margins: gold-gold %.2f mm (need 0.30), gold-silk %.2f (0.30), edge %.2f (%.1f), screw %.2f (3.0), "
+        gg = ">1.0" if st["gold_gold"] > 1e8 else "%.2f" % st["gold_gold"]
+        print("    margins (mm): gold-gold %s (need 0.30), gold-silk %.2f (0.30), edge %.2f (%.1f), screw %.2f (3.0), "
               "controls +%.2f beyond 6.0, dial +%.2f beyond 9.0" % (
-                  st["gold_gold"], st["gold_silk"], st["edge"], EDGE_MM, st["screw"], st["ctrl"], st["dial"]))
+                  gg, st["gold_silk"], st["edge"], EDGE_MM, st["screw"], st["ctrl"], st["dial"]))
         for p in problems:
             print("    " + p)
         failed |= bool(problems)
