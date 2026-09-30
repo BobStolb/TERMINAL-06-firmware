@@ -1,14 +1,13 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (2 agents, both notify on completion):**
-  1. TS06-DRV rev B successor, worktree `.claude/worktrees/agent-a92d573b002761b70`. Routers r3/r4
-     run under nohup; its `recovered/drv-revb/STATUS.md` has "Resume here" per step.
-  2. Review-embassy builder: 5 items in `scratchpad/embassy/review/<id>/` (viewer v2, DISP rev B
-     silk, fascia choice, 12 V plug reach, museum piece). Checkpoint `scratchpad/embassy/STATUS.md`.
-* **When the builder reports:** view each composite myself, scan the item.json texts (no @,
-  /home/, /tmp/, phone numbers), copy to agent-commons `embassy/review/<id>/`, leak_check, push,
-  one mailbox line. xstream.store carries them into the owner's queue (it never judges them).
+* **Running (1 agent, notifies on completion):** TS06-DRV rev B successor, worktree
+  `.claude/worktrees/agent-a92d573b002761b70`; its `recovered/drv-revb/STATUS.md` has "Resume here"
+  per step. At 06:05 it was routed, DRC clean, verify 26 PASS / 1 FAIL (case outputs stale, in 3d/),
+  and doing a reproducibility run (r5).
+* **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
+  agent-commons `embassy/review/` (984c8f9, REVIEW-REQUEST in to-xstream.md). The answers wait for
+  the owner's return; xstream.store copies them into `to-nixie.md`.
 * **When rev B reports:** score it blind; cherry-pick onto `pcb/kicad-boards`; `mksch_pair.py`;
   `verify_pair.sh` all PASS incl. "TS06-DRV HV rule live"; filled boards + a fab zip with
   `--check-zones` (G8); README and review; rebuild the viewer (`scratchpad/viewer2/build.sh`, then
