@@ -37,12 +37,51 @@ boards, and several things that DO need new copper on the driver board:
 * footprints for the 0.5 W resistors actually on sale (F4);
 * a real inductor, and a few protection parts.
 
-These make up **TS06-DRV rev B**, which is in progress. The display board needs only its
-silkscreen and a few clearances. The mechanical points from the first round still stand:
+These make up **TS06-DRV rev B**, which is now routed and merged (30.09.26, next section). The
+display board needed only its silkscreen and a few clearances. The mechanical points from the
+first round still stand:
 * the stack height;
 * the order in which the strips are soldered;
 * a few tall parts;
 * the case openings for the two connectors.
+
+## TS06-DRV rev B, 30.09.26
+
+Rev B puts the second grill's driver-board items into copper (rev A is 78105d6). The full list,
+part by part, is in `PCB/README.md`, "TS06-DRV rev B: what changed":
+* the independent over-voltage clamp (E1): VD5-VD7, R75, R76 and VT2 on PWM_G;
+* 0.8 mm from every bare 185 V pad to all other copper, as a KiCad rule (E3);
+* the USB back-feed diode VD3 (E5) and the input TVS VD4 (E8);
+* the fascia inputs' 1 M pull-down on A6 and 1 k + 10 nF on D7 and D8, placed by hand between
+  the strips and J1 (E11);
+* 0.5 mm at the cathode pads, with oval-pad decoder sockets (E10);
+* МЛТ-0,5 footprints (M4), a real L1 (M2), U13 on a male PLS-5 with its legend (M1), larger
+  VT21 and J1 holes (M7);
+* copper keep-outs round the standoff holes (M12, R1), silkscreen at the fab's floor (M8), the
+  DNP attribute (R13);
+* a route that reproduces: a fresh `--route` rebuilds the saved one byte for byte (R6).
+
+**Where it stands:**
+* `tools/verify_pair.sh`: **27 PASS, 0 FAIL, 0 SKIP**. That includes KiCad's DRC on TS06-DRV
+  (0 errors, 0 unconnected), the live HV rule, ERC, the mate from the written files and the case
+  model.
+* The case model reads the new parts' heights: the case is **81.6 mm deep** (rev A 83.6).
+* The fab packages are built from the committed boards, pours filled (`fab/`, `tools/mkfab.sh`).
+  Nothing is ordered.
+
+| Scored from the board files | Rev A | Rev B |
+|---|---|---|
+| Segments / vias | 1097 / **0** | 1164 / **0** |
+| Signal copper / its floor | 5936 / 4479 mm = 1.33 | 5918 / 4533 mm = **1.31** |
+| Straight (0°/90°) share | **86.1 %** | 83.3 % |
+| DIP orientations | 3 | 4 |
+
+**One change is not on the list: U11 now stands at 0°,** a fourth DIP orientation (finding 5).
+It came with the placement recovered after the layout agent was lost. Everything passes with it.
+Whether to turn it back to 180° is the owner's choice; that would mean routing the board again.
+
+**What no check can show:** the clamp's trip voltage (225-270 V) is computed from the parts'
+tolerances. It is measured only on the bench (`PCB/README.md`, "Open before fabrication").
 
 ## What holds up
 
@@ -180,10 +219,12 @@ about 2.7 s, so it is safe after about 15 s, not immediately.
 no wider than 2.5 mm, and it needs a high-voltage mark. The service note should read:
 "unplug, wait 15 s".
 
-### 5. Three chip orientations on one board
+### 5. Three chip orientations on one board (four in rev B)
 
 On TS06-DRV, U15, U16, U17 and RN1 have pin 1 to the left. U3 and the six optos (U5–U10)
-have it to the right. U2, U11 and U12 have it at the bottom. Each orientation is what made the zero-via
+have it to the right. U2, U11 and U12 have it at the bottom. **Rev B stands U11 at 0°**, a
+fourth orientation. It came from the recovered placement and is not on rev B's change list;
+the owner decides whether to turn it back. Each orientation is what made the zero-via
 routing possible, but at an assembly bench it is the most likely mistake: a DIP socket
 soldered backwards is caught only when a chip is fitted, and a chip fitted backwards may
 be destroyed.
@@ -207,6 +248,11 @@ be destroyed.
 The case model measures each part against the rear panel: U13 has 5.0 mm, C7 7.0, VT21
 8.0, the Nano 10.4 and L1 11.0. U13 sets the depth. Laying down U13, C7 and VT21 makes the
 case 78.2 mm deep instead of 83.6. After that, the Nano and L1 set it.
+
+**Rev B:** U13 sits on a male PLS-5 (15 mm) and L1 is the axial Bourns part, lying (12 mm). The
+case model reads their heights from the footprints: C7 now sets the depth with 5.0 mm, then
+VT21 6.0, the Nano 8.4, U13 10.0 and L1 13.0. The case is **81.6 mm deep**. Laying down U13, C7
+and VT21 still gives 78.2.
 
 ### 7. Header neighbours: 5 V next to 185 V at the minimum spacing
 
@@ -283,6 +329,7 @@ for gates 3 and 4.
     only add area around it.
   * Between the hand-laid buses, the pours break into islands. KiCad's own fill keeps **13
     pieces on the front and 14 on the back**, the largest holding 91 % and 75 % of the copper.
+    Rev B: 15 on the front and 10 on the back, the largest 92 % and 33 %.
     This review first quoted 95 and 137 from `audit.py`, whose grid model also counted pieces
     that touch no ground copper, which KiCad removes. `audit.py` now counts only the kept
     pieces, and `verify_pair.sh` reports KiCad's own count (the red-team's finding F5).
@@ -310,7 +357,8 @@ check out against their datasheets:
 
 **Status key:**
 * **fixed:** with the commit;
-* **rev B:** part of the TS06-DRV revision now being routed;
+* **rev B:** in TS06-DRV rev B, routed and merged on 30.09.26 (b8d3f25; see "TS06-DRV rev B"
+  above);
 * **DISP:** the display board's silkscreen and clearance pass, now in progress;
 * **case:** the case-model pass, now in progress;
 * **open:** needs a decision or the bench.
@@ -352,7 +400,7 @@ check out against their datasheets:
 | M12 | Tracks run 2.2–2.4 mm from mounting-hole centres, under metal standoffs and screw heads | BOM **fixed**: nylon. Copper keep-outs: **rev B** + **DISP** |
 | M13 | BOM gaps: cable crimps, ИН-17 spacers, socket contacts | **fixed** d7aafdc |
 | M14 | Standoff length should err long: 11 mm + a 0.5 mm shim | **open**: bench |
-| M15 | The saved boards carry unfilled pours, and Gerbers plot the stored fill | Fascia **fixed** a7c3660; DRV/DISP refilled and saved at integration |
+| M15 | The saved boards carry unfilled pours, and Gerbers plot the stored fill | Fascia **fixed** a7c3660. DRV/DISP: the fab packages are plotted filled (`fab/`); saving the boards filled is **open**, the owner's decision |
 
 ### Fascia, case, product
 
@@ -380,11 +428,11 @@ proved:
 | ID | Finding | Status |
 |---|---|---|
 | R1 | Metal standoffs and case screws sit over signal copper with only solder mask between. K6 and A3 are 0.81 mm from H3's edge, and XA7 0.63 mm from H2's. No check looked | BOM **fixed**: nylon. Keep-outs of r ≥ 3.8 mm as KiCad rule areas: **rev B** + **DISP** |
-| R2 | The committed boards store no zone fill. DISP's BL_K exists only as a pour, so Gerbers plotted without a refill leave all nine LEDs open | **Stated** above and in the README. `verify_pair.sh` now fills with KiCad and reports the pieces. Committing filled boards and a fab export: at the rev B integration |
+| R2 | The committed boards store no zone fill. DISP's BL_K exists only as a pour, so Gerbers plotted without a refill leave all nine LEDs open | **Stated** above and in the README. `verify_pair.sh` now fills with KiCad and reports the pieces. The fab export is **built** (`fab/`, `tools/mkfab.sh`: every poured copper Gerber checked for its regions). Committing filled boards: **open**, the owner's decision |
 | R3 | "Both boards pass DRC with no errors": DISP's two accepted items are errors, not warnings | **fixed** in this review and the README |
 | R4 | `checkpcb.py` read courtyards only from lines and circles. 80 of 103 DRV footprints (drawn as rectangles) had no edge or overlap check, and XP11's 0.17 mm overhang went unseen | **fixed**: rectangles and polygons are read. XP11 is accepted as the mirror of XS11 |
 | R5 | `audit.py`'s island count was a grid model, about 7× KiCad's fill on DRV | **fixed**: it counts kept pieces. `verify_pair.sh` reports KiCad's own count |
-| R6 | The route does not reproduce: a fresh `--route` stuck at 2 nets sharing (A7, D7). The committed board comes from the saved JSON | **rev B**: deterministic routing, the JSON named as the source |
+| R6 | The route does not reproduce: a fresh `--route` stuck at 2 nets sharing (A7, D7). The committed board comes from the saved JSON | **rev B**: deterministic routing, the JSON named as the source. A fresh `--route` reproduced the saved route byte for byte (2aec60c) |
 | R7 | DISP's "1.04×" counted a poured net in its floor; like for like it is 1.14× | **DISP**: restated |
 | R8 | Cathode clearance: 19 gaps under 0.45 mm on DRV, the least 0.32 mm | **rev B** (E10) |
 | R9 | `check_mate()` reads the generators' lists, not the files. It passed a Ø2.5 hole, a moved hole and strips on the wrong faces | **fixed**: `tools/kicad_checks.py mate` reads the written files with pcbnew, and `verify_pair.sh` runs it. Tested: it catches a Ø2.5 hole and a strip moved 2 mm |
@@ -525,6 +573,8 @@ copper at all. With a cost that also prices orientations, HV separation and edge
 | Gate 6, RTC module pin order | U13's socket order | meter the module |
 | PBS + PLS heights | the standoff length | calipers, finding 1 |
 | Colon vs M10 courtyard | nothing electrical | test fit |
+| Rev B's OV clamp trip voltage | the 185 V rail's protection without U12 | bench: U12 out, RP1 at either end, a current-limited 12 V supply; the 225-270 V window is computed, not measured |
+| U11's orientation (rev B stands it at 0°) | nothing electrical; one more socket direction at assembly | the owner's choice; turning it back means routing again |
 | ~~ИН-17 pair spacing: 13.0, needs 20.5~~ | fixed: boards widened to 191.4, the pair at 20.5 | gate 5 confirms the Ø20 stem |
 | The fascia under the 191.4 mm tube row | the fascia's board and the case bosses | four variants built and scored in `PCB/TS06-FASCIA-variants.md` (recommended: R, the controls on the tube grid): the owner's call |
 | **Rev C (owner, 30.09):** the expander under the decoders | nothing: copper length only | Swap moved U3 under the decoders and cut the port-A bus from 889 to 98 mm; four alternatives agree the placement leaves 10–15 % of the floor. Do it after rev B is verified, with a placement sweep scored on the floor **and** buildability gates (DRC-legal placement, ≤3 orientations, HV separated, connectors at their edges), routing only the best one or two |
@@ -557,9 +607,11 @@ Y up.
   | **Total** | **≈ 59–66 mm** |
 
   With 5 mm of air in front of the rear panel, the inside is about 64–71 mm deep. The case
-  model makes it 71.2 mm, from glass front to rear panel, and **204.4 W × 120.3 H × 83.6 D
-  mm** outside. That is 20–28 mm deeper than Rev F's 44 mm cheek. The two-board stack costs
-  that depth, and it should be drawn in from the start rather than found later.
+  model made it 71.2 mm, from glass front to rear panel, and 204.4 W × 120.3 H × 83.6 D mm
+  outside for rev A. With rev B and the case fixes it is 69.2 mm and **204.4 W × 122.8 H ×
+  81.6 D mm** (`3d/case-pair/checks.md`). That is 20–28 mm deeper than Rev F's 44 mm cheek.
+  The two-board stack costs that depth, and it should be drawn in from the start rather than
+  found later.
 
 The model is in `3d/case-pair/`: an OpenSCAD model, 1:1 drawings, STL parts and an
 interference check against every board. `checks.md` there lists each check and where every

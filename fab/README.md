@@ -49,7 +49,9 @@ have more regions filled than unfilled, or the script fails and does not write t
 **What the difference means.** The committed boards store no fill. Plotted without
 `--check-zones`, TS06-DISP's F.Cu has no BL_K pour, so all nine LEDs would be open, and TS06-DRV
 has no ground pour on either face. TS06-DISP's back face has no pour by design, so it has nothing
-to check.
+to check. The filled counts equal the pieces KiCad's own fill keeps in
+`tools/verify_pair.sh`'s "pours (KiCad)" rows (BL_K 1; GND 15 on the front, 10 on the back): one
+region per piece.
 
 ## Rebuild
 

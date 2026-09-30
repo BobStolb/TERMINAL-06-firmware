@@ -6,7 +6,7 @@ The fascia goes to Rezonit with the clock's electronics. For a small production 
 |---|---|---|---|
 | **TS06-FASCIA** | 176 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | Routed. The control panel AND the printed product face. One board, not two. Surface-mount build: no solder visible from the front. Height compressed from the original 52mm 2026-09 - see below. |
 | **TS06-FASCIA-THT** | 176 × 52 mm | same stack, ENIG | Second build of the same board, routed. Through-hole, with the A6 divider ON the face. Pick one to fabricate; they are alternatives, not a pair. Not yet height-compressed (the SMD build was chosen for fabrication). |
-| **TS06-DISP** + **TS06-DRV** | 191.4 × 44 mm + 191.4 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** See below. |
+| **TS06-DISP** + **TS06-DRV** | 191.4 × 44 mm + 191.4 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** Both at rev B (30.09.26): TS06-DRV rev B is routed and merged, `tools/verify_pair.sh` gives 27 PASS, 0 FAIL, 0 SKIP, and the fab packages are in `../fab/`. Not ordered. See below. |
 | **TS06-MAIN** / **TS06-MAIN-THT** | 176 × 96 mm | 1.6 mm, matte black | **The whole clock on one board**, two builds, one outline, one netlist. Placed and checked; routing in progress — see below. Replaces the inherited AlexGyver board, SEC and COLON. |
 | ~~TS06-SEC~~ | 67 × 55 mm | 1.6 mm, matte black | **Superseded 17.09.26 by TS06-MAIN.** Surface-mount build routed and clean (1159 tracks, 79 vias); kept as the worked example of a hard placement and of the router. |
 | ~~TS06-COLON~~ | 6.5 mm strip | — | **Superseded 17.09.26 by TS06-MAIN**, which carries the two ИНС-1 at the same measured positions. Placement only. |
@@ -230,6 +230,50 @@ square with 45° corners. A polish pass then re-routes each net alone. The resul
 
 **Solder the strips while the two boards are plugged together.** See the review, finding 2.
 
+### TS06-DRV rev B (30.09.26): what changed
+
+Rev B closes the review's open items for the driver board (the review's second grill, E, M and R
+rows). Rev A is 78105d6. The record of the work, with the routing choice, is in
+`../recovered/drv-revb/` (`STATUS.md`, `OPTIONS.md`).
+
+| Change | Parts | Review item |
+|---|---|---|
+| **An over-voltage clamp independent of U12:** a zener string (82 + 82 + 75 V) into an NPN that pulls PWM_G low. It starts at 225 V or more and clamps by 270 V at every tolerance (computed in `tools/ts06pair.py`, not measured) | VD5, VD6 (1N4762A), VD7 (1N4761A), R75 100k, R76 10k, VT2 2N3904 | E1 |
+| **0.8 mm from every bare 185 V pad to all other copper**, both faces, the ground pours included: a rule in `TS06-DRV.kicad_dru` that KiCad's DRC and zone filler apply | - | E3 |
+| **A USB back-feed diode** across the 5 V regulator | VD3 1N5819 | E5 |
+| **An input TVS** after the fuse, so a 19-24 V adapter trips F1 | VD4 1.5KE18A | E8 |
+| **The fascia inputs filtered and pulled down:** 1 M from A6 to ground, 1 k + 10 nF on D7 and D8 (J1 pins 5 and 6 are now D7_J and D8_J). Placed by hand between the strips and J1, each on its own line's way in | R72, R73, R74, C18, C19 | E11 |
+| **0.5 mm from cathode pads to other nets**, with oval-pad sockets for the decoders | U2, U15-U17 | E10, R8 |
+| **МЛТ-0,5 footprints** for the 0.5 W resistors: 1.1 mm holes at 15.24 mm | R27-R32, R56-R63 | M4 |
+| **A real L1:** Bourns 5900-221-RC, 220 µH, 1.8 A, axial, lying | L1 | E4, M2 |
+| **The RTC module on a male PLS-5**, its outline and the "- NC C D +" legend drawn | U13 | M1 |
+| **Larger holes** for VT21 (1.2 mm) and J1 (0.85 mm) | VT21, J1 | M7 |
+| **No copper within 3.8 mm of a standoff hole**, as KiCad keep-out areas | H1-H8 | M12, R1 |
+| **Silkscreen legends at the fab's floor** (1.0 mm text, 0.15 mm lines): block names, the 185 V fences, the jack, the trimmer, the bring-up order, J1's pinout | - | M8 |
+| **The DNP attribute** on the bleeders | R33-R44 | R13 |
+| **A reproducible route:** the router pins its hash seed, and a fresh `--route` rebuilds the saved route byte for byte (2aec60c) | - | R6 |
+
+**What rev B scores against rev A** (`scorecard.py`, from the board files alone):
+
+| | Rev A (78105d6) | Rev B |
+|---|---|---|
+| Segments / vias | 1097 / **0** | 1164 / **0** |
+| Signal copper / its floor | 5936 / 4479 mm = 1.33 | 5918 / 4533 mm = **1.31** |
+| Straight (0°/90°) share | **86.1 %** | 83.3 % |
+| DIP orientations | 3 | 4 (U11, below) |
+| Case depth (the case model) | 83.6 mm | **81.6 mm** |
+
+**U11 now stands at 0°, a fourth DIP orientation.** In rev A the TC4420 stood at 180°, like U12
+and U2. Rev B's placement came from the work recovered after the layout agent was lost, and it
+puts U11 at 0°, moved from (81, 20.7) to (57, 14.8) in the board's frame. It is not on the change
+list above. The board passes every check with it, but a fourth orientation is one more way to
+fit a socket backwards (review, finding 5). Whether to turn it back is the owner's choice;
+turning it moves its pins, so the board would be routed again.
+
+**The case is 81.6 mm deep, not 83.6.** The case model now reads the new footprints' real
+heights. With U13 on a male header, C7 (20 mm, worst case) is the tallest part, 5.0 mm clear of
+the rear panel.
+
 ### Checked
 
 `tools/verify_pair.sh` runs every check below on both boards in one command, with the accepted items
@@ -242,7 +286,11 @@ and the staged bench bring-up. Two of its checks read the written files with KiC
 
 **The committed boards store no zone fill.** Refill before plotting Gerbers: press B in the PCB
 editor, or use `kicad-cli pcb export gerbers --check-zones`. TS06-DISP's LED return, BL_K, is a
-pour with no tracks, so a Gerber plotted unfilled leaves all nine LEDs open.
+pour with no tracks, so a Gerber plotted unfilled leaves all nine LEDs open. `tools/mkfab.sh`
+builds the fab packages that way (`../fab/`, grill.md G8) and checks that every poured copper
+layer's Gerber carries its pour regions. Filling the committed files is the owner's decision.
+
+**`tools/verify_pair.sh` on rev B (30.09.26, after 2dc04ec): 27 PASS, 0 FAIL, 0 SKIP.**
 
 `checkcopper.py --hv` is run with the pair's HV list, `ts06pair.HV_PATTERNS`:
 `HV185,SW,BLEED_*,FB_MID,COLON_*,ANODE_*,EMIT_*`. The cathode nets have their own class,
@@ -250,14 +298,17 @@ CATH, at 0.25 mm.
 
 Both boards are generated from `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` and pass every
 board checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
-the project file). Since 30.09.26 the pair has schematics as well, generated from the same netlist by `tools/mksch_pair.py`, one sheet per section. `checksch.py` finds no dangling pin, `checkmatch.py` agrees net for net with each board (130 and 59 nets), and KiCad's ERC reports 0 violations at every severity. `verify_pair.sh` runs all three.
+the project file). Since 30.09.26 the pair has schematics as well, generated from the same netlist by `tools/mksch_pair.py`, one sheet per section. `checksch.py` finds no dangling pin, `checkmatch.py` agrees net for net with each board (136 nets on rev B's TS06-DRV, 59 on TS06-DISP), and KiCad's ERC reports 0 violations at every severity. `verify_pair.sh` runs all three.
 The results as of 30.09.26 (TS06-DRV rev B), on the widened boards:
 
 | | TS06-DISP | TS06-DRV |
 |---|---|---|
 | Tracks / vias | rev B (30.09.26): 388 / **0** | rev B (30.09.26): 1164 / **0** (373 laid by hand, 791 routed); rev A 1097 / 0 |
 | Copper, and its ratio to the placement's floor | 2125 mm, 1.15× its 1851 mm floor. Like for like with TS06-DRV: signals only, since BL_K is poured and has no tracks (the 1.04× given before counted BL_K's 164 mm in the floor; rev A was 1.14× on this basis) | 6689 mm: 5918 mm of signals, 1.31× their 4533 mm floor, and 772 mm of ground tracks under the ground pours (rev A: 5936 mm, 1.33× 4479 mm) |
-| Straight (0°/90°) share of the copper | 53 % | 83 % (rev A 86 %) |
+| Straight (0°/90°) share of the copper | 53 % | 83.3 % (rev A 86.1 %) |
+| DIP orientations | - | 4 (rev A 3): U11 now stands at 0°, from the recovered placement and not on rev B's change list; the owner decides whether to turn it back |
+| Ground pours as KiCad fills them | BL_K: 1 piece | GND: 15 pieces on the front (the largest 92 %), 10 on the back (the largest 33 %); rev A 13 and 14 |
+| Case model (`3d/case-pair`) | the pair's case: 204.4 × 122.8 × 81.6 mm outside | 81.6 mm deep (rev A 83.6): C7 is the tallest part, 5.0 mm clear of the rear panel |
 | Routing | drawn by hand; every bare 185 V pad 0.8 mm from other copper (IPC-2221B A6), every cathode pad 0.5 mm, no copper within 3.8 mm of a standoff hole | converged in negotiated routing: round 13, 0 nets sharing, 0 unrouted; then polished (30 nets shorter). PYTHONHASHSEED pinned to 0 by the script: a fresh `--route` reproduces the saved route byte for byte (checked 30.09.26); the saved route is the source. Every bare HV pad 0.8 mm from other copper (the `.kicad_dru` rule, proved live), 0 cathode pads under 0.5 mm, no copper within 3.8 mm of a standoff hole |
 | `check_mate()` | — | `[]`: all 63 strip pins (59 carry a net) land on their pins with the same net, all four display standoffs have holes |
 | `checkcopper.py --hv` | clean | clean |
@@ -278,11 +329,14 @@ standoff and a strip body share the 11 mm gap. H4 was moved 2 mm to clear XP12 (
 * **Bench gates:** the ИН-17 lead order, the ИН-15 pinouts, the ИН-17 pip and the RTC module
   (rev B draws the module lying beside its PLS-5; check its body falls on the outlined side).
 * **Rev B on the bench:** with U12 out of its socket and RP1 at either end, the OV clamp must
-  hold the rail between 225 and 270 V (typically ~242 V) - bring it up on a current-limited
-  12 V supply with C7 bled. L1 is the Bourns 5900-221-RC (axial, 1.8 A): check the supplier's
+  hold the rail between 225 and 270 V (typically ~242 V; computed from the parts' tolerances, not
+  yet measured) - bring it up on a current-limited 12 V supply with C7 bled. L1 is the Bourns 5900-221-RC (axial, 1.8 A): check the supplier's
   datasheet revision before ordering.
 * **Parts to measure:** the PBS and PLS heights of the batch being bought.
 * **Test fit:** the colon lamps against the M10 glass.
+* **The owner's decisions:** whether rev B is the board for the prototype, and whether U11 turns
+  back to 180° (rev B stands it at 0°, a fourth DIP orientation); the prototype order (grill.md
+  G14); filling the committed boards (G8, first half). The fab packages are built (`../fab/`).
 
 Cathode-order surprises are firmware tables. Only anode identity and the RTC pin order are
 copper. On the firmware side, `BOARD_TYPE 4` now runs the pair: six slots, the "m" LED, the

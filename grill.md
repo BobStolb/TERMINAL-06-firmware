@@ -224,6 +224,11 @@ Order from that zip only.
 * **Trade-off:** filled board files are larger, and the "committed = fresh generator run" check
   must ignore fill polygons, or the generators must fill.
 
+**Note (30.09.26):** the fab package is built (2dc04ec): `tools/mkfab.sh` writes
+`fab/TS06-DISP-revB-fab.zip` and `fab/TS06-DRV-revB-fab.zip` with `--check-zones`, and every
+poured copper Gerber carries its regions (DISP F.Cu 0 → 1, DRV F.Cu 0 → 15, B.Cu 0 → 10, against
+an unfilled export). Filling the committed boards waits for the owner.
+
 **Status:** proposed, for the rev B integration.
 
 **Owner notes:**
@@ -239,6 +244,10 @@ deterministic: sorted iteration, and a fixed hash seed.
   red-team re-ran it to round 45.
 * The rev B agent was asked to fix it.
 * **Trade-off:** determinism can hide a lucky seed. Record the seed and the round counts.
+
+**Note (30.09.26):** a fresh `--route` of rev B reproduced the saved route byte for byte, with
+PYTHONHASHSEED pinned to 0 by the script and every round line equal to the converged run's
+(2aec60c).
 
 **Status:** proposed; in progress in rev B.
 
