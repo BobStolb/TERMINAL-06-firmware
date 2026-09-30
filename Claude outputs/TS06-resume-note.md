@@ -36,6 +36,9 @@
   connectors welcome; still explore cutouts, lids, moving the port); DISP silk **changes** ("expand on
   it with artwork and visual decorative design"). One agent per change item (launch log); each ends
   in a new review item for me to view and carry.
+* **Artifact plan approved 06:52:** "1b 2b 3a 4a" (A+B, old pages untouched, Family view, inventory now).
+* **LINEAGE (xstream.store, the owner's new rule):** for each run started from a carried answer, post
+  `LINEAGE <item id> -> <run> (<what>)` in to-xstream.md.
 * **Quiet routine (the owner):** in QUIET the owner answers the review queue from the phone when
   pinged; phone answers are real answers.
 * **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
@@ -108,6 +111,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 06:45 | fascia art: the SW1 ring bug on A, then 4 visual variations on the original's design (worktree) | 1 (3 running) |
 | 30.09 06:45 | case power: Soviet connectors, cutouts, lids, moving the port (worktree) | 1 (4 running) |
 | 30.09 06:45 | DISP art: decorative silkscreen artwork, 3 directions, default unchanged (worktree) | 1 (5 running: fan-out 4 plus the finisher) |
+| 30.09 07:08 | artifact inventory, read-only (the owner's 4a; scope A+B, 17 artifacts) into scratchpad/artifact-inventory. quota.json 06:48, 5-hour 35 % (Nixie 6.4 %) | 1 (6 running: the cap) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.

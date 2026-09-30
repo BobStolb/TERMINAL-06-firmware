@@ -3,7 +3,11 @@
 **Asked by the owner** (review answer on viewer v2, 30.09.26 06:22 UTC): "plan out a workflow to replace all my existing
 artifacts into this product page".
 
-**Status:** a plan only. Nothing moves until the owner answers the four decisions below.
+**Status:** approved by the owner, 30.09.26 06:52 UTC, from the review queue: "1b 2b 3a 4a".
+* scope A and B (B as a Family view);
+* old artifacts left untouched (not the recommended "moved to" page);
+* a Family view on this page;
+* the read-only inventory started now.
 
 **The product page** is TS06 Board Viewer (v2, https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS). It already has:
 * the assembled clock in 3D, with an explode slider;
