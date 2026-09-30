@@ -22,9 +22,12 @@ OpenSCAD gets x = X, y = Z, z = Y, so the clock faces -y (OpenSCAD's front view)
 
 WHERE THE BOARD NUMBERS COME FROM. tools/mkpcb_disp.py and tools/mkpcb_drv.py are imported as
 modules: that runs their placement and hand-laid copper and nothing else (no router, no file
-written - both only write under `if __name__ == "__main__"`). The committed
-PCB/TS06-DRV/TS06-DRV.kicad_pcb is NOT used: it is the older 100 x 70 "driver half" (commit
-08a9a1c) and no longer matches the generator. TS06-FASCIA is read from its .kicad_pcb.
+written - both only write under `if __name__ == "__main__"`). The same generators write the
+committed PCB/TS06-DISP and PCB/TS06-DRV boards (191.4 x 44 and 191.4 x 100); reading the
+generators rather than the .kicad_pcb files keeps this in step with a board that is being
+changed. TS06-FASCIA is read from its .kicad_pcb (FASCIA_PCB=<board> puts another in its place).
+Parts are keyed by reference and footprint; a footprint FP_H does not list falls back to the
+height its own descr states, so a new footprint (a larger L1, say) is picked up, not refused.
 """
 import hashlib, json, math, os, subprocess, sys
 
@@ -90,7 +93,11 @@ def extract():
     for ref, (f, x, y) in D.B.placed.items():
         if ref.startswith("H"):
             continue
-        drv["parts"][ref] = {"fp": f.name, "back": f.back, "at": drv_w(x, y), "box": box(D.B.court(ref), drv_w)}
+        drv["parts"][ref] = {"fp": f.name, "back": f.back, "at": drv_w(x, y), "box": box(D.B.court(ref), drv_w),
+                             # a part with any pad on a 185 V net, by the generator's own net classes
+                             "hv": any(p.net and D.B.cls(p.net) == "HV" for p in D.B.pads if p.ref == ref),
+                             # the height its footprint states ("height=16mm"), for a part FP_H does not know
+                             "h_descr": _descr_height(f.tree)}
     for ref in ("XS1", "U1", "J1"):
         drv["parts"][ref]["pads"] = [[p.name] + list(drv_w(p.x, p.y)) for p in D.B.pads if p.ref == ref]
     # the jack's body and the Nano's outline, from their footprints' fabrication layer
@@ -99,6 +106,16 @@ def extract():
     with open(BOARDS, "w") as fh:
         json.dump(out, fh, indent=1, ensure_ascii=False)
     print("wrote", os.path.relpath(BOARDS, ROOT))
+
+
+def _descr_height(tree):
+    """'height=16mm' in a footprint's descr, or None."""
+    import re
+    for n in tree:
+        if isinstance(n, list) and n and n[0] == "descr":
+            m = re.search(r"height\s*=\s*([0-9.]+)\s*mm", str(n[1]))
+            return float(m.group(1)) if m else None
+    return None
 
 
 def _fascia(sexp):
@@ -217,8 +234,13 @@ def dims(B):
     d("BROW_T", 3.0, "design", "printed brow face", g)
     d("SOFFIT_T", 2.0, "design", "printed", g)
     d("BROW_RAKE", 12.0, "doc", "spec §6: front raked 12° - the brow leans back like the fascia", g)
-    d("TOP_CLR", 3.0, "doc", "pair review, envelope: 3 mm of top clearance", g)
-    d("TOP_T", 3.0, "design", "printed top bar", g)
+    d("TOP_T", 3.0, "design", "printed top plate, black like the chassis (case review m5; spec §6: chassis matte black)", g)
+    d("MOD_CLR", 0.5, "doc", "the module's clearance to a case part it slides past: the pair review's 0.5 to each cheek", g)
+    d("END_BLOCK", 8.0, "doc", "case review F7: every insert a cheek screw goes into sits in a block of at least 8 mm", g)
+    # the top plate's rear block has to sit above TS06-DRV's top edge, which slides under it
+    d("TOP_CLR", d.v["MOD_CLR"] + d.v["END_BLOCK"] - d.v["TOP_T"], "design",
+      "TS06-DRV's top edge to the top plate's underside: MOD_CLR + END_BLOCK - TOP_T, so the plate's rear block "
+      "(the rear panel's inserts, the cheek screws) clears the board; was the pair review's 3", g)
     d("REAR_AIR", 5.0, "doc", "pair review, envelope: 5 mm of air in front of the rear panel", g)
     d("REAR_T", 1.6, "doc", "pair review suggestion 2: the rear panel is a 1.6 mm FR4 blank", g)
     d("BASE_T", 3.0, "design", "printed or 3 mm aluminium", g)
@@ -226,11 +248,18 @@ def dims(B):
     d("FASCIA_RAKE", 12.0, "doc", "spec §6 and cad-component-library: front raked 12°", g)
     d("FLOOR_CLR", 0.5, "design", "between the fascia lead's lowest point and the floor", g)
     d("VENT_W", 2.0, "doc", "pair review 4: slots no wider than 2.5 mm (2.0 used)", g)
-    d("VENT_X0", 100.0, "doc", "pair review suggestion 2: vents above the converter, world X 100-130", g)
-    d("VENT_X1", 130.0, "doc", "pair review suggestion 2", g)
-    d("VENT_Y0", 85.0, "doc", "pair review suggestion 2: world Y 85-100", g)
+    # case review m4: not over the 185 V switch node (X 100-130 put them over VT21, C7 and VD1); over the
+    # logic side instead, centred on the Nano's courtyard as the generator places it
+    u1 = drv["parts"]["U1"]["box"]
+    span = 30.0
+    vc = (max(u1[0], 0.0) + u1[1]) / 2
+    d("VENT_X0", round(vc - span / 2, 1), "board", "case review m4: over the logic side - a 30 mm span (the pair "
+      "review's) centred on U1, the Nano (courtyard X %.1f-%.1f in mkpcb_drv)" % (u1[0], u1[1]), g)
+    d("VENT_X1", round(vc + span / 2, 1), "board", "VENT_X0 + 30", g)
+    d("VENT_Y0", 85.0, "doc", "pair review suggestion 2: world Y 85-100 (inside the Nano's Y %.1f-%.1f)" % (u1[2], u1[3]), g)
     d("VENT_Y1", 100.0, "doc", "pair review suggestion 2", g)
     d("VENT_PITCH", 4.5, "design", "", g)
+    d("VENT_HV_CLR", 5.0, "design", "no 185 V part (a pad on an HV-class net) within this of the vent field, projected", g)
     d("BOSS_W", 8.0, "design", "square boss on a cheek's inner face, M3 heat-set insert", g)
     d("BOSS_D", 10.0, "design", "boss length in Z, in front of TS06-DRV", g)
     d("FBOSS_D", 8.0, "design", "fascia boss depth behind the fascia", g)
@@ -260,16 +289,60 @@ def dims(B):
     d("CABLE_R", 3.0, "assumed", "bend radius of the 6-wire PH lead (to the ribbon's centre line)", g)
     d("CABLE_HALF", 0.65, "assumed", "half the lead's thickness (6 x AWG28 side by side)", g)
     d("J1_MATED_H", 9.5, "assumed", "B6B-PH-K 6.0 header + PHR-6 housing, off TS06-DRV's display-facing face", g)
-    d("LEAD_LEN", 150.0, "doc", "pair review suggestion 5: a 150 mm PHR-6 lead", g)
+    d("LEAD_LEN", 190.0, "doc", "PCB/TS06-DRV/bom.md: fascia lead, 6-way JST PH, 180-200 mm (the middle; was the "
+                                "pair review's 150)", g)
     # what hangs behind the fascia: keepouts only, the depths are the least known numbers here
-    d("ROTARY_D", 26.94, "doc", "TERMINAL-06-concept-plates: rotary body 26.94 (caliper 28.08)", g)
-    d("ROTARY_DEPTH", 16.0, "assumed", "rotary body + lugs behind the fascia (spec §6: lugs >= 11.3 behind it)", g)
+    d("ROTARY_D", 25.00, "doc", "knowledge/TERMINAL-06-spec.txt §6, MEASURE BEFORE ORDERING PANELS: body / wafer "
+                                "25.00, which supersedes the withdrawn 26.94 (Rev D.3)", g)
+    d("ROTARY_DEPTH", 22.0, "doc", "knowledge/TERMINAL-06-spec.txt §6: the lugs sit >= 11.3 behind the fascia's rear "
+                                   "face, and the §1 table gives them 10 mm of free length: 21.3, rounded up", g)
     d("MT1_W", 11.92, "doc", "measurements-MT1 #2 (candidate W)", g)
     d("MT1_L", 10.43, "doc", "measurements-MT1 #1 (candidate L)", g)
     d("MT1_DEPTH", 30.0, "assumed", "cad-component-library: 'your spec says 30 mm depth; verify per sample'", g)
     d("KMD1_A", 13.75, "doc", "measurements-KMD1 #1 (orientation not known)", g)
     d("KMD1_B", 16.91, "doc", "measurements-KMD1 #2 (orientation not known)", g)
     d("KMD1_DEPTH", 20.0, "assumed", "КМД1-1 body depth: not captured (measurements-KMD1 #8)", g)
+
+    g = "fixings"
+    d("INS_M3_D", 4.0, "assumed", "M3 heat-set insert: hole diameter (M3 x 5.7 class)", g)
+    d("INS_M3_L", 5.7, "assumed", "M3 heat-set insert: length", g)
+    d("INS_M25_D", 3.5, "assumed", "M2.5 heat-set insert: hole diameter", g)
+    d("INS_M25_L", 4.0, "assumed", "M2.5 heat-set insert: length", g)
+    d("INS_WALL_MIN", 1.5, "doc", "case review m4: at least 1.5 mm of wall round an insert", g)
+    d("CLR_M3", 3.4, "design", "M3 clearance hole through a cheek", g)
+    d("CB_D", 6.2, "design", "counterbore for an M3 socket head, from the cheek's outside", g)
+    d("CB_DEPTH", 2.0, "design", "counterbore depth", g)
+    d("SCREW_M3_L", 8.0, "design", "M3 x 8 through a cheek: 4 mm of cheek under the counterbore, 4 mm into the insert", g)
+    d("SCREW_M25_L", 6.0, "design", "M2.5 x 6: fascia, rear panel, sill ties", g)
+    d("MOD_WASHER_T", 0.8, "assumed", "nylon washer under the module screws' heads (PCB/TS06-DRV/bom.md: M3 + nylon washer)", g)
+    d("TIP_CLR_MIN", 1.0, "doc", "case review F7: no screw within 1 mm of glass or a board", g)
+    d("GLASS_BLK_CLR", 1.0, "design", "a new block under the tall glass stays this far below it (so it needs no lead-in)", g)
+    d("BASE_FIX_Z", 10.0, "design", "front base screw: behind the fascia's lower bosses (Z <= 2.1)", g)
+    d("WALL_FIX_Z", 16.0, "design", "trench screw: in the blocks under H10 / ИН-15А, behind the fascia's upper bosses (Z <= 8.6)", g)
+    d("TOP_FIX_Z", 20.0, "design", "front top-plate screw: in front of TS06-DRV's strips (Z >= 34.1)", g)
+    d("REAR_FIX_DZ", 12.0, "design", "rear base / top-plate screws this far in front of the rear panel", g)
+    d("LEADIN", 3.0, "doc", "case review F8: 45° x 3 mm lead-ins on the rear edges the module passes within 1 mm", g)
+    d("LEADIN_BELOW", 1.0, "doc", "case review F8: the square-edged clearances under 1 mm get one", g)
+    d("LEAD_MARGIN", 1.0, "design", "a sill lead-in runs this far past the LED flange on each side", g)
+    d("SLOT_X", 0.6, "doc", "case review F9: the crossmember holes slotted along X by ±0.6", g)
+    d("PRINT_SHRINK", 0.4, "assumed", "PETG shrinkage along a long print, % (compensate the slicer's X scale)", g)
+    d("REAR_HOLE_D", 2.7, "design", "M2.5 clearance in the FR4 rear panel (slotted ±SLOT_X along X)", g)
+    d("REAR_FIX_X", 4.0, "design", "rear-panel corner screws this far in from the cheeks' inner faces", g)
+
+    g = "variant D"
+    d("FASCIA_FRAME", float(os.environ.get("FASCIA_FRAME", 0)), "design",
+      "variant D, the printed fascia frame: 1 = on. Off by default: the owner has not chosen a fascia variant", g)
+    d("FF_PANEL_W", 179.0, "doc", "case review, variant D: a 179 x 40 fascia, X 3.0-182.0 (no such board yet; the "
+                                  "176 board stands in)", g)
+    d("FF_PANEL_H", 40.0, "doc", "case review, variant D", g)
+    d("FF_WEB", 4.0, "design", "the frame's depth behind the panel", g)
+    d("FF_LEDGE", 2.0, "design", "the rabbet's ledge behind the panel's left, right and bottom edges", g)
+    d("FF_TOP", 4.5, "design", "the top rail behind the panel (under the sill): above the КМД1 bodies (t >= 5.5)", g)
+    d("FF_RIB_W", 2.0, "design", "ribs under the panel's middle, between the controls", g)
+    d("FF_HOLE_E", 3.0, "design", "the 179 panel's lower holes, in from its side edges (FR4 web 1.65)", g)
+    d("FF_HOLE_T", 5.0, "design", "the 179 panel's holes, down from its top edge / up from its bottom edge", g)
+    d("FF_FIX_T", 20.0, "design", "the cheek screw into the frame's end blocks, down the face", g)
+    d("FF_TIE_Z", 8.0, "design", "the sill ties (M2.5, down through the sill into the frame's rib heads)", g)
     return d
 
 
@@ -286,7 +359,7 @@ FP_H = {
     "TS06_C_Disc_P2.50mm": (8.0, "assumed", "radial ceramic"),
     "TS06_CP_Radial_D6.3mm_P2.50mm": (12.5, "assumed", "Ø6.3 x 11 electrolytic on its seat"),
     "TS06_CP_Radial_D10.0mm_P5.00mm": (20.0, "doc", "pair review finding 6: C7 16-20 mm, worst case"),
-    "TS06_L_Radial_D12.0mm_P5.00mm": (16.0, "board", "footprint descr: Fastron 11P, height 16 mm (review said 12-14)"),
+    "TS06_L_Radial_D12.0mm_P5.00mm": (None, "board", "the footprint's descr (Fastron 11P: height=16mm; review said 12-14)"),
     "TS06_TO-220-3_Vertical_HV": (19.0, "doc", "pair review finding 6: IRF840 standing"),
     "TS06_TO-92_Inline_Wide": (8.0, "assumed", "TO-92 on its leads"),
     "TS06_Arduino_Nano": (None, "derived", "PBS 8.5 + PLS body 2.5 + Nano 1.6 + mini-B 4.0 (review said ~15)"),
@@ -298,6 +371,7 @@ FP_H = {
     "TS06_Trimmer_3296W": (10.5, "assumed", "Bourns 3296W"),
     "TS06_PinSocket_1x05": (22.0, "doc", "U13 - pair review finding 6: DS3231 mini standing in a 5-way PBS, 21-22"),
 }
+UNKNOWN_H = 25.0     # a part whose height nothing states: taller than anything known, so it shows up in check 1
 LAID = {"U13": (12.0, "review finding 6: module on a right-angle header"),
         "C7": (11.0, "review finding 6: capacitor on its side"),
         "VT21": (11.0, "review finding 6: TO-220 lying, if its footprint is redrawn")}
@@ -339,15 +413,23 @@ def derive(B, d, lay_down=False):
     v["X_OUT_R"] = v["X_IN_R"] + v["CHEEK_T"]
     # --- parts on TS06-DRV and the rear panel
     parts = []
+    G["unknown_h"] = []
     for ref, p in sorted(drv["parts"].items()):
         fp = p["fp"]
         if p["back"]:                                           # display-facing: the strips and J1
             h = v["J1_MATED_H"] if ref == "J1" else v["PBS_H"]
             parts.append((ref, fp, p["box"], h, 1, "J1_MATED_H" if ref == "J1" else "PBS_H"))
             continue
-        h, kind, src = FP_H[fp]
+        # a footprint not in FP_H (a new L1, say) takes the height its descr states, else a tall guess
+        h, kind, src = FP_H.get(fp, (None, "board", "not in FP_H: the footprint's descr"))
         if fp == "TS06_Arduino_Nano":
             h = v["NANO_H"]
+        elif h is None:
+            h = p.get("h_descr")
+            if h is None:
+                h, src = UNKNOWN_H, "not in FP_H and no height in its descr: %.0f assumed" % UNKNOWN_H
+            if fp not in FP_H or p.get("h_descr") is None:
+                G["unknown_h"].append((ref, fp, h))
         if lay_down and ref in LAID:
             h = LAID[ref][0]
         parts.append((ref, fp, p["box"], h, 0, src))
@@ -410,13 +492,20 @@ def profiles(G):
     rb = math.radians(v["BROW_RAKE"])
     zy = lambda p: (p[1], p[0])                                 # fpt gives (Y, Z)
     zin = lambda y: v["Z_FACE"] + (y - v["SOFFIT_Y"]) * math.tan(rb) + v["BROW_T"] / math.cos(rb)
+    G["zin"] = zin
+    LI, EB = v["LEADIN"], v["END_BLOCK"]
     G["cheek"] = [(v["Z_TOE"], v["Y_BOT"]), (v["Z_REAR_IN"], v["Y_BOT"]), (v["Z_REAR_IN"], v["Y_TOP"]),
                   (v["Z_BROW_TOP"], v["Y_TOP"]), (v["Z_FACE"], v["SOFFIT_Y"]), (v["Z_FACE"], v["SILL_TOP_Y"]),
                   (v["Z_TOE"], v["Y_FLOOR"])]
-    G["brow"] = [(v["Z_FACE"], v["SOFFIT_Y"]), (v["Z_BROW_TOP"], v["Y_TOP"]), (v["Z_REAR_IN"], v["Y_TOP"]),
-                 (v["Z_REAR_IN"], v["Y_TOP_IN"]), (zin(v["Y_TOP_IN"]), v["Y_TOP_IN"]),
-                 (zin(v["SOFFIT_Y"] + v["SOFFIT_T"]), v["SOFFIT_Y"] + v["SOFFIT_T"]),
-                 (v["Z_BACK"], v["SOFFIT_Y"] + v["SOFFIT_T"]), (v["Z_BACK"], v["SOFFIT_Y"])]
+    # the brow: the orange raked face and the soffit. The top plate behind it is a separate black part
+    # (case review m5). The soffit ends at the rear in a lip whose lower edge is a 45° lead-in for the tall
+    # glass, which comes in from behind 0.8 mm under it (F8).
+    sy, st, zb = v["SOFFIT_Y"], v["SOFFIT_T"], v["Z_BACK"]
+    G["brow"] = [(v["Z_FACE"], sy), (v["Z_BROW_TOP"], v["Y_TOP"]), (zin(v["Y_TOP"]), v["Y_TOP"]),
+                 (zin(sy + st), sy + st), (zb - LI - st, sy + st), (zb - LI - st, sy + LI + st),
+                 (zb, sy + LI + st), (zb, sy + LI), (zb - LI, sy)]
+    G["top"] = [(zin(v["Y_TOP_IN"]), v["Y_TOP_IN"]), (zin(v["Y_TOP"]), v["Y_TOP"]), (v["Z_REAR_IN"], v["Y_TOP"]),
+                (v["Z_REAR_IN"], v["Y_TOP_IN"])]
     G["fascia"] = [zy(fpt(0, 0)), zy(fpt(v["FASCIA_H"], 0)), zy(fpt(v["FASCIA_H"], v["FASCIA_T"])),
                    zy(fpt(0, v["FASCIA_T"]))]
     r = math.radians(v["FASCIA_RAKE"])
@@ -432,13 +521,12 @@ def profiles(G):
     hw = v["IN12_W"] / 2 + v["GLASS_ALLOW"]
     v["VAL_X0"] = round(disp["IN12_X"][3] + hw, 3)              # right of M1's glass
     v["VAL_X1"] = round(disp["IN15_X"][0] - hw, 3)              # left of ИН-15Б's glass
-    G["valance"] = (v["VAL_X0"], v["VAL_X1"], v["VALANCE_Y0"], v["SOFFIT_Y"], v["Z_BACK"] - v["VALANCE_T"], v["Z_BACK"])
+    # the valance hangs from the soffit's rear lip, so over its span the lead-in is filled
+    G["valance"] = (v["VAL_X0"], v["VAL_X1"], v["VALANCE_Y0"], sy + LI, v["Z_BACK"] - v["VALANCE_T"], v["Z_BACK"])
     G["rear"] = (v["X_OUT_L"], v["X_OUT_R"], v["Y_BOT"], v["Y_TOP"], v["Z_REAR_IN"], v["Z_REAR_OUT"])
     n = int((v["VENT_X1"] - v["VENT_X0"] - v["VENT_W"]) // v["VENT_PITCH"]) + 1
     G["vents"] = [(v["VENT_X0"] + i * v["VENT_PITCH"], v["VENT_X0"] + i * v["VENT_PITCH"] + v["VENT_W"])
                   for i in range(n)]
-    xc = (v["X_OUT_L"] + v["CHEEK_T"] / 2, v["X_OUT_R"] - v["CHEEK_T"] / 2)
-    G["rear_screws"] = [(x, y) for x in xc for y in (v["Y_BOT"] + 8, v["Y_TOP"] - 5)]
     # what hangs behind the fascia: [ref, x, t, across X, along the face, depth], fascia frame
     fas = G["B"]["fascia"]["parts"]
     G["bodies"] = []
@@ -451,7 +539,7 @@ def profiles(G):
         else:
             a, b, dep = v["KMD1_A"], v["KMD1_B"], v["KMD1_DEPTH"]
         G["bodies"].append((ref, x + v["FASCIA_X0"], t, a, b, dep))   # x in world X
-    # the rotary's rim comes within 0.5 mm of the fascia's top edge: the sill steps back over it
+    # the rotary's rim rises above the sill's underside just behind the fascia's top edge: the sill steps back over it
     ref, x, t, a, b, dep = G["bodies"][0]
     t_top = t - b / 2
     y_under = v["SILL_TOP_Y"] - v["SILL_T"] - 0.5
@@ -482,6 +570,139 @@ def profiles(G):
     L += math.hypot(v["FJ_X"] - jx, (z_top - 2 * rc) - v["FJ_BEND_Z"])   # along the floor, diagonal
     L += rc * math.radians(90 + v["FASCIA_RAKE"])               # up into the fascia plug
     v["LEAD_PATH"] = round(L, 1)
+    fixings(G)
+    fascia_frame(G)
+    screws(G)
+
+
+def fixings(G):
+    """Where every cheek screw goes, and the blocks that take their inserts (case review F7), the rear
+    panel's fixings (m4), the lead-ins (F8). Same maths as case.scad."""
+    v, zin = G["v"], G["zin"]
+    EB, LI = v["END_BLOCK"], v["LEADIN"]
+    rb = math.radians(v["BROW_RAKE"])
+    # the base: blocks on the floor at each cheek, front and rear; a full-width lip at the rear
+    v["FIX_BASE_Y"] = round((v["Y_BOT"] + v["Y_FLOOR"] + EB) / 2, 3)
+    v["FIX_BASE_Z0"], v["FIX_BASE_Z1"] = v["BASE_FIX_Z"], v["Z_REAR_IN"] - v["REAR_FIX_DZ"]
+    # the trench: blocks under H10 and ИН-15А's glass, GLASS_BLK_CLR below it, END_BLOCK tall, through the sill
+    v["WALL_BLK_Y1"] = round(v["IN12_BOT"] - v["GLASS_BLK_CLR"], 3)
+    v["WALL_BLK_Y0"] = round(min(v["SILL_TOP_Y"] - v["SILL_T"], v["WALL_BLK_Y1"] - EB), 3)
+    v["FIX_WALL_Y"] = round((v["WALL_BLK_Y0"] + v["WALL_BLK_Y1"]) / 2, 3)
+    v["FIX_WALL_Z"] = v["WALL_FIX_Z"]
+    # the brow: blocks behind the face, midway between the soffit and the top plate
+    v["FIX_BROW_Y"] = round((v["SOFFIT_Y"] + v["SOFFIT_T"] + v["Y_TOP_IN"]) / 2, 3)
+    v["FIX_BROW_Z"] = round(zin(v["FIX_BROW_Y"]) + EB / 2, 3)
+    # the top plate: blocks under it at the front and a full-width lip at the rear, above TS06-DRV's edge
+    v["FIX_TOP_Y"] = v["Y_TOP"] - EB / 2
+    v["FIX_TOP_Z0"], v["FIX_TOP_Z1"] = v["TOP_FIX_Z"], v["Z_REAR_IN"] - v["REAR_FIX_DZ"]
+    v["TOP_LIP_Y0"] = v["Y_TOP"] - EB                           # = TS06-DRV's top edge + MOD_CLR
+    # the fascia frame (variant D): its end blocks, END_BLOCK behind the panel
+    v["FF_FIX_Y"], v["FF_FIX_Z"] = [round(c, 3) for c in G["fpt"](v["FF_FIX_T"], v["FASCIA_T"] + EB / 2)]
+    G["cheek_fix"] = [("base, front", v["FIX_BASE_Y"], v["FIX_BASE_Z0"]), ("base, rear", v["FIX_BASE_Y"], v["FIX_BASE_Z1"]),
+                      ("trench", v["FIX_WALL_Y"], v["FIX_WALL_Z"]), ("brow", v["FIX_BROW_Y"], v["FIX_BROW_Z"]),
+                      ("top plate, front", v["FIX_TOP_Y"], v["FIX_TOP_Z0"]), ("top plate, rear", v["FIX_TOP_Y"], v["FIX_TOP_Z1"])]
+    if v["FASCIA_FRAME"]:
+        G["cheek_fix"].append(("fascia frame", v["FF_FIX_Y"], v["FF_FIX_Z"]))
+    # blocks at the left cheek (the right ones mirror them): (part, Y0, Y1, Z0, Z1, the insert's Y, Z, what is in
+    # front of the insert along the face)
+    xl = (v["X_IN_L"], v["X_IN_L"] + EB)
+    face_at = lambda y: zin(y) - v["BROW_T"] / math.cos(rb)
+    G["blocks"] = [
+        ("base, front", v["Y_BOT"], v["Y_FLOOR"] + EB, v["FIX_BASE_Z0"] - EB / 2, v["FIX_BASE_Z0"] + EB / 2, v["FIX_BASE_Y"], v["FIX_BASE_Z0"]),
+        ("base, rear", v["Y_BOT"], v["Y_FLOOR"] + EB, v["FIX_BASE_Z1"] - EB / 2, v["Z_REAR_IN"], v["FIX_BASE_Y"], v["FIX_BASE_Z1"]),
+        ("trench", v["WALL_BLK_Y0"], v["WALL_BLK_Y1"], v["FIX_WALL_Z"] - EB / 2, v["FIX_WALL_Z"] + EB / 2 + LI, v["FIX_WALL_Y"], v["FIX_WALL_Z"]),
+        ("brow", v["FIX_BROW_Y"] - EB / 2, v["FIX_BROW_Y"] + EB / 2, face_at(v["FIX_BROW_Y"]), v["FIX_BROW_Z"] + EB / 2, v["FIX_BROW_Y"], v["FIX_BROW_Z"]),
+        ("top plate, front", v["TOP_LIP_Y0"], v["Y_TOP"], v["FIX_TOP_Z0"] - EB / 2, v["FIX_TOP_Z0"] + EB / 2, v["FIX_TOP_Y"], v["FIX_TOP_Z0"]),
+        ("top plate, rear", v["TOP_LIP_Y0"], v["Y_TOP"], v["FIX_TOP_Z1"] - EB / 2, v["Z_REAR_IN"], v["FIX_TOP_Y"], v["FIX_TOP_Z1"])]
+    G["block_x"] = xl
+    # the rear panel (m4): three screws along the bottom into the base's lip, three along the top into the top
+    # plate's - the corners and mid-span. None into the cheeks' 6 mm rear edges: an insert there has 1.25 mm walls.
+    xs = (v["X_IN_L"] + v["REAR_FIX_X"], v["BOARD_W"] / 2, v["X_IN_R"] - v["REAR_FIX_X"])
+    G["rear_screws"] = [(x, y) for y in (v["FIX_BASE_Y"], v["FIX_TOP_Y"]) for x in xs]
+    G["rear_lips"] = {"base": (v["Y_BOT"], v["Y_FLOOR"] + EB, v["Z_REAR_IN"] - EB, v["Z_REAR_IN"]),
+                      "top plate": (v["TOP_LIP_Y0"], v["Y_TOP"], v["Z_REAR_IN"] - EB, v["Z_REAR_IN"])}
+    # lead-ins (F8), 45° x LEADIN on the rear edges the module passes within LEADIN_BELOW: the soffit (in the brow
+    # profile), the left trench wall's inner edge, and the sill where the lowest LEDs' flanges pass - only there,
+    # so the sill still hides XP21-25
+    disp = G["B"]["disp"]
+    fl = v["LED_FLANGE_D"] / 2
+    G["sill_leads"] = [(round(p["at"][0] - fl - v["LEAD_MARGIN"], 3), round(p["at"][0] + fl + v["LEAD_MARGIN"], 3))
+                       for k, p in sorted(disp["parts"].items(), key=lambda kp: kp[1]["at"][0])
+                       if k.startswith("HL") and p["at"][1] - fl - v["SILL_TOP_Y"] < v["LEADIN_BELOW"]]
+    h10_l = disp["IN12_X"][0] - v["IN12_W"] / 2
+    G["wall_l_lead"] = h10_l - v["TRENCH_L_X"] < v["LEADIN_BELOW"]
+
+
+def fascia_frame(G):
+    """Variant D: a printed frame between the cheeks, raked with the fascia, whose pocket continues the trench
+    walls (X TRENCH_L_X-TRENCH_R_X). The 179 x 40 panel drops into it; the 176 board stands in for it here, at its
+    own FASCIA_X0. Local frame: X (world), t down the face from the top edge, s behind the front face."""
+    v = G["v"]
+    fas = G["B"]["fascia"]
+    ff = {"x0": v["TRENCH_L_X"], "x1": v["TRENCH_R_X"], "px0": v["TRENCH_L_X"], "px1": v["TRENCH_L_X"] + v["FF_PANEL_W"]}
+    # what stands behind the stand-in, in world X: control bodies (the КМД1 either way round) and back-side parts
+    keep = []
+    for ref, x, t, a, b, dep in G["bodies"]:
+        half = max(a, b) / 2 if ref in ("SW4", "SW5") else a / 2
+        keep.append((x - half, x + half, ref))
+    for ref, p in fas["parts"].items():
+        if p["box"] and not ref.startswith("SW"):
+            keep.append((p["box"][0] + v["FASCIA_X0"], p["box"][1] + v["FASCIA_X0"], ref))
+    keep.sort()
+    lo, hi = ff["x0"] + v["FF_LEDGE"], ff["x1"] - v["FF_LEDGE"]
+    gaps, edge = [], lo
+    for a, b, ref in keep:
+        if a > edge:
+            gaps.append((edge, a))
+        edge = max(edge, b)
+    inner = [g for g in gaps if g[0] > lo and g[1] < hi]      # between two parts, not against a ledge
+    widest = sorted(sorted(inner, key=lambda g: g[1] - g[0])[-2:])
+    ff["ribs"] = [round((a + b) / 2, 1) for a, b in widest]
+    ff["rib_gaps"] = widest
+    ff["keep"] = keep
+    ff["boss_r"] = v["INS_M25_D"] / 2 + v["INS_WALL_MIN"]
+    # the 179 panel's holes: its top two over the ribs (clear of SW5, which a corner hole sits on), its bottom two
+    # at its corners
+    tb = v["FF_PANEL_H"] - v["FF_HOLE_T"]
+    ff["holes"] = [(ff["ribs"][0], v["FF_HOLE_T"]), (ff["ribs"][1], v["FF_HOLE_T"]),
+                   (ff["px0"] + v["FF_HOLE_E"], tb), (ff["px1"] - v["FF_HOLE_E"], tb)]
+    fj = fas["parts"]["J1"]["box"]
+    ff["j1_notch"] = (fj[0] + v["FASCIA_X0"] - 1.0, fj[1] + v["FASCIA_X0"] + 1.0)
+    ff["rot_notch"] = (v["SILL_NOTCH_X0"], v["SILL_NOTCH_X1"])
+    G["ff"] = ff
+
+
+def screws(G):
+    """Every case screw: (group, spec, seat [X, Y, Z], axis, length, diameter, boards it passes through)."""
+    v, fpt = G["v"], G["fpt"]
+    r = math.radians(v["FASCIA_RAKE"])
+    nrm = (0.0, -math.sin(r), math.cos(r))                      # into the case, normal to the fascia
+    S = []
+    for name, y, z in G["cheek_fix"]:
+        for x, ax in ((v["X_OUT_L"] + v["CB_DEPTH"], 1.0), (v["X_OUT_R"] - v["CB_DEPTH"], -1.0)):
+            S.append(("cheek into the " + name, "M3 x %g low head" % v["SCREW_M3_L"], (x, y, z), (ax, 0.0, 0.0),
+                      v["SCREW_M3_L"], 3.0, ()))
+    for name, hx, hy, dia in G["drv_case_holes"]:
+        S.append(("module into the cheek bosses (H5-H8, from behind, nylon washer)", "M3 x 8",
+                  (hx, hy, v["Z_DRV_B"] + v["MOD_WASHER_T"]),
+                  (0.0, 0.0, -1.0), 8.0, 3.0, ("TS06-DRV",)))
+    if v["FASCIA_FRAME"]:
+        for x, t in G["ff"]["holes"]:
+            y, z = fpt(t, 0)
+            S.append(("fascia into the frame", "M2.5 x %g" % v["SCREW_M25_L"], (x, y, z), nrm, v["SCREW_M25_L"], 2.5,
+                      ("TS06-FASCIA",)))
+        for x in G["ff"]["ribs"]:
+            S.append(("sill tie into the frame", "M2.5 x %g countersunk" % v["SCREW_M25_L"], (x, v["SILL_TOP_Y"], v["FF_TIE_Z"]),
+                      (0.0, -1.0, 0.0), v["SCREW_M25_L"], 2.5, ()))
+    else:
+        for x, t, dia in G["fascia_holes"]:
+            y, z = fpt(t, 0)
+            S.append(("fascia into the cheek bosses", "M2.5 x %g" % v["SCREW_M25_L"], (x + v["FASCIA_X0"], y, z), nrm,
+                      v["SCREW_M25_L"], 2.5, ("TS06-FASCIA",)))
+    for x, y in G["rear_screws"]:
+        S.append(("rear panel into the %s" % ("base" if y < 0 else "top plate"), "M2.5 x %g" % v["SCREW_M25_L"],
+                  (x, y, v["Z_REAR_OUT"]), (0.0, 0.0, -1.0), v["SCREW_M25_L"], 2.5, ()))
+    G["screws"] = S
 
 
 # ============================================================================ checks
@@ -503,11 +724,25 @@ def _rect(b):
     return [(b[4], b[2]), (b[5], b[2]), (b[5], b[3]), (b[4], b[3])]
 
 
+def sill_profile(G, x):
+    """The sill's (Z, Y) section at X = x: stepped back over the rotary, and with its lead-in where the
+    lowest LEDs pass."""
+    v = G["v"]
+    y0, y1, z1 = v["SILL_TOP_Y"] - v["SILL_T"], v["SILL_TOP_Y"], v["Z_BACK"]
+    z0 = v["SILL_NOTCH_Z"] if v["SILL_NOTCH_X0"] <= x <= v["SILL_NOTCH_X1"] else v["Z_SILL_F"]
+    if any(a <= x <= b for a, b in G["sill_leads"]):
+        li = v["LEADIN"]
+        return [(z0, y0), (z1 - li - 1, y0), (z1 - li - 1, y1 - li - 0.5), (z1, y1 - li - 0.5), (z1, y1 - li),
+                (z1 - li, y1), (z0, y1)]
+    return [(z0, y0), (z1, y0), (z1, y1), (z0, y1)]
+
+
 def occluders(G, x):
     """What stands between a point inside the case and a viewer in front, in the section at X = x.
     Tube glass is transparent and is not an occluder."""
     v = G["v"]
-    occ = [("brow", G["brow"]), ("fascia", G["fascia"]), ("base", G["base"]), ("sill", _rect(G["sill"])),
+    occ = [("brow", G["brow"]), ("top plate", G["top"]), ("fascia", G["fascia"]), ("base", G["base"]),
+           ("sill", sill_profile(G, x)),
            ("TS06-DISP", [(v["Z_DISP_F"], v["DISP_BOT_Y"]), (v["Z_DISP_B"], v["DISP_BOT_Y"]),
                           (v["Z_DISP_B"], v["DISP_TOP_Y"]), (v["Z_DISP_F"], v["DISP_TOP_Y"])])]
     if G["valance"][0] <= x <= G["valance"][1]:
@@ -548,7 +783,7 @@ def _fmt_runs(runs, lim=60.0):
     return "seen from " + ", ".join("%+.1f° to %+.1f°" % r for r in runs)
 
 
-def checks(G, G_lay):
+def checks(G, G_lay, G_ff=None):
     v, B = G["v"], G["B"]
     disp, drv, fas = B["disp"], B["drv"], B["fascia"]
     R = []
@@ -562,11 +797,16 @@ def checks(G, G_lay):
         clr = v["Z_REAR_IN"] - (v["Z_DRV_B"] + h)
         row("1", "rear panel vs %s (%s, %.1f tall)" % (ref, fp.replace("TS06_", ""), h),
             "%.1f mm clear" % clr, "OK" if clr >= v["REAR_AIR"] - 1e-6 else "FAIL", src)
+    if G["unknown_h"]:
+        row("1", "parts whose footprint FP_H does not list",
+            "; ".join("%s (%s): %.1f" % (ref, fp.replace("TS06_", ""), h) for ref, fp, h in G["unknown_h"]), "NOTE",
+            "height from the footprint's descr, or %.0f if it states none; add the footprint to FP_H" % UNKNOWN_H)
     vl = G_lay["v"]
+    h_l1 = next((p[3] for p in G["drv_parts"] if p[0] == "L1"), 0.0)
     row("1", "if U13, C7 and VT21 lie down (review finding 6)",
         "tallest becomes %.1f mm; rear panel %.1f mm further forward; outside depth %.1f"
         % (vl["PART_MAX"], v["Z_REAR_IN"] - vl["Z_REAR_IN"], vl["OUT_D"]), "NOTE",
-        "the Nano (%.1f) and L1 (16.0) then set the depth" % v["NANO_H"])
+        "the Nano (%.1f) and L1 (%.1f) then set the depth" % (v["NANO_H"], h_l1))
 
     # 2. the DC jack through the right cheek
     gap = v["X_IN_R"] - v["JACK_MOUTH_X"]
@@ -603,11 +843,15 @@ def checks(G, G_lay):
         "a closed 12 x 9 window would trap the module (receptacle %.1f mm inside it); the slot runs open to "
         "the cheek's rear edge (Z %.1f), closed by the rear panel" % (intrude, v["Z_REAR_IN"]), "OK",
         "added here - not in the review")
-    top_l = max(y for x, y in G["rear_screws"] if x < 0)
-    row("3", "rear-panel screw (left cheek, top) vs the USB slot",
-        "screw at Y %.1f, slot top Y %.2f: %.2f mm to an Ø4 insert's edge"
-        % (top_l, v["USB_Y"] + v["USB_SLOT_W"] / 2, top_l - 2.0 - (v["USB_Y"] + v["USB_SLOT_W"] / 2)), "OK",
-        "at Y_TOP - 10 it would have landed in the slot")
+    slot_top = v["USB_Y"] + v["USB_SLOT_W"] / 2
+    near = [(y, z) for n, y, z in G["cheek_fix"]]
+    dmin = min(math.hypot(max(0.0, abs(y - v["USB_Y"]) - v["USB_SLOT_W"] / 2),
+                          max(0.0, (v["USB_Z"] - v["USB_SLOT_H"] / 2) - z, z - v["Z_REAR_IN"])) - v["CB_D"] / 2
+               for y, z in near)
+    row("3", "left cheek's screw holes vs the USB slot",
+        "the rear panel no longer screws into the cheek; the nearest cheek counterbore (Ø%g) is %.1f mm from the slot "
+        "(slot Y %.2f..%.2f)" % (v["CB_D"], dmin, v["USB_Y"] - v["USB_SLOT_W"] / 2, slot_top),
+        "OK" if dmin >= 1.5 else "TIGHT", "")
 
     # 4. brow vs tube tops at the viewing angle
     th = math.radians(v["VIEW_DEG"])
@@ -646,19 +890,30 @@ def checks(G, G_lay):
     r_ = view_range(G, disp["parts"]["XP21"]["at"][0] + 2.54, (zt, xp2[3]))
     row("5", "XP21-25 joints (pad top Y %.2f) behind the sill (top Y %.1f)" % (xp2[3], v["SILL_TOP_Y"]),
         _fmt_runs(r_), "OK" if not r_ or min(abs(a) for a, b in r_) > 30 else "TIGHT")
+    xps = [disp["parts"][k]["pads"][:2] for k in sorted(disp["parts"]) if k.startswith("XP2")]
+    gx = min(max(a - pb, pa - b) for a, b in G["sill_leads"] for pa, pb in xps) if G["sill_leads"] else 99.0
+    row("5", "sill lead-ins (F8) vs the XP21-25 pads behind the sill",
+        "lead-ins only at X %s, where the lowest LEDs pass; %.2f mm from the nearest XP2x pad in X"
+        % (", ".join("%.1f-%.1f" % s for s in G["sill_leads"]), gx), "OK" if gx >= 2.0 else "TIGHT",
+        "a full-width 45° x %g lead-in would let the joints be seen from ~20° to ~52° above" % v["LEADIN"])
     xp11 = disp["parts"]["XP11"]["pads"]
-    a_pad = math.degrees(math.atan((v["TRENCH_L_X"] - xp11[1]) / (v["Z_DISP_F"] - v["Z_BACK"])))
-    a_tip = math.degrees(math.atan((v["TRENCH_L_X"] - xp11[1]) / (v["Z_DISP_F"] - v["PIN_TAIL"] - v["Z_BACK"])))
+    zc = v["Z_BACK"] - (v["LEADIN"] if G["wall_l_lead"] else 0.0)    # the wall's inner face ends here
+    a_pad = math.degrees(math.atan((v["TRENCH_L_X"] - xp11[1]) / (v["Z_DISP_F"] - zc)))
+    a_tip = math.degrees(math.atan((v["TRENCH_L_X"] - xp11[1]) / (v["Z_DISP_F"] - v["PIN_TAIL"] - zc)))
+    a_tip0 = math.degrees(math.atan((v["TRENCH_L_X"] - xp11[1]) / (v["Z_DISP_F"] - v["PIN_TAIL"] - v["Z_BACK"])))
     row("5", "XP11 joints (pads X %.2f..%.2f) behind the left trench wall (X %.1f)" % (xp11[0], xp11[1], v["TRENCH_L_X"]),
         "hidden head-on and from the left; from the right past %.1f° (joint tip) / %.1f° (pad edge), "
-        "and then only through H10's glass" % (a_tip, a_pad), "OK")
+        "and then only through H10's glass" % (a_tip, a_pad), "OK",
+        "the wall's %g mm lead-in (F8) brings this down from %.1f° (joint tip)" % (v["LEADIN"], a_tip0)
+        if G["wall_l_lead"] else "")
 
     # 6. clearances that are tight
     h10_l = disp["IN12_X"][0] - v["IN12_W"] / 2
     v10_r = disp["IN15_X"][1] + v["IN12_W"] / 2
     row("6", "left trench wall vs H10 glass", "%.3f mm nominal, %.3f mm with the +%.1f glass allowance"
         % (h10_l - v["TRENCH_L_X"], h10_l - v["TRENCH_L_X"] - v["GLASS_ALLOW"], v["GLASS_ALLOW"]),
-        "TIGHT", "set by the review's 3 mm; the trench coupon test (cad library §5) decides it")
+        "TIGHT", "set by the review's 3 mm; the trench coupon test (cad library §5) decides it. Its rear edge "
+        "has a 45° x %g lead-in (F8)" % v["LEADIN"])
     gap_r = v["TRENCH_R_X"] - v10_r
     row("6", "right trench wall vs ИН-15А (V10) glass", "%.3f mm nominal, %.3f mm with the +%.1f glass allowance"
         % (gap_r, gap_r - v["GLASS_ALLOW"], v["GLASS_ALLOW"]),
@@ -666,7 +921,8 @@ def checks(G, G_lay):
     led_lo = min(p["at"][1] for k, p in disp["parts"].items() if k.startswith("HL")) - v["LED_FLANGE_D"] / 2
     row("6", "sill top vs the lowest LED flange (HL5/HL6, under the ИН-17s)",
         "%.2f mm (flange bottom Y %.2f)" % (led_lo - v["SILL_TOP_Y"], led_lo), "TIGHT" if led_lo - v["SILL_TOP_Y"] < 1 else "OK",
-        "the ИН-17 LEDs sit 1.0 lower than the ИН-12 ones")
+        "the ИН-17 LEDs sit 1.0 lower than the ИН-12 ones. The sill's rear edge has a 45° x %g lead-in under them (F8)"
+        % v["LEADIN"])
     row("6", "sill top vs the XP21-25 pads", "%.2f mm above the pad tops" % (v["SILL_TOP_Y"] - xp2[3]), "OK")
     in17_bot = v["IN17_Y"] - v["IN17_H"] / 2
     row("6", "sill / fascia top vs the lowest glass (ИН-17 bottom Y %.2f)" % in17_bot,
@@ -696,6 +952,20 @@ def checks(G, G_lay):
     sweep.append("sill %.2f under the lowest LED flange" % (led_lo - v["SILL_TOP_Y"]))
     row("7", "module withdrawal sweep (tubes, LEDs, TS06-DISP)", "; ".join(sweep), "OK",
         "a full-width valance down to Y %.1f would stop the ИН-12s coming out" % v["VALANCE_Y0"])
+    li = v["LEADIN"]
+    row("7", "lead-ins on the rear edges the module passes within %g mm (F8)" % v["LEADIN_BELOW"],
+        "45° x %g: the soffit's rear edge (0.80 over the tall glass; a %.1f lip carries it), the left trench wall's "
+        "inner rear edge (%.3f from H10), the sill's rear edge at X %s (%.2f under HL5/HL6's flanges); and the new "
+        "trench blocks' rear top edges" % (li, v["SOFFIT_T"], h10_l - v["TRENCH_L_X"],
+                                           ", ".join("%.1f-%.1f" % s for s in G["sill_leads"]), led_lo - v["SILL_TOP_Y"]),
+        "OK", "the module rides up a lead-in if it comes in up to %g mm off" % li)
+    blk = [b for b in G["blocks"] if b[0] == "trench"][0]
+    row("7", "sweep past the new blocks (F7)",
+        "trench blocks %.2f under H10's and ИН-15А's glass (X %.1f-%.1f and %.1f-%.1f); top plate's rear lip %.2f over "
+        "TS06-DRV's top edge; base blocks and lip %.2f under its bottom edge"
+        % (v["IN12_BOT"] - blk[2], G["block_x"][0], G["block_x"][1], v["X_IN_R"] - v["END_BLOCK"], v["X_IN_R"],
+           v["TOP_LIP_Y0"] - v["DRV_TOP_Y"], v["DRV_BOT_Y"] - (v["Y_FLOOR"] + v["END_BLOCK"])),
+        "OK", "the top lip keeps the review's %.1f, the same as each cheek; FR4 edge on plastic, not glass" % v["MOD_CLR"])
 
     # 8. the fascia lead
     row("8", "fascia J1 (side entry, lead towards the bottom edge) vs the floor",
@@ -711,7 +981,7 @@ def checks(G, G_lay):
     slack = v["LEAD_LEN"] - v["LEAD_PATH"]
     row("8", "fascia lead length", "path %.0f mm (plug to plug, diagonal on the floor) vs a %.0f mm lead: %.0f mm slack"
         % (v["LEAD_PATH"], v["LEAD_LEN"], slack), "TIGHT" if slack < 40 else "OK",
-        "the module has to come back ~30 mm before DRV J1 can be reached from below: use 180-200 mm")
+        "the module has to come back ~30 mm before DRV J1 can be reached from below; the BOM's 180-200 mm allows it")
     z_top = v["Z_DRV_F"] - v["J1_MATED_H"]
     for ref, x, t, a, b_, dep in G["bodies"]:
         cs = [G["fpt"](tt, ss) for tt in (t - b_ / 2, t + b_ / 2) for ss in (v["FASCIA_T"], v["FASCIA_T"] + dep)]
@@ -752,6 +1022,10 @@ def checks(G, G_lay):
         row("8", "SW5 КМД1 body (%g across x %g down) vs the fascia hole at (%.1f, %.1f)" % (a, b, hole[0], hole[1]),
             "%.2f mm from the hole centre to the body; an M2.5 nut or insert boss needs ~3" % dist,
             "TIGHT" if dist < 3.0 else "OK", "the КМД1's orientation and third dimension are not captured")
+    sl, sr = v["FASCIA_X0"] - v["X_IN_L"], v["X_IN_R"] - (v["FASCIA_X0"] + v["FASCIA_W"])
+    row("8", "open slots beside the fascia, between its edges and the cheeks",
+        "%.2f mm left, %.2f mm right, the fascia's full height: TS06-DRV shows through" % (sl, sr), "NOTE",
+        "variant D closes them (section 12)")
 
     # 9. the ИН-17 stems against each other and against the glass either side, in the board plane
     p17 = disp["IN17_X"][1] - disp["IN17_X"][0]
@@ -766,6 +1040,221 @@ def checks(G, G_lay):
         "FAIL" if worst < 0 else "TIGHT" if worst < 0.5 else "OK",
         "Rev F's 20.5 (stem + 0.5); TS06-DISP was re-spaced to it on 29.09.26, having carried the "
         "FreeCAD 13.0 until then. The stem is the drawing's Ø20 (one caliper reading: 19.30): gate 5")
+
+    # 10. the fixings (case review F7, F9)
+    EB, ri = v["END_BLOCK"], v["INS_M3_D"] / 2
+    bx = G["block_x"][1] - G["block_x"][0]
+    for name, y0, y1, z0, z1, y, z in G["blocks"]:
+        wall = min(y - y0, y1 - y, z - z0, z1 - z, bx - (v["INS_M3_L"] + 0.5) + ri) - ri
+        ok = min(bx, y1 - y0, z1 - z0) >= EB - 1e-6 and wall >= v["INS_WALL_MIN"] - 1e-6
+        row("10", "end blocks for the cheek screws into the %s" % name,
+            "%.1f x %.1f x %.1f mm (X x Y x Z) at each cheek; M3 insert at Y %.2f, Z %.2f, %.2f mm of wall round it"
+            % (bx, y1 - y0, z1 - z0, y, z, wall), "OK" if ok else "FAIL",
+            {"base, front": "was a Ø3.4 hole at Y -8.8 on the edge of the 3 mm base",
+             "top plate, front": "was a Ø3.4 hole at Y 108.5 on the edge of the 3 mm top bar",
+             "trench": "was an M3 x 8 into the 3.5 mm left wall, its tip at X 3.5, 0.025 from H10's glass (3.475)"}
+            .get(name, ""))
+    groups = {}
+    for s in G["screws"]:
+        c, what = _screw_clear(G, s)
+        g0 = groups.setdefault(s[0], [s[1], 0, 99.0, ""])
+        g0[1] += 1
+        if c < g0[2]:
+            g0[2], g0[3] = c, what
+    for name, (spec, n, c, what) in groups.items():
+        row("10", "screw vs glass and boards: %s (%d x %s)" % (name, n, spec),
+            "%.2f mm from %s at the closest" % (c, what), "OK" if c >= v["TIP_CLR_MIN"] - 1e-6 else "FAIL",
+            "the whole shank, not only its tip; the boards it clamps are left out")
+    span = v["X_IN_R"] - v["X_IN_L"]
+    err = span * v["PRINT_SHRINK"] / 100
+    row("10", "printed crossmembers set the cheek spacing, FR4 hole patterns span it (F9)",
+        "%.1f mm between the cheeks: %.2f mm short at %.1f%% shrink; TS06-DRV's H5-H8 (Ø3.2 for M3) float 0.1 a side"
+        % (span, err, v["PRINT_SHRINK"]), "NOTE",
+        "screw the module in first, so the DRV locates the cheeks, then the crossmembers; scale the crossmembers "
+        "+%.1f%% in X in the slicer. The rear panel's holes are slotted ±%.1f along X" % (v["PRINT_SHRINK"], v["SLOT_X"]))
+
+    # 11. the rear panel (case review m4)
+    xs = sorted({x for x, y in G["rear_screws"]})
+    row("11", "rear panel fixings",
+        "%d x M2.5: X %s, along the bottom (base lip, Y %.1f) and the top (top plate's lip, Y %.1f); longest free edge "
+        "%.1f mm (was %.1f between the corner screws)"
+        % (len(G["rear_screws"]), ", ".join("%.1f" % x for x in xs), v["FIX_BASE_Y"], v["FIX_TOP_Y"],
+           max(b - a for a, b in zip(xs, xs[1:])), v["X_OUT_R"] - v["X_OUT_L"] - v["CHEEK_T"]), "OK",
+        "none into the cheeks' side edges: see the next row")
+    r25 = v["INS_M25_D"] / 2
+    walls = []
+    for part, (y0, y1, z0, z1) in G["rear_lips"].items():
+        for x, y in G["rear_screws"]:
+            if y0 <= y <= y1:
+                walls.append((min(y - y0, y1 - y, x - v["X_IN_L"], v["X_IN_R"] - x) - r25, part))
+    w, part = min(walls)
+    row("11", "walls round the rear panel's M2.5 inserts (Ø%g)" % v["INS_M25_D"],
+        "%.2f mm at the least (%s lip, %g deep)" % (w, part, EB), "OK" if w >= v["INS_WALL_MIN"] - 1e-6 else "FAIL",
+        "in a cheek's 6 mm rear edge, where the corner screws were, the same insert has %.2f mm"
+        % ((v["CHEEK_T"] - v["INS_M25_D"]) / 2))
+    hv = _hv_under(G, v["VENT_X0"], v["VENT_X1"])
+    hv_old = _hv_under(G, 100.0, 130.0)
+    row("11", "rear-panel vents vs 185 V parts (a pad on an HV-class net in mkpcb_drv)",
+        "%d slots at X %.1f-%.1f, Y %.0f-%.0f, over U1 (the Nano); %s within %g mm"
+        % (len(G["vents"]), v["VENT_X0"], G["vents"][-1][1], v["VENT_Y0"], v["VENT_Y1"],
+           ", ".join(hv) if hv else "no 185 V part", v["VENT_HV_CLR"]), "FAIL" if hv else "OK",
+        "at X 100-130 the field sat over %s" % ", ".join(hv_old))
+    row("11", "rear panel holes vs the print error (F9)",
+        "Ø%g slotted ±%.1f along X; the lips' inserts drift up to %.2f at %.1f%% shrink"
+        % (v["REAR_HOLE_D"], v["SLOT_X"], (xs[-1] - xs[0]) / 2 * v["PRINT_SHRINK"] / 100, v["PRINT_SHRINK"]),
+        "OK", "")
+
+    # 12. variant D: the fascia frame (FASCIA_FRAME=1)
+    if G_ff is not None:
+        R += checks_frame(G_ff)
+    return R
+
+
+def _glass_and_boards(G):
+    """Glass (nominal envelopes) and boards, as world boxes (X0, X1, Y0, Y1, Z0, Z1); the fascia in its own raked
+    frame (X, t, s)."""
+    v = G["v"]
+    out = []
+    for nm, kind, x, y, w, h, z0, z1 in _tubes(G):
+        if kind == "ИН-17":
+            w = h = v["IN17_STEM"]
+        out.append(("%s's glass" % nm, (x - w / 2, x + w / 2, y - h / 2, y + h / 2, z0, z1), False))
+    for x, y in G["B"]["disp"]["COLON"]:
+        rr = v["INS1_D"] / 2
+        out.append(("an ИНС-1", (x - rr, x + rr, y - rr, y + rr, 2.0, v["Z_DISP_F"]), False))
+    out.append(("TS06-DISP", (0, v["BOARD_W"], v["DISP_BOT_Y"], v["DISP_TOP_Y"], v["Z_DISP_F"], v["Z_DISP_B"]), False))
+    out.append(("TS06-DRV", (0, v["BOARD_W"], v["DRV_BOT_Y"], v["DRV_TOP_Y"], v["Z_DRV_F"], v["Z_DRV_B"]), False))
+    out.append(("TS06-FASCIA", (v["FASCIA_X0"], v["FASCIA_X0"] + v["FASCIA_W"], 0, v["FASCIA_H"], 0, v["FASCIA_T"]), True))
+    if v["FASCIA_FRAME"]:
+        ff = G["ff"]
+        out.append(("TS06-FASCIA", (ff["px0"], ff["px1"], 0, v["FF_PANEL_H"], 0, v["FASCIA_T"]), True))
+    return out
+
+
+def _screw_clear(G, s):
+    """Least distance from a screw's shank to glass or a board it does not pass through, and what that is."""
+    v = G["v"]
+    name, spec, p0, ax, L, dia, through = s
+    r = math.radians(v["FASCIA_RAKE"])
+    best = (99.0, "")
+    for what, b, raked in _glass_and_boards(G):
+        if what in through:
+            continue
+        m = 99.0
+        for i in range(61):
+            X, Y, Z = (p0[k] + ax[k] * L * i / 60 for k in range(3))
+            if raked:
+                dy, dz = v["SILL_TOP_Y"] - Y, Z - v["Z_FACE"]
+                Y, Z = dy * math.cos(r) - dz * math.sin(r), dy * math.sin(r) + dz * math.cos(r)
+            d = math.sqrt(max(b[0] - X, 0, X - b[1]) ** 2 + max(b[2] - Y, 0, Y - b[3]) ** 2 + max(b[4] - Z, 0, Z - b[5]) ** 2)
+            m = min(m, d)
+        if m - dia / 2 < best[0]:
+            best = (m - dia / 2, what)
+    return best
+
+
+def _hv_under(G, x0, x1):
+    """185 V parts whose courtyard comes within VENT_HV_CLR of a vent field X x0-x1, Y VENT_Y0-VENT_Y1."""
+    v = G["v"]
+    c = v["VENT_HV_CLR"]
+    return sorted(ref for ref, p in G["B"]["drv"]["parts"].items()
+                  if p.get("hv") and not p["back"] and p["box"][0] < x1 + c and p["box"][1] > x0 - c
+                  and p["box"][2] < v["VENT_Y1"] + c and p["box"][3] > v["VENT_Y0"] - c)
+
+
+def checks_frame(G):
+    """Section 12: variant D, the fascia frame - what it changes against the cheek-boss mounting."""
+    v, B = G["v"], G["B"]
+    fas, ff = B["fascia"], G["ff"]
+    R = []
+
+    def row(what, result, status, note=""):
+        R.append({"id": "12", "what": "D: " + what, "result": result, "status": status, "note": note})
+
+    x0 = v["FASCIA_X0"]
+    row("the frame",
+        "a printed frame between the cheeks, raked %g°: pocket X %.3f-%.3f (continuing the trench walls) for a %g x %g "
+        "panel; a rabbet ledge %g wide behind its sides and bottom, a top rail %g under the sill; ribs at X %s; the "
+        "panel on 4 x M2.5 into bosses at (X, down the face) %s; one M3 from each cheek into the frame's end blocks; "
+        "the sill tied down to the rib heads"
+        % (v["FASCIA_RAKE"], ff["x0"], ff["x1"], v["FF_PANEL_W"], v["FF_PANEL_H"], v["FF_LEDGE"], v["FF_TOP"],
+           ", ".join("%.1f" % x for x in ff["ribs"]), ", ".join("(%.1f, %.1f)" % h for h in ff["holes"])), "NOTE",
+        "replaces the four bosses cantilevered from the cheeks. There is no 179 board yet: the 176 board stands in, at "
+        "its own X %.3f-%.3f, and its holes do not meet the frame's" % (x0, x0 + v["FASCIA_W"]))
+    # R5, against the boss for the panel's bottom-left screw and the left ledge
+    r5 = fas["parts"]["R5"]["box"]
+    r5x0, r5t0, r5t1 = r5[0] + x0, r5[2], r5[3]
+    near = [(math.hypot(max(0.0, r5x0 - hx - 0.0, hx - (r5[1] + x0)), max(0.0, r5t0 - ht, ht - r5t1)) - ff["boss_r"], hx, ht)
+            for hx, ht in ff["holes"]]
+    g5, hx, ht = min(near)
+    g5l = r5x0 - (ff["x0"] + v["FF_LEDGE"])
+    row("fascia boss vs R5 (stand-in, back face)",
+        "%.2f mm from the boss at (%.1f, %.1f) (Ø%.1f) to R5's courtyard; the left ledge %.2f from it"
+        % (g5, hx, ht, 2 * ff["boss_r"], g5l), "FAIL" if g5 < 0 else "TIGHT" if g5 < 1.0 else "OK",
+        "today, the cheek boss: -1.20 mm, on R5's pad (FAIL)")
+    # SW5, against everything of the frame behind the panel
+    sw5 = next(b for b in G["bodies"] if b[0] == "SW5")
+    res, worst = [], 99.0
+    for a, b in ((v["KMD1_A"], v["KMD1_B"]), (v["KMD1_B"], v["KMD1_A"])):
+        bx0, bx1, bt0, bt1 = sw5[1] - a / 2, sw5[1] + a / 2, sw5[2] - b / 2, sw5[2] + b / 2
+        d_rail = bt0 - v["FF_TOP"]
+        d_ledge = (ff["x1"] - v["FF_LEDGE"]) - bx1
+        d_boss = min(math.hypot(max(0.0, bx0 - hx, hx - bx1), max(0.0, bt0 - ht, ht - bt1)) - ff["boss_r"] for hx, ht in ff["holes"])
+        d_rib = min(max(bx0 - (x + v["FF_RIB_W"] / 2), (x - v["FF_RIB_W"] / 2) - bx1) for x in ff["ribs"])
+        m = min(d_rail, d_ledge, d_boss, d_rib)
+        worst = min(worst, m)
+        res.append("%g across: %.2f (top rail %.2f, right ledge %.2f, nearest boss %.2f)" % (a, m, d_rail, d_ledge, d_boss))
+    row("SW5 КМД1 body vs the frame", "; ".join(res), "FAIL" if worst < 0 else "TIGHT" if worst < 1.0 else "OK",
+        "today, the top-right cheek boss: 1.22 / 2.62 mm from its hole centre (TIGHT). The frame puts no screw in that "
+        "corner: the panel's top screws sit over the ribs")
+    # the slots beside the fascia
+    sl0, sr0 = x0 - v["X_IN_L"], v["X_IN_R"] - (x0 + v["FASCIA_W"])
+    fit = ((ff["x1"] - ff["x0"]) - v["FF_PANEL_W"]) / 2
+    sl, sr = x0 - ff["x0"], ff["x1"] - (x0 + v["FASCIA_W"])
+    row("slots beside the fascia",
+        "the %g panel: %.3f a side; the 176 stand-in: %.2f left, %.2f right, with the frame's %g ledge behind both "
+        "(it overlaps the stand-in by %.2f / %.2f), so TS06-DRV no longer shows"
+        % (v["FF_PANEL_W"], fit, sl, sr, v["FF_LEDGE"], v["FF_LEDGE"] - sl, v["FF_LEDGE"] - sr),
+        "OK" if min(v["FF_LEDGE"] - sl, v["FF_LEDGE"] - sr) > 0 else "FAIL",
+        "today: %.2f left and %.2f right, open" % (sl0, sr0))
+    row("the %g panel in the pocket" % v["FF_PANEL_W"],
+        "pocket %.3f wide (the trench walls' X): %.4f mm a side" % (ff["x1"] - ff["x0"], fit),
+        "TIGHT" if fit < 0.15 else "OK", "a printed pocket wants ~0.2 a side: make the board 178.6, or ease the pocket's "
+                                         "sides by 0.2 and let the seam sit 0.2 off the walls")
+    # ribs and bosses against what stands behind the stand-in
+    gaps = []
+    for x in ff["ribs"]:
+        for a, b, ref in ff["keep"]:
+            gaps.append((max(a - (x + max(v["FF_RIB_W"] / 2, ff["boss_r"])), (x - max(v["FF_RIB_W"] / 2, ff["boss_r"])) - b), ref, x))
+    g, ref, x = min(gaps)
+    row("ribs (with their boss and tie heads) vs the stand-in's controls and back-side parts",
+        "%.2f mm, the rib at X %.1f to %s" % (g, x, ref), "OK" if g >= 1.0 else "TIGHT" if g >= 0 else "FAIL",
+        "set in the two widest gaps between the stand-in's parts; the 179 board has to leave them free")
+    row("frame vs the rotary and the fascia's J1",
+        "top rail cut over X %.1f-%.1f, as the sill is (the rotary's rim); bottom ledge cut over X %.1f-%.1f for J1's "
+        "plug and lead" % (ff["rot_notch"] + ff["j1_notch"]), "OK", "")
+    row("the sill",
+        "bears on the frame's top rail across the width (not over the rotary) and is screwed down into the %d rib "
+        "heads (M2.5, countersunk into the sill's top)" % len(ff["ribs"]), "OK",
+        "assemble the frame and the trench on the bench first, then fit them between the cheeks")
+    # the frame's own fixings: its end blocks, and every screw that is new or moved
+    EB, ri = v["END_BLOCK"], v["INS_M3_D"] / 2
+    wall = min(EB / 2, EB) - ri
+    row("end blocks for the cheek screws into the frame",
+        "%.1f x %.1f x %.1f mm (X x down the face x behind the panel); M3 insert at Y %.2f, Z %.2f, %.2f mm of wall"
+        % (EB, 2 * EB, EB, v["FF_FIX_Y"], v["FF_FIX_Z"], wall), "OK" if wall >= v["INS_WALL_MIN"] else "FAIL", "")
+    groups = {}
+    for s in G["screws"]:
+        if "frame" not in s[0]:
+            continue
+        c, what = _screw_clear(G, s)
+        g0 = groups.setdefault(s[0], [s[1], 0, 99.0, ""])
+        g0[1] += 1
+        if c < g0[2]:
+            g0[2], g0[3] = c, what
+    for name, (spec, n, c, what) in groups.items():
+        row("screw vs glass and boards: %s (%d x %s)" % (name, n, spec), "%.2f mm from %s at the closest" % (c, what),
+            "OK" if c >= v["TIP_CLR_MIN"] - 1e-6 else "FAIL", "the stand-in and the 179 outline both counted")
     return R
 
 
@@ -814,9 +1303,18 @@ def write_scad(G, d, path):
     L.append("FASCIA_CTRL  = %s;  // board: SW1-SW5 [ref, x, y, panel hole]" % _scad(ctl))
     L.append("FJ_BOX       = %s;  // board: fascia J1 courtyard [x0, x1, y0, y1], back face" % _scad(fas["parts"]["J1"]["box"]))
     L.append("LEAD = %s;  // derived: fascia lead centre line [X, Y, Z]" % _scad([[round(c, 2) for c in p] for p in G["lead"]]))
+    ff = G["ff"]
+    L.append("FF_RIB_X = %s;  // derived (variant D): the frame's ribs, in the two widest gaps between the stand-in's "
+             "controls and back-side parts" % _scad(ff["ribs"]))
+    L.append("FF_HOLES = %s;  // derived (variant D): the 179 panel's M2.5 holes [X, down the face]: over the ribs, and "
+             "its bottom corners" % _scad([[round(c, 3) for c in h] for h in ff["holes"]]))
     L += ["", "// ---- derived in case_pair.py; case.scad derives the same and echoes it for comparison"]
-    for k in ("Z_DISP_F", "Z_DRV_B", "PART_MAX", "Z_REAR_IN", "SOFFIT_Y", "Y_FLOOR", "Z_TOE", "OUT_W", "OUT_H", "OUT_D"):
+    for k in ("Z_DISP_F", "Z_DRV_B", "PART_MAX", "Z_REAR_IN", "SOFFIT_Y", "Y_FLOOR", "Z_TOE", "OUT_W", "OUT_H", "OUT_D",
+              "SILL_NOTCH_Z", "SILL_NOTCH_X0", "FIX_BASE_Y", "WALL_BLK_Y0", "WALL_BLK_Y1", "FIX_BROW_Y", "FIX_BROW_Z",
+              "FIX_TOP_Y", "TOP_LIP_Y0", "FF_FIX_Y", "FF_FIX_Z"):
         L.append("PY_%-12s = %s;" % (k, _scad(round(v[k], 3))))
+    L.append("PY_%-12s = %s;" % ("SILL_LEAD_X0", _scad(round(G["sill_leads"][0][0], 3))))
+    L.append("PY_%-12s = %s;" % ("REAR_SCREWS", _scad(len(G["rear_screws"]))))
     with open(path, "w", encoding="utf8") as fh:
         fh.write("\n".join(L) + "\n")
 
@@ -929,7 +1427,7 @@ def _tubes(G):
 def draw_front(G):
     v, disp, fas = G["v"], G["B"]["disp"], G["B"]["fascia"]
     M, MT = 34.0, 26.0
-    W, H = v["OUT_W"] + 2 * M + 30, v["OUT_H"] + MT + 40
+    W, H = v["OUT_W"] + 2 * M + 30, v["OUT_H"] + MT + 44
     f = lambda X, Y: (X - v["X_OUT_L"] + M, v["Y_TOP"] - Y + MT)
     S = Sheet(W, H, "TS06 PAIR CASE - FRONT ELEVATION  1:1",
               "concept A · outside %.1f W x %.1f H x %.1f D mm · world X/Y of the FreeCAD assembly"
@@ -969,9 +1467,10 @@ def draw_front(G):
         S.box(x - w / 2, x + w / 2, y - h / 2, y + h / 2, fill=GLASS, stroke=GLASS_E, sw=0.35, op=0.9)
         dg = v["IN17_DIGIT"] if kind == "ИН-17" else v["IN12_DIGIT"]
         S.text(x, y - dg / 2 + 0.2, glyph[nm], dg * 1.28, "#E8590C", "middle", "300")
-    # trench walls and the brow
+    # trench walls, the blocks under H10 and ИН-15А (F7), and the brow
     S.box(v["X_IN_L"], v["TRENCH_L_X"], v["SILL_TOP_Y"], v["SOFFIT_Y"], fill=CASE)
     S.box(v["TRENCH_R_X"], v["X_IN_R"], v["SILL_TOP_Y"], v["SOFFIT_Y"], fill=CASE)
+    S.box(v["X_IN_L"], v["X_IN_L"] + v["END_BLOCK"], v["SILL_TOP_Y"], v["WALL_BLK_Y1"], fill=CASE)
     S.box(v["X_IN_L"], v["X_IN_R"], v["SOFFIT_Y"], v["Y_TOP"], fill=BRIGHT, stroke=INK, sw=0.35)
     # hidden: the boards, the bosses, the openings at the ends
     S.box(0, v["BOARD_W"], v["DRV_BOT_Y"], v["DRV_TOP_Y"], stroke=MUTE, dash="1.2 0.8", sw=0.2)
@@ -985,9 +1484,11 @@ def draw_front(G):
     S.label((v["X_OUT_R"] - 3, v["JACK_Y"]), (v["X_OUT_R"] + 6, v["JACK_Y"] + 6), "12 V jack, right cheek", RED, 2.2)
     S.label((v["X_OUT_L"] + 3, v["USB_Y"]), (v["X_OUT_L"] - 6, v["USB_Y"] + 10), "USB, left cheek", RED, 2.2, "end")
     # labels
-    S.label((140, 100), (140, v["Y_TOP"] + 6), "brow + top bar (safety orange, spec §6) hides TS06-DRV's top band", INK, 2.4)
+    S.label((140, 100), (140, v["Y_TOP"] + 6), "brow (safety orange, spec §6) hides TS06-DRV's top band; black top "
+            "plate behind it", INK, 2.4)
     S.label((1.5, 60), (-20, 66), "trench wall", INK, 2.2, "end")
-    S.label((20, 16), (20, v["Y_BOT"] - 6), "TS06-FASCIA 176 x 40, raked 12°", INK, 2.2)
+    S.label((20, 16), (20, v["Y_BOT"] - 6), "TS06-FASCIA %g x %g, raked %g°, 4 x M2.5 x 6"
+            % (v["FASCIA_W"], v["FASCIA_H"], v["FASCIA_RAKE"]), INK, 2.2)
     S.label((100, (v["Y_FLOOR"] + v["FAS_BOT_Y"]) / 2), (100, v["Y_BOT"] - 6), "kick strip (base)", INK, 2.2)
     # dimensions
     yb = v["Y_BOT"]
@@ -1005,7 +1506,10 @@ def draw_front(G):
                   "the jack and USB openings in the cheeks, the fascia connector J1 (violet)."
                   % (v["DRV_BOT_Y"], v["DRV_TOP_Y"], v["DISP_BOT_Y"], v["DISP_TOP_Y"]),
                   "Chain on the right, bottom up: base, kick strip, fascia (projected), trench window, brow. "
-                  "Fascia registered at X 0-176 like the boards (the FreeCAD assembly has it ~7 mm off - open)."])
+                  "Fascia centred under the tube row, X %.1f-%.1f (the FreeCAD assembly has it elsewhere: review 5)."
+                  % (v["FASCIA_X0"], v["FASCIA_X0"] + v["FASCIA_W"]),
+                  "The grey step under H10 is the trench's end block (%g mm, an M3 x %g from the cheek into its insert); "
+                  "its twin under ИН-15А sits inside the right wall." % (v["END_BLOCK"], v["SCREW_M3_L"])])
 
 
 def draw_section(G):
@@ -1025,12 +1529,32 @@ def draw_section(G):
         if b[7] < 88:
             S.box(b[5], b[6], b[3], b[4], fill="#E3E8ED", stroke=MUTE, sw=0.25)
             S.text(b[5] + 0.5, b[4] + 1.0, "boss " + b[0], 1.8, MUTE)
+    # beyond the cut, at the left cheek: the end blocks (F7), and the cheek screws M3 x 8 into their inserts
+    for name, y0, y1, z0, z1, y, z in G["blocks"]:
+        S.box(z0, z1, y0, y1, fill="#E3E8ED", stroke=MUTE, sw=0.2, dash="0.8 0.5")
+    for name, y, z in G["cheek_fix"]:
+        S.circle(z, y, v["CB_D"] / 2, stroke=RED, sw=0.25)
+        S.circle(z, y, v["CLR_M3"] / 2, fill="#FFFFFF", stroke=RED, sw=0.25)
+    rc = v["CB_D"] / 2
+    where = {"base, front": (0, rc + 1.2, "middle"), "base, rear": (0, rc + 1.2, "middle"),
+             "trench": (0, -rc - 2.4, "middle"), "brow": (0, -rc - 2.4, "middle"),
+             "top plate, front": (0, -rc - 2.4, "middle"), "top plate, rear": (-rc - 1.0, -0.7, "end")}
+    for name, y, z in G["cheek_fix"]:
+        dz, dy, anc = where.get(name, (0, -rc - 2.4, "middle"))
+        S.text(z + dz, y + dy, "M3 x %g" % v["SCREW_M3_L"], 1.8, RED, anc)
     # cut: the case
     S.poly(G["base"], fill=CASE_CUT, sw=0.3)
+    for part, (y0, y1, z0, z1) in G["rear_lips"].items():          # the rear lips run the full width: cut here
+        S.box(z0, z1, y0, y1, fill=CASE_CUT if part == "base" else "#57606A", sw=0.3)
     S.poly(G["fascia"], fill=BOARD, stroke=BOARD_E, sw=0.3)
-    S.box(G["sill"][4], G["sill"][5], G["sill"][2], G["sill"][3], fill=CASE_CUT, sw=0.3)
+    S.poly(sill_profile(G, disp["IN12_X"][2]), fill=CASE_CUT, sw=0.3)
     S.poly(G["brow"], fill=BRIGHT, sw=0.3)
+    S.poly(G["top"], fill="#57606A", sw=0.3)
     S.box(v["Z_REAR_IN"], v["Z_REAR_OUT"], v["Y_BOT"], v["Y_TOP"], fill=BOARD, stroke=BOARD_E, sw=0.3)
+    for x, y in G["rear_screws"][:1] + G["rear_screws"][3:4]:     # the rear panel's screws (beyond, at X 3.5)
+        S.box(v["Z_REAR_OUT"] - v["SCREW_M25_L"], v["Z_REAR_OUT"], y - 1.25, y + 1.25, stroke=RED, sw=0.25, dash="0.6 0.4")
+        S.text(v["Z_REAR_OUT"] - 1, v["Y_TOP"] + 1.5 if y > 0 else v["Y_BOT"] - 3.2,
+               "rear panel: 3 x M2.5 x %g along this edge" % v["SCREW_M25_L"], 1.8, RED, "end")
     # cut: the stack
     S.box(v["Z_DISP_F"], v["Z_DISP_B"], v["DISP_BOT_Y"], v["DISP_TOP_Y"], fill="#2E7D5B", stroke=INK, sw=0.25)
     S.box(v["Z_DRV_F"], v["Z_DRV_B"], v["DRV_BOT_Y"], v["DRV_TOP_Y"], fill="#2E7D5B", stroke=INK, sw=0.25)
@@ -1064,7 +1588,7 @@ def draw_section(G):
     S.text(11, v["IN17_Y"] - v["IN17_H"] / 2 + 1.5, "ИН-17 (phantom)", 1.8, PHANTOM, "middle")
     lead = [(p[2], p[1]) for p in G["lead"]]
     S.poly(lead, stroke=PHANTOM, sw=0.45, dash="2 0.8 0.4 0.8", close=False)
-    S.text(15, v["Y_FLOOR"] + 2.0, "fascia lead %.0f mm (phantom)" % v["LEAD_PATH"], 1.9, PHANTOM)
+    S.text(17, 1.2, "fascia lead %.0f mm (phantom)" % v["LEAD_PATH"], 1.9, PHANTOM)
     # sight lines past the brow's lower edge and the fascia's top edge
     t = math.tan(math.radians(v["VIEW_DEG"]))
     z_far = v["Z_DISP_F"]
@@ -1080,7 +1604,7 @@ def draw_section(G):
     S.label((v["Z_DRV_F"] + 0.8, 22), (6, 24), "TS06-DRV", INK, 2.1)
     S.label((v["Z_REAR_OUT"] - 0.8, 104), (50, v["Y_TOP"] + 4), "rear panel, FR4 blank", INK, 2.1)
     zb = v["Z_FACE"] + (95 - v["SOFFIT_Y"]) * math.tan(math.radians(v["BROW_RAKE"])) + 1.5
-    S.label((zb, 95), (-22, 100), "brow + top bar", INK, 2.2, "end")
+    S.label((zb, 95), (-22, 100), "brow (orange) + top plate (black)", INK, 2.2, "end")
     S.label((10, v["SILL_TOP_Y"] - 1), (-18, v["SILL_TOP_Y"] - 20), "sill / trench floor", INK, 2.2, "end")
     S.label((-5, 20), (-24, 26), "TS06-FASCIA, 12°", INK, 2.2, "end")
     S.label((-4, v["Y_FLOOR"] + 2), (-24, v["Y_FLOOR"] + 4), "kick + base", INK, 2.2, "end")
@@ -1161,8 +1685,8 @@ def draw_plan(G):
     S.poly([(p[0], p[2]) for p in G["lead"]], stroke=PHANTOM, sw=0.45, dash="2 0.8 0.4 0.8", close=False)
     S.text(100, (G["lead"][3][2] + G["lead"][4][2]) / 2 + 3.5, "fascia lead on the floor, %.0f mm" % v["LEAD_PATH"],
            2.0, PHANTOM, "middle")
-    S.box(0, v["BOARD_W"], v["Z_FACE"], v["Z_FACE"] - 8, stroke=MUTE, dash="1 0.8", sw=0.2)
-    S.text(88, v["Z_FACE"] - 4.5, "TS06-FASCIA below (raked)", 2.0, MUTE, "middle")
+    S.box(v["FASCIA_X0"], v["FASCIA_X0"] + v["FASCIA_W"], v["Z_FACE"], v["Z_FACE"] - 8, stroke=MUTE, dash="1 0.8", sw=0.2)
+    S.text(v["FASCIA_X0"] + v["FASCIA_W"] / 2, v["Z_FACE"] - 4.5, "TS06-FASCIA below (raked)", 2.0, MUTE, "middle")
     # dimensions
     S.dim((v["X_OUT_R"], cz1), (v["X_OUT_R"], cz0), 8, "Ø%g cb" % v["JACK_CB_D"], horiz=False, size=2.0)
     S.dim((v["X_IN_R"], jz1), (xw, jz1), -9, "web %.1f" % v["JACK_WEB"], size=2.0)
@@ -1182,19 +1706,29 @@ def draw_plan(G):
 def draw_exploded(G):
     v = G["v"]
     M, MT = 64.0, 30.0
-    off = {"base": (0, -26), "fascia": (-30, -4), "trench": (-16, 0), "brow": (0, 30), "module": (22, 0), "rear": (52, 0)}
-    W, H = v["OUT_D"] + M + 150, v["OUT_H"] + MT + 84
-    f = lambda Z, Y: (Z - v["Z_TOE"] + M, v["Y_TOP"] + 36 - Y + MT)
+    off = {"base": (0, -26), "fascia": (-30, -4), "trench": (-16, 0), "brow": (-14, 22), "top": (0, 44), "module": (22, 0),
+           "rear": (52, 0)}
+    W, H = v["OUT_D"] + M + 150, v["OUT_H"] + MT + 104
+    f = lambda Z, Y: (Z - v["Z_TOE"] + M, v["Y_TOP"] + 56 - Y + MT)
     S = Sheet(W, H, "EXPLODED SIDE VIEW - WHAT COMES APART, AND WITH WHAT",
               "cheeks carry everything; the module (TS06-DISP + TS06-DRV) lifts out backwards as one piece", f)
     mv = lambda pts, k: [(z + off[k][0], y + off[k][1]) for z, y in pts]
     S.poly(G["cheek"], fill="#F3F5F7", stroke=MUTE, sw=0.3)
     S.text(20, 16, "cheek x2, 6 mm - the only structure", 2.3, MUTE, "middle")
+    for name, y, z in G["cheek_fix"]:                       # the cheek's screw holes, counterbored outside
+        S.circle(z, y, v["CB_D"] / 2, stroke=RED, sw=0.25)
     S.poly(mv(G["base"], "base"), fill=CASE_CUT)
+    for part, key in (("base", "base"), ("top plate", "top")):
+        y0, y1, z0, z1 = G["rear_lips"][part]
+        S.poly(mv(_rect((0, 0, y0, y1, z0, z1)), key), fill=CASE_CUT if key == "base" else "#57606A")
+    for name, y0, y1, z0, z1, y, z in G["blocks"]:
+        k = {"base": "base", "trench": "trench", "brow": "brow", "top plate": "top"}[name.split(",")[0]]
+        S.poly(mv(_rect((0, 0, y0, y1, z0, z1)), k), fill="#E3E8ED", stroke=MUTE, sw=0.2)
     S.poly(mv(G["fascia"], "fascia"), fill=BOARD, stroke=BOARD_E)
     for k, bx in (("trench", G["sill"]), ("trench", G["wall_l"])):
         S.poly(mv(_rect(bx), k), fill=CASE, sw=0.3)
     S.poly(mv(G["brow"], "brow"), fill=BRIGHT)
+    S.poly(mv(G["top"], "top"), fill="#57606A")
     S.poly(mv(_rect(G["rear"]), "rear"), fill=BOARD, stroke=BOARD_E)
     dz, dy = off["module"]
     S.box(v["Z_DISP_F"] + dz, v["Z_DISP_B"] + dz, v["DISP_BOT_Y"], v["DISP_TOP_Y"], fill="#2E7D5B")
@@ -1203,18 +1737,24 @@ def draw_exploded(G):
     for ref, fp, bx, h, side, src in G["drv_parts"]:
         if side == 0 and h >= 15:
             S.box(v["Z_DRV_B"] + dz, v["Z_DRV_B"] + h + dz, bx[2], bx[3], fill=PART, stroke=INK, sw=0.2)
-    txt = [((30, v["Y_BOT"] - 26 - 5), "base + kick strip: 2 x M3 per cheek", "middle"),
-           ((-34, -10), "TS06-FASCIA: 4 x M2.5 into cheek bosses", "middle"),
-           ((-3, 80), "trench frame (sill + walls): 1 x M3 per wall", "middle"),
-           ((30, v["Y_TOP"] + 30 + 4), "brow + top bar (orange): 2 x M3 per cheek", "middle"),
-           ((66, -2), "module: 4 x M3 (H5-H8) into cheek bosses, from behind", "middle"),
-           ((v["Z_REAR_OUT"] + 52 + 3, 50), "rear panel (FR4 blank):", "start"),
-           ((v["Z_REAR_OUT"] + 52 + 3, 46), "4 x M2.5 into the cheeks' rear edges", "start")]
+    m3, m25 = "M3 x %g" % v["SCREW_M3_L"], "M2.5 x %g" % v["SCREW_M25_L"]
+    txt = [((30, v["Y_BOT"] - 26 - 5), "base + kick strip: 2 x %s per cheek, into 8 mm end blocks" % m3, "middle"),
+           ((-34, -10), "TS06-FASCIA: 4 x %s into cheek bosses" % m25, "middle"),
+           ((-3, 84), "trench (sill + walls): 1 x %s per cheek, into the blocks under H10 / ИН-15А" % m3, "middle"),
+           ((-20, v["Y_TOP"] + 6), "brow (safety orange): 1 x %s per cheek" % m3, "end"),
+           ((34, v["Y_TOP"] + 50), "top plate (black): 2 x %s per cheek" % m3, "middle"),
+           ((66, -2), "module: 4 x M3 x 8 + nylon washers (H5-H8) into cheek bosses, from behind", "middle"),
+           ((v["Z_REAR_OUT"] + 52 + 3, 54), "rear panel (FR4 blank):", "start"),
+           ((v["Z_REAR_OUT"] + 52 + 3, 50), "6 x %s, 3 into the base's lip" % m25, "start"),
+           ((v["Z_REAR_OUT"] + 52 + 3, 46), "and 3 into the top plate's;", "start"),
+           ((v["Z_REAR_OUT"] + 52 + 3, 42), "holes slotted ±%.1f along X" % v["SLOT_X"], "start")]
     for (z, y), s, anc in txt:
         S.text(z, y, s, 2.3, INK, anc)
-    return S.svg(["Service (review 7): unplug, wait 15 s; 4 screws off the rear panel; 4 module screws; draw the module "
+    return S.svg(["Service (review 7): unplug, wait 15 s; 6 screws off the rear panel; 4 module screws; draw the module "
                   "back ~30 mm and unplug J1 from below; lift out.",
-                  "The display pulls straight off TS06-DRV (seven strip pairs) - pull both ends evenly."])
+                  "Assembly (F9): screw the module in before tightening the crossmember screws, so TS06-DRV sets the "
+                  "cheeks' spacing. The display pulls straight off TS06-DRV (seven strip pairs).",
+                  "Red circles: the cheek's counterbored M3 holes; grey: the end blocks (8 mm) with their inserts."])
 
 
 def write_svgs(G):
@@ -1225,7 +1765,20 @@ def write_svgs(G):
 
 
 # ============================================================================ checks.md
-def write_checks(G, G_lay, d, R, path):
+def screw_table(G):
+    """[(spec, qty, into, closest mm, to what)] - the screws grouped by what they go into."""
+    rows = {}
+    for s in G["screws"]:
+        key = (s[1], s[0])
+        c, what = _screw_clear(G, s)
+        r = rows.setdefault(key, [0, 99.0, ""])
+        r[0] += 1
+        if c < r[1]:
+            r[1], r[2] = c, what
+    return [(k[0], n, k[1], c, w) for k, (n, c, w) in rows.items()]
+
+
+def write_checks(G, G_lay, d, R, path, G_ff=None):
     v = G["v"]
     L = ["# TS06 pair case, concept A: checks", "",
          "Generated by `case_pair.py` from `boards.json` and the DIMS table - do not edit. "
@@ -1234,22 +1787,37 @@ def write_checks(G, G_lay, d, R, path):
          "## Envelope", "",
          "| | mm | from |", "|---|---|---|",
          "| Outside width | %.1f | %.1f boards + 2 x 0.5 + 2 x %.0f cheeks |" % (v["OUT_W"], v["OUT_W"] - 1.0 - 2 * v["CHEEK_T"], v["CHEEK_T"]),
-         "| Outside height | %.1f | base %.0f + floor to TS06-DRV %.1f + board %.0f + top %.0f + bar %.0f |"
+         "| Outside height | %.1f | base %.0f + floor to TS06-DRV %.1f + board %.0f + top clearance %.1f + top plate %.0f |"
          % (v["OUT_H"], v["BASE_T"], v["DRV_BOT_Y"] - v["Y_FLOOR"], v["DRV_H"], v["TOP_CLR"], v["TOP_T"]),
          "| Outside depth | %.1f | toe %.1f in front of the face + glass-to-rear-panel %.1f + panel %.1f + recess %.1f |"
          % (v["OUT_D"], v["Z_FACE"] - v["Z_TOE"], v["Z_REAR_IN"], v["REAR_T"], v["GLASS_RECESS"]),
-         "| Inside height (floor to top bar) | %.1f | review estimate ~106 |" % v["IN_H"],
+         "| Inside height (floor to top plate) | %.1f | review estimate ~106 |" % v["IN_H"],
          "| Glass front to rear panel | %.1f | review estimate 65-72 |" % v["Z_REAR_IN"],
          "| Same, with U13 / C7 / VT21 laid down | %.1f | outside depth %.1f |" % (G_lay["v"]["Z_REAR_IN"], G_lay["v"]["OUT_D"]),
          "", "## Results", "", "| # | Check | Result | Status | Note |", "|---|---|---|---|---|"]
     for r in R:
         L.append("| %s | %s | %s | **%s** | %s |" % (r["id"], r["what"], r["result"], r["status"], r["note"]))
+    L += ["", "## Screws", "", "Every case screw, its length, what it goes into, and how close its shank comes to glass "
+          "or a board it does not clamp (check 10). The cheek screws go in from a %g mm counterbore on the cheek's "
+          "outside." % v["CB_DEPTH"], "", "| Screw | Qty | Into | Closest to glass or a board |", "|---|---|---|---|"]
+    for spec, n, into, c, what in screw_table(G):
+        L.append("| %s | %d | %s | %.1f mm (%s) |" % (spec, n, into, c, what))
+    if G_ff is not None:
+        for spec, n, into, c, what in screw_table(G_ff):
+            if "frame" in into:
+                L.append("| %s | %d | variant D: %s | %.1f mm (%s) |" % (spec, n, into, c, what))
+        L.append("")
+        L.append("Variant D drops the four fascia screws into the cheek bosses and adds the frame's rows. The cheek "
+                 "screws are low-head (DIN 7984, 2 mm) so the head sits in the %g mm counterbore." % v["CB_DEPTH"])
     L += ["", "## Every dimension and where it comes from", "", "| Name | Value | Kind | Source |", "|---|---|---|---|"]
     for name, value, kind, src, g in d.rows:
         L.append("| `%s` | %s | %s | %s |" % (name, _scad(value), kind, src))
     L += ["", "## Part heights on TS06-DRV's rear face", "", "| Footprint | mm | Kind | Note |", "|---|---|---|---|"]
     for fp, (h, kind, src) in sorted(FP_H.items()):
-        L.append("| %s | %s | %s | %s |" % (fp.replace("TS06_", ""), "%.1f" % (h if h else v["NANO_H"]), kind, src))
+        if h is None:
+            hs = [p[3] for p in G["drv_parts"] if p[1] == fp]
+            h = hs[0] if hs else None
+        L.append("| %s | %s | %s | %s |" % (fp.replace("TS06_", ""), "%.1f" % h if h is not None else "-", kind, src))
     with open(path, "w", encoding="utf8") as fh:
         fh.write("\n".join(L) + "\n")
 
@@ -1262,7 +1830,8 @@ VIEWS = {   # name: (part, explode, --camera=tx,ty,tz,rx,ry,rz,dist)
     "exploded": ("assembly", 1, "88,30,50,62,0,325,760"),
     "module": ("module", 0, "88,30,50,55,0,210,470"),
 }
-STL_PARTS = ["cheek_l", "cheek_r", "brow", "trench", "base", "rear", "fascia_blank"]
+STL_PARTS = ["cheek_l", "cheek_r", "brow", "top", "trench", "base", "rear", "fascia_blank",
+             "fascia_frame"]    # the last is variant D's, rendered with FASCIA_FRAME=1 (its cheeks: -D FASCIA_FRAME=1)
 
 
 def render():
@@ -1277,7 +1846,8 @@ def render():
     # 2. printable parts
     for p in STL_PARTS:
         out = os.path.join(OUTDIR, p + ".stl")
-        r = run(["openscad", "-o", out, "-D", 'PART="%s"' % p, scad])
+        r = run(["openscad", "-o", out, "-D", 'PART="%s"' % p] + (["-D", "FASCIA_FRAME=1"] if p == "fascia_frame" else [])
+                + [scad])
         print("  %-14s %s" % (p, "ok" if r.returncode == 0 and os.path.exists(out) else "FAILED\n" + r.stderr[-800:]))
     # 3. pictures (OpenCSG preview needs an X server: xvfb-run)
     for name, (part, ex, cam) in VIEWS.items():
@@ -1303,21 +1873,27 @@ def main():
     d2 = dims(B)
     d2.v.update({k: float(val) for k, val in sets})
     G_lay = derive(B, d2, lay_down=True)
+    d3 = dims(B)                                    # variant D, scored beside the default (section 12)
+    d3.v.update({k: float(val) for k, val in sets})
+    d3.v["FASCIA_FRAME"] = 1.0
+    G_ff = derive(B, d3)
     if sets:
         v = G["v"]
         print("what-if %s: envelope %.1f W x %.1f H x %.1f D, glass front to rear panel %.1f, floor Y %.1f"
               % (" ".join("=".join(x) for x in sets), v["OUT_W"], v["OUT_H"], v["OUT_D"], v["Z_REAR_IN"], v["Y_FLOOR"]))
         return
-    R = checks(G, G_lay)
+    R = checks(G, G_lay, G_ff)
     write_scad(G, d, os.path.join(HERE, "params.scad"))
-    write_checks(G, G_lay, d, R, os.path.join(HERE, "checks.md"))
+    write_checks(G, G_lay, d, R, os.path.join(HERE, "checks.md"), G_ff)
     write_svgs(G)
     v = G["v"]
     print("envelope %.1f W x %.1f H x %.1f D   (glass front to rear panel %.1f, floor at Y %.1f)"
           % (v["OUT_W"], v["OUT_H"], v["OUT_D"], v["Z_REAR_IN"], v["Y_FLOOR"]))
+    n = {}
     for r in R:
-        if r["status"] != "OK":
-            print("  [%s] %s: %s" % (r["status"], r["what"], r["result"]))
+        n[r["status"]] = n.get(r["status"], 0) + 1
+        print("  %-3s [%s] %s: %s" % (r["id"], r["status"], r["what"], r["result"]))
+    print("checks: " + ", ".join("%d %s" % (c, s) for s, c in sorted(n.items())))
     if "--render" in sys.argv:
         render()
 

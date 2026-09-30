@@ -1,14 +1,16 @@
 // case.scad - TS06-DISP + TS06-DRV case, concept A.
 //
 // Two cheeks carry everything (Rev F's idea, kept): the electronics module (TS06-DISP riding on
-// TS06-DRV) hangs from four bosses, the fascia from four more, and a brow, a trench frame, a base
-// and a rear panel close the box between them. Every number is a named variable in params.scad
-// with its source; this file only derives from them (the same maths as case_pair.py, which also
-// runs the checks and draws the dimensioned sheets).
+// TS06-DRV) hangs from four bosses, the fascia from four more, and a brow, a top plate, a trench
+// frame, a base and a rear panel close the box between them. Every number is a named variable in
+// params.scad with its source; this file only derives from them (the same maths as case_pair.py,
+// which also runs the checks and draws the dimensioned sheets).
 //
-//   openscad -D 'PART="assembly"' case.scad          assembly (also: module, cheek_l, cheek_r,
-//                                                     brow, trench, base, rear, fascia_blank, none)
+//   openscad -D 'PART="assembly"' case.scad          assembly (also: module, cheek_l, cheek_r, brow,
+//                                                     top, trench, base, rear, fascia_blank,
+//                                                     fascia_frame, none)
 //   openscad -D EXPLODE=1 ...                         pulled apart
+//   openscad -D FASCIA_FRAME=1 ...                    variant D: the fascia in a printed frame
 //
 // World frame: X across the front from the clock's left, Y up (FreeCAD assembly), Z depth from
 // the ИН-12 glass front, + toward the back. OpenSCAD: x = X, y = Z, z = Y (the clock faces -y).
@@ -74,13 +76,36 @@ USB_Z = Z_DRV_B + PBS_H + PLS_BODY + NANO_PCB_T + USB_H / 2;
 VAL_X0 = IN12_X[3] + IN12_W / 2 + GLASS_ALLOW;
 VAL_X1 = IN15_X[0] - IN12_W / 2 - GLASS_ALLOW;
 
-// the SR25's rim reaches 0.5 mm below the fascia's top edge: the sill steps back over it
+// the SR25's rim rises above the sill's underside close behind the fascia's top edge: the sill steps back over it
 ROT = FASCIA_CTRL[0];                               // ["SW1", x, y, hole]
 ROT_T_TOP = ROT[2] - ROTARY_D / 2;
 ROT_S_CLR = (SILL_TOP_Y - ROT_T_TOP * cos(r) - (SILL_TOP_Y - SILL_T - 0.5)) / sin(r);
 SILL_NOTCH_Z  = round(max(Z_SILL_F, fpt(ROT_T_TOP, ROT_S_CLR)[1]) * 100) / 100;
 SILL_NOTCH_X0 = FASCIA_X0 + ROT[1] - ROTARY_D / 2 - 1;     // world X: the fascia is centred
 SILL_NOTCH_X1 = FASCIA_X0 + ROT[1] + ROTARY_D / 2 + 1;
+
+// ---- fixings (case review F7): every cheek screw goes into a heat-set insert in an END_BLOCK block
+function zin(y) = Z_FACE + (y - SOFFIT_Y) * tan(rb) + BROW_T / cos(rb);   // the brow face's inside
+EB = END_BLOCK;
+FIX_BASE_Y  = (Y_BOT + Y_FLOOR + EB) / 2;
+FIX_BASE_Z  = [BASE_FIX_Z, Z_REAR_IN - REAR_FIX_DZ];
+WALL_BLK_Y1 = IN12_BOT - GLASS_BLK_CLR;                     // under H10's and ИН-15А's glass
+WALL_BLK_Y0 = min(SILL_TOP_Y - SILL_T, WALL_BLK_Y1 - EB);
+FIX_WALL_Y  = (WALL_BLK_Y0 + WALL_BLK_Y1) / 2;
+FIX_BROW_Y  = (SOFFIT_Y + SOFFIT_T + Y_TOP_IN) / 2;
+FIX_BROW_Z  = zin(FIX_BROW_Y) + EB / 2;
+FIX_TOP_Y   = Y_TOP - EB / 2;
+FIX_TOP_Z   = [TOP_FIX_Z, Z_REAR_IN - REAR_FIX_DZ];
+TOP_LIP_Y0  = Y_TOP - EB;                                   // TS06-DRV's top edge + MOD_CLR
+FF_FIX      = fpt(FF_FIX_T, FASCIA_T + EB / 2);             // [Y, Z]: the fascia frame's end blocks
+CHEEK_FIX = concat([for (z = FIX_BASE_Z) [FIX_BASE_Y, z]], [[FIX_WALL_Y, WALL_FIX_Z], [FIX_BROW_Y, FIX_BROW_Z]],
+                   [for (z = FIX_TOP_Z) [FIX_TOP_Y, z]], FASCIA_FRAME ? [FF_FIX] : []);
+// the rear panel (m4): corners and mid-span, along the bottom into the base's lip, along the top into the top plate's
+REAR_SCREWS = [for (y = [FIX_BASE_Y, FIX_TOP_Y]) for (x = [X_IN_L + REAR_FIX_X, BOARD_W / 2, X_IN_R - REAR_FIX_X]) [x, y]];
+// lead-ins (F8): the sill only where the lowest LEDs' flanges pass, so it still hides XP21-25
+SILL_LEADS = [for (l = LEDS) if (l[1] - LED_FLANGE_D / 2 - SILL_TOP_Y < LEADIN_BELOW)
+              [l[0] - LED_FLANGE_D / 2 - LEAD_MARGIN, l[0] + LED_FLANGE_D / 2 + LEAD_MARGIN]];
+WALL_L_LEAD = IN12_X[0] - IN12_W / 2 - TRENCH_L_X < LEADIN_BELOW;
 
 module check(name, a, b) echo(str(name, " scad=", a, " py=", b, abs(a - b) < 0.01 ? "  ok" : "  MISMATCH"));
 check("Z_DISP_F", Z_DISP_F, PY_Z_DISP_F);
@@ -93,33 +118,62 @@ check("Z_TOE", Z_TOE, PY_Z_TOE);
 check("OUT_W", OUT_W, PY_OUT_W);
 check("OUT_H", OUT_H, PY_OUT_H);
 check("OUT_D", OUT_D, PY_OUT_D);
+check("SILL_NOTCH_Z", SILL_NOTCH_Z, PY_SILL_NOTCH_Z);
+check("SILL_NOTCH_X0", SILL_NOTCH_X0, PY_SILL_NOTCH_X0);
+check("FIX_BASE_Y", FIX_BASE_Y, PY_FIX_BASE_Y);
+check("WALL_BLK_Y0", WALL_BLK_Y0, PY_WALL_BLK_Y0);
+check("WALL_BLK_Y1", WALL_BLK_Y1, PY_WALL_BLK_Y1);
+check("FIX_BROW_Y", FIX_BROW_Y, PY_FIX_BROW_Y);
+check("FIX_BROW_Z", FIX_BROW_Z, PY_FIX_BROW_Z);
+check("FIX_TOP_Y", FIX_TOP_Y, PY_FIX_TOP_Y);
+check("TOP_LIP_Y0", TOP_LIP_Y0, PY_TOP_LIP_Y0);
+check("FF_FIX_Y", FF_FIX[0], PY_FF_FIX_Y);
+check("FF_FIX_Z", FF_FIX[1], PY_FF_FIX_Z);
+check("SILL_LEAD_X0", SILL_LEADS[0][0], PY_SILL_LEAD_X0);
+check("REAR_SCREWS", len(REAR_SCREWS), PY_REAR_SCREWS);
 
 // ============================================================ primitives in world coordinates
 module wbox(x0, x1, y0, y1, z0, z1) translate([x0, z0, y0]) cube([x1 - x0, z1 - z0, y1 - y0]);
 // extrude a side profile [[Z, Y], ...] along X
 module xprism(x0, x1, prof) multmatrix([[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
-    linear_extrude(height = x1 - x0) polygon(prof);
+    linear_extrude(height = x1 - x0, convexity = 10) polygon(prof);
 module xcyl(x0, x1, y, z, d) translate([x0, z, y]) rotate([0, 90, 0]) cylinder(h = x1 - x0, d = d);
 module zcyl(x, y, z0, z1, d, fn = 0) translate([x, z0, y]) rotate([-90, 0, 0])
     cylinder(h = z1 - z0, d = d, $fn = fn > 0 ? fn : $fn);
-// the fascia's frame: local x = X - FASCIA_X0 (centred under the tube row), local y = t (down the face), local z = s
-module fframe() multmatrix([[1, 0, 0, FASCIA_X0], [0, -sin(r), cos(r), Z_FACE], [0, -cos(r), -sin(r), SILL_TOP_Y], [0, 0, 0, 1]])
+module ycyl(x, z, y0, y1, d) translate([x, z, y0]) cylinder(h = y1 - y0, d = d);
+// extrude a plan profile [[X, Z], ...] along Y
+module yprism(y0, y1, prof) translate([0, 0, y0]) linear_extrude(height = y1 - y0, convexity = 10) polygon(prof);
+// the raked frame of the fascia plane: local x = X, local y = t (down the face from its top edge), local z = s (behind
+// its front face); fframe() is the fascia board's own, FASCIA_X0 to the right (centred under the tube row)
+module rake() multmatrix([[1, 0, 0, 0], [0, -sin(r), cos(r), Z_FACE], [0, -cos(r), -sin(r), SILL_TOP_Y], [0, 0, 0, 1]])
     children();
+module fframe() rake() translate([FASCIA_X0, 0, 0]) children();
 module ex(v) translate(EXPLODE * [v[0], v[2], v[1]]) children();   // v = [dX, dY, dZ]
 
+// the end blocks at both cheeks, and the M3 inserts in them from the cheek faces (F7)
+module blocks(y0, y1, z0, z1) for (x = [X_IN_L, X_IN_R - EB]) wbox(x, x + EB, y0, y1, z0, z1);
+module inserts_x(y, z) {
+    xcyl(X_IN_L - 1, X_IN_L + INS_M3_L + 0.5, y, z, INS_M3_D);
+    xcyl(X_IN_R - INS_M3_L - 0.5, X_IN_R + 1, y, z, INS_M3_D);
+}
+module insert_rear(x, y) zcyl(x, y, Z_REAR_IN - INS_M25_L - 1, Z_REAR_IN + 1, INS_M25_D, 20);   // the rear panel's M2.5
+// a 45° x LEADIN cut on the rear top edge (at Z = z, top face at Y = y) of whatever lies over X x0-x1 (F8)
+module lead_top(x0, x1, z, y) xprism(x0, x1, [[z - LEADIN - 0.01, y + 0.01], [z + 0.01, y + 0.01], [z + 0.01, y - LEADIN - 0.01]]);
+
 // ============================================================ profiles
-function zin(y) = Z_FACE + (y - SOFFIT_Y) * tan(rb) + BROW_T / cos(rb);   // the brow face's inside
 CHEEK_PROFILE = [[Z_TOE, Y_BOT], [Z_REAR_IN, Y_BOT], [Z_REAR_IN, Y_TOP], [Z_BROW_TOP, Y_TOP],
                  [Z_FACE, SOFFIT_Y], [Z_FACE, SILL_TOP_Y], [Z_TOE, Y_FLOOR]];
-BROW_PROFILE = [[Z_FACE, SOFFIT_Y], [Z_BROW_TOP, Y_TOP], [Z_REAR_IN, Y_TOP], [Z_REAR_IN, Y_TOP_IN],
-                [zin(Y_TOP_IN), Y_TOP_IN], [zin(SOFFIT_Y + SOFFIT_T), SOFFIT_Y + SOFFIT_T],
-                [Z_BACK, SOFFIT_Y + SOFFIT_T], [Z_BACK, SOFFIT_Y]];
+// the brow: the orange face and the soffit; the soffit's rear lip carries a 45° lead-in for the tall glass (F8)
+BROW_PROFILE = [[Z_FACE, SOFFIT_Y], [Z_BROW_TOP, Y_TOP], [zin(Y_TOP), Y_TOP], [zin(SOFFIT_Y + SOFFIT_T), SOFFIT_Y + SOFFIT_T],
+                [Z_BACK - LEADIN - SOFFIT_T, SOFFIT_Y + SOFFIT_T], [Z_BACK - LEADIN - SOFFIT_T, SOFFIT_Y + LEADIN + SOFFIT_T],
+                [Z_BACK, SOFFIT_Y + LEADIN + SOFFIT_T], [Z_BACK, SOFFIT_Y + LEADIN], [Z_BACK - LEADIN, SOFFIT_Y]];
+// the top plate: black, a separate part behind the brow face (case review m5)
+TOP_PROFILE = [[zin(Y_TOP_IN), Y_TOP_IN], [zin(Y_TOP), Y_TOP], [Z_REAR_IN, Y_TOP], [Z_REAR_IN, Y_TOP_IN]];
 T_KB = (SILL_TOP_Y - Y_FLOOR - KICK_T * sin(r)) / cos(r);
 BASE_PROFILE = [[Z_TOE, Y_BOT], [Z_REAR_IN, Y_BOT], [Z_REAR_IN, Y_FLOOR], zy(fpt(T_KB, KICK_T)),
                 zy(fpt(FASCIA_H, KICK_T)), zy(fpt(FASCIA_H, 0)), [Z_TOE, Y_FLOOR]];
 
 // ============================================================ the case
-REAR_SCREWS = [for (x = [X_OUT_L + CHEEK_T / 2, X_OUT_R - CHEEK_T / 2]) for (y = [Y_BOT + 8, Y_TOP - 5]) [x, y]];
 
 module drv_boss(h) {                                // [X, Y] of a TS06-DRV case hole (H5-H8)
     left = h[0] < BOARD_W / 2;
@@ -152,7 +206,8 @@ module cheek(left) {
         union() {
             xprism(x0, x1, CHEEK_PROFILE);
             for (h = DRV_CASE_HOLES) if ((h[0] < BOARD_W / 2) == left) drv_boss(h);
-            for (h = FASCIA_HOLES) if ((h[0] < FASCIA_W / 2) == left) fascia_boss(h);
+            if (!FASCIA_FRAME)                      // variant D's frame replaces these four
+                for (h = FASCIA_HOLES) if ((h[0] < FASCIA_W / 2) == left) fascia_boss(h);
         }
         if (left)                                   // USB: 12 x 9 slot, open to the rear edge
             wbox(X_OUT_L - 1, X_IN_L + 1, USB_Y - USB_SLOT_W / 2, USB_Y + USB_SLOT_W / 2,
@@ -161,38 +216,77 @@ module cheek(left) {
             xcyl(X_IN_R - 1, X_OUT_R + 1, JACK_Y, JACK_Z, JACK_HOLE_D);
             xcyl(X_IN_R + JACK_WEB, X_OUT_R + 1, JACK_Y, JACK_Z, JACK_CB_D);
         }
-        for (s = REAR_SCREWS) if ((s[0] < 0) == left) zcyl(s[0], s[1], Z_REAR_IN - 8, Z_REAR_IN + 1, 3.5);
-        // fixing holes through the cheek: base, trench walls, brow (M3, counterbored outside)
-        for (p = [[Y_FLOOR - BASE_T / 2, 10], [Y_FLOOR - BASE_T / 2, Z_REAR_IN - 12],
-                  [(SILL_TOP_Y + SOFFIT_Y) / 2, 12], [Y_TOP - TOP_T / 2, 20], [Y_TOP - TOP_T / 2, Z_REAR_IN - 12]]) {
-            xcyl(x0 - 1, x1 + 1, p[0], p[1], 3.4);
-            xcyl(left ? x0 - 1 : x1 - 2, left ? x0 + 2 : x1 + 1, p[0], p[1], 6.2);
+        // M3 x 8 from outside through the cheek into the inserts in the crossmembers' end blocks (F7)
+        for (p = CHEEK_FIX) {
+            xcyl(x0 - 1, x1 + 1, p[0], p[1], CLR_M3);
+            xcyl(left ? x0 - 1 : x1 - CB_DEPTH, left ? x0 + CB_DEPTH : x1 + 1, p[0], p[1], CB_D);
         }
     }
 }
 
-module brow() {
-    xprism(X_IN_L, X_IN_R, BROW_PROFILE);
-    wbox(VAL_X0, VAL_X1, VALANCE_Y0, SOFFIT_Y + 0.01, Z_BACK - VALANCE_T, Z_BACK);   // hides XP12 over the ИН-17s
-}
-
-module trench() {
-    difference() {                                  // the sill (trench floor), stepped back over the rotary
-        wbox(X_IN_L, X_IN_R, SILL_TOP_Y - SILL_T, SILL_TOP_Y, Z_SILL_F, Z_BACK);
-        wbox(SILL_NOTCH_X0, SILL_NOTCH_X1, SILL_TOP_Y - SILL_T - 1, SILL_TOP_Y + 1, Z_SILL_F - 1, SILL_NOTCH_Z);
+module brow() difference() {
+    union() {
+        xprism(X_IN_L, X_IN_R, BROW_PROFILE);
+        wbox(VAL_X0, VAL_X1, VALANCE_Y0, SOFFIT_Y + LEADIN, Z_BACK - VALANCE_T, Z_BACK);   // hides XP12 over the ИН-17s
+        blocks(FIX_BROW_Y - EB / 2, FIX_BROW_Y + EB / 2, zin(FIX_BROW_Y + EB / 2) - 1, FIX_BROW_Z + EB / 2);
     }
-    wbox(X_IN_L, TRENCH_L_X, SILL_TOP_Y, SOFFIT_Y, Z_FACE, Z_BACK);      // hides XP11 (review 4)
-    wbox(TRENCH_R_X, X_IN_R, SILL_TOP_Y, SOFFIT_Y, Z_FACE, Z_BACK);
+    inserts_x(FIX_BROW_Y, FIX_BROW_Z);
 }
 
-module base() xprism(X_IN_L, X_IN_R, BASE_PROFILE);
+module top_plate() difference() {
+    union() {
+        xprism(X_IN_L, X_IN_R, TOP_PROFILE);
+        blocks(TOP_LIP_Y0, Y_TOP_IN + 0.01, FIX_TOP_Z[0] - EB / 2, FIX_TOP_Z[0] + EB / 2);
+        blocks(TOP_LIP_Y0, Y_TOP_IN + 0.01, FIX_TOP_Z[1] - EB / 2, Z_REAR_IN);
+        wbox(X_IN_L, X_IN_R, TOP_LIP_Y0, Y_TOP_IN + 0.01, Z_REAR_IN - EB, Z_REAR_IN);   // the rear panel's top screws (m4)
+    }
+    for (z = FIX_TOP_Z) inserts_x(FIX_TOP_Y, z);
+    for (s = REAR_SCREWS) if (s[1] > 0) insert_rear(s[0], s[1]);
+}
+
+module trench() difference() {
+    union() {
+        difference() {                              // the sill (trench floor), stepped back over the rotary
+            wbox(X_IN_L, X_IN_R, SILL_TOP_Y - SILL_T, SILL_TOP_Y, Z_SILL_F, Z_BACK);
+            wbox(SILL_NOTCH_X0, SILL_NOTCH_X1, SILL_TOP_Y - SILL_T - 1, SILL_TOP_Y + 1, Z_SILL_F - 1, SILL_NOTCH_Z);
+        }
+        wbox(X_IN_L, TRENCH_L_X, SILL_TOP_Y, SOFFIT_Y, Z_FACE, Z_BACK);      // hides XP11 (review 4)
+        wbox(TRENCH_R_X, X_IN_R, SILL_TOP_Y, SOFFIT_Y, Z_FACE, Z_BACK);
+        blocks(WALL_BLK_Y0, WALL_BLK_Y1, WALL_FIX_Z - EB / 2, WALL_FIX_Z + EB / 2 + LEADIN);   // F7: under H10 / ИН-15А
+        for (s = SILL_LEADS)                        // under the sill's lead-ins, so they are a full LEADIN deep
+            wbox(s[0], s[1], SILL_TOP_Y - LEADIN - 0.5, SILL_TOP_Y - SILL_T + 0.01, Z_BACK - LEADIN - 1, Z_BACK);
+    }
+    inserts_x(FIX_WALL_Y, WALL_FIX_Z);
+    // F8: 45° lead-ins on the rear edges the module passes within LEADIN_BELOW
+    for (s = SILL_LEADS) lead_top(s[0], s[1], Z_BACK, SILL_TOP_Y);
+    lead_top(TRENCH_L_X, X_IN_L + EB, WALL_FIX_Z + EB / 2 + LEADIN, WALL_BLK_Y1);          // the left block, under H10
+    if (WALL_L_LEAD)                                // the left wall's inner rear edge, beside H10
+        yprism(SILL_TOP_Y - 0.01, SOFFIT_Y + 0.01, [[TRENCH_L_X + 0.01, Z_BACK - LEADIN - 0.01],
+               [TRENCH_L_X + 0.01, Z_BACK + 0.01], [TRENCH_L_X - LEADIN - 0.01, Z_BACK + 0.01]]);
+    if (FASCIA_FRAME) for (x = FF_RIB_X) {          // variant D: the sill ties, M2.5 countersunk
+        ycyl(x, FF_TIE_Z, SILL_TOP_Y - SILL_T - 1, SILL_TOP_Y + 1, REAR_HOLE_D);
+        translate([x, FF_TIE_Z, SILL_TOP_Y - 1.4]) cylinder(h = 1.41, d1 = REAR_HOLE_D, d2 = 5.2);
+    }
+}
+
+module base() difference() {
+    union() {
+        xprism(X_IN_L, X_IN_R, BASE_PROFILE);
+        blocks(Y_FLOOR - 0.01, Y_FLOOR + EB, FIX_BASE_Z[0] - EB / 2, FIX_BASE_Z[0] + EB / 2);
+        blocks(Y_FLOOR - 0.01, Y_FLOOR + EB, FIX_BASE_Z[1] - EB / 2, Z_REAR_IN);
+        wbox(X_IN_L, X_IN_R, Y_FLOOR - 0.01, Y_FLOOR + EB, Z_REAR_IN - EB, Z_REAR_IN);   // the rear panel's bottom screws (m4)
+    }
+    for (z = FIX_BASE_Z) inserts_x(FIX_BASE_Y, z);
+    for (s = REAR_SCREWS) if (s[1] < 0) insert_rear(s[0], s[1]);
+}
 
 module rear_panel(label = false) {
     color("#15181b") difference() {
         wbox(X_OUT_L, X_OUT_R, Y_BOT, Y_TOP, Z_REAR_IN, Z_REAR_OUT);
-        for (x = [VENT_X0 : VENT_PITCH : VENT_X1 - VENT_W])        // vents <= 2.5 wide (review 4)
+        for (x = [VENT_X0 : VENT_PITCH : VENT_X1 - VENT_W])        // vents <= 2.5 wide (review 4), over the logic (m4)
             hull() for (y = [VENT_Y0 + VENT_W / 2, VENT_Y1 - VENT_W / 2]) zcyl(x + VENT_W / 2, y, Z_REAR_IN - 1, Z_REAR_OUT + 1, VENT_W, 16);
-        for (s = REAR_SCREWS) zcyl(s[0], s[1], Z_REAR_IN - 1, Z_REAR_OUT + 1, 2.7);
+        for (s = REAR_SCREWS)                       // slotted ±SLOT_X along X: the printed parts set the spacing (F9)
+            hull() for (dx = [-SLOT_X, SLOT_X]) zcyl(s[0] + dx, s[1], Z_REAR_IN - 1, Z_REAR_OUT + 1, REAR_HOLE_D, 16);
     }
     if (label) color("white") for (l = [["12 V DC  centre +", 60], ["! 185 V INSIDE", 45], ["unplug, wait 15 s", 36]])
         translate([150, Z_REAR_OUT, l[1]]) rotate([90, 0, 180]) linear_extrude(0.15) text(l[0], size = 4.5, font = "DejaVu Sans:style=Bold");
@@ -225,7 +319,46 @@ module fascia_dressed() {                           // the board, its controls a
         }
         color("#f2f2f2") translate([FJ_BOX[0] + 1, FJ_BOX[2], FASCIA_T]) cube([FJ_BOX[1] - FJ_BOX[0] - 2, FJ_BOX[3] - FJ_BOX[2], FJ_HDR_H]);
         color("#f2f2f2") translate([FJ_BOX[0] + 3, FJ_BOX[3], FASCIA_T + 0.5]) cube([FJ_BOX[1] - FJ_BOX[0] - 6, FJ_PLUG_OUT, FJ_HDR_H - 1]);
+        if (FASCIA_FRAME)                           // variant D is drawn for a 179 board that does not exist yet
+            color("#d63384") translate([62, FASCIA_H - 5, -0.05]) mirror([0, 1, 0]) mirror([0, 0, 1])
+                linear_extrude(0.2) text("176 STAND-IN", size = 3.2, font = "DejaVu Sans:style=Bold");
     }
+}
+
+// ============================================================ variant D: the fascia frame (FASCIA_FRAME = 1)
+// A printed frame between the cheeks, raked with the fascia. Its pocket continues the trench walls (X TRENCH_L_X to
+// TRENCH_R_X) and takes a FF_PANEL_W x FF_PANEL_H panel in a rabbet: a ledge behind its sides and bottom, a top rail
+// under the sill, ribs between the controls. The panel screws into four bosses; each cheek screws into an end block;
+// the sill bears on the top rail and is screwed down into the rib heads. It replaces the four cheek bosses.
+FF_X0 = TRENCH_L_X;  FF_X1 = TRENCH_R_X;
+FF_D = FASCIA_T + FF_WEB;
+FF_BOSS_R = INS_M25_D / 2 + INS_WALL_MIN;
+FF_J1 = [FASCIA_X0 + FJ_BOX[0] - 1, FASCIA_X0 + FJ_BOX[1] + 1];
+module fascia_frame() difference() {
+    union() {
+        rake() difference() {
+            translate([X_IN_L, 0, 0]) cube([X_IN_R - X_IN_L, FF_PANEL_H, FF_D]);
+            translate([FF_X0, -1, -1]) cube([FF_X1 - FF_X0, FF_PANEL_H + 2, FASCIA_T + 1]);       // the rabbet
+            translate([FF_X0 + FF_LEDGE, FF_TOP, FASCIA_T - 1])                                      // the window behind
+                cube([FF_X1 - FF_X0 - 2 * FF_LEDGE, FF_PANEL_H - FF_LEDGE - FF_TOP, FF_WEB + 2]);
+            translate([SILL_NOTCH_X0, -1, FASCIA_T - 1]) cube([SILL_NOTCH_X1 - SILL_NOTCH_X0, FF_TOP + 2, FF_WEB + 2]);  // rotary
+            translate([FF_J1[0], FF_PANEL_H - FF_LEDGE - 1, FASCIA_T - 1]) cube([FF_J1[1] - FF_J1[0], FF_LEDGE + 2, FF_WEB + 2]);  // J1
+        }
+        rake() {
+            for (x = FF_RIB_X) translate([x - FF_RIB_W / 2, 0, FASCIA_T]) cube([FF_RIB_W, FF_PANEL_H, FF_WEB]);
+            for (h = FF_HOLES) translate([h[0], h[1], FASCIA_T]) cylinder(h = INS_M25_L + 0.5 + INS_WALL_MIN, r = FF_BOSS_R);
+            for (x = [X_IN_L, X_IN_R - EB]) translate([x, FF_FIX_T - EB, FASCIA_T]) cube([EB, 2 * EB, EB]);
+        }
+        for (x = FF_RIB_X) hull() {                 // the rib heads under the sill, for its ties
+            wbox(x - FF_BOSS_R, x + FF_BOSS_R, SILL_TOP_Y - SILL_T - EB, SILL_TOP_Y - SILL_T,
+                 FF_TIE_Z - FF_BOSS_R, FF_TIE_Z + FF_BOSS_R);
+            rake() translate([x - FF_RIB_W / 2, 0, FASCIA_T]) cube([FF_RIB_W, 2 * EB, FF_WEB]);
+        }
+    }
+    wbox(X_IN_L - 1, X_IN_R + 1, SILL_TOP_Y - SILL_T, SILL_TOP_Y + 5, Z_SILL_F - 0.2, Z_BACK + 1);   // the sill sits here
+    rake() for (h = FF_HOLES) translate([h[0], h[1], FASCIA_T - 0.01]) cylinder(h = INS_M25_L + 0.5, d = INS_M25_D);
+    inserts_x(FF_FIX[0], FF_FIX[1]);
+    for (x = FF_RIB_X) ycyl(x, FF_TIE_Z, SILL_TOP_Y - SILL_T - INS_M25_L - 0.5, SILL_TOP_Y - SILL_T + 0.01, INS_M25_D);
 }
 
 module lead() color("#8250df") for (i = [0 : len(LEAD) - 2])
@@ -273,11 +406,13 @@ module stack() {
 module assembly() {
     color("#3a3f45") ex([-40, 0, 0]) cheek(true);
     color("#3a3f45") ex([40, 0, 0]) cheek(false);
-    color("#f28c28") ex([0, 40, 0]) brow();
+    color("#f28c28") ex([0, 36, -12]) brow();                // safety orange (spec §6)
+    color("#2b2f34") ex([0, 62, 0]) top_plate();             // black, like the chassis (case review m5)
     color("#30363d") ex([0, 0, -30]) trench();
     color("#30363d") ex([0, -30, 0]) base();
+    if (FASCIA_FRAME) color("#30363d") ex([0, -8, -42]) fascia_frame();
     ex([0, 0, 50]) rear_panel(true);
-    ex([0, -6, -55]) fascia_dressed();
+    ex([0, -6, -60]) fascia_dressed();
     ex([0, 0, 22]) stack();
     if (EXPLODE == 0) lead();
 }
@@ -287,7 +422,9 @@ else if (PART == "module") stack();
 else if (PART == "cheek_l") cheek(true);
 else if (PART == "cheek_r") cheek(false);
 else if (PART == "brow") brow();
+else if (PART == "top") top_plate();
 else if (PART == "trench") trench();
 else if (PART == "base") base();
 else if (PART == "rear") rear_panel();
 else if (PART == "fascia_blank") fascia_blank();
+else if (PART == "fascia_frame") fascia_frame();

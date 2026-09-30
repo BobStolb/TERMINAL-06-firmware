@@ -7,14 +7,14 @@
 <polygon points="232.40,106.38 238.40,106.38 238.40,65.10 233.90,65.10 233.90,62.60 232.40,62.60" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
 <polygon points="232.40,53.60 233.90,53.60 233.90,51.10 238.40,51.10 238.40,37.60 232.40,37.60" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
 <polygon points="40.00,106.38 232.40,106.38 232.40,103.31 40.00,103.31" fill="#F59E42" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="34.00,37.60 140.50,37.60 140.50,36.00 34.00,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="142.50,37.60 145.00,37.60 145.00,36.00 142.50,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="147.00,37.60 149.50,37.60 149.50,36.00 147.00,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="151.50,37.60 154.00,37.60 154.00,36.00 151.50,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="156.00,37.60 158.50,37.60 158.50,36.00 156.00,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="160.50,37.60 163.00,37.60 163.00,36.00 160.50,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="165.00,37.60 167.50,37.60 167.50,36.00 165.00,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
-<polygon points="169.50,37.60 238.40,37.60 238.40,36.00 169.50,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="34.00,37.60 47.40,37.60 47.40,36.00 34.00,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="49.40,37.60 51.90,37.60 51.90,36.00 49.40,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="53.90,37.60 56.40,37.60 56.40,36.00 53.90,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="58.40,37.60 60.90,37.60 60.90,36.00 58.40,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="62.90,37.60 65.40,37.60 65.40,36.00 62.90,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="67.40,37.60 69.90,37.60 69.90,36.00 67.40,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="71.90,37.60 74.40,37.60 74.40,36.00 71.90,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
+<polygon points="76.40,37.60 238.40,37.60 238.40,36.00 76.40,36.00" fill="#2D333B" stroke="#57606A" stroke-width="0.25" stroke-linejoin="round"/>
 <polygon points="40.50,78.80 231.90,78.80 231.90,77.20 40.50,77.20" fill="none" stroke="#6E7781" stroke-width="0.25" stroke-linejoin="round"/>
 <polygon points="40.00,106.80 232.40,106.80 232.40,81.30 40.00,81.30" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
 <polygon points="146.08,74.70 225.82,74.70 225.82,66.20 146.08,66.20" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
@@ -55,8 +55,8 @@
 <text x="256.90" y="57.10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="start" font-weight="400">5.5/2.1 plug</text>
 <polyline points="89.50,75.70 89.50,78.70 89.50,78.70 89.50,81.70 196.81,111.19 196.81,114.12" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
 <text x="140.50" y="92.95" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="middle" font-weight="400">fascia lead on the floor, 139 mm</text>
-<polygon points="40.50,109.80 231.90,109.80 231.90,117.80 40.50,117.80" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
-<text x="128.50" y="114.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#6E7781" text-anchor="middle" font-weight="400">TS06-FASCIA below (raked)</text>
+<polygon points="44.80,109.80 220.81,109.80 220.81,117.80 44.80,117.80" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
+<text x="132.81" y="114.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#6E7781" text-anchor="middle" font-weight="400">TS06-FASCIA below (raked)</text>
 <line x1="238.40" y1="51.10" x2="246.40" y2="51.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="238.40" y1="65.10" x2="246.40" y2="65.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="246.40" y1="51.10" x2="246.40" y2="65.10" stroke="#2F6DB5" stroke-width="0.25"/>
@@ -93,12 +93,12 @@
 <circle cx="34.00" cy="28.00" r="0.45" fill="#2F6DB5"/>
 <circle cx="238.40" cy="28.00" r="0.45" fill="#2F6DB5"/>
 <text x="136.20" y="27.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">204.4 outside</text>
-<line x1="140.50" y1="36.00" x2="140.50" y2="33.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="169.50" y1="36.00" x2="169.50" y2="33.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="140.50" y1="33.00" x2="169.50" y2="33.00" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="140.50" cy="33.00" r="0.45" fill="#2F6DB5"/>
-<circle cx="169.50" cy="33.00" r="0.45" fill="#2F6DB5"/>
-<text x="155.00" y="32.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#2F6DB5" text-anchor="middle" font-weight="400">7 vents x 2.0 wide</text>
+<line x1="47.40" y1="36.00" x2="47.40" y2="33.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="76.40" y1="36.00" x2="76.40" y2="33.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="47.40" y1="33.00" x2="76.40" y2="33.00" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="47.40" cy="33.00" r="0.45" fill="#2F6DB5"/>
+<circle cx="76.40" cy="33.00" r="0.45" fill="#2F6DB5"/>
+<text x="61.90" y="32.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#2F6DB5" text-anchor="middle" font-weight="400">7 vents x 2.0 wide</text>
 <text x="8" y="152.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Right cheek: Ø14 counterbore from the OUTSIDE, 1.5 mm web, Ø9 hole - the review's pocket 'from inside' would leave the outer face where it is and the plug at 2.7 mm engagement.</text>
 <text x="8" y="155.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Left cheek: the 12 x 9 USB slot runs open to the rear edge so the module can be drawn out backwards past the receptacle; the rear panel closes it.</text>
 </svg>

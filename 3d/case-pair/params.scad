@@ -57,8 +57,10 @@ VALANCE_T          = 1.5;  // [design] printed rib behind the ИН-17 pair
 BROW_T             = 3;  // [design] printed brow face
 SOFFIT_T           = 2;  // [design] printed
 BROW_RAKE          = 12;  // [doc] spec §6: front raked 12° - the brow leans back like the fascia
-TOP_CLR            = 3;  // [doc] pair review, envelope: 3 mm of top clearance
-TOP_T              = 3;  // [design] printed top bar
+TOP_T              = 3;  // [design] printed top plate, black like the chassis (case review m5; spec §6: chassis matte black)
+MOD_CLR            = 0.5;  // [doc] the module's clearance to a case part it slides past: the pair review's 0.5 to each cheek
+END_BLOCK          = 8;  // [doc] case review F7: every insert a cheek screw goes into sits in a block of at least 8 mm
+TOP_CLR            = 5.5;  // [design] TS06-DRV's top edge to the top plate's underside: MOD_CLR + END_BLOCK - TOP_T, so the plate's rear block (the rear panel's inserts, the cheek screws) clears the board; was the pair review's 3
 REAR_AIR           = 5;  // [doc] pair review, envelope: 5 mm of air in front of the rear panel
 REAR_T             = 1.6;  // [doc] pair review suggestion 2: the rear panel is a 1.6 mm FR4 blank
 BASE_T             = 3;  // [design] printed or 3 mm aluminium
@@ -66,11 +68,12 @@ KICK_T             = 2;  // [design] the raked strip under the fascia; thin enou
 FASCIA_RAKE        = 12;  // [doc] spec §6 and cad-component-library: front raked 12°
 FLOOR_CLR          = 0.5;  // [design] between the fascia lead's lowest point and the floor
 VENT_W             = 2;  // [doc] pair review 4: slots no wider than 2.5 mm (2.0 used)
-VENT_X0            = 100;  // [doc] pair review suggestion 2: vents above the converter, world X 100-130
-VENT_X1            = 130;  // [doc] pair review suggestion 2
-VENT_Y0            = 85;  // [doc] pair review suggestion 2: world Y 85-100
+VENT_X0            = 6.9;  // [board] case review m4: over the logic side - a 30 mm span (the pair review's) centred on U1, the Nano (courtyard X -2.4-43.8 in mkpcb_drv)
+VENT_X1            = 36.9;  // [board] VENT_X0 + 30
+VENT_Y0            = 85;  // [doc] pair review suggestion 2: world Y 85-100 (inside the Nano's Y 85.2-103.5)
 VENT_Y1            = 100;  // [doc] pair review suggestion 2
 VENT_PITCH         = 4.5;  // [design] 
+VENT_HV_CLR        = 5;  // [design] no 185 V part (a pad on an HV-class net) within this of the vent field, projected
 BOSS_W             = 8;  // [design] square boss on a cheek's inner face, M3 heat-set insert
 BOSS_D             = 10;  // [design] boss length in Z, in front of TS06-DRV
 FBOSS_D            = 8;  // [design] fascia boss depth behind the fascia
@@ -100,15 +103,54 @@ FJ_PLUG_OUT        = 3;  // [assumed] mated PHR-6 beyond the header mouth, to wh
 CABLE_R            = 3;  // [assumed] bend radius of the 6-wire PH lead (to the ribbon's centre line)
 CABLE_HALF         = 0.65;  // [assumed] half the lead's thickness (6 x AWG28 side by side)
 J1_MATED_H         = 9.5;  // [assumed] B6B-PH-K 6.0 header + PHR-6 housing, off TS06-DRV's display-facing face
-LEAD_LEN           = 150;  // [doc] pair review suggestion 5: a 150 mm PHR-6 lead
-ROTARY_D           = 26.94;  // [doc] TERMINAL-06-concept-plates: rotary body 26.94 (caliper 28.08)
-ROTARY_DEPTH       = 16;  // [assumed] rotary body + lugs behind the fascia (spec §6: lugs >= 11.3 behind it)
+LEAD_LEN           = 190;  // [doc] PCB/TS06-DRV/bom.md: fascia lead, 6-way JST PH, 180-200 mm (the middle; was the pair review's 150)
+ROTARY_D           = 25;  // [doc] knowledge/TERMINAL-06-spec.txt §6, MEASURE BEFORE ORDERING PANELS: body / wafer 25.00, which supersedes the withdrawn 26.94 (Rev D.3)
+ROTARY_DEPTH       = 22;  // [doc] knowledge/TERMINAL-06-spec.txt §6: the lugs sit >= 11.3 behind the fascia's rear face, and the §1 table gives them 10 mm of free length: 21.3, rounded up
 MT1_W              = 11.92;  // [doc] measurements-MT1 #2 (candidate W)
 MT1_L              = 10.43;  // [doc] measurements-MT1 #1 (candidate L)
 MT1_DEPTH          = 30;  // [assumed] cad-component-library: 'your spec says 30 mm depth; verify per sample'
 KMD1_A             = 13.75;  // [doc] measurements-KMD1 #1 (orientation not known)
 KMD1_B             = 16.91;  // [doc] measurements-KMD1 #2 (orientation not known)
 KMD1_DEPTH         = 20;  // [assumed] КМД1-1 body depth: not captured (measurements-KMD1 #8)
+
+// ---- fixings
+INS_M3_D           = 4;  // [assumed] M3 heat-set insert: hole diameter (M3 x 5.7 class)
+INS_M3_L           = 5.7;  // [assumed] M3 heat-set insert: length
+INS_M25_D          = 3.5;  // [assumed] M2.5 heat-set insert: hole diameter
+INS_M25_L          = 4;  // [assumed] M2.5 heat-set insert: length
+INS_WALL_MIN       = 1.5;  // [doc] case review m4: at least 1.5 mm of wall round an insert
+CLR_M3             = 3.4;  // [design] M3 clearance hole through a cheek
+CB_D               = 6.2;  // [design] counterbore for an M3 socket head, from the cheek's outside
+CB_DEPTH           = 2;  // [design] counterbore depth
+SCREW_M3_L         = 8;  // [design] M3 x 8 through a cheek: 4 mm of cheek under the counterbore, 4 mm into the insert
+SCREW_M25_L        = 6;  // [design] M2.5 x 6: fascia, rear panel, sill ties
+MOD_WASHER_T       = 0.8;  // [assumed] nylon washer under the module screws' heads (PCB/TS06-DRV/bom.md: M3 + nylon washer)
+TIP_CLR_MIN        = 1;  // [doc] case review F7: no screw within 1 mm of glass or a board
+GLASS_BLK_CLR      = 1;  // [design] a new block under the tall glass stays this far below it (so it needs no lead-in)
+BASE_FIX_Z         = 10;  // [design] front base screw: behind the fascia's lower bosses (Z <= 2.1)
+WALL_FIX_Z         = 16;  // [design] trench screw: in the blocks under H10 / ИН-15А, behind the fascia's upper bosses (Z <= 8.6)
+TOP_FIX_Z          = 20;  // [design] front top-plate screw: in front of TS06-DRV's strips (Z >= 34.1)
+REAR_FIX_DZ        = 12;  // [design] rear base / top-plate screws this far in front of the rear panel
+LEADIN             = 3;  // [doc] case review F8: 45° x 3 mm lead-ins on the rear edges the module passes within 1 mm
+LEADIN_BELOW       = 1;  // [doc] case review F8: the square-edged clearances under 1 mm get one
+LEAD_MARGIN        = 1;  // [design] a sill lead-in runs this far past the LED flange on each side
+SLOT_X             = 0.6;  // [doc] case review F9: the crossmember holes slotted along X by ±0.6
+PRINT_SHRINK       = 0.4;  // [assumed] PETG shrinkage along a long print, % (compensate the slicer's X scale)
+REAR_HOLE_D        = 2.7;  // [design] M2.5 clearance in the FR4 rear panel (slotted ±SLOT_X along X)
+REAR_FIX_X         = 4;  // [design] rear-panel corner screws this far in from the cheeks' inner faces
+
+// ---- variant D
+FASCIA_FRAME       = 0;  // [design] variant D, the printed fascia frame: 1 = on. Off by default: the owner has not chosen a fascia variant
+FF_PANEL_W         = 179;  // [doc] case review, variant D: a 179 x 40 fascia, X 3.0-182.0 (no such board yet; the 176 board stands in)
+FF_PANEL_H         = 40;  // [doc] case review, variant D
+FF_WEB             = 4;  // [design] the frame's depth behind the panel
+FF_LEDGE           = 2;  // [design] the rabbet's ledge behind the panel's left, right and bottom edges
+FF_TOP             = 4.5;  // [design] the top rail behind the panel (under the sill): above the КМД1 bodies (t >= 5.5)
+FF_RIB_W           = 2;  // [design] ribs under the panel's middle, between the controls
+FF_HOLE_E          = 3;  // [design] the 179 panel's lower holes, in from its side edges (FR4 web 1.65)
+FF_HOLE_T          = 5;  // [design] the 179 panel's holes, down from its top edge / up from its bottom edge
+FF_FIX_T           = 20;  // [design] the cheek screw into the frame's end blocks, down the face
+FF_TIE_Z           = 8;  // [design] the sill ties (M2.5, down through the sill into the frame's rib heads)
 
 // ---- read from the boards (world coordinates)
 IN12_X   = [13.21, 36.57, 63.99, 87.37];  // board: mkpcb_disp IN12_X (H10 H1 M10 M1)
@@ -228,6 +270,8 @@ FASCIA_HOLES = [[4.5, 4.5, 2.7], [4.5, 35.5, 2.7], [171.5, 4.5, 2.7], [171.5, 35
 FASCIA_CTRL  = [["SW1", 30, 14, 8.8], ["SW2", 95, 14, 8], ["SW3", 118, 14, 8], ["SW4", 146, 14, 8], ["SW5", 164, 14, 8]];  // board: SW1-SW5 [ref, x, y, panel hole]
 FJ_BOX       = [143.4, 160.6, 28.3, 38.5];  // board: fascia J1 courtyard [x0, x1, y0, y1], back face
 LEAD = [[49, 9, 33.1], [49, 9, 30.1], [49, -3.65, 30.1], [49, -6.65, 27.1], [156.31, -6.65, -2.39], [156.31, -2.51, -5.32]];  // derived: fascia lead centre line [X, Y, Z]
+FF_RIB_X = [71.8, 134.7];  // derived (variant D): the frame's ribs, in the two widest gaps between the stand-in's controls and back-side parts
+FF_HOLES = [[71.8, 5], [134.7, 5], [6, 35], [179, 35]];  // derived (variant D): the 179 panel's M2.5 holes [X, down the face]: over the ribs, and its bottom corners
 
 // ---- derived in case_pair.py; case.scad derives the same and echoes it for comparison
 PY_Z_DISP_F     = 30;
@@ -238,5 +282,18 @@ PY_SOFFIT_Y     = 75.4;
 PY_Y_FLOOR      = -7.3;
 PY_Z_TOE        = -10.841;
 PY_OUT_W        = 204.4;
-PY_OUT_H        = 120.3;
+PY_OUT_H        = 122.8;
 PY_OUT_D        = 83.641;
+PY_SILL_NOTCH_Z = 3.55;
+PY_SILL_NOTCH_X0 = 20.805;
+PY_FIX_BASE_Y   = -4.8;
+PY_WALL_BLK_Y0  = 36.736;
+PY_WALL_BLK_Y1  = 44.736;
+PY_FIX_BROW_Y   = 93.45;
+PY_FIX_BROW_Z   = 9.904;
+PY_FIX_TOP_Y    = 108.5;
+PY_TOP_LIP_Y0   = 104.5;
+PY_FF_FIX_Y     = 18.19;
+PY_FF_FIX_Z     = 0.711;
+PY_SILL_LEAD_X0 = 105.735;
+PY_REAR_SCREWS  = 6;

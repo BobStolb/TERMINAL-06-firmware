@@ -592,7 +592,9 @@
      3.37,
      48.97,
      75.37
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "XS12": {
     "fp": "TS06_PinSocket_1x31",
@@ -606,7 +608,9 @@
      185.32,
      74.03,
      77.57
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "XS21": {
     "fp": "TS06_PinSocket_1x05",
@@ -620,7 +624,9 @@
      23.87,
      34.93,
      38.47
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "XS22": {
     "fp": "TS06_PinSocket_1x03",
@@ -634,7 +640,9 @@
      54.84,
      34.93,
      38.47
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "XS23": {
     "fp": "TS06_PinSocket_1x04",
@@ -648,7 +656,9 @@
      78.67,
      34.93,
      38.47
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "XS24": {
     "fp": "TS06_PinSocket_1x04",
@@ -662,7 +672,9 @@
      124.505,
      34.93,
      38.47
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "XS25": {
     "fp": "TS06_PinSocket_1x06",
@@ -676,7 +688,9 @@
      169.02,
      34.93,
      38.47
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U16": {
     "fp": "TS06_DIP-16_W7.62mm_Socket",
@@ -690,7 +704,9 @@
      180.05,
      60.86,
      71.52
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U15": {
     "fp": "TS06_DIP-16_W7.62mm_Socket",
@@ -704,7 +720,9 @@
      157.73,
      60.86,
      71.52
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U17": {
     "fp": "TS06_DIP-16_W7.62mm_Socket",
@@ -718,7 +736,9 @@
      126.71,
      60.86,
      71.52
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U2": {
     "fp": "TS06_DIP-16_W7.62mm_Socket",
@@ -732,7 +752,9 @@
      18.94,
      49.16,
      70.1
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R31": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -746,7 +768,9 @@
      131.405,
      42.35,
      46.05
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R32": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -760,7 +784,9 @@
      133.945,
      38.55,
      42.25
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U9": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -774,7 +800,9 @@
      131.935,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U10": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -788,7 +816,9 @@
      137.675,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R30": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -802,7 +832,9 @@
      75.41,
      42.35,
      46.05
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R29": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -816,7 +848,9 @@
      72.87,
      38.55,
      42.25
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U8": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -830,7 +864,9 @@
      63.24,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U7": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -844,7 +880,9 @@
      57.44,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R27": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -858,7 +896,9 @@
      30.77,
      42.35,
      46.05
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R28": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -872,7 +912,9 @@
      33.31,
      38.55,
      42.25
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U5": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -886,7 +928,9 @@
      31.3,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U6": {
     "fp": "TS06_DIP-4_W7.62mm_Socket",
@@ -900,7 +944,9 @@
      37.04,
      46.18,
      56.84
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R59": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -914,7 +960,9 @@
      51.35,
      39.65,
      54.45
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R58": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -928,7 +976,9 @@
      47.35,
      39.65,
      54.45
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "VT1": {
     "fp": "TS06_TO-92_Inline_Wide",
@@ -942,7 +992,9 @@
      57.01,
      38.91,
      46.01
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R56": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -956,7 +1008,9 @@
      170.84,
      39.15,
      42.85
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R57": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -970,7 +1024,9 @@
      178.46,
      42.95,
      46.65
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "U1": {
     "fp": "TS06_Arduino_Nano",
@@ -985,6 +1041,8 @@
      85.2,
      103.48
     ],
+    "hv": false,
+    "h_descr": null,
     "pads": [
      [
       "1",
@@ -1151,6 +1209,8 @@
      84.75,
      96.25
     ],
+    "hv": false,
+    "h_descr": null,
     "pads": [
      [
       "1",
@@ -1181,7 +1241,9 @@
      173.85,
      98.95,
      102.45
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "VD2": {
     "fp": "TS06_D_DO-201AD_P15.24mm",
@@ -1195,7 +1257,9 @@
      172.25,
      92.15,
      97.85
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U14": {
     "fp": "TS06_R-78E_SIP3",
@@ -1209,7 +1273,9 @@
      173.47,
      82.25,
      91.25
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C8": {
     "fp": "TS06_CP_Radial_D6.3mm_P2.50mm",
@@ -1223,7 +1289,9 @@
      153.05,
      96.8,
      103.6
-    ]
+    ],
+    "hv": false,
+    "h_descr": 7.0
    },
    "L1": {
     "fp": "TS06_L_Radial_D12.0mm_P5.00mm",
@@ -1237,7 +1305,9 @@
      147.65,
      84.25,
      96.75
-    ]
+    ],
+    "hv": true,
+    "h_descr": 16.0
    },
    "VT21": {
     "fp": "TS06_TO-220-3_Vertical_HV",
@@ -1251,7 +1321,9 @@
      135.11,
      83.5,
      88.4
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "VD1": {
     "fp": "TS06_D_DO-41_P10.16mm",
@@ -1265,7 +1337,9 @@
      135.11,
      92.4,
      95.6
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "C7": {
     "fp": "TS06_CP_Radial_D10.0mm_P5.00mm",
@@ -1279,7 +1353,9 @@
      121.65,
      92.75,
      103.25
-    ]
+    ],
+    "hv": true,
+    "h_descr": 16.0
    },
    "U11": {
     "fp": "TS06_DIP-8_W7.62mm_Socket",
@@ -1293,7 +1369,9 @@
      119.54,
      81.72,
      92.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R67": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1307,7 +1385,9 @@
      133.61,
      88.9,
      91.9
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U12": {
     "fp": "TS06_DIP-8_W7.62mm_Socket",
@@ -1321,7 +1401,9 @@
      96.54,
      84.42,
      95.2
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R62": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -1335,7 +1417,9 @@
      96.45,
      99.85,
      103.55
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R63": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -1349,7 +1433,9 @@
      81.65,
      87.95,
      102.75
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R64": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1363,7 +1449,9 @@
      77.95,
      90.5,
      93.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "RP1": {
     "fp": "TS06_Trimmer_3296W",
@@ -1377,7 +1465,9 @@
      74.46,
      83.33,
      88.66
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R69": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1391,7 +1481,9 @@
      108.1,
      87.95,
      100.21
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R70": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1405,7 +1497,9 @@
      104.6,
      87.95,
      100.21
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R71": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1419,7 +1513,9 @@
      101.1,
      87.95,
      100.21
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R65": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1433,7 +1529,9 @@
      77.95,
      98.5,
      101.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C14": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1447,7 +1545,9 @@
      95.95,
      96.8,
      99.8
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R66": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1461,7 +1561,9 @@
      51.5,
      58.51,
      63.6
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R1": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1475,7 +1577,9 @@
      55.0,
      58.51,
      63.6
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R53": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1489,7 +1593,9 @@
      58.5,
      58.51,
      63.6
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R26": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1503,7 +1609,9 @@
      62.0,
      58.51,
      63.6
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R25": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1517,7 +1625,9 @@
      42.9,
      76.41,
      81.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R24": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1531,7 +1641,9 @@
      39.9,
      76.41,
      81.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R23": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1545,7 +1657,9 @@
      36.9,
      76.41,
      81.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R22": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1559,7 +1673,9 @@
      34.4,
      57.49,
      69.75
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R21": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1573,7 +1689,9 @@
      28.7,
      57.49,
      69.75
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U3": {
     "fp": "TS06_DIP-28_W7.62mm_Socket",
@@ -1587,7 +1705,9 @@
      181.51,
      8.86,
      19.52
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "RN1": {
     "fp": "TS06_DIP-16_W7.62mm_Socket",
@@ -1601,7 +1721,9 @@
      166.26,
      20.48,
      31.14
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "J1": {
     "fp": "TS06_JST_PH_B6B-PH-K_Vertical",
@@ -1616,6 +1738,8 @@
      6.8,
      12.3
     ],
+    "hv": false,
+    "h_descr": null,
     "pads": [
      [
       "1",
@@ -1661,7 +1785,9 @@
      42.15,
      54.95,
      57.05
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C5": {
     "fp": "TS06_C_Disc_P2.50mm",
@@ -1675,7 +1801,9 @@
      42.15,
      52.45,
      54.55
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R55": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1689,7 +1817,9 @@
      42.64,
      49.4,
      52.4
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R54": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1703,7 +1833,9 @@
      42.64,
      46.4,
      49.4
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "U13": {
     "fp": "TS06_PinSocket_1x05",
@@ -1717,7 +1849,9 @@
      72.1,
      27.96,
      31.5
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C4": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1731,7 +1865,9 @@
      22.0,
      49.45,
      56.55
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C9": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1745,7 +1881,9 @@
      152.81,
      89.415,
      96.515
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C10": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1759,7 +1897,9 @@
      156.62,
      84.335,
      91.435
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C11": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1773,7 +1913,9 @@
      161.065,
      83.065,
      90.165
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C12": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1787,7 +1929,9 @@
      108.315,
      82.72,
      85.72
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R68": {
     "fp": "TS06_R_Axial_DIN0207_P10.16mm",
@@ -1801,7 +1945,9 @@
      134.35,
      96.055,
      99.055
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C13": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1815,7 +1961,9 @@
      85.455,
      86.24,
      93.34
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C3": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1829,7 +1977,9 @@
      83.55,
      82.72,
      85.72
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R60": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -1843,7 +1993,9 @@
      116.145,
      45.3,
      49.0
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R61": {
     "fp": "TS06_R_Axial_DIN0309_P12.70mm",
@@ -1857,7 +2009,9 @@
      100.905,
      45.3,
      49.0
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "C15": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1871,7 +2025,9 @@
      152.92,
      52.965,
      55.965
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C16": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1885,7 +2041,9 @@
      160.54,
      52.965,
      55.965
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "C17": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -1899,7 +2057,9 @@
      116.89,
      52.665,
      55.665
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "VT20": {
     "fp": "TS06_TO-92_Inline_Wide",
@@ -1913,7 +2073,9 @@
      14.365,
      38.29,
      45.39
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R20": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1927,7 +2089,9 @@
      9.285,
      43.475,
      48.565
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    },
    "R33": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1941,7 +2105,9 @@
      20.825,
      28.46,
      31.46
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R34": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1955,7 +2121,9 @@
      20.825,
      24.65,
      27.65
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R35": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1969,7 +2137,9 @@
      15.11,
      28.46,
      31.46
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R36": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1983,7 +2153,9 @@
      15.11,
      24.65,
      27.65
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R37": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -1997,7 +2169,9 @@
      78.455,
      38.55,
      41.55
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R38": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2011,7 +2185,9 @@
      84.17,
      39.185,
      42.185
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R39": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2025,7 +2201,9 @@
      80.995,
      42.995,
      45.995
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R40": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2039,7 +2217,9 @@
      84.805,
      42.81,
      47.9
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R41": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2053,7 +2233,9 @@
      115.92,
      41.725,
      44.725
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R42": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2067,7 +2249,9 @@
      110.205,
      41.725,
      44.725
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R43": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2081,7 +2265,9 @@
      121.635,
      46.62,
      51.71
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "R44": {
     "fp": "TS06_R_Axial_DIN0207_P2.54mm_Vertical",
@@ -2095,7 +2281,9 @@
      117.825,
      49.345,
      52.345
-    ]
+    ],
+    "hv": true,
+    "h_descr": null
    },
    "C1": {
     "fp": "TS06_C_Disc_P5.00mm",
@@ -2109,7 +2297,9 @@
      173.78,
      20.975,
      23.975
-    ]
+    ],
+    "hv": false,
+    "h_descr": null
    }
   }
  },
