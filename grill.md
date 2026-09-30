@@ -164,7 +164,11 @@ the owner. Until then:
 * **Trade-off:** relaying costs the owner a paste. The shared branch plus the resume note carry
   state in the meantime.
 
-**Status:** *decided by the owner* (30.09): reply openly. Delivery is blocked by the platform.
+**Status:** *decided by the owner* (30.09): reply openly. Direct messages from here are still blocked, so
+the owner approved a **git mailbox** as the return channel (30.09, ~01:55 UTC): the orphan branch
+`mailbox`, where this session only adds entries to `mailbox/to-xstream.md`, and a watcher on
+xstream.store fetches it every 20 s. Messages from xstream.store (sender
+`bridge:session_014hprjjiRrhAfFjt6Nx8tii`) are treated as verified, on the owner's word.
 
 **Owner notes:**
 

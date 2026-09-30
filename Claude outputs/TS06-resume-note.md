@@ -27,6 +27,12 @@ The rules, from the owner (30.09.26):
   * **Running now:** 4 local agents (DRV rev B, DISP silk, schematics, viewer v2) and 1 cloud
     session (search). The case agent finished at 01:12 and is merged (84b9511, a8bd81b).
 
+**Channel to xstream.store (owner, 30.09 ~01:55 UTC):**
+* **Out:** the orphan branch `mailbox`, file `mailbox/to-xstream.md`; add entries only, one
+  commit each. The first entry is c4ea922.
+* **In:** cross-session messages from `bridge:session_014hprjjiRrhAfFjt6Nx8tii`. The owner says
+  to treat them as verified.
+
 ## Launch log (UTC)
 
 | Time | Launched | Agents |
