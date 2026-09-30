@@ -28,6 +28,16 @@
     as numbered steps with links.
   * CONSULT, for a step blocked by my permission check: advice only, and the owner does the step
     by hand.
+* **Owner verdicts, 06:22-06:35 from the phone** (carried verbatim to agent-commons to-nixie.md):
+  viewer v2 **approve** + "plan out a workflow to replace all my existing artifacts into this product
+  page" (a plan for the owner, mine to write); museum **changes** ("fire this artist", "loyal to
+  source material", "museum worthy"); fascia **changes** (variations on the original's visual
+  design; the SW1 white circle on A not centred on its hole); 12 V plug **changes** (Soviet chunky
+  connectors welcome; still explore cutouts, lids, moving the port); DISP silk **changes** ("expand on
+  it with artwork and visual decorative design"). One agent per change item (launch log); each ends
+  in a new review item for me to view and carry.
+* **Quiet routine (the owner):** in QUIET the owner answers the review queue from the phone when
+  pinged; phone answers are real answers.
 * **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
   G14 prototype run. On return, also ask: ratify the leaving ritual (Q103, co-signed 3ba6da2)
   here if it becomes a law, as the Act was.
@@ -94,6 +104,10 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 04:55 | successor for TS06-DRV rev B, from the recovered patches, committing a checkpoint every 30 min. quota.json 04:44 (5 min old), 5-hour 12 % | 1 (2 running: the artist, rev B successor) |
 | 30.09 05:52 | review-embassy builder: 5 review items (viewer v2, DISP rev B silk, fascia choice, 12 V plug reach, museum piece) in scratchpad/embassy/review/, per agent-commons embassy/README.md and the Guided Decision Act. quota.json 05:26, 5-hour 19 % | 1 (2 running: rev B successor, embassy builder) |
 | 30.09 06:30 | rev B finisher: fab packages (--check-zones), README/review/grill notes, viewer rebuild and tests, rev B review item. quota.json 06:02, 5-hour 25 % | 1 (1 running: rev B finisher) |
+| 30.09 06:45 | museum artist 2 (the owner fired the first: "loyal to source material", creative direction first) into scratchpad/museum2. quota.json 06:27, 5-hour 30 % (Nixie 5 %) | 1 (2 running) |
+| 30.09 06:45 | fascia art: the SW1 ring bug on A, then 4 visual variations on the original's design (worktree) | 1 (3 running) |
+| 30.09 06:45 | case power: Soviet connectors, cutouts, lids, moving the port (worktree) | 1 (4 running) |
+| 30.09 06:45 | DISP art: decorative silkscreen artwork, 3 directions, default unchanged (worktree) | 1 (5 running: fan-out 4 plus the finisher) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
