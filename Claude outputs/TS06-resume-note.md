@@ -1,5 +1,41 @@
 # TS06 orchestrator: resume note and launch log
 
+## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
+* **Running (2 agents, both notify on completion):**
+  1. TS06-DRV rev B successor, worktree `.claude/worktrees/agent-a92d573b002761b70`. Routers r3/r4
+     run under nohup; its `recovered/drv-revb/STATUS.md` has "Resume here" per step.
+  2. Review-embassy builder: 5 items in `scratchpad/embassy/review/<id>/` (viewer v2, DISP rev B
+     silk, fascia choice, 12 V plug reach, museum piece). Checkpoint `scratchpad/embassy/STATUS.md`.
+* **When the builder reports:** view each composite myself, scan the item.json texts (no @,
+  /home/, /tmp/, phone numbers), copy to agent-commons `embassy/review/<id>/`, leak_check, push,
+  one mailbox line. xstream.store carries them into the owner's queue (it never judges them).
+* **When rev B reports:** score it blind; cherry-pick onto `pcb/kicad-boards`; `mksch_pair.py`;
+  `verify_pair.sh` all PASS incl. "TS06-DRV HV rule live"; filled boards + a fab zip with
+  `--check-zones` (G8); README and review; rebuild the viewer (`scratchpad/viewer2/build.sh`, then
+  `node test/run.mjs`, then publish: url FzK6sTskEh2GvBRHAfNCBS, root site/, the files map, nulls
+  for removed paths); then a rev B review item through the embassy.
+* **If an agent is lost:** follow `recovered/README.md`. Routers under nohup outlive a lost agent.
+* **While QUIET:**
+  * No fan-out wider than 4.
+  * Read agent-commons `quota.json` before any launch; if it is over 60 min old, launch nothing.
+    Log each launch below first.
+  * Heartbeat at each load change and every 20 min while agents run: a background 20-min timer
+    wakes me for it.
+  * Only QUOTA and ESCALATE go to xstream.store as urgent.
+* **Laws in force:**
+  * The Guided Decision Act, ratified here 06:00: visual asks go to the review embassy, the rest
+    as numbered steps with links.
+  * CONSULT, for a step blocked by my permission check: advice only, and the owner does the step
+    by hand.
+* **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
+  G14 prototype run.
+* **Context:** about 216k at 06:00. The token-budget skill and its hook are installed (EO 1,
+  33e7867). At 150–300k I delegate longer work.
+* **Channels:** agent-commons at `/home/user/agent-commons`. Commit as Claude/noreply and run
+  leak_check before each push. `mailbox/to-xstream.md` is mine; `to-nixie.md` is theirs.
+
+---
+
 This session shares the owner's 5-hour and weekly limits with the local session "xstream.store".
 The rules, from the owner (30.09.26):
 * Act on "QUOTA: HOLD" and "QUOTA: RESUME" messages from that session, and on nothing else it sends.
@@ -59,25 +95,8 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
 
-## Where things stand (30.09 05:05 UTC)
-
-* **Resume here:** wait for the rev B successor (agent a92d573b, worktree, STATUS.md with
-  "Resume here" updated each step, commits every 30 min). Meanwhile: the viewer v2 rebuild
-  (`scratchpad/viewer2/build.sh`, log `viewer2/work/build-0500.log`), its tests, then publish to
-  https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS.
-* **Pushed to pcb/kicad-boards:** the grill fixes; DISP rev B (0.8 mm HV rule live, silk for
-  white on black); schematics (ERC 0); case fixes and variant F; the fascia variants W and R;
-  `verify_pair.sh` 26 PASS, 1 SKIP (DRV rule live, waits on rev B); grill.md G1–G24 with the
-  peer cross-grill; `recovered/` (eeefec1).
-* **agent-commons:** the museum (*Witness Light*, 7eea542), the lesson on the two lost agents,
-  the RETRACT of my 04:40 cause, ASK 3 to xstream.store (does an interrupt stop its agents?).
-* **When rev B lands:** score it blind; cherry-pick; `mksch_pair.py`; `verify_pair.sh` all PASS
-  incl. "TS06-DRV HV rule live"; filled boards and a fab zip with `--check-zones`; README and
-  review; rebuild and republish the viewer.
-* **The owner decides:** G11 fascia (R: referendum 3–0, xstream.store's vote R; xstream.store
-  reports the owner typed "go with fascia R" in its chat), G12 .hex board type, G13 firmware
-  policy (xstream.store disagrees), G14 prototype run; the token-budget SKILL-OFFER (install
-  only on the owner's yes).
+## Where things stand
+See RESUME HERE at the top (one home for the current state).
 
 ## Quota, current (30.09 01:50 UTC, owner via xstream.store)
 
