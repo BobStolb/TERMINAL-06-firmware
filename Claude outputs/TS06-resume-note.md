@@ -5,8 +5,7 @@
   disp-circuit-art: make `--art circuit` the default of mkpcb_disp.py, regenerate, verify_pair 27 PASS,
   rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
   variations as creative as the display art -> run fascia-gold. Subagents default to model sonnet (the
-  owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both runs wait for a fresh quota.json
-  (07:29 stale at 08:47).
+  owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both launched 09:10 (launch log).
 * **Running: none.** Viewer v4 published 08:35 (Front panel view, rev B circuit sections, 112/112 tests;
   source mirrored in recovered/viewer2, b6fea17). Follow-ups, small: the section summaries are still rev A
   text, and rev B's new parts sit in the schematic's "labelled, not wired" row (a generator change).
@@ -133,6 +132,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 07:08 | artifact inventory, read-only (the owner's 4a; scope A+B, 17 artifacts) into scratchpad/artifact-inventory. quota.json 06:48, 5-hour 35 % (Nixie 6.4 %) | 1 (6 running: the cap) |
 | 30.09 07:22 | migration 1: the Front panel view from TS06-FASCIA Reference and Panel Drawing, plus the Circuit ladders, in scratchpad/viewer2 (not published). quota.json 07:08, 5-hour 41 % (Nixie 10 %) | 1 (5 running) |
 | 30.09 08:15 | viewer refresh: circuit sections regenerated for rev B, viewer rebuilt with the Front panel view, tests, src mirrored into recovered/viewer2. quota.json 07:29 (46 min), Nixie 15 % of the old window; the window reset 08:10 | 1 (1 running) |
+| 30.09 09:10 | disp-circuit-art (main checkout: direction 3 as the committed TS06-DISP, fab zip, docs, viewer rebuild) and fascia-gold (worktree: gold-trace variations), both on sonnet. quota.json 08:47 (21 min), 5-hour 4 % (Nixie 1.9 %) | 2 (2 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
