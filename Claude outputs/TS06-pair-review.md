@@ -527,6 +527,7 @@ copper at all. With a cost that also prices orientations, HV separation and edge
 | Colon vs M10 courtyard | nothing electrical | test fit |
 | ~~ИН-17 pair spacing: 13.0, needs 20.5~~ | fixed: boards widened to 191.4, the pair at 20.5 | gate 5 confirms the Ø20 stem |
 | The fascia under the 191.4 mm tube row | the fascia's board and the case bosses | four variants built and scored in `PCB/TS06-FASCIA-variants.md` (recommended: R, the controls on the tube grid): the owner's call |
+| **Rev C (owner, 30.09):** the expander under the decoders | nothing: copper length only | Swap moved U3 under the decoders and cut the port-A bus from 889 to 98 mm; four alternatives agree the placement leaves 10–15 % of the floor. Do it after rev B is verified, with a placement sweep scored on the floor **and** buildability gates (DRC-legal placement, ≤3 orientations, HV separated, connectors at their edges), routing only the best one or two |
 | Firmware: 6-slot timing | ghosting, flicker, brightness | bench, first pair |
 | ~~Firmware: `rtc.adjust()` on every boot~~, stale `.hex` | every board type | the RTC writes are fixed; rebuild the `.hex` for the board you flash (finding 8) |
 
