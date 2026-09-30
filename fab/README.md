@@ -1,8 +1,9 @@
 # Fab packages: TS06-DISP and TS06-DRV, rev B
 
 One zip per board of the through-hole pair, built from the committed boards by `tools/mkfab.sh`
-(grill.md G8, second half). Built 30.09.26 from `pcb/kicad-boards` at b8d3f25 (the rev B merge),
-with KiCad 10.0.6's `kicad-cli` in Docker.
+(grill.md G8, second half). Rebuilt 30.09.26 from `pcb/kicad-boards` at 77e3b11 (TS06-DISP with
+the circuit-as-ornament silkscreen art; TS06-DRV unchanged), with KiCad 10.0.6's `kicad-cli` in Docker.
+First built at b8d3f25 (the rev B merge).
 
 Not ordered: the prototype run is the owner's decision (grill G14). Filling the committed board files (G8, first half) is also the owner's decision.
 
@@ -27,6 +28,11 @@ layers: every part is through-hole (no SMD pads on either board), and neither bo
 |---|---|---|---|
 | TS06-DISP rev B | 191.5 × 44.1 mm | 179 | 10 |
 | TS06-DRV rev B | 191.5 × 100.1 mm | 427 | 8 |
+
+TS06-DISP's silkscreen files carry the art: front 29 kB to 121 kB, back 104 kB to 173 kB. Its
+copper, mask, outline and drill files are the same as before the art, apart from the creation
+date, and the thinnest silk line in them is 0.15 mm (the apertures in the two silk files).
+TS06-DRV's files are the same as before, apart from the creation date.
 
 The hole counts are the drill files' hits; they equal the boards' through-hole and
 non-plated pads. Both job files say 2 layers, 1.6 mm and ENIG, from the boards' own setup; the
