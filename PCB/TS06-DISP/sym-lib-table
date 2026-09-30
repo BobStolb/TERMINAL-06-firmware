@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "TS06_pair")(type "KiCad")(uri "${KIPRJMOD}/../lib/TS06_pair.kicad_sym")(options "")(descr "TERMINAL-06 THT pair symbols, written by tools/mksch_pair.py"))
+)
