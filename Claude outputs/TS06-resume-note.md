@@ -5,7 +5,8 @@
   disp-circuit-art: make `--art circuit` the default of mkpcb_disp.py, regenerate, verify_pair 27 PASS,
   rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
   variations as creative as the display art -> run fascia-gold. Subagents default to model sonnet (the
-  owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both launched 09:10 (launch log).
+  owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both launched 09:10 (launch log). disp-circuit-art DONE 09:40: 77e3b11/da9dc97/bd113cb,
+  27 PASS, viewer v5 published. fascia-gold still running (worktree; item nixie-fascia-gold, show here).
 * **Running: none.** Viewer v4 published 08:35 (Front panel view, rev B circuit sections, 112/112 tests;
   source mirrored in recovered/viewer2, b6fea17). Follow-ups, small: the section summaries are still rev A
   text, and rev B's new parts sit in the schematic's "labelled, not wired" row (a generator change).
