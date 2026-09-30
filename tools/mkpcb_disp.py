@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """TS06-DISP: the display board of the through-hole pair - tubes, colon, backlight, headers.
 
-    python3 tools/mkpcb_disp.py            # PCB/TS06-DISP/TS06-DISP.kicad_pcb (+ .kicad_pro, .kicad_dru, copper.png)
+    python3 tools/mkpcb_disp.py            # PCB/TS06-DISP/TS06-DISP.kicad_pcb (+ .kicad_pro, .kicad_dru, copper.png):
+                                           # rev B with the "circuit" silkscreen art, the owner's choice of 30.09.26
+    python3 tools/mkpcb_disp.py --art none --out /tmp/art/TS06-DISP.kicad_pcb
+                                           # plain rev B: its labels only, no art
     python3 tools/mkpcb_disp.py --art engraving --out /tmp/art/TS06-DISP.kicad_pcb
-                                           # a candidate: rev B + one silkscreen art direction (tools/disp_art.py:
-                                           # engraving, constructivist, circuit), written beside, never over, the board
+                                           # a direction not chosen (engraving, constructivist), written beside,
+                                           # never over, the board (tools/disp_art.py)
 
 Nothing on this board is placed by a packer or routed by a router. Every coordinate below is
 chosen, and the reason is written beside it; tools/pcbkit.py only writes what this file says.
@@ -739,27 +742,36 @@ def write_all(out, comment="TERMINAL-06 display board, THT pair with TS06-DRV"):
     return n, text
 
 
+ART_NAMES = ("engraving", "constructivist", "circuit")
+DEFAULT_ART = "circuit"
+COMMITTED = os.path.abspath(os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb"))
+
+
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser(description="TS06-DISP: the board, its project, rules and copper.png.")
-    ap.add_argument("--art", choices=("engraving", "constructivist", "circuit"),
-                    help="draw one silkscreen art direction (tools/disp_art.py) over rev B's silkscreen, into a "
-                         "candidate board at --out. Without it the board is rev B, as committed")
+    ap.add_argument("--art", choices=("none",) + ART_NAMES, default=DEFAULT_ART,
+                    help="the silkscreen art (tools/disp_art.py) drawn over rev B's labels. Default: %s, the "
+                         "owner's choice of 30.09.26. 'none' writes plain rev B; engraving and constructivist "
+                         "are the two directions not chosen, and are written only to a --out of their own" % DEFAULT_ART)
     ap.add_argument("--out", help="the board file to write (default $TS06_OUT, else PCB/TS06-DISP/TS06-DISP.kicad_pcb)")
     args = ap.parse_args()
     out = os.path.abspath(args.out) if args.out else OUT
     comment = "TERMINAL-06 display board, THT pair with TS06-DRV"
-    if args.art:
-        # a candidate until the owner picks one: it never lands on the committed board
-        if os.path.abspath(out) == os.path.abspath(os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")):
-            ap.error("--art writes a candidate board: give --out a path of its own")
+    if args.art != "none":
+        if args.art != DEFAULT_ART and os.path.abspath(out) == COMMITTED:
+            # only the chosen direction may land on the committed board
+            ap.error("--art %s is a direction not chosen: give --out a path of its own" % args.art)
         import disp_art
         art = disp_art.draw(args.art, sys.modules[__name__])
         nl, nt, by = art.summary()
         print(f"art '{args.art}': {nl} lines, {nt} texts (front {by['F']}, back {by['B']})")
         for s in art.skipped:
             print("  [art] did not fit, left out:", s)
-        comment += f"; candidate silkscreen art '{args.art}' (tools/disp_art.py), not chosen"
+        if args.art == DEFAULT_ART:
+            comment += f"; silkscreen art '{args.art}' (tools/disp_art.py), the owner's choice of 30.09.26"
+        else:
+            comment += f"; candidate silkscreen art '{args.art}' (tools/disp_art.py), not chosen"
     bad = B.check()
     mine = copper_problems() + silk_problems()
     for b in mine:

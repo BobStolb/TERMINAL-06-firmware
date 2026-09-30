@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""TS06-DISP silkscreen art: three directions for the owner to choose between.
+"""TS06-DISP silkscreen art: three directions were drawn for the owner to choose between.
 
 The owner's verdict on rev B's silkscreen (30.09.26): "good but expand on it with artwork and
-visual decorative design". `tools/mkpcb_disp.py --art NAME --out FILE` draws one direction on top of
-rev B's silkscreen into a board of its own; without --art the board is rev B, byte for byte, and
-this file is not even imported.
+visual decorative design". He chose "circuit" the same day ("the best for display pcb is circuit
+as ornament"), and it is what `tools/mkpcb_disp.py` now writes by default. `--art none` writes
+plain rev B (its labels only; this file is not even imported); `--art engraving` or
+`--art constructivist` draws a direction not chosen, only into a board of its own (`--out FILE`).
 
     engraving       a Soviet instrument panel, engraved: graduated scales, ruled rules and dials,
                     a nameplate
