@@ -1223,7 +1223,7 @@
 )
 (uuid "81fca8d7-b539-583e-971d-a5311395de31")
 )
-(text "C5: Ladder filters at the board end (spec §2).\nC18: At J1, on the cable side of R73.\nJ1: The panel cable; pin order is the specification both fascia builds share. Top entry, so the cable leaves\ntowards the fascia.\nR72: A6 pull-down: a defined 0 with the fascia unplugged.\nR73: Series resistor on the button line, at J1."
+(text "C5: Ladder filters at the board end (spec §2).\nC18: Near J1, on the cable side of R73.\nJ1: The panel cable; pin order is the specification both fascia builds share. Top entry, so the cable leaves\ntowards the fascia.\nR72: A6 pull-down: a defined 0 with the fascia unplugged.\nR73: Series resistor on the button line, between the strips and J1."
 (exclude_from_sim no)
 (at 20.32 115.57 0)
 (effects

@@ -319,11 +319,11 @@ C("C5", "100n", "A6", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="Ladder
 C("C6", "100n", "A7", "GND", "TS06_C_Disc_P2.50mm", group="fascia")
 # Rev B (E11): with the fascia lead unplugged A6 floated and the MODE filter read noise; 1M holds
 # it at 0 (the ladder's own divider is far stiffer, so its codes do not move). The two button
-# lines get 1k in series and 10 nF to ground at J1: ESD and cable pick-up stop at the connector.
+# lines get 1k in series and 10 nF to ground near J1: ESD and cable pick-up stop at the connector end.
 R("R72", "1M", "A6", "GND", group="fascia", note="A6 pull-down: a defined 0 with the fascia unplugged.")
-R("R73", "1k", "D7", "D7_J", group="fascia", note="Series resistor on the button line, at J1.")
+R("R73", "1k", "D7", "D7_J", group="fascia", note="Series resistor on the button line, between the strips and J1.")
 R("R74", "1k", "D8", "D8_J", group="fascia")
-C("C18", "10n", "D7_J", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="At J1, on the cable side of R73.")
+C("C18", "10n", "D7_J", "GND", "TS06_C_Disc_P2.50mm", group="fascia", note="Near J1, on the cable side of R73.")
 C("C19", "10n", "D8_J", "GND", "TS06_C_Disc_P2.50mm", group="fascia")
 part("U13", "DS3231 mini", "TS06_PinHeader_1x05_DS3231", {1: "GND", 2: None, 3: "SCL", 4: "SDA", 5: "+5V"}, DRV, "rtc",
      "A male PLS-5 on the board: the module's own female header plugs onto it and the module lies over "

@@ -44,7 +44,7 @@ The generator exits non-zero if check() or check_mate() finds anything.
 REV B (30.09.26), from the grills of rev A:
   * an over-voltage clamp independent of U12 and of the divider (VD5-VD7, R75, R76, VT2);
     a Schottky across U14 (VD3), a TVS after the fuse (VD4), the A6 pull-down and the button
-    lines' RC at J1 (R72-R74, C18, C19);
+    lines' RC between the strips and J1 (R72-R74, C18, C19), each on its own line's way in;
   * IPC-2221B A6: every HV pad 0.8 mm from all other copper, pours included (Board.pad_rules,
     the router, TS06-DRV.kicad_dru); cathode pads 0.5 mm where routable (Board.soft_pad_rules);
   * 3.8 mm copper keep-outs round the eight standoff holes, as KiCad rule areas;
