@@ -4,7 +4,7 @@
 <meta name="description" content="TERMINAL-06 nixie clock: the TS06 board pair and fascia in 3D, the assembly in its case, build and bring-up steps, and the schematic sections.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: one working stage (3D) with its camera deck and a side rail for steps and facts;
    the reference material sits below in tabs. Black boards, white silk, nixie-orange accent. */
@@ -267,6 +267,97 @@ td.n, th.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; fon
 .pztools button { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 6px; font: 600 12px var(--f-mono); padding: 2px 8px; cursor: pointer; }
 .stubnote { font-size: 13px; }
 
+/* ---------- front panel view and the panel ladders (moved from the TS06-FASCIA pages, 30.09.26) */
+.mk { display: inline-block; font: 500 10.5px/1.5 var(--f-mono); padding: 0 5px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; vertical-align: 1px; }
+.mk.seen { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+.mk.comp { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.mk.inf { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.from { font: 500 11px var(--f-mono); color: var(--muted); letter-spacing: .03em; }
+.hist { border-left: 3px solid var(--bad); background: var(--bad-soft); padding: 7px 12px; border-radius: 0 8px 8px 0; margin: 8px 0 12px; font-size: 13.5px; }
+.hist b:first-child { color: var(--bad); }
+.fpsec { margin-top: 26px; }
+.fpsec > h2 { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.fpsec > h2 .from { font-weight: 500; }
+.prose p, .card p { max-width: 78ch; }
+.fptoday { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.fptoday .shotpair { display: grid; gap: 8px; }
+.fptoday figure { margin: 0; background: #e9e6e0; border-radius: 8px; overflow: hidden; }
+:root[data-theme="dark"] .fptoday figure { background: #2a2825; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fptoday figure { background: #2a2825; } }
+.fptoday figure img { display: block; width: 100%; height: auto; }
+.fptoday figcaption { font: 12px var(--f-mono); color: var(--muted); padding: 4px 8px; background: var(--surface); }
+.fptoday dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; font-size: 13.5px; }
+.fptoday dt { color: var(--muted); }
+.fptoday dd { margin: 0; min-width: 0; }
+.board-fig { background: #0f1113; border-radius: 10px; padding: 10px; color: #dcd8d0; }
+.board-fig svg { display: block; width: 100%; height: auto; }
+.dialx { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.dialx .poslist { border-right: 1px solid var(--line); }
+.posbtn { display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; appearance: none; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 9px 14px; cursor: pointer; text-align: left; color: var(--muted); font: 500 13.5px/1.2 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
+.posbtn:last-child { border-bottom: 0; }
+.posbtn .n { font: 12px var(--f-mono); color: var(--accent); border: 1px solid var(--line); border-radius: 50%; width: 24px; height: 24px; display: grid; place-items: center; }
+.posbtn[aria-pressed="true"] { color: var(--text); background: var(--accent-soft); }
+.posbtn[aria-pressed="true"] .n { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.dialx .info { padding: 14px 16px; min-width: 0; }
+.dialx .info h3 { font-size: 19px; margin: 0; text-transform: uppercase; letter-spacing: .04em; }
+.dialx .info .lede2 { color: var(--muted); margin: 4px 0 12px; font-size: 14px; }
+.dialx .dialpic { max-width: 280px; margin: 0 0 12px; }
+.ctlgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.ctl { background: var(--surface); padding: 10px 12px; }
+.ctl .k { font: 500 10.5px var(--f-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+.ctl .v { font-size: 14px; line-height: 1.45; }
+.ctl.off .v { color: var(--muted); font-style: italic; }
+.ctl.live { background: var(--accent-soft); }
+.ctl.live .k { color: var(--accent); }
+.netrow { display: grid; grid-template-columns: 120px 220px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.netrow:last-child { border-bottom: 0; }
+.netrow .nn { font: 600 14px var(--f-mono); }
+.netrow .np { font: 12.5px var(--f-mono); color: var(--accent); overflow-wrap: anywhere; }
+.netrow .nw { font-size: 13.5px; color: var(--muted); }
+.netgroup h3 { font: 600 12px var(--f-mono); text-transform: uppercase; letter-spacing: .07em; color: var(--accent); margin: 14px 0 4px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.pinout { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.pinout .pin { flex: 1 1 90px; padding: 10px 8px; text-align: center; border-right: 1px solid var(--line); background: var(--surface); }
+.pinout .pin:last-child { border-right: 0; }
+.pinout .pn { font: 11px var(--f-mono); color: var(--muted); }
+.pinout .pv { font: 600 15px var(--f-mono); color: var(--accent); margin-top: 2px; }
+.notelist { display: grid; gap: 10px; }
+.rnote { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 14px; background: var(--surface); }
+.rnote h4 { font: 600 13.5px var(--f-mono); margin: 0 0 4px; }
+.rnote p { font-size: 13.5px; color: var(--muted); margin: 0; }
+.qlog .q { border-left: 2px solid var(--bad); padding: 2px 0 2px 14px; margin: 12px 0; }
+.qlog .q.done { border-left-color: var(--ok); }
+.qlog .q h4 { font-size: 13.5px; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .05em; }
+.qlog .q p { margin: 0 0 4px; color: var(--muted); font-size: 14px; }
+.qlog .q .today { color: var(--text); font-size: 13px; }
+.difflist { margin: 0; padding-left: 20px; }
+.difflist li { margin-bottom: 8px; font-size: 14px; }
+.svtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 8px; }
+.drawscroll { overflow-x: auto; border-radius: 10px; }
+.drawscroll .board-fig { min-width: 620px; }
+.a2fig { --mask: #f3efe4; --panel-line: #ddd4bd; --silk: #1b1812; --silk-dim: #6b6152; --gold: #a3782a; background: #ffffff; border: 1px solid #ddd4bd; border-radius: 8px; padding: 14px; min-width: 560px; }
+.a2fig svg text { font-family: var(--f-mono); }
+:root[data-theme="dark"] .a2fig { --mask: #0c0e0f; --panel-line: #2a2e30; --silk: #eee9df; --silk-dim: #948d7c; --gold: #d8b25e; background: #15181a; border-color: #2a2e30; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .a2fig { --mask: #0c0e0f; --panel-line: #2a2e30; --silk: #eee9df; --silk-dim: #948d7c; --gold: #d8b25e; background: #15181a; border-color: #2a2e30; } }
+.ladders { margin-top: 22px; }
+.ladfig { background: #131618; border-radius: 10px; padding: 12px; }
+.ladfig svg { display: block; width: 100%; max-width: 330px; height: auto; margin: 0 auto; }
+.ladders .grid2 > div { min-width: 0; }
+.ladders table { margin: 8px 0 10px; }
+.fptoday .seg button { font-size: 12.5px; }
+@media (max-width: 1000px) { .fptoday { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) {
+  .dialx { grid-template-columns: minmax(0, 1fr); }
+  .dialx .poslist { border-right: 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .posbtn { border-bottom: 1px solid var(--line); padding: 8px 10px; font-size: 12.5px; letter-spacing: .03em; }
+  .netrow { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .pinout .pin { flex-basis: 30%; }
+  /* then and now: one card per row on a phone, so Today and Status are not scrolled out of sight */
+  #fp-tntable thead { display: none; }
+  #fp-tntable tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  #fp-tntable td { display: block; border: 0; padding: 2px 0; }
+  #fp-tntable td::before { content: attr(data-l) " · "; font: 500 11px var(--f-mono); color: var(--muted); }
+}
+
 footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; border-top: 1px solid var(--line); margin-top: 36px; }
 
 @media (max-width: 1000px) {
@@ -376,6 +467,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
 
   <nav class="doctabs" role="tablist" aria-label="Reference">
     <button class="doctab" role="tab" id="dt-sections" data-doc="sections" aria-selected="true">Circuit sections</button>
+    <button class="doctab" role="tab" id="dt-panel" data-doc="panel" aria-selected="false">Front panel</button>
     <button class="doctab" role="tab" id="dt-fascia" data-doc="fascia" aria-selected="false">Fascia variants</button>
     <button class="doctab" role="tab" id="dt-test" data-doc="test" aria-selected="false">Test everything</button>
     <button class="doctab" role="tab" id="dt-kicad" data-doc="kicad" aria-selected="false">Open in KiCad 10</button>
@@ -388,6 +480,248 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
     <div class="secwrap">
       <div class="seclist" id="seclist" role="tablist" aria-label="Sections"></div>
       <div class="secdetail" id="secdetail"></div>
+    </div>
+
+    <!-- The panel side of the Fascia link: the two ladders, moved 30.09.26 from A1 (TS06-FASCIA Panel Drawing)
+         and A2 (TS06-FASCIA Reference), their words as they were. -->
+    <div class="card ladders" id="ladders" data-from="A1, A2 ladders">
+      <div class="tag">The panel side of the fascia link · from the old TS06-FASCIA pages</div>
+      <h2>Reading five controls on two analog pins <span class="from">A2 · 02</span></h2>
+      <p style="color:var(--muted)">The interesting part of this board isn't the buttons — it's that six rotary positions and two independent levers are each read through a single MCU analog input, by putting the switching inside a resistor ladder instead of on the pin count.</p>
+      <p><span class="from">A1 · Every resistor on the back · eight parts · two jobs</span><br>Five controls reach the Nano on two analogue pins. Both pins are A6 and A7, which on the TQFP‑32 ATmega328P are ADC inputs with no digital driver and no internal pull‑up. They can never do anything else — which is exactly why ladders belong on them, and why spending real GPIO or an I²C expander here would be paying for a shortage that does not exist.</p>
+      <div class="caution" id="lad-check" style="font-size:13px"></div>
+      <div class="grid2" style="margin-top:12px">
+        <div id="lad-a6" data-from="A1 A6 divider, A2 A6 table">
+          <h3>R1–R5 — the A6 tapped divider <span class="from">A1</span></h3>
+          <div class="ladfig" id="lad-a6fig"></div>
+          <p style="font-size:13.5px;margin-top:10px">Five 4.7&nbsp;kΩ in series turn the rail into six voltages, and the wiper picks one. That is the whole circuit. The taps land on 0, 1, 2, 3, 4 and 5&nbsp;V, so the ADC reads <strong>0, 205, 409, 614, 818, 1023</strong> — about 204 codes between neighbours.</p>
+          <p style="font-size:13.5px">1% parts move a tap by roughly two codes, so the margin is about a hundredfold. The tolerance is not there for accuracy; it is there so one firmware threshold table fits all ten units without calibrating each clock by hand.</p>
+          <p style="font-size:13.5px">The string is 23.5&nbsp;kΩ and draws 213&nbsp;µA continuously. The number that actually constrains the design is source impedance: the ADC's sample‑and‑hold wants to see under 10&nbsp;kΩ, and the worst tap looks back into two resistors in parallel with three — 9.4&nbsp;k ∥ 14.1&nbsp;k = <strong>5.64&nbsp;kΩ</strong>. Comfortable.</p>
+          <h3 style="margin-top:12px">MODE rotary → A6 <span class="from">A2 · 6-position tapped divider</span></h3>
+          <p style="font-size:13.5px;color:var(--muted)">R1–R5 (4.7k&nbsp;1%) chain from GND to +5V. The rotary wiper lands on one of six nodes along that chain, so each position presents a distinct, evenly-spaced voltage on A6 — no separate pin per position.</p>
+          <div class="tablewrap"><table id="lad-a6table">
+            <thead><tr><th>Pos</th><th>Node</th><th>Label</th><th>A6 reads</th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td>T1</td><td>NORMAL</td><td>GND</td></tr>
+              <tr><td class="n">2</td><td>T2</td><td>SET TIME</td><td>TAP2</td></tr>
+              <tr><td class="n">3</td><td>T3</td><td>DISPLAY</td><td>TAP3</td></tr>
+              <tr><td class="n">4</td><td>T4</td><td>AMBIENT</td><td>TAP4</td></tr>
+              <tr><td class="n">5</td><td>T5</td><td>FORMAT/DATE</td><td>TAP5</td></tr>
+              <tr><td class="n">6</td><td>T6</td><td>INFO</td><td>+5V</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div id="lad-a7" data-from="A1 A7 ladder, A2 A7 table">
+          <h3>R6, R7, R8 — the A7 lever ladder <span class="from">A1</span></h3>
+          <div class="ladfig" id="lad-a7fig"></div>
+          <p style="font-size:13.5px;margin-top:10px">Two switches, four states, one pin. R6 holds A7 at the rail when both levers are open. Closing a lever hangs its resistor from A7 to ground, and the two values are chosen so no combination collides:</p>
+          <div class="tablewrap"><table id="lad-a7codes">
+            <thead><tr><th>FIELD</th><th>SUB</th><th>To ground</th><th>ADC</th></tr></thead>
+            <tbody>
+              <tr><td>open</td><td>open</td><td class="n">—</td><td class="n">1023</td></tr>
+              <tr><td>closed</td><td>open</td><td class="n">20 k</td><td class="n">682</td></tr>
+              <tr><td>open</td><td>closed</td><td class="n">10 k</td><td class="n">512</td></tr>
+              <tr><td>closed</td><td>closed</td><td class="n">6.67 k</td><td class="n">409</td></tr>
+            </tbody>
+          </table></div>
+          <p style="font-size:13.5px">Worst gap is 103 codes, between the last two rows — still far more than any tolerance stack will move. Worst‑case draw is 300&nbsp;µA with both closed.</p>
+          <p style="font-size:13.5px">The levers switch to <em>ground</em>, never to the rail. A closed switch then clamps the pin hard to 0&nbsp;V through a low resistance, which is the state most immune to what a metre of cable picks up running past a converter chopping 185&nbsp;V at 31&nbsp;kHz.</p>
+          <p style="font-size:12.5px;color:var(--muted)"><span class="mk seen">seen</span> The converter runs at 31 kHz (firmware <code>1_setup.ino</code>). The lead is 180–200 mm, not a metre (TS06-DRV bom.md); switching to ground helps all the same <span class="mk inf">inferred</span>.</p>
+          <h3 style="margin-top:12px">FIELD + SUB → A7 <span class="from">A2 · binary-weighted 2-lever encode</span></h3>
+          <p style="font-size:13.5px;color:var(--muted)">A7 has its own 10k pull-up to +5V (R6). Lever A pulls it down through R7 (20k); lever B pulls it down through R8 (10k) — different values on purpose, so each of the four lever combinations divides the pull-up to a different, distinguishable voltage.</p>
+          <div class="tablewrap"><table id="lad-a7table">
+            <thead><tr><th>Lever A</th><th>Lever B</th><th>Path to GND</th></tr></thead>
+            <tbody>
+              <tr><td>open</td><td>open</td><td>none — A7 ≈ +5V</td></tr>
+              <tr><td>closed</td><td>open</td><td>R6 || R7</td></tr>
+              <tr><td>open</td><td>closed</td><td>R6 || R8</td></tr>
+              <tr><td>closed</td><td>closed</td><td>R6 || (R7||R8)</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:16px">
+        <div id="lad-notthere" data-from="A1 The two resistors that are not here">
+          <h3>The two resistors that are not here <span class="from">A1</span></h3>
+          <p style="font-size:14px">The buttons have no pull‑ups on this board, because the ATmega has its own and the firmware already switches them on. Two parts saved, and a shorter cable.</p>
+          <p style="font-size:14px">The two 100&nbsp;nF filter caps are deliberately at the <strong>main board</strong> end, not here. They do two jobs that only work at that end: they hold the last reading when a non‑shorting wiper floats mid‑rotation, and they shunt cable pickup to ground right at the ADC pin. Put them on the fascia and the whole cable still hangs off the pin unfiltered.</p>
+          <p style="font-size:14px">With 5.64&nbsp;kΩ of source impedance that cap forms a 564&nbsp;µs low‑pass — slow against noise, fast against a hand turning a knob, and well inside the firmware's five‑identical‑readings filter at 10&nbsp;ms.</p>
+          <p style="font-size:12.5px;color:var(--muted)" id="lad-drvnote"></p>
+        </div>
+        <div id="lad-earns" data-from="A1 Why the ladder earns the board">
+          <h3>Why the ladder earns the board <span class="from">A1</span></h3>
+          <p style="font-size:14px">Without it, five controls need five conductors plus power and ground — seven wires, and two of the Nano's pins that could have driven something. With it, the count is <strong>six wires and zero real GPIO</strong>, because A6 and A7 were never capable of anything else.</p>
+          <p style="font-size:14px">Eight resistors cost about 30&nbsp;₽. That is the entire price of collapsing the panel down to one connector, and it is why this board is worth fabricating even before you count the printed face.</p>
+          <p style="font-size:14px">The resistors sit on the <em>back</em>, behind the switches they belong to. Anchoring them at copper pads rather than leaving them in free air on flying leads is the difference between a panel that still reads true in month three and one that drifts as oxidised joints move the divider.</p>
+          <p style="font-size:12.5px;color:var(--muted)"><span class="mk inf">inferred</span> The price is A1’s and is not checked. The rest of the Front panel view is in <button type="button" class="linkbtn" data-goto="panel">Front panel</button>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Front panel: moved 30.09.26 from two older pages, TS06-FASCIA Panel Drawing (A1, rev A, 08.09.26)
+       and TS06-FASCIA Reference (A2, 09.09.26). Their words are kept as they were; what no longer holds is
+       labelled, not rewritten. The ladders went to Circuit sections (#ladders). -->
+  <section class="docpanel" id="doc-panel" role="tabpanel" aria-labelledby="dt-panel" hidden>
+    <p class="lead">The fascia is the clock’s control panel and its printed face, on one board: the MODE rotary, the FIELD and SUB levers, and the − and + buttons. This view holds what two older pages said about it, <b>moved as they were</b>: <a href="https://claude.ai/artifact/TUhqHXAXRTEU7tNwfTPH3L" target="_blank" rel="noopener">TS06-FASCIA Panel Drawing</a> (A1, rev A, 08.09.26) and <a href="https://claude.ai/artifact/PAMS1JbcoDL8A7hXQcQgwS" target="_blank" rel="noopener">TS06-FASCIA Reference</a> (A2, 09.09.26). Those pages stay as they are. Each item was checked against the repository on 30.09.26; what no longer holds is marked <b>history</b>, and nothing old was corrected in place. Their two resistor ladders moved to <button type="button" class="linkbtn" data-goto="ladders">Circuit sections</button>.</p>
+    <p style="font-size:13px;color:var(--muted)">Marks: <span class="mk seen">seen</span> read in the repository (branch pcb/kicad-boards) · <span class="mk comp">computed</span> worked out here · <span class="mk inf">inferred</span> a judgement, not checked.</p>
+
+    <div class="card fpsec" id="fp-today" data-from="today">
+      <div class="tag">Today’s board · from the board files</div>
+      <div class="fptoday">
+        <div>
+          <div class="seg" role="group" aria-label="Fascia board" id="fp-fvseg" style="margin-bottom:8px">
+            <button type="button" data-fp="A" aria-pressed="true">A · TS06-FASCIA</button>
+            <button type="button" data-fp="W" aria-pressed="false">W · wide</button>
+            <button type="button" data-fp="R" aria-pressed="false">R · rhythm</button>
+          </div>
+          <div class="shotpair">
+            <figure><img id="fp-front" alt="" loading="lazy"><figcaption>Front, KiCad render of the board file</figcaption></figure>
+            <figure><img id="fp-back" alt="" loading="lazy"><figcaption>Back, KiCad render of the board file</figcaption></figure>
+          </div>
+        </div>
+        <div>
+          <dl id="fp-todayfacts"></dl>
+          <p style="font-size:13.5px;margin-top:12px" data-from="A2 §01"><span class="from">A2 · 01 The front face</span><br>Every control the customer touches, laid out to scale. Nothing on this side is a solder joint — every pad lands on the back — so what you see here is mask, silkscreen, and bare ENIG gold where the mask is deliberately opened. <span class="mk seen">seen</span> <span style="color:var(--muted);font-size:12.5px">still true: every pad is on B.Cu and the gold is F.Cu artwork</span></p>
+          <p style="font-size:13.5px;color:var(--muted)">Which fascia is built is <b>still the owner’s open choice</b>: A, W, R or F, scored in <button type="button" class="linkbtn" data-goto="fascia">Fascia variants</button>. A is the committed board.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card fpsec caution" id="fp-diffs" style="padding:14px 16px">
+      <h2 style="font-size:17px">Where the old pages disagree with today’s design</h2>
+      <p style="font-size:13.5px">Said here, not fixed in the old text. Each point is also flagged where it occurs below.</p>
+      <ol class="difflist" id="fp-difflist"></ol>
+    </div>
+
+    <div class="fpsec" id="fp-controls" data-from="A1 What the controls do">
+      <h2>What the controls do <span class="from">A1 · turn the dial — the panel legend cannot</span></h2>
+      <div class="prose">
+        <p>The rotary has six fixed names, so it letters itself. The levers do not: each means something different on every screen, which is why the face says <strong>FIELD</strong> and <strong>SUB</strong> — the one thing about them that stays true. Pick a position and watch what a printed label would have had to promise.</p>
+        <p style="color:var(--muted);font-size:14px"><strong style="color:var(--text)">SUB now has one rule, and it holds everywhere:</strong> it is read only when FIELD is thrown to its <em>second</em> position — Effects on Display, Date on Format/Date. Two screens, one grammar, no exception to letter. The face draws that rule as a supply: a gold trace ends directly beneath FIELD, at the point its second throw reaches, and runs from there into the box enclosing SUB. Two more leave that box for positions 3 and 5. Nothing reaches SUB except through that point, so the panel says <em>this is live when the lever comes down here</em> without lettering a word of it — and the lever itself, not a drawing of one, closes the gap.</p>
+      </div>
+      <div class="caution" id="fp-fwnote"><b>Planned, not yet in the firmware</b> <span class="mk seen">seen</span>. The screens below are control scheme rev B, the spec. Today’s firmware (<code>firmware/nixieClock_TS06/ts06pair.ino</code>) reads the rotary only as SET TIME = PROGRAM and the other five positions = RUN, the two-button interface of the old boards; it does not read A7, so FIELD and SUB do nothing yet; and it keeps the ИН-15 pair dark, so NORMAL’s idle cycle is not written. Its own TODO lists the six screens.</div>
+      <div class="dialx" id="fp-dial">
+        <div class="poslist" id="fp-poslist" role="group" aria-label="MODE position"></div>
+        <div class="info">
+          <div class="board-fig dialpic" id="fp-dialpic" aria-hidden="true"></div>
+          <h3 id="fp-posname">Normal</h3>
+          <p class="lede2" id="fp-poslede"></p>
+          <div class="ctlgrid">
+            <div class="ctl" id="fp-c-field"><div class="k">Lever — Field</div><div class="v"></div></div>
+            <div class="ctl" id="fp-c-sub"><div class="k">Lever — Sub</div><div class="v"></div></div>
+            <div class="ctl" id="fp-c-btn"><div class="k">Buttons − / +</div><div class="v"></div></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:13.5px;margin-top:12px" data-from="A1 panel drawing note"><span class="from">A1 · under the panel drawing</span><br>Every switch mounts from behind; only its bushing passes through. The lugs sit at least 11.3&nbsp;mm further back and point away, so nothing here is board-mounted — each control is hand-wired to its landing pads. <span class="mk inf">inferred</span> <span style="color:var(--muted);font-size:12.5px">still so: each switch footprint on today’s board is an unplated bushing hole with surface-mount landing pads (seen); the 11.3 mm is not checked.</span></p>
+    </div>
+
+    <div class="grid2 fpsec">
+      <div class="card" id="fp-hardware" data-from="A1 Hardware">
+        <div class="tag">Hardware · A1</div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Feature</th><th>Value</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Rotary bushing</td><td class="n">Ø8.62 → 8.80 hole</td><td>CAD</td></tr>
+            <tr><td>Bushing usable</td><td class="n">7.00 mm</td><td>CAD</td></tr>
+            <tr><td>Rotary shaft</td><td class="n">Ø6.00</td><td>CAD</td></tr>
+            <tr><td>Rotary body</td><td class="n">Ø25.00</td><td>CAD</td></tr>
+            <tr><td>Step angle</td><td class="n">30.00° × 6 = 150°</td><td>12 detents</td></tr>
+            <tr><td>МТ1 bushing</td><td class="n">Ø7.82 → 8.00 hole</td><td>CAD</td></tr>
+            <tr><td>КМД1 bushing</td><td class="n">Ø7.82 → 8.00 hole</td><td>CAD</td></tr>
+            <tr><td>КМД1 plunger</td><td class="n">Ø6.00</td><td>CAD</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:13px;color:var(--muted);margin:8px 0 0" id="fp-hwcheck"></p>
+      </div>
+      <div class="card" id="fp-scheme" data-from="A1 Control scheme rev B">
+        <div class="tag">Control scheme — rev B · A1</div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Pos</th><th>Screen</th><th>Field</th><th>Sub</th></tr></thead>
+          <tbody>
+            <tr><td class="n">1</td><td>Normal</td><td>—</td><td>—</td></tr>
+            <tr><td class="n">2</td><td>Set Time</td><td>Hour ↔ Minute</td><td>—</td></tr>
+            <tr><td class="n">3</td><td>Display</td><td>Bright ↔ Effects</td><td>Trans ↔ Glitch</td></tr>
+            <tr><td class="n">4</td><td>Ambient</td><td>Colon ↔ Backlight</td><td>—</td></tr>
+            <tr><td class="n">5</td><td>Format / Date</td><td>Format ↔ Date</td><td>D‑M ↔ Year</td></tr>
+            <tr><td class="n">6</td><td>Info</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:10px">Two changes from the spec's rev A: <strong style="color:var(--text)">INFO and FORMAT/DATE swap</strong>, putting both parking screens on end stops; and <strong style="color:var(--text)">SUB gains the glitch rate</strong> on Display, which turns its one‑screen exception into a rule that holds on both. Buttons are always −/+ on whatever the levers point at.</p>
+        <p style="font-size:13px;color:var(--muted);margin:0"><span class="mk seen">seen</span> The same table is the decision record <code>TERMINAL-06-control-scheme-revB.md</code> (it defers to the spec), and today’s board letters the six positions in this order. The firmware does not do these screens yet (see above).</p>
+      </div>
+    </div>
+
+    <div class="card fpsec" id="fp-nets" data-from="A2 §03 Net reference">
+      <div class="tag">03 · Net reference · A2</div>
+      <p class="lead" style="margin-bottom:4px">What each net actually is, everything it lands on, and why.</p>
+      <div id="fp-netbody"></div>
+      <p style="font-size:13px;color:var(--muted);margin:10px 0 0" id="fp-netcheck"></p>
+    </div>
+
+    <div class="card fpsec" id="fp-j1" data-from="A2 §04 J1">
+      <div class="tag">04 · J1 — panel cable · A2</div>
+      <p style="color:var(--muted)">One pin order, fixed for both the SMD and through-hole builds, so a single cable fits whichever one gets fabricated.</p>
+      <div class="pinout" id="fp-pinout">
+        <div class="pin"><div class="pn">PIN 1</div><div class="pv">+5V</div></div>
+        <div class="pin"><div class="pn">PIN 2</div><div class="pv">GND</div></div>
+        <div class="pin"><div class="pn">PIN 3</div><div class="pv">A6</div></div>
+        <div class="pin"><div class="pn">PIN 4</div><div class="pv">A7</div></div>
+        <div class="pin"><div class="pn">PIN 5</div><div class="pv">D7</div></div>
+        <div class="pin"><div class="pn">PIN 6</div><div class="pv">D8</div></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin:10px 0 0"><span class="mk seen">seen</span> Current. PCB/README.md fixes this order for both builds, today’s board prints it on its back silkscreen, and TS06-DRV’s J1 (a top-entry B6B-PH-K) has it too, with pins 5 and 6 named D7_J and D8_J behind rev B’s filters. The lead is 6-way JST PH, 1:1, 180–200 mm (TS06-DRV bom.md).</p>
+      <div class="hist"><b>History:</b> superseded by the order above. A1 lettered J1 as “J1&nbsp;&nbsp;GND +5V A6 A7 D7 D8” on a 6-way JST-XH (its title block and back drawing, below). A2 and today agree; A1 does not.</div>
+    </div>
+
+    <div class="card fpsec" id="fp-routing" data-from="A2 §05 Routing">
+      <div class="tag">05 · Routing &amp; the GND pour · A2</div>
+      <p style="color:var(--muted)">The SMD build's one hard rule: nothing functional ever touches the front. That rule shapes everything below it — and one placement choice almost broke the ground plane before placement itself fixed it.</p>
+      <div class="notelist">
+        <div class="rnote"><h4>64 signal tracks, one layer, zero vias — anywhere</h4><p>Every non-GND net routes entirely on <code>B.Cu</code>. <code>F.Cu</code> carries only the decorative gold artwork, so a signal trace can never physically collide with it — there's no layer transition to get wrong, and none was needed.</p></div>
+        <div class="rnote"><h4>R6 was sitting in the one corridor everything else needed</h4><p>R6 (the A7 pull-up) originally sat directly between R7 and R8, in the same narrow stretch the +5V, A6, A7, D7 and D8 traces all had to cross to reach J1. That walled three GND pads (SW4.1, R8.2, R7.2) off from the rest of the plane — no B.Cu path existed at any trace width down to the clearance minimum, checked exhaustively before concluding this.</p></div>
+        <div class="rnote"><h4>Moving it — nothing else — closed the gap</h4><p>R6 moved out of that corridor; no other component, trace width, or clearance setting changed. That alone opened enough room for the GND pour to reach all seven pads on its own, verified against KiCad's own computed <code>filled_polygon</code> data (not just this repo's simulated fill): one connected region, every GND pad inside it. No stitch traces, no vias.</p></div>
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin:10px 0 0" id="fp-routecheck"></p>
+    </div>
+
+    <div class="card fpsec qlog" id="fp-open" data-from="A1 Open before Gerbers">
+      <div class="tag">Open before Gerbers · A1 · a respin costs 15 000 ₽ and a week</div>
+      <div class="q done"><h4>Closed — twelve detents, so the step is exactly 30.00°</h4><p>Counted, not measured. A count is an integer, so this is now exact rather than estimated: 360&nbsp;÷&nbsp;12&nbsp;=&nbsp;30.00° per step, six positions spanning 150°. It also agrees with the twelve outer taps the model already carried, which is the same claim arriving from a second direction. The earlier ~32°/160° figure was an eye estimate of a swept arc and is withdrawn.</p><p class="today"><span class="mk comp">computed</span> Today: the board letters positions 1–6 at 75°, 45°, 15°, −15°, −45° and −75° round the shaft, 30° apart.</p></div>
+      <div class="q"><h4>Does the bushing clear the stack?</h4><p>The diameters are measured and settled. What is not settled is the stack behind them: 7.00&nbsp;mm of usable bushing, 2.0&nbsp;mm of FR4, and the fascia recessed into the chassis — so nut, washer and recess depth all have to fit in the 5.00&nbsp;mm that is left. That is a depth question against the printed chassis, not a diameter question.</p><p class="today"><span class="mk seen">seen</span> Today: still open. PCB/TS06-FASCIA-variants.md asks, whichever variant is chosen, for a dry fit of a real КМД1 and МТ1 against the panel.</p></div>
+      <div class="q done"><h4>Resolved — SUB now has one rule</h4><p>Giving SUB the glitch rate on Display makes it live on two screens instead of one, and both obey the same condition: FIELD thrown to its second position. The face draws that as a supply: a gold trace ending directly under FIELD where its second throw lands, running into the box around SUB, with two leaving for positions 3 and 5. Nothing reaches SUB except through that point — the rule stated as geometry rather than as a caption, and closed by the real lever rather than a picture of one.</p><p class="today"><span class="mk seen">seen</span> Today: the board draws it (the gold box and traces in the render above). The firmware does not read SUB yet.</p></div>
+      <div class="q done"><h4>Resolved — INFO moved to position 6</h4><p>Both parking screens now sit on end stops. NORMAL at one extreme, INFO at the other, and every live editing screen in between. The knob cannot be knocked past either end into something that changes a setting. Firmware cost is one row of the A6 threshold table: 818&nbsp;→&nbsp;Format/Date, 1023&nbsp;→&nbsp;Info.</p><p class="today"><span class="mk seen">seen</span> Today: the silkscreen reads NORMAL … INFO in this order, and the firmware’s comment maps 818 to FORMAT/DATE and 1023 to INFO.</p></div>
+      <div class="q"><h4>Withdrawn — the 26.94&nbsp;mm body</h4><p>That figure was bad caliper technique and has been re‑measured at 25.00&nbsp;mm. It has already propagated into spec §2, §6's panel table, three header notes and prototype plan P1/P8. Those still say something false, and §1's control table now does too.</p><p class="today"><span class="mk seen">seen</span> Today: the board’s body ring reads “BODY 25.00”. Whether the spec’s sections were swept is not checked here.</p></div>
+    </div>
+
+    <div class="card fpsec" id="fp-thennow" data-from="A1 title block, A2 header">
+      <div class="tag">Then and now · A1’s title block and A2’s header</div>
+      <p style="font-size:13.5px;color:var(--muted)">A1: “The control panel and the product face are one board. It carries the ladder, it takes the bushing torque, and it is the most photographed surface on the instrument. Drawn from the calipered FreeCAD models in <code>3d/</code>.” A2: “The control panel and the printed product face, in one board. This page maps every net to what it does and why it's wired that way — for the surface-mount build specifically.”</p>
+      <div class="tablewrap"><table id="fp-tntable"></table></div>
+    </div>
+
+    <div class="fpsec" id="fp-history" data-from="A1 panel drawing, A2 front face">
+      <h2>The drawings as they were <span class="from">A1 panel drawing · A2 01 The front face</span></h2>
+      <div class="hist" id="fp-histlabel"></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="tag">A1 · Panel drawing · 1:1 at 96 dpi · scroll to pan</div>
+        <div class="svtabs seg" role="group" aria-label="Board side" id="fp-a1tabs">
+          <button type="button" data-side="front" aria-pressed="true">Front — the face</button>
+          <button type="button" data-side="back" aria-pressed="false">Back — the circuit</button>
+        </div>
+        <div class="drawscroll"><div class="board-fig" id="fp-a1front"></div><div class="board-fig" id="fp-a1back" hidden></div></div>
+        <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0">Redrawn here by the old page’s own drawing code, unchanged but for the page’s font. In A1 the knob in this drawing turned with the position list; that dial now sits in “What the controls do” above.</p>
+      </div>
+      <div class="card">
+        <div class="tag">A2 · 01 The front face</div>
+        <div class="drawscroll"><div class="a2fig" id="fp-a2front"></div></div>
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 18px;font:12px var(--f-mono);color:var(--muted);margin-top:8px"><span>Front — as the customer sees it, drawn to real scale.</span><span>Full render: <code>PCB/TS06-FASCIA/preview.svg</code></span></div>
+      </div>
+    </div>
+
+    <div class="fpsec" id="fp-prov" style="font-size:12.5px;color:var(--muted)">
+      <b>Where this came from.</b> A1: “TS06-FASCIA rev A · drawn 2026-09-08 · branch pcb/kicad-boards”, palette VOID #0A0B0C · SIGNAL #F25610 · CATHODE #FF9E36 · BONE #DCD8D0. A2: “TS06-FASCIA · TERMINAL-06 custom PCB set · Verify with checkpcb.py · checkcopper.py · checkmatch.py · audit.py” (all four are in <code>tools/</code>, seen). Both pages were read, not changed, on 30.09.26.
     </div>
   </section>
 

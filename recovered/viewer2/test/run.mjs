@@ -365,6 +365,173 @@ for (const scheme of ['light', 'dark']) {
   await ctx.close();
 }
 
+// ================================================================ front panel view + the panel ladders
+// Moved 30.09.26 from A1 (TS06-FASCIA Panel Drawing) and A2 (TS06-FASCIA Reference). One check per moved
+// item, so nothing is lost without a FAIL. The expected words are copied from the old pages here, not
+// read back from app.js. The 3D models are not waited for: this content renders before they load.
+async function openPanel(page, hash = '#panel') {
+  await page.goto(`http://127.0.0.1:${PORT}/index.html${hash}`);
+  await page.waitForFunction(() => document.querySelectorAll('#fp-difflist li').length > 0 && document.querySelector('#lad-a6fig svg'), null, { timeout: 120000 });
+}
+const txt = (page, s) => page.evaluate(s => { const e = document.querySelector(s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; }, s);
+{
+  const { ctx, page, errs } = await newPage({ w: 1280, h: 900 });
+  await openPanel(page);
+  const facts = JSON.parse(fs.readFileSync(path.join(SITE, 'data', 'facts.json'), 'utf8')).boards;
+  const sz = b => `${facts[b].size[0]} × ${facts[b].size[1]}`;
+  ok('front panel: the tab opens (#panel)', await page.evaluate(() => !document.querySelector('#doc-panel').hidden && document.querySelector('#dt-panel').getAttribute('aria-selected') === 'true'));
+  // today's board, from the build
+  {
+    const res = [];
+    for (const [v, b] of [['A', 'TS06-FASCIA'], ['W', 'TS06-FASCIA-wide'], ['R', 'TS06-FASCIA-rhythm']]) {
+      await page.click(`#fp-fvseg button[data-fp="${v}"]`);
+      await page.waitForFunction(() => ['#fp-front', '#fp-back'].every(s => document.querySelector(s).complete), null, { timeout: 30000 });
+      const r = await page.evaluate(() => ({ imgs: ['#fp-front', '#fp-back'].map(s => document.querySelector(s).naturalWidth > 0), dl: document.querySelector('#fp-todayfacts').textContent }));
+      res.push(r.imgs.every(Boolean) && r.dl.includes(sz(b)) && r.dl.includes(b));
+    }
+    await page.click('#fp-fvseg button[data-fp="A"]');
+    ok('front panel: today’s boards A, W, R shown from the build (renders + facts)', res.every(Boolean), res.join(','));
+  }
+  await page.locator('#fp-today').screenshot({ path: path.join(SHOTS, 'd1280-light-panel-today.png') });
+  // the disagreements
+  {
+    const d = await page.evaluate(() => [...document.querySelectorAll('#fp-difflist li')].map(li => ({ k: li.dataset.d, mk: !!li.querySelector('.mk') })));
+    ok('front panel: disagreements with today listed and marked', d.length === 9 && d.every(x => x.mk) && ['outline', 'j1', 'back', 'dial', 'silk', 'firmware', 'drv', 'routing', 'cable'].every(k => d.some(x => x.k === k)), d.map(x => x.k).join(','));
+  }
+  // A1: what the controls do
+  {
+    const t = await txt(page, '#fp-controls');
+    ok('migrated A1 “What the controls do”: intro and the SUB rule', t.includes('The rotary has six fixed names, so it letters itself.') && t.includes('SUB now has one rule, and it holds everywhere:') && t.includes('the lever itself, not a drawing of one, closes the gap.'));
+    ok('A1 dial explainer flagged: rev B is not in the firmware yet', (await txt(page, '#fp-fwnote')).includes('does not read A7'));
+    const want = [
+      ['Normal', 'not read', 'not read', 'not read', 'A safe parking position.'],
+      ['Set Time', 'Hour ↔ Minute', 'not read', 'Adjusts the selected field', 'costs you the time on the clock'],
+      ['Display', 'Brightness ↔ Effects', 'Transition ↔ Glitch — read only while FIELD = Effects', 'Adjusts the selected setting. Glitch runs off at the bottom of its range', 'three settings on two levers'],
+      ['Ambient', 'Colon ↔ Backlight', 'not read', "Cycles that item's styles", 'not digits'],
+      ['Format / Date', 'Format ↔ Date', 'Day-Month ↔ Year — read only while FIELD = Date', "Format: flips 12h/24h. Date: adjusts SUB's selection", 'a binary toggle and a multi-field value'],
+      ['Info', 'not read', 'not read', 'not read', 'it is now an end stop']];
+    const bad = [];
+    for (let i = 0; i < 6; i++) {
+      await page.click(`#fp-poslist button[data-pos="${i}"]`);
+      const r = await page.evaluate(() => ({ n: document.querySelector('#fp-posname').textContent, f: document.querySelector('#fp-c-field .v').textContent, s: document.querySelector('#fp-c-sub .v').textContent, b: document.querySelector('#fp-c-btn .v').textContent, l: document.querySelector('#fp-poslede').textContent, rot: document.querySelector('#fp-knob').getAttribute('transform'), pressed: [...document.querySelectorAll('#fp-poslist .posbtn')].findIndex(b => b.getAttribute('aria-pressed') === 'true') }));
+      const w = want[i];
+      if (!(r.n === w[0] && r.f === w[1] && r.s === w[2] && r.b === w[3] && r.l.includes(w[4]) && r.pressed === i && r.rot === `rotate(${15 + 30 * i} 30 26)`)) bad.push(i + 1 + ':' + JSON.stringify(r));
+      if (i === 2) await page.locator('#fp-dial').screenshot({ path: path.join(SHOTS, 'd1280-light-panel-dial-display.png') });
+    }
+    ok('migrated A1 dial explainer: all six positions, as A1 wrote them', !bad.length, bad.join(' | ').slice(0, 300));
+    await page.click('#fp-poslist button[data-pos="0"]');
+    ok('migrated A1 note under the panel drawing (hand-wired landing pads)', t.includes('each control is hand-wired to its landing pads'));
+  }
+  // A1 hardware + control scheme
+  {
+    const hw = await page.evaluate(() => [...document.querySelectorAll('#fp-hardware tbody tr')].map(r => [...r.cells].map(c => c.textContent.trim()).join(' ')));
+    ok('migrated A1 hardware table: 8 rows', hw.length === 8 && hw[0].includes('Ø8.62 → 8.80 hole') && hw[4].includes('30.00° × 6 = 150°') && hw[7].includes('КМД1 plunger'), hw.join(' / ').slice(0, 200));
+    const sc = await page.evaluate(() => [...document.querySelectorAll('#fp-scheme tbody tr')].map(r => [...r.cells].map(c => c.textContent.trim()).join(' ')));
+    ok('migrated A1 control scheme rev B: 6 rows and the two changes from rev A', sc.length === 6 && sc[2].includes('Trans ↔ Glitch') && sc[4].includes('D‑M ↔ Year') && (await txt(page, '#fp-scheme')).includes('INFO and FORMAT/DATE swap'), sc.join(' / ').slice(0, 200));
+  }
+  // A2 §03 nets, §04 J1, §05 routing
+  {
+    const nets = await page.evaluate(() => [...document.querySelectorAll('#fp-nets .netrow')].map(r => [r.dataset.net, r.querySelector('.np').textContent]));
+    const want = { '+5V': 'SW1.6, R5.1, R6.1, J1.1', GND: 'SW1.1, SW4.1, SW5.1, R1.2, R7.2, R8.2, J1.2', A6: 'SW1.7, J1.3', 'TAP2–TAP5': 'SW1.2–.5, R1–R5 chain', A7: 'R6.2, SW2.2, SW3.2, R6–R8 junction, J1.4', 'LEVA / LEVB': 'SW2.1↔R7.1 · SW3.1↔R8.1', D7: 'SW4.2 (−), J1.5', D8: 'SW5.2 (+), J1.6' };
+    ok('migrated A2 §03 net reference: 8 nets with their pads', nets.length === 8 && nets.every(([n, p]) => want[n] === p), JSON.stringify(nets).slice(0, 200));
+    const nc = await txt(page, '#fp-netcheck');
+    ok('A2 §03 checked: every part it names is on today’s board', nc.startsWith('seen Current.') && !nc.includes('changed since'), nc.slice(0, 120));
+    const pins = await page.evaluate(() => [...document.querySelectorAll('#fp-pinout .pin')].map(p => [...p.children].map(c => c.textContent.trim()).join(' ')));
+    ok('migrated A2 §04 J1 pinout: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8', pins.join('|') === 'PIN 1 +5V|PIN 2 GND|PIN 3 A6|PIN 4 A7|PIN 5 D7|PIN 6 D8', pins.join('|'));
+    ok('A1’s JST-XH J1 order marked history: superseded', (await txt(page, '#fp-j1 .hist')).includes('History: superseded by the order above.'));
+    const rn = await page.evaluate(() => [...document.querySelectorAll('#fp-routing .rnote h4')].map(h => h.textContent));
+    const rc = await txt(page, '#fp-routecheck');
+    ok('migrated A2 §05 routing notes: 3 notes, checked per board', rn.length === 3 && rn[0].startsWith('64 signal tracks') && rn[1].startsWith('R6 was sitting') && rn[2].startsWith('Moving it') && rc.includes(`${facts['TS06-FASCIA'].tracks} tracks, ${facts['TS06-FASCIA'].vias} vias`) && rc.includes(`(${facts['TS06-FASCIA-rhythm'].tracks} tracks`), rc.slice(0, 160));
+  }
+  // A1 open before Gerbers
+  {
+    const q = await page.evaluate(() => [...document.querySelectorAll('#fp-open .q')].map(x => ({ h: x.querySelector('h4').textContent, today: !!x.querySelector('.today .mk') })));
+    ok('migrated A1 “Open before Gerbers”: 5 items, each with today’s status', q.length === 5 && q.every(x => x.today) && q[0].h.includes('twelve detents') && q[1].h.includes('bushing clear the stack') && q[4].h.includes('26.94'), q.map(x => x.h.slice(0, 24)).join(' | '));
+  }
+  // then and now
+  {
+    const rows = await page.evaluate(() => [...document.querySelectorAll('#fp-tntable tbody tr')].map(r => [...r.cells].map(c => c.textContent.replace(/\s+/g, ' ').trim())));
+    const out = rows.find(r => r[1] === 'Outline') || [];
+    const itf = rows.find(r => r[1] === 'Interface') || [];
+    ok('migrated A1 title block + A2 header: 15 rows, each with today and a status', rows.length === 15 && rows.every(r => r.length === 5 && r[3] && r[4]), rows.length + ' rows');
+    ok('176 × 52 outline labelled “history: superseded by” today’s fascia', out[2] === '176.00 × 52.00 mm' && out[4].startsWith(`history: superseded by today’s TS06-FASCIA, ${sz('TS06-FASCIA')} mm`), out[4]);
+    ok('A1’s JST-XH interface labelled “history: superseded by” JST PH', itf[2] === '1 × JST-XH, 6 way' && itf[4].startsWith('history: superseded by the JST PH J1'), itf[4]);
+  }
+  // the drawings as they were
+  {
+    const h = await txt(page, '#fp-histlabel');
+    ok('old drawings labelled: superseded by today’s fascia, the choice still open', h.startsWith(`History: superseded by today’s TS06-FASCIA, ${sz('TS06-FASCIA')} mm`) && h.includes('still the owner’s open choice') && h.includes(sz('TS06-FASCIA-wide')), h.slice(0, 160));
+    const f = await page.evaluate(() => { const s = document.querySelector('#fp-a1front svg'); return { t: s.textContent, n: s.querySelectorAll('*').length, w: s.getBoundingClientRect().width }; });
+    ok('migrated A1 panel drawing, front: redrawn 176 × 52 by its own code', f.t.includes('176.00') && f.t.includes('52.00') && f.t.includes('FORMAT/DATE') && f.t.includes('FIELD') && f.n > 80 && f.w > 500, `${f.n} elements, ${f.w.toFixed(0)} px wide`);
+    await page.locator('#fp-history').scrollIntoViewIfNeeded();
+    await page.locator('#fp-history').screenshot({ path: path.join(SHOTS, 'd1280-light-panel-history.png') });
+    await page.click('#fp-a1tabs button[data-side="back"]');
+    const b = await page.evaluate(() => { const s = document.querySelector('#fp-a1back svg'); return { t: s.textContent, vis: !document.querySelector('#fp-a1back').hidden && document.querySelector('#fp-a1front').hidden }; });
+    ok('migrated A1 panel drawing, back (x-ray): redrawn, J1 in its old order', b.vis && b.t.includes('J1  GND +5V A6 A7 D7 D8') && b.t.includes('BACK-SIDE PLACEMENT') && b.t.includes('R6 10k') && b.t.includes('∅25.00 BODY KEEPOUT'), b.t.slice(0, 80));
+    await page.locator('#fp-history').screenshot({ path: path.join(SHOTS, 'd1280-light-panel-history-back.png') });
+    await page.click('#fp-a1tabs button[data-side="front"]');
+    const a2 = await page.evaluate(() => { const s = document.querySelector('#fp-a2front svg'); return s ? s.textContent : ''; });
+    ok('migrated A2 §01 front-face drawing (176 × 52)', a2.includes('SW1 · SR25 rotary · A6') && a2.includes('SW4/SW5 · D7/D8') && a2.includes('— FORMAT/DATE'), a2.slice(0, 60));
+    ok('migrated A2 §01 front-face words', (await txt(page, '#fp-today')).includes('Every control the customer touches, laid out to scale.') && (await txt(page, '#fp-history')).includes('Front — as the customer sees it, drawn to real scale.'));
+    const links = await page.evaluate(() => [...document.querySelectorAll('#doc-panel a[href*="claude.ai/artifact/"]')].map(a => a.href));
+    const pv = await txt(page, '#fp-prov');
+    ok('provenance: both old pages linked, their footers kept', links.some(l => l.endsWith('TUhqHXAXRTEU7tNwfTPH3L')) && links.some(l => l.endsWith('PAMS1JbcoDL8A7hXQcQgwS')) && pv.includes('drawn 2026-09-08') && pv.includes('checkmatch.py'), links.length + ' links');
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.locator('#doc-panel').screenshot({ path: path.join(SHOTS, 'd1280-light-panel.png') });
+  // Circuit sections: the ladders
+  await page.click('#dt-sections');
+  {
+    const t = await txt(page, '#ladders');
+    ok('migrated A2 §02 lede and A1’s “Every resistor on the back” in Circuit', t.includes('six rotary positions and two independent levers are each read through a single MCU analog input') && t.includes('TQFP‑32 ATmega328P are ADC inputs with no digital driver'));
+    const a6 = await page.evaluate(() => ({ svg: document.querySelector('#lad-a6fig svg').textContent, rows: [...document.querySelectorAll('#lad-a6table tbody tr')].map(r => [...r.cells].map(c => c.textContent.trim()).join(' ')), t: document.querySelector('#lad-a6').textContent.replace(/\s+/g, ' ') }));
+    ok('migrated A1 A6 divider (diagram, codes) + A2’s A6 table', ['1023', '818', '614', '409', '205', 'R5 4k7', 'wiper'].every(s => a6.svg.includes(s)) && a6.rows.length === 6 && a6.rows[0] === '1 T1 NORMAL GND' && a6.rows[5] === '6 T6 INFO +5V' && a6.t.includes('0, 205, 409, 614, 818, 1023') && a6.t.includes('5.64 kΩ'), a6.rows.join(' / '));
+    const a7 = await page.evaluate(() => ({ svg: document.querySelector('#lad-a7fig svg').textContent, codes: [...document.querySelectorAll('#lad-a7codes tbody tr')].map(r => r.cells[3].textContent.trim()), paths: [...document.querySelectorAll('#lad-a7table tbody tr')].map(r => r.cells[2].textContent.trim()), t: document.querySelector('#lad-a7').textContent.replace(/\s+/g, ' ') }));
+    ok('migrated A1 A7 lever ladder (diagram, ADC 1023/682/512/409) + A2’s A7 table', ['R6 10k', 'R7 20k', 'R8 10k', 'FIELD', 'SUB', 'A7'].every(s => a7.svg.includes(s)) && a7.codes.join('/') === '1023/682/512/409' && a7.paths.join('/') === 'none — A7 ≈ +5V/R6 || R7/R6 || R8/R6 || (R7||R8)' && a7.t.includes('Worst gap is 103 codes'), a7.codes.join('/'));
+    ok('migrated A1 “The two resistors that are not here”', (await txt(page, '#lad-notthere')).includes('The two 100 nF filter caps are deliberately at the main board end') && (await txt(page, '#lad-drvnote')).includes('C5 and C6'));
+    ok('migrated A1 “Why the ladder earns the board”', (await txt(page, '#lad-earns')).includes('six wires and zero real GPIO'));
+    const lc = await txt(page, '#lad-check');
+    ok('ladders checked against today’s resistor values (build data)', lc.startsWith('Checked against today: boards A, W, R carry R1–R5 4k7, R6 10k, R7 20k, R8 10k'), lc.slice(0, 120));
+    await page.locator('#ladders').scrollIntoViewIfNeeded();
+    await page.locator('#ladders').screenshot({ path: path.join(SHOTS, 'd1280-light-ladders.png') });
+    const i = await page.evaluate(() => [...document.querySelectorAll('#seclist .secbtn')].findIndex(b => b.id === 'sec-fascia'));
+    let linked = false;
+    if (i >= 0) {
+      await page.locator('#seclist .secbtn').nth(i).click();
+      await page.waitForSelector('#sec-ladlink');
+      await page.click('#sec-ladlink button[data-goto="ladders"]'); await page.waitForTimeout(800);
+      linked = await page.evaluate(() => { const r = document.querySelector('#ladders').getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; });
+    }
+    ok('the Fascia link section points to the ladders', i >= 0 && linked, 'section index ' + i);
+  }
+  const sw = await page.evaluate(() => document.documentElement.scrollWidth);
+  ok('front panel desktop: no horizontal scroll, no console errors', sw <= 1280 && errs.length === 0, 'scrollWidth ' + sw + ' ' + errs.slice(0, 3).join(' || '));
+  await ctx.close();
+}
+// the site's SVGs: the host refuses XML with a DOCTYPE
+{
+  const bad = [];
+  const walk = d => { for (const f of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); if (f.isDirectory()) walk(p); else if (/\.svg$/i.test(f.name) && /<!DOCTYPE/i.test(fs.readFileSync(p, 'utf8'))) bad.push(path.relative(SITE, p)); } };
+  walk(SITE);
+  ok('site SVGs carry no <!DOCTYPE', bad.length === 0, bad.join(', '));
+}
+for (const scheme of ['light', 'dark']) {
+  const { ctx, page, errs } = await newPage({ w: 390, h: 844, scheme, touch: true, mobile: true });
+  await openPanel(page);
+  await page.tap('#fp-poslist button[data-pos="4"]');
+  const r = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, n: document.querySelector('#fp-posname').textContent, st: Math.max(...[...document.querySelectorAll('#fp-tntable tbody td:last-child')].map(td => td.getBoundingClientRect().right)) }));
+  await page.locator('#fp-dial').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, `p390-${scheme}-panel-dial.png`) });
+  await page.locator('#fp-history').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, `p390-${scheme}-panel-history.png`) });
+  await page.tap('#dt-sections');
+  await page.locator('#ladders').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300); await page.screenshot({ path: path.join(SHOTS, `p390-${scheme}-ladders.png`) });
+  const sw2 = await page.evaluate(() => document.documentElement.scrollWidth);
+  ok(`phone ${scheme}: front panel and ladders fit 390, the dial taps`, r.sw <= 390 && sw2 <= 390 && r.st <= 390 && r.n === 'Format / Date' && errs.length === 0, `scrollWidth ${r.sw}/${sw2}, status column right edge ${r.st.toFixed(0)}, ${r.n}` + (errs.length ? ' ' + errs.slice(0, 3).join(' || ') : ''));
+  await ctx.close();
+}
+
 await browser.close();
 server.kill();
 const failed = results.filter(r => !r.pass);

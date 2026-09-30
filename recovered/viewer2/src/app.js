@@ -1164,6 +1164,7 @@ function renderSections() {
     <div class="stepnav"><button type="button" class="btn primary" id="sec3d">Show in 3D</button></div>
     <div class="chips" aria-label="Parts">${(s.parts || []).map(r => `<button type="button" class="chip" data-ref="${esc(r)}">${esc(r)}</button>`).join('')}</div>
     <div class="chips" aria-label="Nets">${(s.nets || []).map(n => `<span class="chip net">${esc(n)}</span>`).join('')}</div>
+    ${(s.nets || []).includes('A6') ? '<p style="font-size:13.5px" id="sec-ladlink">The panel end of this link, the two resistor ladders on A6 and A7, is <button type="button" class="linkbtn" data-goto="ladders">below this list</button>; the panel itself is in <button type="button" class="linkbtn" data-goto="panel">Front panel</button>.</p>' : ''}
     <div class="secpanes">${pane('Schematic', s.schematic, '')}${pane('Layout', s.layout, 'dark')}</div>`;
   $$('#secdetail .pane').forEach(p => {
     const pz = panZoom($('.pz', p), $('img', p));
@@ -1262,6 +1263,384 @@ function renderNotes() {
   $('#notesbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
 }
 
+// ------------------------------------------------------------------------------------------ front panel
+// Moved 30.09.26 from two older pages, kept as they were: A1 = TS06-FASCIA Panel Drawing (rev A,
+// 08.09.26), A2 = TS06-FASCIA Reference (09.09.26). The old text is in index.html (#doc-panel, #ladders);
+// here are A1's script-built parts (the dial explainer, the panel drawing, the two ladder diagrams), ported
+// with their geometry unchanged, and the checks against today's board, read from data/facts.json and
+// data/parts.json so they follow the board files when the fascia changes. Marks: seen / computed / inferred.
+const FPB = { A: 'TS06-FASCIA', W: 'TS06-FASCIA-wide', R: 'TS06-FASCIA-rhythm' };
+const MK = { seen: 'seen', comp: 'computed', inf: 'inferred' };
+const mk = k => `<span class="mk ${k}">${MK[k]}</span>`;
+const SVGNS = 'http://www.w3.org/2000/svg';
+const svgEl = (t, a) => { const e = document.createElementNS(SVGNS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+// A1's dial: six positions 30° apart, the arc opening right, position 1 at 75° (its CX, CY, SPAN, START)
+const A1D = { CX: 30, CY: 26, SPAN: 30, START: 75 };
+const a1ang = i => (A1D.START - A1D.SPAN * i) * Math.PI / 180;
+const a1px = (r, i) => A1D.CX + r * Math.cos(a1ang(i));
+const a1py = (r, i) => A1D.CY - r * Math.sin(a1ang(i));
+const A1POS = [   // A1's POS, word for word
+  { n: 'Normal', lede: 'A safe parking position. Nothing is read, so a knock does nothing. The ИН-15 pair idle-cycles its symbol set here.', field: null, sub: null, btn: null },
+  { n: 'Set Time', lede: 'The only screen where a wrong input costs you the time on the clock.', field: 'Hour ↔ Minute', sub: null, btn: 'Adjusts the selected field' },
+  { n: 'Display', lede: 'Digit brightness, the transitions between digits, and how often the glitch fires — three settings on two levers.', field: 'Brightness ↔ Effects', sub: 'Transition ↔ Glitch', subnote: 'read only while FIELD = Effects', btn: 'Adjusts the selected setting. Glitch runs off at the bottom of its range' },
+  { n: 'Ambient', lede: 'The two light sources that are not digits.', field: 'Colon ↔ Backlight', sub: null, btn: "Cycles that item's styles" },
+  { n: 'Format / Date', lede: 'Two different kinds of setting on one screen — a binary toggle and a multi-field value.', field: 'Format ↔ Date', sub: 'Day-Month ↔ Year', subnote: 'read only while FIELD = Date', btn: "Format: flips 12h/24h. Date: adjusts SUB's selection" },
+  { n: 'Info', lede: 'Read-only glance screen. Every input is ignored on purpose — and it is now an end stop, so the knob cannot be knocked past it into anything live.', field: null, sub: null, btn: null },
+];
+const A1LABEL = ['NORMAL', 'SET TIME', 'DISPLAY', 'AMBIENT', 'FORMAT/DATE', 'INFO'];
+const A2NETS = [   // A2 §03, word for word
+  ['Power & ground', [
+    ['+5V', 'SW1.6, R5.1, R6.1, J1.1', 'Rail for both resistor ladders and the connector. Pin 1 on J1 — first on the cable, on purpose.'],
+    ['GND', 'SW1.1, SW4.1, SW5.1, R1.2, R7.2, R8.2, J1.2', "Poured across the whole back face rather than traced — seven pads scattered edge to edge is exactly what a plane is for. See §05 for why that almost didn't work."]]],
+  ['Position sensing (analog)', [
+    ['A6', 'SW1.7, J1.3', 'MODE rotary wiper. Off-board on J1 pin 3.'],
+    ['TAP2–TAP5', 'SW1.2–.5, R1–R5 chain', 'Internal ladder nodes only — never leave the board. They exist purely to give the rotary something to land on between GND and +5V.'],
+    ['A7', 'R6.2, SW2.2, SW3.2, R6–R8 junction, J1.4', 'Shared read for both levers. Off-board on J1 pin 4.'],
+    ['LEVA / LEVB', 'SW2.1↔R7.1 · SW3.1↔R8.1', 'Internal-only names for each lever-to-resistor junction — a routing label, not a signal the MCU sees separately from A7.']]],
+  ['Buttons (digital)', [
+    ['D7', 'SW4.2 (−), J1.5', 'Normally open, shorts to GND on press. MCU-side pull-up (GyverButton, INPUT_PULLUP) — nothing extra needed here.'],
+    ['D8', 'SW5.2 (+), J1.6', 'Same as D7, other button.']]],
+];
+// A1's back-side placement ("x-ray"), as its script drew it: parts, landing pads, J1 box
+const A1BACK = { R: [['R1', 58, 10], ['R2', 58, 18], ['R3', 58, 26], ['R4', 58, 34], ['R5', 58, 42], ['R7', 95, 44], ['R8', 118, 44], ['R6', 106.5, 10]], J1: [147, 10] };
+
+const fpBoard = v => FACTS.boards[FPB[v]];
+const fpSize = v => { const b = fpBoard(v); return b ? `${+b.size[0]} × ${+b.size[1]}` : 'not built'; };
+const ohms = v => { const m = /^([\d.]+)([kKM]?)(\d*)$/.exec(String(v).trim()); if (!m) return NaN; const mul = { '': 1, k: 1e3, K: 1e3, M: 1e6 }[m[2]]; return parseFloat(m[1] + (m[3] ? '.' + m[3] : '')) * mul; };
+function fpLadderCodes(b) {        // the codes today's resistor values give (computed), or null if a part is missing
+  const P = (PARTS[b] || {}).parts || {}, r = k => ohms((P[k] || {}).v);
+  const R = ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8'].map(r);
+  if (R.some(x => !(x > 0))) return null;
+  const tot = R.slice(0, 5).reduce((a, x) => a + x, 0);
+  let below = 0; const a6 = [0];
+  for (let i = 0; i < 5; i++) { below += R[i]; a6.push(Math.round(1023 * below / tot)); }   // R1 is the GND end
+  const par = (x, y) => x * y / (x + y), dv = g => Math.round(1023 * g / (g + R[5]));
+  return { raw: ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8'].map(k => P[k].v), a6, a7: [1023, dv(R[6]), dv(R[7]), dv(par(R[6], R[7]))] };
+}
+function fpTodayFacts(v) {
+  const b = fpBoard(v), P = (PARTS[FPB[v]] || {}).parts || {}, n = x => `<span class="num">${x}</span>`;
+  if (!b) return '<dt>Board</dt><dd>not in this build</dd>';
+  const j = P.J1 || {};
+  return [['Board', `<code>PCB/${esc(FPB[v])}</code>${v === 'A' ? ' <span class="pill acc">committed</span>' : ''}`],
+    ['Outline', n(fpSize(v) + ' mm') + `, ${n((+b.thickness).toFixed(1) + ' mm')} FR4`],
+    ['Copper', `${n(b.tracks)} tracks, all on B.Cu; ${n(b.vias)} vias`],
+    ['Parts', `${n(b.parts)}: R1–R8, SW1–SW5, J1`],
+    ['J1', `${esc(j.fp || '?').replace('TS06_', '')} on the ${j.side === 'B' ? 'back' : 'front'}, at ${n((j.at || []).slice(0, 2).join(', '))}`],
+    ['Finish', '2.0 mm FR4, black mask, white silk, ENIG (PCB/README.md)']]
+    .map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('') + `<dt>Checked</dt><dd>${mk('seen')} this page’s build, from the board file</dd>`;
+}
+let FPV = 'A';
+function fpShowToday(v) {
+  FPV = FACTS.boards[FPB[v]] ? v : 'A';
+  $$('#fp-fvseg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.fp === FPV));
+  const f = $('#fp-front'), k = $('#fp-back');
+  f.src = `img/${FPB[FPV]}-top.png`; f.alt = `${FPB[FPV]}, front, KiCad render`;
+  k.src = `img/${FPB[FPV]}-bottom.png`; k.alt = `${FPB[FPV]}, back, KiCad render`;
+  $('#fp-todayfacts').innerHTML = fpTodayFacts(FPV);
+}
+const fpTodayName = () => `today’s TS06-FASCIA, ${fpSize('A')} mm (board A, the committed one; its height was compressed from 52 to 40 mm in 2026-09)`;
+const fpOpenChoice = () => `Which fascia is built is still the owner’s open choice: A, W or R (${fpSize('W')} mm), or F, a 179 × 40 panel in a printed frame (PCB/TS06-FASCIA-variants.md).`;
+
+// ---- the dial explainer (A1's "What the controls do")
+function fpDialSVG() {
+  const s = svgEl('svg', { viewBox: '10 5 70 43', role: 'img', 'aria-label': 'The MODE dial' });
+  s.innerHTML = `<defs><linearGradient id="dxgold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC46B"/><stop offset=".5" stop-color="#FF9E36"/><stop offset="1" stop-color="#C87515"/></linearGradient>
+    <linearGradient id="dxknob" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3F44"/><stop offset="1" stop-color="#191C1F"/></linearGradient></defs>`;
+  const tg = svgEl('g', {}), ng = svgEl('g', {}), wg = svgEl('g', {});
+  tg.appendChild(svgEl('path', { d: `M ${a1px(13.9, 0)} ${a1py(13.9, 0)} A 13.9 13.9 0 0 1 ${a1px(13.9, 5)} ${a1py(13.9, 5)}`, fill: 'none', stroke: '#4A5057', 'stroke-width': '.25' }));
+  for (let i = 0; i < 6; i++) {
+    tg.appendChild(svgEl('line', { x1: a1px(11.6, i), y1: a1py(11.6, i), x2: a1px(13.9, i), y2: a1py(13.9, i), stroke: '#DCD8D0', 'stroke-width': '.55', 'stroke-linecap': 'round' }));
+    const nt = svgEl('text', { x: a1px(16.4, i), y: a1py(16.4, i) + 1.05, 'font-family': 'IBM Plex Mono, monospace', 'font-size': '3', fill: 'url(#dxgold)', 'text-anchor': 'middle' });
+    nt.textContent = String(i + 1); ng.appendChild(nt);
+    const wt = svgEl('text', { x: 52, y: a1py(16.4, i) + 1.0, 'font-family': 'Saira Condensed, Arial Narrow, sans-serif', 'font-size': '3.4', 'letter-spacing': '.28', fill: '#DCD8D0', 'data-w': i });
+    wt.textContent = A1LABEL[i]; wg.appendChild(wt);
+    wg.appendChild(svgEl('line', { x1: a1px(18.3, i), y1: a1py(16.4, i), x2: 50.6, y2: a1py(16.4, i), stroke: '#4A5057', 'stroke-width': '.22' }));
+  }
+  s.append(tg, ng, wg);
+  s.appendChild(svgEl('circle', { cx: 30, cy: 26, r: 4.4, fill: '#000' }));
+  const knob = svgEl('g', { id: 'fp-knob' });
+  knob.appendChild(svgEl('circle', { cx: 30, cy: 26, r: 9.2, fill: 'url(#dxknob)', stroke: '#4A5057', 'stroke-width': '.35' }));
+  knob.appendChild(svgEl('path', { d: 'M30 18.4 L31.15 21.2 L28.85 21.2 Z', fill: '#F25610' }));
+  knob.appendChild(svgEl('rect', { x: 29.55, y: 21.4, width: .9, height: 3.2, fill: '#F25610', opacity: '.75' }));
+  s.appendChild(knob);
+  s.appendChild(svgEl('circle', { cx: 30, cy: 26, r: 1.5, fill: '#0C0D0E', stroke: '#4A5057', 'stroke-width': '.3' }));
+  return s;
+}
+let FPPOS = 0;
+function fpSelect(i) {
+  FPPOS = i; const p = A1POS[i];
+  $$('#fp-poslist .posbtn').forEach((b, k) => b.setAttribute('aria-pressed', k === i));
+  $('#fp-posname').textContent = p.n;
+  $('#fp-poslede').textContent = p.lede;
+  const fill = (id, val, note) => {
+    const box = $(id), v = $('.v', box);
+    box.classList.toggle('off', !val); box.classList.toggle('live', !!val);
+    v.textContent = val ? val + (note ? ' — ' + note : '') : 'not read';
+  };
+  fill('#fp-c-field', p.field); fill('#fp-c-sub', p.sub, p.subnote); fill('#fp-c-btn', p.btn);
+  const rot = 90 - (A1D.START - A1D.SPAN * i);                 // the pointer art starts pointing up
+  const k = $('#fp-knob'); if (k) k.setAttribute('transform', `rotate(${rot} 30 26)`);
+  $$('#fp-dialpic [data-w]').forEach(w => { const on = +w.dataset.w === i; w.setAttribute('fill', on ? '#FFFFFF' : '#DCD8D0'); w.setAttribute('opacity', on ? '1' : '.62'); });
+}
+
+// ---- A1's panel drawing, front and back, by its own drawing code (ids prefixed a1)
+function fpA1Front() {
+  const s = svgEl('svg', { viewBox: '-10 -10 196 76', role: 'img', 'aria-label': 'TS06-FASCIA front face, 176 by 52 millimetres (A1, rev A, history)' });
+  s.innerHTML = `<defs>
+    <linearGradient id="a1mask" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141618"/><stop offset="1" stop-color="#08090A"/></linearGradient>
+    <linearGradient id="a1gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC46B"/><stop offset=".5" stop-color="#FF9E36"/><stop offset="1" stop-color="#C87515"/></linearGradient>
+    <linearGradient id="a1knobg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3F44"/><stop offset="1" stop-color="#191C1F"/></linearGradient></defs>
+    <rect x="0" y="0" width="176" height="52" rx="1.5" fill="url(#a1mask)" stroke="#33383D" stroke-width=".3"/>
+    <g fill="#000" stroke="#3A4045" stroke-width=".25"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="171.5" cy="4.5" r="1.35"/><circle cx="4.5" cy="47.5" r="1.35"/><circle cx="171.5" cy="47.5" r="1.35"/></g>
+    <g><g class="a1ticks"></g><g class="a1nums"></g><g class="a1words"></g>
+      <circle cx="30" cy="26" r="4.4" fill="#000"/>
+      <g transform="rotate(15 30 26)"><circle cx="30" cy="26" r="9.2" fill="url(#a1knobg)" stroke="#4A5057" stroke-width=".35"/>
+        <path d="M30 18.4 L31.15 21.2 L28.85 21.2 Z" fill="#F25610"/><rect x="29.55" y="21.4" width=".9" height="3.2" fill="#F25610" opacity=".75"/></g>
+      <circle cx="30" cy="26" r="1.5" fill="#0C0D0E" stroke="#4A5057" stroke-width=".3"/></g>
+    <g class="a1levers"></g><g class="a1buttons"></g>
+    <text x="6.5" y="6.4" font-family="Saira Condensed, Arial Narrow, sans-serif" font-size="2.5" letter-spacing=".55" fill="#8C8880">MODE</text>
+    <g stroke="#4A5057" stroke-width=".22" fill="none"><path d="M0 58 L176 58"/><path d="M0 55.6 L0 60.4"/><path d="M176 55.6 L176 60.4"/><path d="M181 0 L181 52"/><path d="M178.6 0 L183.4 0"/><path d="M178.6 52 L183.4 52"/></g>
+    <rect x="79" y="55.6" width="18" height="4.8" fill="#0f1113"/>
+    <text x="88" y="59.4" font-family="IBM Plex Mono, monospace" font-size="3.1" fill="#8C8880" text-anchor="middle">176.00</text>
+    <text x="181" y="26" font-family="IBM Plex Mono, monospace" font-size="3.1" fill="#8C8880" text-anchor="middle" transform="rotate(-90 181 26)">52.00</text>`;
+  const tg = $('.a1ticks', s), ng = $('.a1nums', s), wg = $('.a1words', s);
+  for (let i = 0; i < 6; i++) {
+    tg.appendChild(svgEl('line', { x1: a1px(11.6, i), y1: a1py(11.6, i), x2: a1px(13.9, i), y2: a1py(13.9, i), stroke: '#DCD8D0', 'stroke-width': '.55', 'stroke-linecap': 'round' }));
+    const nt = svgEl('text', { x: a1px(16.4, i), y: a1py(16.4, i) + 1.05, 'font-family': 'IBM Plex Mono, monospace', 'font-size': '3', fill: 'url(#a1gold)', 'text-anchor': 'middle' });
+    nt.textContent = String(i + 1); ng.appendChild(nt);
+    const wt = svgEl('text', { x: 52, y: a1py(16.4, i) + 1.0, 'font-family': 'Saira Condensed, Arial Narrow, sans-serif', 'font-size': '3.4', 'letter-spacing': '.28', fill: i === 0 ? '#FFFFFF' : '#DCD8D0', opacity: i === 0 ? '1' : '.62' });
+    wt.textContent = A1LABEL[i]; wg.appendChild(wt);
+    wg.appendChild(svgEl('line', { x1: a1px(18.3, i), y1: a1py(16.4, i), x2: 50.6, y2: a1py(16.4, i), stroke: '#4A5057', 'stroke-width': '.22' }));
+  }
+  tg.insertBefore(svgEl('path', { d: `M ${a1px(13.9, 0)} ${a1py(13.9, 0)} A 13.9 13.9 0 0 1 ${a1px(13.9, 5)} ${a1py(13.9, 5)}`, fill: 'none', stroke: '#4A5057', 'stroke-width': '.25' }), tg.firstChild);
+  const lg = $('.a1levers', s);
+  [[95, 'FIELD'], [118, 'SUB']].forEach(([x, name]) => {
+    lg.appendChild(svgEl('circle', { cx: x, cy: 26, r: 4, fill: '#000' }));
+    lg.appendChild(svgEl('circle', { cx: x, cy: 26, r: 6.6, fill: 'none', stroke: '#4A5057', 'stroke-width': '.3' }));
+    lg.appendChild(svgEl('path', { d: `M ${x - 1.4} 24.6 L ${x + 1.4} 19.4 L ${x + 3.1} 20.6 L ${x + 0.5} 25.6 Z`, fill: '#2E3338', stroke: '#565C63', 'stroke-width': '.3' }));
+    const t = svgEl('text', { x, y: 38.4, 'font-family': 'Saira Condensed, Arial Narrow, sans-serif', 'font-size': '3.6', 'letter-spacing': '.4', fill: '#DCD8D0', 'text-anchor': 'middle', 'font-weight': '600' });
+    t.textContent = name; lg.appendChild(t);
+  });
+  // the gold traces from the SUB box to positions 3 and 5, and the enable stub under FIELD (A1's code)
+  const g2 = svgEl('g', {}), ytx = i => a1py(16.4, i) + 1.0, y3 = ytx(2), y5 = ytx(4), BX = 108, BR = 128, BT = 17, BB = 41;
+  const gold = { fill: 'none', stroke: 'url(#a1gold)', 'stroke-width': '.45', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+  g2.appendChild(svgEl('path', Object.assign({ d: `M ${BX} 34.2 L 95 34.2 L 95 32.6` }, gold)));
+  g2.appendChild(svgEl('circle', { cx: 95, cy: 32.6, r: '.85', fill: 'url(#a1gold)' }));
+  g2.appendChild(svgEl('rect', { x: BX, y: BT, width: BR - BX, height: BB - BT, rx: '2.2', fill: 'none', stroke: 'url(#a1gold)', 'stroke-width': '.45' }));
+  g2.appendChild(svgEl('path', Object.assign({ d: `M 118 ${BT} L 118 11 L ${65 + (11 - y3) * -1} 11 L 65 ${y3}` }, gold)));
+  g2.appendChild(svgEl('path', Object.assign({ d: `M 118 ${BB} L 118 45 L ${71 + (45 - y5)} 45 L 71 ${y5}` }, gold)));
+  g2.appendChild(svgEl('circle', { cx: 65, cy: y3, r: '.85', fill: 'url(#a1gold)' }));
+  g2.appendChild(svgEl('circle', { cx: 71, cy: y5, r: '.85', fill: 'url(#a1gold)' }));
+  lg.insertBefore(g2, lg.firstChild);
+  const bg = $('.a1buttons', s);
+  [[146, '−'], [164, '+']].forEach(([x, ch]) => {
+    bg.appendChild(svgEl('circle', { cx: x, cy: 26, r: 4, fill: '#000' }));
+    bg.appendChild(svgEl('circle', { cx: x, cy: 26, r: 6.6, fill: 'none', stroke: '#4A5057', 'stroke-width': '.3' }));
+    bg.appendChild(svgEl('circle', { cx: x, cy: 26, r: 3, fill: '#22262A', stroke: '#565C63', 'stroke-width': '.3' }));
+    const t = svgEl('text', { x, y: 39.2, 'font-family': 'Saira Condensed, Arial Narrow, sans-serif', 'font-size': '6.4', fill: 'url(#a1gold)', 'text-anchor': 'middle', 'font-weight': '700' });
+    t.textContent = ch; bg.appendChild(t);
+  });
+  return s;
+}
+function fpA1Back() {
+  const s = svgEl('svg', { viewBox: '-10 -10 196 76', role: 'img', 'aria-label': 'TS06-FASCIA back side placement, drawn as seen from the front (A1, rev A, history)' });
+  s.innerHTML = `<rect x="0" y="0" width="176" height="52" rx="1.5" fill="#0E1012" stroke="#33383D" stroke-width=".3"/>
+    <g fill="#000" stroke="#3A4045" stroke-width=".25"><circle cx="4.5" cy="4.5" r="1.35"/><circle cx="171.5" cy="4.5" r="1.35"/><circle cx="4.5" cy="47.5" r="1.35"/><circle cx="171.5" cy="47.5" r="1.35"/></g>
+    <circle cx="30" cy="26" r="12.5" fill="none" stroke="#F25610" stroke-width=".3" stroke-dasharray="1.6 1.2" opacity=".8"/>
+    <text x="30" y="41.6" font-family="IBM Plex Mono, monospace" font-size="2.3" fill="#B4562A" text-anchor="middle">∅25.00 BODY KEEPOUT</text>
+    <circle cx="30" cy="26" r="4.4" fill="#000" stroke="#3A4045" stroke-width=".25"/>
+    <g class="bh"></g><g class="bp"></g><g class="bpad"></g>
+    <text x="88" y="6.2" font-family="Saira Condensed, Arial Narrow, sans-serif" font-size="3" letter-spacing=".4" fill="#6C6F72" text-anchor="middle">BACK-SIDE PLACEMENT, DRAWN AS SEEN FROM THE FRONT (X-RAY)</text>`;
+  const bh = $('.bh', s), bp = $('.bp', s), bpad = $('.bpad', s), mono = 'IBM Plex Mono, monospace';
+  [95, 118, 146, 164].forEach(x => bh.appendChild(svgEl('circle', { cx: x, cy: 26, r: 4, fill: '#000', stroke: '#3A4045', 'stroke-width': '.25' })));
+  const part = (x, y, label, w = 9) => {
+    bp.appendChild(svgEl('rect', { x: x - w / 2, y: y - 1.6, width: w, height: 3.2, fill: '#1E2225', stroke: '#5E646A', 'stroke-width': '.28', rx: '.3' }));
+    bp.appendChild(svgEl('circle', { cx: x - w / 2, cy: y, r: .75, fill: '#B9932F' }));
+    bp.appendChild(svgEl('circle', { cx: x + w / 2, cy: y, r: .75, fill: '#B9932F' }));
+    const t = svgEl('text', { x, y: y - 2.9, 'font-family': mono, 'font-size': '2.2', fill: '#9C9890', 'text-anchor': 'middle' }); t.textContent = label; bp.appendChild(t);
+  };
+  ['R1 4k7', 'R2 4k7', 'R3 4k7', 'R4 4k7', 'R5 4k7'].forEach((l, i) => part(58, 10 + i * 8, l));
+  part(95, 44, 'R7 20k'); part(118, 44, 'R8 10k'); part(106.5, 10, 'R6 10k');
+  const pads = (x, y, n, lbl) => {
+    for (let i = 0; i < n; i++) bpad.appendChild(svgEl('circle', { cx: x + (i - (n - 1) / 2) * 2.6, cy: y, r: 1.05, fill: '#0B0C0D', stroke: '#B9932F', 'stroke-width': '.4' }));
+    const t = svgEl('text', { x, y: y + 3.9, 'font-family': mono, 'font-size': '2.1', fill: '#9C9890', 'text-anchor': 'middle' }); t.textContent = lbl; bpad.appendChild(t);
+  };
+  pads(30, 44.5, 7, 'SW1 COM + T1..T6');
+  pads(95, 33.5, 2, 'SW2'); pads(118, 33.5, 2, 'SW3'); pads(146, 33.5, 2, 'SW4'); pads(164, 33.5, 2, 'SW5');
+  bpad.appendChild(svgEl('rect', { x: 139, y: 7, width: 16, height: 6, fill: '#1E2225', stroke: '#5E646A', 'stroke-width': '.3', rx: '.4' }));
+  for (let j = 0; j < 6; j++) bpad.appendChild(svgEl('circle', { cx: 141.5 + j * 2.5, cy: 10, r: .8, fill: '#0B0C0D', stroke: '#B9932F', 'stroke-width': '.35' }));
+  const jt = svgEl('text', { x: 147, y: 5.4, 'font-family': mono, 'font-size': '2.2', fill: '#9C9890', 'text-anchor': 'middle' });
+  jt.textContent = 'J1  GND +5V A6 A7 D7 D8'; bpad.appendChild(jt);
+  return s;
+}
+// A2 §01, its one static drawing, word for word (its colours are A2's own tokens, see .a2fig)
+const A2FRONT = `<svg viewBox="-6 -6 188 64" style="width:100%; height:auto; display:block;" role="img" aria-label="TS06-FASCIA front panel diagram (A2, history)">
+  <rect x="0" y="0" width="176" height="52" rx="2.5" fill="var(--mask)" stroke="var(--panel-line)" stroke-width="0.6"/>
+  <circle cx="4.5" cy="4.5" r="1.35" fill="none" stroke="var(--silk-dim)" stroke-width="0.4"/><circle cx="171.5" cy="4.5" r="1.35" fill="none" stroke="var(--silk-dim)" stroke-width="0.4"/>
+  <circle cx="4.5" cy="47.5" r="1.35" fill="none" stroke="var(--silk-dim)" stroke-width="0.4"/><circle cx="171.5" cy="47.5" r="1.35" fill="none" stroke="var(--silk-dim)" stroke-width="0.4"/>
+  <circle cx="30" cy="26" r="17" fill="none" stroke="var(--silk-dim)" stroke-width="0.35"/><circle cx="30" cy="26" r="8" fill="var(--panel-line)"/>
+  <path d="M 33.6 12.57 A 13.9 13.9 0 0 1 33.6 39.43" fill="none" stroke="var(--gold)" stroke-width="1"/>
+  <text x="20" y="8" font-size="3.6" fill="var(--silk)" font-weight="600">MODE</text>
+  <g font-size="3.1" fill="var(--silk)">
+    <text x="34.5" y="13.4">1</text><text x="40" y="13.4">— NORMAL</text><text x="37.5" y="18.5">2</text><text x="43" y="18.5">— SET TIME</text>
+    <text x="39" y="24.8">3</text><text x="44.5" y="24.8">— DISPLAY</text><text x="39" y="30.2">4</text><text x="44.5" y="30.2">— AMBIENT</text>
+    <text x="37.5" y="35.8">5</text><text x="43" y="35.8">— FORMAT/DATE</text><text x="34.5" y="40.6">6</text><text x="40" y="40.6">— INFO</text></g>
+  <circle cx="95" cy="26" r="4.2" fill="var(--panel-line)"/><rect x="88.6" y="19.6" width="12.8" height="18.8" rx="3" fill="none" stroke="var(--gold)" stroke-width="0.7"/>
+  <circle cx="118" cy="26" r="4.2" fill="var(--panel-line)"/><rect x="111.6" y="19.6" width="12.8" height="18.8" rx="3" fill="none" stroke="var(--gold)" stroke-width="0.7"/>
+  <text x="95" y="43.5" font-size="3" fill="var(--silk)" text-anchor="middle">FIELD</text><text x="118" y="43.5" font-size="3" fill="var(--silk)" text-anchor="middle">SUB</text>
+  <path d="M 89.5 20.5 L 78.5 11.5" stroke="var(--gold)" stroke-width="0.5" fill="none"/><path d="M 91 32.5 L 78.5 32.5" stroke="var(--gold)" stroke-width="0.5" fill="none"/>
+  <path d="M 100.5 32.5 L 113.5 32.5" stroke="var(--gold)" stroke-width="0.5" fill="none"/><path d="M 101 20.5 L 111.5 12" stroke="var(--gold)" stroke-width="0.5" fill="none"/>
+  <circle cx="146" cy="26" r="4.2" fill="var(--panel-line)"/><circle cx="164" cy="26" r="4.2" fill="var(--panel-line)"/>
+  <text x="146" y="43.5" font-size="4" fill="var(--gold)" text-anchor="middle">−</text><text x="164" y="43.5" font-size="4" fill="var(--gold)" text-anchor="middle">+</text>
+  <g font-size="2.6" fill="var(--silk-dim)">
+    <text x="30" y="50.5" text-anchor="middle">SW1 · SR25 rotary · A6</text><text x="95" y="6" text-anchor="middle">SW2 · LEVER A</text>
+    <text x="118" y="6" text-anchor="middle">SW3 · LEVER B</text><text x="155" y="6" text-anchor="middle">SW4/SW5 · D7/D8</text></g></svg>`;
+
+// ---- A1's two ladder diagrams (for Circuit sections), by its own drawing code
+function fpLadderA6() {
+  const s = svgEl('svg', { viewBox: '0 0 330 206', role: 'img', 'aria-label': 'Five 4.7k resistors in series from plus 5 volts to ground, with six taps' }), mono = 'IBM Plex Mono, monospace';
+  s.innerHTML = `<g stroke="#4A5057" stroke-width="1.4" fill="none"><path d="M110 20 L110 170"/><path d="M110 20 L96 20 M96 14 L96 26"/></g>
+    <text x="88" y="24" fill="#DCD8D0" font-family="${mono}" font-size="11" text-anchor="end">+5V</text>
+    <g stroke="#4A5057" stroke-width="1.4" fill="none"><path d="M100 176 L120 176 M104 181 L116 181 M108 186 L112 186"/><path d="M110 170 L110 176"/></g>
+    <g class="a6r"></g><g class="a6taps"></g>
+    <path d="M243 95 L176 110" stroke="#F25610" stroke-width="1.6" fill="none"/><circle cx="243" cy="95" r="3.4" fill="#F25610"/>
+    <path d="M176 110 L184 105 L184 116 Z" fill="#F25610"/>
+    <path d="M232 42 A 62 62 0 0 1 232 148" stroke="#F25610" stroke-width="1" fill="none" stroke-dasharray="3 4" opacity=".55"/>
+    <text x="250" y="99" fill="#F25610" font-family="${mono}" font-size="11">wiper</text>
+    <text x="250" y="112" fill="#7C7972" font-family="${mono}" font-size="10">→ A6</text>`;
+  const a6r = $('.a6r', s), a6t = $('.a6taps', s), NODEY = [20, 50, 80, 110, 140, 170];   // node 0 = +5V end, node 5 = GND end
+  for (let r = 0; r < 5; r++) {
+    const cy = (NODEY[r] + NODEY[r + 1]) / 2;
+    a6r.appendChild(svgEl('rect', { x: 99, y: cy - 11, width: 22, height: 22, fill: '#1A1E21', stroke: '#5E646A', 'stroke-width': '1.3' }));
+    const rl = svgEl('text', { x: 92, y: cy + 4, fill: '#DCD8D0', 'font-family': mono, 'font-size': '10', 'text-anchor': 'end' }); rl.textContent = 'R' + (5 - r) + ' 4k7'; a6r.appendChild(rl);
+  }
+  for (let t = 0; t < 6; t++) {
+    const y = NODEY[t], posn = 6 - t, volts = (5 - t).toFixed(2), code = [1023, 818, 614, 409, 205, 0][t];
+    a6t.appendChild(svgEl('path', { d: 'M110 ' + y + ' L168 ' + y, stroke: '#4A5057', 'stroke-width': '1.2', fill: 'none' }));
+    a6t.appendChild(svgEl('circle', { cx: 110, cy: y, r: '2.6', fill: '#B9932F' }));
+    const pl = svgEl('text', { x: 176, y: y + 4, 'font-family': mono, 'font-size': '10.5', fill: '#DCD8D0' });
+    pl.textContent = posn + '   ' + volts + ' V   ' + code; a6t.appendChild(pl);
+  }
+  return s;
+}
+function fpLadderA7() {
+  const s = svgEl('svg', { viewBox: '0 0 330 206', role: 'img', 'aria-label': 'A 10k pull-up on A7, with 20k and 10k switched to ground by the two levers' }), mono = 'IBM Plex Mono, monospace';
+  s.innerHTML = `<g stroke="#4A5057" stroke-width="1.4" fill="none"><path d="M150 16 L150 34"/><path d="M150 16 L136 16 M136 10 L136 22"/>
+      <path d="M150 66 L150 96"/><path d="M78 96 L232 96"/><path d="M78 96 L78 116"/><path d="M232 96 L232 116"/>
+      <path d="M78 146 L78 156"/><path d="M232 146 L232 156"/><path d="M78 188 L78 196"/><path d="M232 188 L232 196"/></g>
+    <text x="128" y="20" fill="#DCD8D0" font-family="${mono}" font-size="11" text-anchor="end">+5V</text>
+    <rect x="139" y="34" width="22" height="32" fill="#1A1E21" stroke="#5E646A" stroke-width="1.3"/>
+    <text x="168" y="54" fill="#DCD8D0" font-family="${mono}" font-size="11">R6 10k</text>
+    <circle cx="150" cy="96" r="3.4" fill="#FF9E36"/>
+    <text x="150" y="86" fill="#FF9E36" font-family="${mono}" font-size="11" text-anchor="middle">A7</text>
+    <g class="a7sw"></g>
+    <rect x="67" y="156" width="22" height="32" fill="#1A1E21" stroke="#5E646A" stroke-width="1.3"/>
+    <text x="55" y="176" fill="#DCD8D0" font-family="${mono}" font-size="11" text-anchor="end">R7 20k</text>
+    <rect x="221" y="156" width="22" height="32" fill="#1A1E21" stroke="#5E646A" stroke-width="1.3"/>
+    <text x="255" y="176" fill="#DCD8D0" font-family="${mono}" font-size="11">R8 10k</text>
+    <g stroke="#4A5057" stroke-width="1.4" fill="none"><path d="M68 196 L88 196 M72 200 L84 200"/><path d="M222 196 L242 196 M226 200 L238 200"/></g>`;
+  const a7 = $('.a7sw', s);
+  [[78, 'FIELD'], [232, 'SUB']].forEach(([x, name]) => {
+    a7.appendChild(svgEl('circle', { cx: x, cy: 116, r: '3', fill: '#0E1012', stroke: '#5E646A', 'stroke-width': '1.3' }));
+    a7.appendChild(svgEl('circle', { cx: x, cy: 146, r: '3', fill: '#0E1012', stroke: '#5E646A', 'stroke-width': '1.3' }));
+    a7.appendChild(svgEl('path', { d: `M ${x + 2} 118 L ${x + 13} 143`, stroke: '#5E646A', 'stroke-width': '1.4', fill: 'none', 'stroke-linecap': 'round' }));
+    const t = svgEl('text', { x, y: 108, 'font-family': 'Saira Condensed, Arial Narrow, sans-serif', 'font-size': '11', 'letter-spacing': '1', fill: '#7C7972', 'text-anchor': 'middle' });
+    t.textContent = name; a7.appendChild(t);
+  });
+  return s;
+}
+
+// ---- where the old pages disagree with today, and the then-and-now table
+function fpDiffs() {
+  const P = (PARTS[FPB.A] || {}).parts || {}, at = r => P[r] ? `${+P[r].at[0]}, ${+P[r].at[1]}` : '?';
+  const rows = [...'12345'].map(i => P['R' + i]).filter(Boolean), ys = [...new Set(rows.map(p => +p.at[1]))], xs = rows.map(p => +p.at[0]);
+  const r15 = ys.length === 1 ? `in a row at y ${ys[0]}, x ${Math.min(...xs)}–${Math.max(...xs)}` : 'at ' + [...'12345'].map(i => 'R' + i + ' ' + at('R' + i)).join('; ');
+  return [
+    ['outline', `<b>Outline.</b> Both old pages draw the board 176 × 52 mm. Today’s board A is ${fpSize('A')} mm: its height was compressed in 2026-09 by moving the parts, tracks, pour and legend up 12 mm, with no re-route. W and R are ${fpSize('W')} and ${fpSize('R')} mm, and the choice between them is still open. ${mk('seen')}`],
+    ['j1', `<b>Connector.</b> A1 says “1 × JST-XH, 6 way” and letters J1 “GND +5V A6 A7 D7 D8”. A2 and today say JST PH, pin 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8 (PCB/README.md fixes the order for both builds). Here the two old pages disagree with each other, and A2 is the one that still holds. ${mk('seen')}`],
+    ['back', `<b>Back-side placement.</b> A1’s x-ray drawing puts R1–R5 in a column at x 58, R6 at 106.5, 10, R7 and R8 at y 44 and J1 top right. On today’s board A they sit ${r15}; R6 at ${at('R6')}, R7 at ${at('R7')}, R8 at ${at('R8')}, J1 at ${at('J1')} (board mm). ${mk('seen')}`],
+    ['dial', `<b>Dial lettering.</b> The old drawings letter the dial for the 52 mm board. Today’s lettering was scaled by 0.789 in the compression and MODE moved to the left of the shaft; the angles did not change (positions at 75° down to −75°, 30° apart). ${mk('seen')} ${mk('comp')}`],
+    ['silk', `<b>Silkscreen.</b> A1 says white silk “front only”. Today the back silkscreen carries J1’s pin legend. ${mk('seen')}`],
+    ['firmware', `<b>The controls, in the firmware.</b> A1’s dial explainer is control scheme rev B, the spec. The firmware does not do it yet: <code>ts06pair.ino</code> reads SET TIME as PROGRAM and the other five positions as RUN, does not read A7, and keeps the ИН-15 pair dark, so NORMAL’s idle cycle is not written. ${mk('seen')}`],
+    ['drv', `<b>The driver-board end.</b> A1 names two 100 nF caps there; they are still there (C5, C6 on TS06-DRV). Rev B added R72, 1 M from A6 to ground, and 1 k with 10 nF on D7 and D8, so J1’s pins 5 and 6 are D7_J and D8_J on that board. With R72 the middle taps read up to 3.4 codes low; the firmware rounds with ±102 codes to spare. ${mk('seen')} ${mk('comp')}`],
+    ['routing', `<b>Routing notes.</b> A2’s 64 tracks and the R6 story are board A’s, and W’s, which is A’s tracks moved. R was placed and routed anew: ${fpBoard('R') ? fpBoard('R').tracks : '?'} tracks, ${fpBoard('R') ? fpBoard('R').vias : '?'} vias. ${mk('seen')}`],
+    ['cable', `<b>Cable length.</b> A1 argues from “a metre of cable”. Today’s lead is 180–200 mm (TS06-DRV bom.md). ${mk('seen')} The argument for switching to ground holds all the same. ${mk('inf')}`],
+  ];
+}
+function fpThenNow() {
+  const A = fpBoard('A') || {}, pill = (c, t) => `<span class="pill ${c}">${t}</span>`;
+  const cur = pill('ok', 'current'), chg = pill('warn', 'changed since'), hist = pill('bad', 'history: superseded'), unk = pill('acc', 'not checked');
+  const J = ((PARTS[FPB.A] || {}).parts || {}).J1 || {};
+  return [
+    ['A1, A2', 'Outline', '176.00 × 52.00 mm', `${fpSize('A')} mm (A); W and R ${fpSize('W')} mm ${mk('seen')}`, hist + ` by ${fpTodayName()}`],
+    ['A1', 'Stack', '2.0 mm FR4, 2 layer', `${(+A.thickness).toFixed(1)} mm FR4, 2 layers ${mk('seen')}`, cur],
+    ['A2', 'Stack', '2.0mm FR4, 2-layer, ENIG', 'the same, ENIG (PCB/README.md) ' + mk('seen'), cur],
+    ['A1', 'Mask', 'Matte black', 'black (PCB/README.md; “matte” is not written there) ' + mk('seen'), cur],
+    ['A1', 'Silk', 'White, front only', 'white; the back silk carries J1’s pin legend ' + mk('seen'), chg],
+    ['A2', 'Finish', 'Black mask · white silk', 'the same ' + mk('seen'), cur],
+    ['A1', 'Finish', 'ENIG — gold accents', 'ENIG; the gold artwork is F.Cu under opened mask ' + mk('seen'), cur],
+    ['A2', 'Signal routing', 'B.Cu only, 0 vias', `A: ${A.tracks} tracks on B.Cu, ${A.vias} vias ${mk('seen')}`, cur],
+    ['A1', 'Interface', '1 × JST-XH, 6 way', `JST PH: ${esc((J.fp || '').replace('TS06_JST_PH_', '').replace('_Back', ''))} on the back ${mk('seen')}`, hist + ' by the JST PH J1'],
+    ['A2', 'Off-board', '6-pin JST-PH to main board', 'a 6-way JST PH lead, 180–200 mm, to TS06-DRV’s J1; the main board is now the pair’s driver board ' + mk('seen'), cur],
+    ['A1', 'Parts', '8 R · 5 SW · 1 J', `${A.parts} parts: R1–R8, SW1–SW5, J1 ${mk('seen')}`, cur],
+    ['A1', 'Rev', 'A · 2026-09-08', 'compressed to 40 mm in 2026-09; two leftovers fixed 30.09.26 (PCB/README.md) ' + mk('seen'), hist + ` by ${fpTodayName()}`],
+    ['A1', 'Order', 'Rezonit order, 15 off', 'PCB/README.md: the fascia goes to Rezonit with the electronics; the count is not in the repository', unk],
+    ['A2', 'Build', 'for the surface-mount build', 'TS06-FASCIA is the surface-mount build chosen for fabrication; TS06-FASCIA-THT (176 × 52) stays as the alternative ' + mk('seen'), cur],
+    ['A2', 'Full render', 'PCB/TS06-FASCIA/preview.svg', 'still made there by tools/render.py; this page shows KiCad renders of the board file instead (above) ' + mk('seen'), cur],
+  ];
+}
+function renderPanel() {
+  // today's board
+  const v0 = V.fv in FPB ? V.fv : 'A';
+  fpShowToday(v0);
+  // disagreements
+  $('#fp-difflist').innerHTML = fpDiffs().map(([k, t]) => `<li data-d="${k}">${t}</li>`).join('');
+  // dial explainer
+  $('#fp-poslist').innerHTML = A1LABEL.map((l, i) => `<button type="button" class="posbtn" data-pos="${i}" aria-pressed="${i === 0}"><span class="n">${i + 1}</span><span>${esc(l)}</span></button>`).join('');
+  $('#fp-dialpic').replaceChildren(fpDialSVG());
+  fpSelect(FPPOS);
+  // hardware check
+  $('#fp-hwcheck').innerHTML = `${mk('seen')} Today’s board drills the rotary 8.8 mm and the МТ1 and КМД1 8.0 mm, and its body ring reads “BODY 25.00”. The bushing length, shaft and plunger are not in the board file ${mk('inf')}.`;
+  // nets, with a live check that every part named still exists on board A
+  const P = (PARTS[FPB.A] || {}).parts || {};
+  $('#fp-netbody').innerHTML = A2NETS.map(([g, rows]) => `<div class="netgroup"><h3>${esc(g)}</h3>${rows.map(([n, p, w]) => `<div class="netrow" data-net="${esc(n)}"><div class="nn">${esc(n)}</div><div class="np">${esc(p)}</div><div class="nw">${esc(w)}</div></div>`).join('')}</div>`).join('');
+  const named = [...new Set(A2NETS.flatMap(g => g[1].map(r => r[1])).join(' ').match(/\b(SW\d|R\d|J\d)\b/g))];
+  const missing = named.filter(r => !P[r]);
+  $('#fp-netcheck').innerHTML = (missing.length ? `<span class="pill bad">changed since</span> not on today’s board A: ${missing.map(esc).join(', ')}. ` : `${mk('seen')} Current. Every pad above, read pad by pad from today’s board A (30.09.26), carries the net named, and no other pad does; the ${named.length} parts named are all on the board in this build. `)
+    + `The firmware’s buttons are GButton HIGH_PULL, which is INPUT_PULLUP ${mk('seen')}. Since A2, TS06-DRV rev B puts 1 k in series and 10 nF to ground on D7 and D8 at its end (R73, R74, C18, C19), and 1 M from A6 to ground (R72) ${mk('seen')}.`;
+  // routing
+  const b = k => fpBoard(k) || {};
+  $('#fp-routecheck').innerHTML = `${mk('seen')} Current for board A: ${b('A').tracks} tracks, ${b('A').vias} vias, all signal copper on B.Cu, one GND pour on B.Cu; PCB/README.md tells the same R6 story. W is A’s ${b('W').tracks} tracks moved across. R was placed and routed anew (${b('R').tracks} tracks, ${b('R').vias} vias), so the corridor story is not R’s.`;
+  // then and now
+  $('#fp-tntable').innerHTML = '<thead><tr><th>From</th><th>Item</th><th>The old page says</th><th>Today</th><th>Status</th></tr></thead><tbody>'
+    + fpThenNow().map(r => `<tr><td class="n" data-l="From">${r[0]}</td><td data-l="Item">${r[1]}</td><td data-l="The old page says">${esc(r[2])}</td><td data-l="Today">${r[3]}</td><td data-l="Status">${r[4]}</td></tr>`).join('') + '</tbody>';
+  // history
+  $('#fp-histlabel').innerHTML = `<b>History:</b> superseded by ${fpTodayName()}. ${fpOpenChoice()} These drawings show the 176 × 52 board of 08–09.09.26: its outline, the old dial lettering, A1’s JST-XH J1 “GND +5V A6 A7 D7 D8” and A1’s back-side placement no longer hold. The controls and their order still do.`;
+  $('#fp-a1front').replaceChildren(fpA1Front());
+  $('#fp-a1back').replaceChildren(fpA1Back());
+  $('#fp-a2front').innerHTML = A2FRONT;
+}
+function renderLadders() {
+  $('#lad-a6fig').replaceChildren(fpLadderA6());
+  $('#lad-a7fig').replaceChildren(fpLadderA7());
+  const want = { a6: [0, 205, 409, 614, 818, 1023], a7: [1023, 682, 512, 409] };
+  const res = Object.keys(FPB).map(v => [v, fpLadderCodes(FPB[v])]).filter(r => r[1]);
+  const same = c => c.a6.join() === want.a6.join() && c.a7.join() === want.a7.join();
+  const bad = res.filter(r => !same(r[1]));
+  const vals = res.length ? res[0][1].raw : [];
+  $('#lad-check').innerHTML = (bad.length
+    ? `<b>Changed since:</b> on ${bad.map(r => r[0]).join(', ')} today’s resistor values give A6 ${bad[0][1].a6.join('/')} and A7 ${bad[0][1].a7.join('/')} ${mk('comp')}, not the codes below. `
+    : `<b>Checked against today:</b> boards ${res.map(r => r[0]).join(', ')} carry R1–R5 ${esc(vals[0])}, R6 ${esc(vals[5])}, R7 ${esc(vals[6])}, R8 ${esc(vals[7])} ${mk('seen')}, which give exactly the codes below ${mk('comp')}; the firmware uses the same numbers (<code>ts06pair.ino</code>) ${mk('seen')}. `)
+    + `The 213 µA, 5.64 kΩ, 564 µs, 300 µA and the 103-code gap are recomputed here and agree ${mk('comp')}.`;
+  $('#lad-drvnote').innerHTML = `${mk('seen')} Still so on TS06-DRV: C5 and C6, 100 nF from A6 and A7 to ground (<code>tools/ts06pair.py</code>); the firmware’s rotary filter wants five identical readings about 10 ms apart, and its buttons use the ATmega’s pull-ups. Since A1, rev B added R72, 1 M from A6 to ground, so an unplugged panel reads 0 instead of noise; with the panel on, the middle taps read up to 3.4 codes low ${mk('comp')}, inside the firmware’s ±102.`;
+}
+function gotoDoc(d) {
+  if (d === 'ladders') { setDoc('sections', true); $('#ladders').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); return; }
+  if (!DOCS.includes(d)) return;
+  setDoc(d, true);
+  $('#doc-' + d).scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+}
+
 // ------------------------------------------------------------------------------------------ wiring
 function wire() {
   $$('#scenes .tab').forEach(t => {
@@ -1333,8 +1712,19 @@ function wire() {
     if (b) { goStep(+b.dataset.step); setSide('steps'); $('#viewer').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
   });
   window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (DOCS.includes(h)) setDoc(h, false); });
+  // front panel view (and its ladders in Circuit sections)
+  document.addEventListener('click', e => { const b = e.target.closest('[data-goto]'); if (b) gotoDoc(b.dataset.goto); });
+  $('#fp-fvseg').addEventListener('click', e => { const b = e.target.closest('button[data-fp]'); if (b) fpShowToday(b.dataset.fp); });
+  $('#fp-poslist').addEventListener('click', e => { const b = e.target.closest('button[data-pos]'); if (b) fpSelect(+b.dataset.pos); });
+  $('#fp-a1tabs').addEventListener('click', e => {
+    const b = e.target.closest('button[data-side]');
+    if (!b) return;
+    $$('#fp-a1tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#fp-a1front').hidden = b.dataset.side !== 'front';
+    $('#fp-a1back').hidden = b.dataset.side !== 'back';
+  });
 }
-const DOCS = ['sections', 'fascia', 'test', 'kicad', 'notes'];
+const DOCS = ['sections', 'panel', 'fascia', 'test', 'kicad', 'notes'];
 function setSide(s) {
   UI.side = s;
   $$('#sidetabs button').forEach(b => { const on = b.dataset.side === s; b.setAttribute('aria-selected', on); b.setAttribute('aria-pressed', on); });
@@ -1424,6 +1814,8 @@ async function main() {
   renderSections();
   renderTestStages();
   renderNotes();
+  renderPanel();
+  renderLadders();
   const h = location.hash.slice(1);
   setDoc(DOCS.includes(h) ? h : 'sections', false);
   setMode('img');                       // the pictures show while the models load

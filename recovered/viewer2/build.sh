@@ -6,7 +6,8 @@
 #   PAGE_ONLY=1 ./build.sh       only re-stamp the page (src/ -> site/) and re-copy the sections
 #   VIEWER_BRANCH=...            the branch named on the page (default pcb/kicad-boards); the commit is REPO's HEAD
 #
-# REPO defaults to the current directory if it holds PCB/TS06-DRV, else /home/user/TERMINAL-06-firmware.
+# REPO defaults to the current directory if it holds PCB/TS06-DRV, else to the git checkout this script
+# sits in (recovered/viewer2/ in the firmware repository); otherwise pass it as the argument.
 # The repository is only read. Nothing is committed and nothing in it is written (scratch copies only).
 #
 # NEEDS
@@ -40,7 +41,8 @@ set -euo pipefail
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 if [ $# -ge 1 ]; then REPO=$(cd "$1" && pwd)
 elif [ -d "$PWD/PCB/TS06-DRV" ]; then REPO=$PWD
-else REPO=/home/user/TERMINAL-06-firmware; fi
+elif TOP=$(git -C "$HERE" rev-parse --show-toplevel 2>/dev/null) && [ -d "$TOP/PCB/TS06-DRV" ]; then REPO=$TOP
+else echo "usage: $0 REPO   (REPO: the firmware repository, holding PCB/TS06-DRV)"; exit 1; fi
 MODELS=${MODELS:-$(cd "$HERE/.." && pwd)/3dmodels}
 SCH=${SCH:-$(cd "$HERE/.." && pwd)/sch/out}
 IMAGE=${KICAD_IMAGE:-mirror.gcr.io/kicad/kicad:10.0}
