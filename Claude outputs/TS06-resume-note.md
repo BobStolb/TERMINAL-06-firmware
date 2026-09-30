@@ -1,6 +1,12 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
+* **Owner answers 08:39 (relayed, standing):** DISP art **approve, direction 3 circuit** -> run
+  disp-circuit-art: make `--art circuit` the default of mkpcb_disp.py, regenerate, verify_pair 27 PASS,
+  rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
+  variations as creative as the display art -> run fascia-gold. Subagents default to model sonnet (the
+  owner's word, relayed), within QUOTA: PACE 3.6 %/day each. Both runs wait for a fresh quota.json
+  (07:29 stale at 08:47).
 * **Running: none.** Viewer v4 published 08:35 (Front panel view, rev B circuit sections, 112/112 tests;
   source mirrored in recovered/viewer2, b6fea17). Follow-ups, small: the section summaries are still rev A
   text, and rev B's new parts sit in the schematic's "labelled, not wired" row (a generator change).
