@@ -1,0 +1,477 @@
+{
+ "_about": "Written by power_options.py from the case model (default numbers) and TS06-DRV.kicad_pcb.",
+ "model": {
+  "CHEEK_T": 6.0,
+  "X_IN_R": 191.9,
+  "X_OUT_R": 197.9,
+  "JACK_MOUTH_X": 191.1,
+  "JACK_Y": 91.5,
+  "JACK_Z": 50.7,
+  "Z_DRV_B": 44.2,
+  "Z_REAR_IN": 69.2,
+  "Z_REAR_OUT": 70.8,
+  "REAR_T": 1.6,
+  "PLUG_BARREL_L": 9.5,
+  "PLUG_NOSE_D": 10.0,
+  "JACK_ENGAGE_MIN": 7.0,
+  "JACK_HOLE_D": 9.0,
+  "JACK_CB_D": 14.0,
+  "JACK_WEB": 1.5,
+  "Y_TOP": 112.5,
+  "Y_BOT": -10.3,
+  "TOP_LIP_Y0": 104.5,
+  "OUT_W": 204.4,
+  "OUT_H": 122.8,
+  "OUT_D": 81.64136880532202
+ },
+ "rule": {
+  "gap": 0.8,
+  "t_stop_max": 1.7,
+  "text": "the nose must be able to reach within this much of the cheek's inner face"
+ },
+ "cheek": [
+  {
+   "id": "K0",
+   "name": "Plain 6 mm cheek, Ø9 hole",
+   "engaged": 2.7,
+   "stop_from_mouth": 6.8,
+   "ok": false,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 2.7,
+    "10": 2.7,
+    "11.5": 2.7,
+    "13": 2.7,
+    "15": 2.7,
+    "17": 2.7
+   },
+   "change": "none",
+   "note": "the reference: the plug stops on the outer face"
+  },
+  {
+   "id": "K-model",
+   "name": "The model now: Ø14 pocket from outside, 1.5 web, Ø9",
+   "engaged": 7.2,
+   "stop_from_mouth": 2.3,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 7.2,
+    "10": 7.2,
+    "11.5": 7.2,
+    "13": 7.2,
+    "15": 2.7,
+    "17": 2.7
+   },
+   "change": "cheek only",
+   "note": "the earlier review's option 3"
+  },
+  {
+   "id": "A1",
+   "name": "Clear hole Ø11 straight through",
+   "engaged": 9.5,
+   "stop_from_mouth": 0.0,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 9.5,
+    "10": 9.5,
+    "11.5": 2.7,
+    "13": 2.7,
+    "15": 2.7,
+    "17": 2.7
+   },
+   "change": "cheek only",
+   "note": "the nose passes; the barrel seats on the jack face"
+  },
+  {
+   "id": "A2",
+   "name": "Slot 11 wide, open to the rear edge (right-angle plug)",
+   "engaged": 9.5,
+   "stop_from_mouth": 0.0,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 9.5,
+    "10": 9.5,
+    "11.5": 2.7,
+    "13": 2.7,
+    "15": 2.7,
+    "17": 2.7
+   },
+   "change": "cheek only",
+   "note": "same section as A1; the cable runs back along the slot"
+  },
+  {
+   "id": "A3",
+   "name": "Recessed well Ø18 x 5 deep, 1.0 web, Ø9",
+   "engaged": 7.7,
+   "stop_from_mouth": 1.8,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 7.7,
+    "10": 7.7,
+    "11.5": 7.7,
+    "13": 7.7,
+    "15": 7.7,
+    "17": 7.7
+   },
+   "change": "cheek only",
+   "note": "any nose Ø9-18 stops on the web"
+  },
+  {
+   "id": "A4",
+   "name": "Stepped counterbore Ø16 x 2 + Ø11 through",
+   "engaged": 9.5,
+   "stop_from_mouth": 0.0,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 9.5,
+    "10": 9.5,
+    "11.5": 4.7,
+    "13": 4.7,
+    "15": 4.7,
+    "17": 2.7
+   },
+   "change": "cheek only",
+   "note": "a Ø10 nose passes both steps"
+  },
+  {
+   "id": "B1",
+   "name": "Hatch cap over a right-angle plug (Ø11 hole)",
+   "engaged": 9.5,
+   "stop_from_mouth": 0.0,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 9.5,
+    "10": 9.5,
+    "11.5": 2.7,
+    "13": 2.7,
+    "15": 2.7,
+    "17": 2.7
+   },
+   "change": "cheek + a screwed cap",
+   "note": "the cap does not touch the plug"
+  },
+  {
+   "id": "B2",
+   "name": "Removable metal panel 1.5 flush inside, Ø9",
+   "engaged": 7.2,
+   "stop_from_mouth": 2.3,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 7.2,
+    "10": 7.2,
+    "11.5": 7.2,
+    "13": 7.2,
+    "15": 7.2,
+    "17": 7.2
+   },
+   "change": "cheek window + 1.5 aluminium plate",
+   "note": "metal web: no printed-web doubt"
+  },
+  {
+   "id": "B2-1.0",
+   "name": "Removable metal panel 1.0 flush inside, Ø9",
+   "engaged": 7.7,
+   "stop_from_mouth": 1.8,
+   "ok": true,
+   "by_nose": {
+    "8": 9.5,
+    "9.5": 7.7,
+    "10": 7.7,
+    "11.5": 7.7,
+    "13": 7.7,
+    "15": 7.7,
+    "17": 7.7
+   },
+   "change": "cheek window + 1.0 aluminium plate",
+   "note": ""
+  }
+ ],
+ "hatch": {
+  "elbow_assumed": 11.0,
+  "elbow_proud": 4.2,
+  "cap_proud": 6.2
+ },
+ "slot": {
+  "width": 11.0,
+  "z0": 45.2,
+  "z1": 69.2,
+  "length": 24.0
+ },
+ "rear_room_z": 25.0,
+ "rear": [
+  {
+   "key": "2RM14",
+   "at": [
+    182.5,
+    91.5
+   ],
+   "body_r": 8.0,
+   "h_under": 2.8,
+   "tallest": "screw H7",
+   "room": 22.2,
+   "need": 18.0,
+   "margin": 4.2,
+   "issues": [],
+   "lead_min": 17.1,
+   "lead_cut": 77.0,
+   "ok": true
+  },
+  {
+   "key": "DCJ",
+   "at": [
+    182.5,
+    91.5
+   ],
+   "body_r": 6.0,
+   "h_under": 2.8,
+   "tallest": "screw H7",
+   "room": 22.2,
+   "need": 22.0,
+   "margin": 0.2,
+   "issues": [],
+   "lead_min": 13.1,
+   "lead_cut": 73.0,
+   "ok": true
+  },
+  {
+   "key": "DIN5",
+   "at": [
+    182.5,
+    91.5
+   ],
+   "body_r": 8.0,
+   "h_under": 2.8,
+   "tallest": "screw H7",
+   "room": 22.2,
+   "need": 21.0,
+   "margin": 1.2,
+   "issues": [],
+   "lead_min": 14.1,
+   "lead_cut": 74.0,
+   "ok": true
+  },
+  {
+   "key": "SHR20",
+   "at": [
+    182.5,
+    91.5
+   ],
+   "body_r": 10.0,
+   "h_under": 10.5,
+   "tallest": "U14",
+   "room": 14.5,
+   "need": 25.0,
+   "margin": -10.5,
+   "issues": [
+    "body into the right cheek (X > 191.9)",
+    "flange over the rear screw at 187.9, 108.5"
+   ],
+   "lead_min": 10.1,
+   "lead_cut": 70.0,
+   "ok": false
+  },
+  {
+   "key": "SHR20",
+   "at": [
+    178.0,
+    49.5
+   ],
+   "body_r": 10.0,
+   "h_under": 0.0,
+   "tallest": null,
+   "room": 25.0,
+   "need": 25.0,
+   "margin": 0.0,
+   "issues": [],
+   "lead_min": 52.4,
+   "lead_cut": 112.0,
+   "ok": true
+  },
+  {
+   "key": "2RM14",
+   "at": [
+    178.0,
+    49.5
+   ],
+   "body_r": 8.0,
+   "h_under": 0.0,
+   "tallest": null,
+   "room": 25.0,
+   "need": 18.0,
+   "margin": 7.0,
+   "issues": [],
+   "lead_min": 59.4,
+   "lead_cut": 119.0,
+   "ok": true
+  }
+ ],
+ "cheek_jack": {
+  "axis_y": 91.5,
+  "axis_z": 57.0,
+  "above_board": 12.8,
+  "below_rear": 12.2,
+  "body_d": 12.0,
+  "rear": 17.0,
+  "body_x0": 174.9,
+  "collisions": []
+ },
+ "left_cheek_lead": 271.0,
+ "xs1_pads": [
+  {
+   "ref": "XS1",
+   "n": "1",
+   "x": 14.0,
+   "y": 12.5,
+   "net": "VIN_J",
+   "drill": [
+    "oval",
+    "1",
+    "3"
+   ],
+   "w": 3.5,
+   "h": 3.5
+  },
+  {
+   "ref": "XS1",
+   "n": "2",
+   "x": 8.0,
+   "y": 12.5,
+   "net": "GND",
+   "drill": [
+    "oval",
+    "1",
+    "3"
+   ],
+   "w": 3.0,
+   "h": 3.5
+  },
+  {
+   "ref": "XS1",
+   "n": "3",
+   "x": 11.0,
+   "y": 17.2,
+   "net": "GND",
+   "drill": [
+    "oval",
+    "3",
+    "1"
+   ],
+   "w": 3.5,
+   "h": 3.5
+  }
+ ],
+ "xs1_pads_world": [
+  [
+   "1",
+   177.4,
+   91.5,
+   "VIN_J"
+  ],
+  [
+   "2",
+   183.4,
+   91.5,
+   "GND"
+  ],
+  [
+   "3",
+   180.4,
+   86.8,
+   "GND"
+  ]
+ ],
+ "h7": [
+  "H7",
+  187.9,
+  100.5,
+  3.2
+ ],
+ "free": {
+  "JST VH 2-pin (B2P-VH, 3.96)": {
+   "size": [
+    8.8,
+    9.8
+   ],
+   "with_xs1": 0,
+   "with_xs1_first": [],
+   "in_xs1_place": 56,
+   "in_xs1_place_first": [
+    [
+     0.5,
+     7.75
+    ],
+    [
+     1.0,
+     7.75
+    ],
+    [
+     1.5,
+     7.75
+    ],
+    [
+     2.0,
+     7.75
+    ]
+   ]
+  },
+  "JST XH 2-pin (B2B-XH-A, 2.5)": {
+   "size": [
+    7.4,
+    6.3
+   ],
+   "with_xs1": 56,
+   "with_xs1_first": [
+    [
+     7.5,
+     0.5
+    ],
+    [
+     8.0,
+     0.5
+    ],
+    [
+     8.5,
+     0.5
+    ],
+    [
+     9.0,
+     0.5
+    ],
+    [
+     9.5,
+     0.5
+    ],
+    [
+     11.0,
+     48.0
+    ]
+   ],
+   "in_xs1_place": 187,
+   "in_xs1_place_first": [
+    [
+     0.5,
+     7.75
+    ],
+    [
+     1.0,
+     7.75
+    ],
+    [
+     1.5,
+     7.75
+    ],
+    [
+     2.0,
+     7.75
+    ]
+   ]
+  }
+ }
+}
