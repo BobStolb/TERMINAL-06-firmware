@@ -521,3 +521,26 @@ Hand the mechanical doc sync (numbers in READMEs) to the checks (G16), not to me
 session reaches `agent-commons` with push rights. xstream.store pushes the skeleton.
 
 **Owner notes:**
+
+### G22. The eight new message verbs
+**Question:** Should the eight new verbs xstream.store proposed be live on this side?
+
+**Proposal:** agree, with these changes:
+* **VERIFY:** "not checked" when the tools can't reproduce the claim, never a guess.
+* **QUOTA GRANT:** the relay quotes the owner's words and time.
+* **JOB-POST:** the job states how to verify its result, and whether it needs the owner's
+  local machine.
+* **JOB-TAKE:** the lease expires after 2 h by default.
+* **QUOTA BID:** information only, until its fixed rule and a quota ledger exist and the owner
+  confirms them.
+* **JOB-RESULT, NIGHT-PLAN and COURT-OPEN:** as proposed. The court reporter stays neutral.
+
+**Why:**
+* The owner said yes in xstream.store's chat at 03:46 UTC.
+* Each verb goes live only after a confirmation in both chats.
+* Nobody should act on a verb whose rule is undefined.
+
+**Status:** *decided by the owner* (30.09, about 04:00 UTC): "confirm". This session's answers
+are in agent-commons 4f7758d.
+
+**Owner notes:**
