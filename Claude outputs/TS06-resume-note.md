@@ -1,15 +1,16 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (3 agents, each notifies on completion; checkpoints in the scratchpad):** fascia-art
-  (worktree; it reported a write of analysis.md refused by the harness: do not redo it), disp-art (worktree),
-  migration-1 (viewer2, Front panel view). Each ends in a review item in `scratchpad/embassy/review/<id>/`:
-  view it, scan it, file it in agent-commons embassy/review/, and for worktree agents review and
-  cherry-pick their commits (verify_pair must stay 27 PASS).
+* **Running (1 agent):** migration-1 (scratchpad/viewer2, the Front panel view; not published; its
+  review item nixie-migrate-front-panel; then mirror its src/test changes into recovered/viewer2 and commit).
 * **Done:** case power (4d19bf1..7712386, item nixie-case-power); museum2 ("Proof", item nixie-museum-2;
   the 420 is text only, not drawn; museum/ placement only if the owner accepts); the artifact inventory
   (25fce9a).
-* **Ready to show the owner in this chat once they confirm item 1 below:** nixie-case-power, nixie-museum-2.
+* **Also done 07:55:** fascia-art (a8eb627..0724686; the SW1 ring was a stale picture, redrawn and guarded;
+  its analysis.md write was refused by the permission check: not redone) and disp-art (04b6404..c30cb6a,
+  `mkpcb_disp.py --art`; rev B unchanged). verify_pair 27 PASS after each merge.
+* **Ready to show the owner in this chat once they confirm item 1 below:** nixie-case-power, nixie-museum-2,
+  nixie-fascia-art, nixie-disp-art (all also filed in agent-commons embassy/review/).
 * **Done 07:20:** the rev B finisher. Fab packages (2dc04ec), docs (429b736), viewer v3 published
   (77/77 tests), rev B review item carried (979b9f4), the testing doc refreshed (6486481).
 * **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
