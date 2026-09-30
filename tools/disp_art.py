@@ -226,17 +226,21 @@ class Art:
         return (EDGE + hw <= x <= self.W - EDGE - hw and EDGE + hw <= y <= self.H - EDGE - hw
                 and self.ob[face].clear(x, y, hw) and (face == "B" or not vis or self.seen(x, y)))
 
-    def line(self, face, a, b, w=W_MIN, vis=True):
-        """a-b as silk on face "F" or "B", in the pieces that keep every rule (on the front, only
-        where the clock shows the board, unless vis is False). Returns the number drawn."""
-        w = max(w, W_MIN)
-        hw = w / 2
+    def runs(self, face, a, b, w=W_MIN, vis=True, clip=None):
+        """The pieces of a-b that keep every rule, as ((x, y), (x, y)) pairs: on the front only where
+        the clock shows the board (unless vis is False), and only where clip(x, y) holds if given.
+        A piece shorter than MIN_RUN left over by clipping is dropped; a whole short line is kept."""
+        hw = max(w, W_MIN) / 2
         L = math.hypot(b[0] - a[0], b[1] - a[1])
         if L < 1e-6:
-            return 0
+            return []
         n = max(1, int(math.ceil(L / SAMPLE)))
-        good = [self.ok(face, a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n, hw, vis) for i in range(n + 1)]
-        drawn, i = 0, 0
+        pt = lambda i: (a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n)
+        good = []
+        for i in range(n + 1):
+            x, y = pt(i)
+            good.append(self.ok(face, x, y, hw, vis) and (clip is None or clip(x, y)))
+        out, i = [], 0
         while i <= n:
             if not good[i]:
                 i += 1
@@ -244,19 +248,44 @@ class Art:
             j = i
             while j < n and good[j + 1]:
                 j += 1
-            if (j - i) / n * L >= max(MIN_RUN, w):
-                p = (a[0] + (b[0] - a[0]) * i / n, a[1] + (b[1] - a[1]) * i / n)
-                q = (a[0] + (b[0] - a[0]) * j / n, a[1] + (b[1] - a[1]) * j / n)
-                self.B.line(round(p[0], 4), round(p[1], 4), round(q[0], 4), round(q[1], 4), face + ".SilkS", round(w, 3))
-                drawn += 1
+            if (i == 0 and j == n) or (j - i) / n * L >= max(MIN_RUN, 2 * hw):
+                out.append((pt(i), pt(j)))
             i = j + 1
-        return drawn
+        return out
 
-    def path(self, face, pts, w=W_MIN, closed=False, vis=True):
+    def line(self, face, a, b, w=W_MIN, vis=True, clip=None, whole=False):
+        """a-b as silk on face "F" or "B", in the pieces runs() allows; with whole=True all of it or
+        nothing. Returns the number of pieces drawn."""
+        w = max(w, W_MIN)
+        pieces = self.runs(face, a, b, w, vis, clip)
+        if whole and not (len(pieces) == 1 and math.dist(pieces[0][0], a) < 1e-9 and math.dist(pieces[0][1], b) < 1e-9):
+            return 0
+        for p, q in pieces:
+            self.B.line(round(p[0], 4), round(p[1], 4), round(q[0], 4), round(q[1], 4), face + ".SilkS", round(w, 3))
+        return len(pieces)
+
+    def fits(self, face, poly, w=W_MIN, vis=True, step=0.15):
+        """True if a shape (its outline and inside) keeps every rule everywhere."""
+        xs, ys = [p[0] for p in poly], [p[1] for p in poly]
+        hw = w / 2
+        y = min(ys)
+        while y <= max(ys) + 1e-9:
+            x = min(xs)
+            while x <= max(xs) + 1e-9:
+                if _inside((x, y), poly) and not self.ok(face, x, y, hw, vis):
+                    return False
+                x += step
+            y += step
+        for p, q in zip(poly, poly[1:] + poly[:1]):
+            if len(self.runs(face, p, q, w, vis)) != 1:
+                return False
+        return True
+
+    def path(self, face, pts, w=W_MIN, closed=False, vis=True, clip=None):
         pts = list(pts)
         if closed:
             pts.append(pts[0])
-        return sum(self.line(face, p, q, w, vis) for p, q in zip(pts, pts[1:]))
+        return sum(self.line(face, p, q, w, vis, clip) for p, q in zip(pts, pts[1:]))
 
     @staticmethod
     def arc_pts(cx, cy, rx, ry, a0, a1, chord=0.4):
@@ -266,13 +295,13 @@ class Art:
         return [(cx + rx * math.cos(math.radians(a0) + sweep * k / n), cy + ry * math.sin(math.radians(a0) + sweep * k / n))
                 for k in range(n + 1)]
 
-    def arc(self, face, cx, cy, r, a0, a1, w=W_MIN, vis=True):
-        return self.path(face, self.arc_pts(cx, cy, r, r, a0, a1), w, vis=vis)
+    def arc(self, face, cx, cy, r, a0, a1, w=W_MIN, vis=True, clip=None):
+        return self.path(face, self.arc_pts(cx, cy, r, r, a0, a1), w, vis=vis, clip=clip)
 
-    def circle(self, face, cx, cy, r, w=W_MIN, vis=True):
-        return self.arc(face, cx, cy, r, 0, 360, w, vis)
+    def circle(self, face, cx, cy, r, w=W_MIN, vis=True, clip=None):
+        return self.arc(face, cx, cy, r, 0, 360, w, vis, clip)
 
-    def hatch(self, face, poly, angle, pitch, w=W_MIN, vis=True, phase=0.5):
+    def hatch(self, face, poly, angle, pitch, w=W_MIN, vis=True, phase=0.5, clip=None):
         """Parallel lines at angle (degrees) and pitch, inside the polygon."""
         c, s = math.cos(math.radians(angle)), math.sin(math.radians(angle))
         rot = [(x * c + y * s, -x * s + y * c) for x, y in poly]          # the lines run along u
@@ -289,13 +318,15 @@ class Art:
             for k in range(0, len(xs) - 1, 2):
                 p = (xs[k] * c - v * s, xs[k] * s + v * c)
                 q = (xs[k + 1] * c - v * s, xs[k + 1] * s + v * c)
-                n += self.line(face, p, q, w, vis)
+                n += self.line(face, p, q, w, vis, clip)
             v += pitch
         return n
 
-    def solid(self, face, poly, w=0.3, angle=0.0, vis=True):
-        """A filled shape: strokes that overlap (pitch 0.8 of the width), so the print is solid."""
-        return self.hatch(face, poly, angle, w * 0.8, w, vis, phase=0.5)
+    def solid(self, face, poly, w=0.3, angle=0.0, vis=True, clip=None):
+        """A filled shape: strokes that overlap (pitch 0.8 of the width), so the print is solid, and a
+        stroke round its edge."""
+        n = self.hatch(face, poly, angle, w * 0.8, w, vis, phase=0.5, clip=clip)
+        return n + self.path(face, poly, w, closed=True, vis=vis, clip=clip)
 
     def text(self, face, t, x, y, size=1.0, thick=None, rot=0, vis=True, log=True):
         """t centred at (x, y), whole or not at all. Its box then keeps art lines ART_TEXT_CLR away."""
@@ -328,12 +359,35 @@ class Art:
         """Reserve a box: later art keeps clear of it (a knocked-out field)."""
         self.ob[face].box(x0, y0, x1, y1, clr)
 
-    def glyph(self, face, ch, x, y, h, w=W_MIN, vis=True, slant=0.0):
-        """One nixie numeral as drawn wire, h tall, top-left at (x, y)."""
+    def glyph(self, face, ch, x, y, h, w=W_MIN, vis=True, occlude=None):
+        """One nixie numeral as drawn wire, h tall (0.62 h wide), top-left at (x, y). With occlude,
+        what is drawn later keeps that far from its wires: a wire in front hides the one behind."""
+        k0 = len(self.B.gfx)
         n = 0
         for stroke in GLYPHS[ch]:
-            n += self.path(face, [(x + (u + slant * (1 - v)) * h, y + v * h) for u, v in stroke], w, vis=vis)
+            n += self.path(face, [(x + u * h, y + v * h) for u, v in stroke], w, vis=vis)
+        if occlude is not None:
+            for kind, ly, d in self.B.gfx[k0:]:
+                self.ob[face].capsule((d[0], d[1]), (d[2], d[3]), d[4] / 2, occlude)
         return n
+
+    def glyph_fits(self, face, x, y, h, w=W_MIN, vis=True):
+        """True if the numeral's whole box keeps every rule, so it can be drawn uncut."""
+        return self.fits(face, [(x, y), (x + 0.62 * h, y), (x + 0.62 * h, y + h), (x, y + h)], w, vis)
+
+    def why(self, face, x, y, hw=0.0):
+        """What stops silk at (x, y): for debugging a layout."""
+        out = []
+        if not self.seen(x, y) and face == "F":
+            out.append("not seen in the clock")
+        for k in self.ob[face].cells.get((int(math.floor(x / CELL)), int(math.floor(y / CELL))), ()):
+            kind, d, clr = self.ob[face].items[k]
+            o = Obstacles()
+            getattr(o, {"d": "disc", "c": "capsule", "b": "box"}[kind])(*(
+                (d[0], d[1], d[2]) if kind == "d" else ((d[0], d[1]), (d[2], d[3]), d[4]) if kind == "c" else d), clr)
+            if not o.clear(x, y, hw):
+                out.append((kind, tuple(round(v, 3) for v in (d if kind != "c" else d)), clr))
+        return out
 
     def summary(self):
         new = self.B.gfx[self.n0:]
@@ -341,6 +395,15 @@ class Art:
         texts = sum(1 for k, l, d in new if k == "text")
         by = {f: sum(1 for k, l, d in new if l == f + ".SilkS") for f in "FB"}
         return lines, texts, by
+
+
+def _inside(p, poly):
+    x, y = p
+    c = False
+    for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1]):
+        if (y0 > y) != (y1 > y) and x < x0 + (y - y0) * (x1 - x0) / (y1 - y0):
+            c = not c
+    return c
 
 
 # ======================================================================== the nixie numerals
@@ -383,27 +446,84 @@ def _free_spans(x0, x1, blocked, gap):
     return spans
 
 
+# ======================================================================== shared pieces
+def _fields(a):
+    """The front's fields, in board mm (see the module's docstring): name -> (x0, y0, x1, y1)."""
+    M = a.M
+    g = a.half12[0]
+    return {"A": (a.blocks[0], M.Y12 + a.half12[1], a.win[1], a.win[3]),
+            "B": (M.IN12_X[1] + g, a.win[2], M.IN12_X[2] - g, M.Y12 + a.half12[1]),
+            "C": (a.valance[0], a.valance[2], a.valance[1], M.Y17 - 10.0),
+            "D1": (M.IN12_X[0] + g, a.win[2], M.IN12_X[1] - g, M.Y12 + a.half12[1]),
+            "D2": (M.IN12_X[2] + g, a.win[2], M.IN12_X[3] - g, M.Y12 + a.half12[1])}
+
+
+def _in(box):
+    return lambda x, y: box[0] <= x <= box[2] and box[1] <= y <= box[3]
+
+
+def _rule(a, face, y, x0, x1, w, caps=None, min_len=3.0):
+    """A rule along y that stops, squarely, where something must not be crowded: each piece of 3 mm
+    or more is drawn, with an upright cap at each end (caps = (up, down) lengths) if asked.
+    Returns the pieces as (x0, x1)."""
+    out = []
+    for p, q in a.runs(face, (x0, y), (x1, y), w):
+        if q[0] - p[0] < min_len:
+            continue
+        a.line(face, p, q, w)
+        if caps:
+            for x in (p[0] + w / 2, q[0] - w / 2):
+                a.line(face, (x, y - caps[0]), (x, y + caps[1]), 0.2, whole=True)
+        out.append((p[0], q[0]))
+    return out
+
+
+def _bar(a, face, x0, y0, x1, y1, w=0.3):
+    """A solid rectangle, whole or not at all."""
+    return _poly(a, face, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], w)
+
+
+def _poly(a, face, poly, w=0.3):
+    """A solid shape, whole or not at all."""
+    if a.fits(face, poly, w):
+        a.solid(face, poly, w)
+        return True
+    return False
+
+
+def _cell(centres, gap=0.4):
+    """clip: only nearer to the first centre than to any other, by 2 x gap - so neighbouring dials
+    never touch."""
+    (cx, cy), others = centres[0], centres[1:]
+
+    def f(x, y):
+        d0 = math.hypot(x - cx, y - cy)
+        return all(math.hypot(x - ox, y - oy) - d0 >= 2 * gap for ox, oy in others)
+    return f
+
+
 # ======================================================================== 1. ENGRAVING
 def engraving(a):
     """A Soviet instrument panel, engraved. Borrowed: the faceplates of panel meters and bench
-    instruments - a graduated scale with long, middle and short ticks and figures at the long ones,
-    ruled double lines, dials, and the maker's nameplate with notched corners."""
+    instruments and the tuning scale of a valve radio - graduated scales with long, middle and short
+    ticks, ruled double lines, dials round the controls, a waveband named on the scale, and the
+    maker's nameplate with its corners notched."""
     M = a.M
     F, Bk = "F", "B"
-    # ---- A: the bottom band is a tuning scale, as on a radio's dial: a ruled line just above the
-    # sill (where the band is seen from above as well), graduated in millimetres of the board - long
-    # ticks every 10, middle every 5 - and between each pair's LEDs the pair's name, the way a dial
-    # names its wavebands
-    yb = 38.35
-    a.line(F, (a.blocks[0] + 0.4, 38.75), (a.win[1] - 0.4, 38.75), 0.15)
-    a.line(F, (a.blocks[0] + 0.4, yb), (a.win[1] - 0.4, yb), 0.25)
-    for k in range(int(a.blocks[0]) + 1, int(a.win[1])):
-        ln = 2.0 if k % 10 == 0 else 1.3 if k % 5 == 0 else 0.75
-        a.line(F, (k, yb - 0.2), (k, yb - 0.2 - ln), 0.2 if k % 10 == 0 else 0.15)
+    fld = _fields(a)
+    # ---- A: the bottom band is a tuning scale. A rule just above the sill, where the band is seen
+    # from above as well, graduated in millimetres of the board (long ticks every 10, middle every
+    # 5); the rule stops squarely with a cap where the 185 V mark and the K marks want room. Between
+    # each pair's LEDs the pair's name, the way a dial names its wavebands.
+    yb = 38.15
+    pieces = _rule(a, F, yb, fld["A"][0] + 0.4, fld["A"][2] - 0.4, 0.25, caps=(1.9, 0.4))
+    for x0, x1 in pieces:
+        for k in range(int(math.ceil(x0 + 0.6)), int(math.floor(x1 - 0.6)) + 1):
+            ln = 1.9 if k % 10 == 0 else 1.25 if k % 5 == 0 else 0.7
+            a.line(F, (k, yb - 0.2), (k, yb - 0.2 - ln), 0.2 if k % 10 == 0 else 0.15, whole=True)
     for name, (l, r) in (("ЧАСЫ", M.IN12_X[:2]), ("МИНУТЫ", M.IN12_X[2:]), ("СЕКУНДЫ", M.IN17_X)):
-        ty = 34.25 if name == "СЕКУНДЫ" else 34.0
-        a.text(F, name, (l + r) / 2 - 1.15, ty, 1.2)
-    # ---- B: the colon column: a small engraved rosette between the lamps, a rule under them
+        a.text(F, name, (l + r) / 2 - 1.15, 34.25 if name == "СЕКУНДЫ" else 34.0, 1.2)
+    # ---- B: the colon column: an engraved rosette between the lamps, a rule and lozenge under them
     cx, cy = M.COLON_X, (M.COLON_Y[0] + M.COLON_Y[1]) / 2
     a.circle(F, cx, cy, 2.55, 0.2)
     a.circle(F, cx, cy, 1.95, 0.15)
@@ -416,37 +536,45 @@ def engraving(a):
     a.line(F, (cx - 3.4, yl), (cx + 3.4, yl), 0.15)
     a.path(F, [(cx - 0.8, yl), (cx, yl - 0.8), (cx + 0.8, yl), (cx, yl + 0.8)], 0.15, closed=True)
     # ---- D: a vertical gauge in each slot between two ИН-12s, graduated every millimetre
-    for xl, xr in ((M.IN12_X[0] + 9.735, M.IN12_X[1] - 9.735), (M.IN12_X[2] + 9.735, M.IN12_X[3] - 9.735)):
+    for key in ("D1", "D2"):
+        xl, y0, xr, y1 = fld[key]
         xc = (xl + xr) / 2
         sp = xc - 1.0
-        a.line(F, (sp, 4.0), (sp, 31.6), 0.2)
-        a.line(F, (xc + 1.25, 4.0), (xc + 1.25, 31.6), 0.15)
-        for k in range(28):
-            y = 4.2 + k
+        a.line(F, (sp, y0 + 1.4), (sp, y1 - 0.6), 0.2)
+        a.line(F, (xc + 1.25, y0 + 1.4), (xc + 1.25, y1 - 0.6), 0.15)
+        for k in range(int(y1 - y0 - 1.6)):
+            y = y0 + 1.6 + k
             ln = 1.9 if k % 10 == 0 else 1.3 if k % 5 == 0 else 0.7
-            a.line(F, (sp, y), (sp + ln, y), 0.15)
-    # ---- C: the nameplate over the ИН-17 pair: a ruled double frame with notched corners
-    x0, y0, x1, y1 = 98.9, 4.9, 138.9, 12.6
+            a.line(F, (sp, y), (sp + ln, y), 0.15, whole=True)
+    # ---- C: the nameplate over the ИН-17 pair: a ruled double frame with notched corners, the
+    # clock's name, a rule with a lozenge at each end, and what it is
+    x0, y0, x1, y1 = 98.9, 4.7, 138.9, 12.9
     for inset, w in ((0.0, 0.25), (0.55, 0.15)):
         _notched(a, F, x0 + inset, y0 + inset, x1 - inset, y1 - inset, 1.3 - inset * 0.5, w)
-    a.text(F, "ТЕРМИНАЛ-06", (x0 + x1) / 2, 7.55, 2.0, thick=0.3)
-    a.line(F, ((x0 + x1) / 2 - 15.5, 9.35), ((x0 + x1) / 2 + 15.5, 9.35), 0.15)
-    a.text(F, "ЧАСЫ НА ГАЗОРАЗРЯДНЫХ ИНДИКАТОРАХ", (x0 + x1) / 2, 10.75, 1.0)
+    xm = (x0 + x1) / 2
+    a.text(F, "ТЕРМИНАЛ-06", xm, 7.2, 2.0, thick=0.3)
+    a.line(F, (xm - 12.0, 9.2), (xm + 12.0, 9.2), 0.15)
+    for sx in (-1, 1):
+        a.path(F, [(xm + sx * 12.0, 9.2), (xm + sx * 12.6, 8.85), (xm + sx * 13.2, 9.2), (xm + sx * 12.6, 9.55)], 0.15, closed=True)
+    a.text(F, "ЧАСЫ НА ГАЗОРАЗРЯДНЫХ ИНДИКАТОРАХ", xm, 10.75, 1.0)
 
-    # ---- the back: the whole face ruled like a panel, a dial round every socket, a millimetre rule
+    # ---- the back, which the builder sees: the face ruled round like a panel, a dial round every
+    # socket (neighbours never touch), and a millimetre rule along the bottom edge
     _frame(a, Bk, 0.85, 0.25)
     _frame(a, Bk, 1.35, 0.15)
-    for x, y in [(x, M.Y12) for x in M.IN12_X + M.IN15_X]:
-        _dial(a, Bk, x, y, 10.45, 60, 5, (0.55, 0.95))
-    for x in M.IN17_X:
-        _dial(a, Bk, x, M.Y17, 7.25, 60, 5, (0.5, 0.85))
-    # the millimetre rule along the bottom edge, read from the back: 0 at the back's left
+    centres = [(x, M.Y12) for x in M.IN12_X + M.IN15_X] + [(x, M.Y17) for x in M.IN17_X]
+    for i, (x, y) in enumerate(centres):
+        clip = _cell([(x, y)] + centres[:i] + centres[i + 1:])
+        if i < 6:
+            _dial(a, Bk, x, y, 10.45, 60, 5, (0.55, 0.95), clip=clip)
+        else:
+            _dial(a, Bk, x, y, 7.25, 60, 5, (0.5, 0.85), clip=clip)
     ybr = M.H - 1.35
-    for k in range(0, 192):
+    for k in range(1, 191):
         x = M.W - k
         ln = 1.5 if k % 10 == 0 else 1.0 if k % 5 == 0 else 0.55
-        a.line(Bk, (x, ybr - 0.1), (x, ybr - 0.1 - ln), 0.15)
-        if k % 10 == 0 and 0 < k < 190:
+        a.line(Bk, (x, ybr - 0.1), (x, ybr - 0.1 - ln), 0.15, whole=True)
+        if k % 10 == 0:
             a.text(Bk, str(k), x, ybr - 2.55, 1.0, log=False)
 
 
@@ -460,97 +588,124 @@ def _notched(a, face, x0, y0, x1, y1, r, w):
 
 def _frame(a, face, inset, w):
     """A rule round the face, bowed round each standoff hole it meets (a corner notch)."""
-    W, H, M = a.W, a.H, a.M
+    W, H = a.W, a.H
     R = HOLE_R + 0.45 + w / 2
     pts = []
     for p, q in (((inset, inset), (W - inset, inset)), ((W - inset, inset), (W - inset, H - inset)),
                  ((W - inset, H - inset), (inset, H - inset)), ((inset, H - inset), (inset, inset))):
-        L = math.hypot(q[0] - p[0], q[1] - p[1])
-        n = int(L / 0.2)
+        n = int(math.hypot(q[0] - p[0], q[1] - p[1]) / 0.25)
         for k in range(n):
             x, y = p[0] + (q[0] - p[0]) * k / n, p[1] + (q[1] - p[1]) * k / n
             for hx, hy, hd in a.B.holes:
                 d = math.hypot(x - hx, y - hy)
-                if d < R:                         # push the rule round the hole, on the board's side
+                if d < R:                         # round the hole, on the side the board lies
                     ux, uy = W / 2 - hx, H / 2 - hy
-                    # the side of the hole the board lies on: project onto the circle, away from the edge
-                    if d < 1e-6:
-                        x, y = hx + R * ux / math.hypot(ux, uy), hy + R * uy / math.hypot(ux, uy)
-                    else:
-                        nx, ny = (x - hx) / d, (y - hy) / d
-                        if nx * ux + ny * uy < 0:     # on the edge side: mirror across the line to the centre
-                            k2 = (nx * ux + ny * uy) / (ux * ux + uy * uy)
-                            nx, ny = nx - 2 * k2 * ux, ny - 2 * k2 * uy
-                        x, y = hx + R * nx, hy + R * ny
+                    nx, ny = ((x - hx) / d, (y - hy) / d) if d > 1e-6 else (ux, uy)
+                    if nx * ux + ny * uy < 0:
+                        k2 = (nx * ux + ny * uy) / (ux * ux + uy * uy)
+                        nx, ny = nx - 2 * k2 * ux, ny - 2 * k2 * uy
+                    L = math.hypot(nx, ny)
+                    x, y = hx + R * nx / L, hy + R * ny / L
             pts.append((x, y))
-    return a.path(face, pts, w, closed=True)
+    # drawn in the stretches that stay clear for 6 mm or more: where labels crowd the edge the
+    # rule simply stops, instead of leaving dashes between them
+    good = [a.ok(face, x, y, w / 2) for x, y in pts]
+    k0 = good.index(False) if False in good else 0          # start the walk where the rule is broken
+    n, drawn, run = len(pts), 0, []
+    for i in range(n + 1):
+        j = (k0 + i) % n
+        if i < n and good[j]:
+            run.append(pts[j])
+            continue
+        if len(run) > 1 and sum(math.dist(p, q) for p, q in zip(run, run[1:])) >= 6.0:
+            drawn += a.path(face, run, w)
+        run = []
+    if all(good):
+        drawn += a.path(face, pts, w, closed=True)
+    return drawn
 
 
-def _dial(a, face, cx, cy, r, n, major, lens, w=0.15):
+def _dial(a, face, cx, cy, r, n, major, lens, w=0.15, clip=None):
     """A dial ring of radius r with n ticks outwards, every `major`th the longer."""
-    a.circle(face, cx, cy, r, w)
+    a.circle(face, cx, cy, r, w, clip=clip)
     for k in range(n):
         ang = math.radians(k * 360 / n - 90)
         ln = lens[1] if k % major == 0 else lens[0]
         a.line(face, (cx + (r + 0.1) * math.cos(ang), cy + (r + 0.1) * math.sin(ang)),
-               (cx + (r + 0.1 + ln) * math.cos(ang), cy + (r + 0.1 + ln) * math.sin(ang)), 0.2 if k % major == 0 else 0.15)
+               (cx + (r + 0.1 + ln) * math.cos(ang), cy + (r + 0.1 + ln) * math.sin(ang)),
+               0.2 if k % major == 0 else 0.15, clip=clip, whole=True)
 
 
 # ======================================================================== 2. CONSTRUCTIVIST
 def constructivist(a):
-    """A constructivist band. Borrowed: the posters and book covers of the 1920s - Lissitzky's wedge
-    and circle, Rodchenko's diagonals and bars, type set square to the edges and upright. Here in
-    one colour, white on black: solid shapes are strokes laid edge to edge, grey ones hatched."""
+    """A constructivist band. Borrowed: the posters and book covers of the 1920s - Lissitzky's
+    wedge against a circle, Rodchenko's diagonals and stacked bars, type set square and upright.
+    One colour, white on black: a solid shape is strokes laid edge to edge, a grey one hatched."""
     M = a.M
     F, Bk = "F", "B"
-    # ---- A: one solid bar along the band, and over it a march of slanted bars between the LEDs,
-    # rising and falling like a beat; a wedge points from the hours into the minutes at the colon
-    a.solid(F, [(a.blocks[0] + 0.5, 37.95), (a.win[1] - 0.5, 37.95), (a.win[1] - 0.5, 38.7), (a.blocks[0] + 0.5, 38.7)], 0.3)
-    leds = [(x - 2.6, x + 2.6) for x, y in a.leds]
+    fld = _fields(a)
+    # ---- A: a solid bar along the band, stopping squarely at the 185 V mark and the K marks; over
+    # it a march of slanted bars, a beat that rises and falls and ducks under the LEDs
+    ybar0, ybar1 = 37.85, 38.6
+    for p, q in a.runs(F, (fld["A"][0] + 0.5, (ybar0 + ybar1) / 2), (fld["A"][2] - 0.5, (ybar0 + ybar1) / 2), ybar1 - ybar0):
+        for d in (0.0, 0.3, 0.6, 0.9, 1.2):           # the corners reach further than the centre line
+            if q[0] - p[0] - 2 * d >= 3.0 and _bar(a, F, p[0] + d, ybar0, q[0] - d, ybar1):
+                break
     k = 0
-    for s, e in _free_spans(a.blocks[0] + 0.6, a.win[1] - 0.6, leds, 0.0):
-        x = s + 0.4
-        while x + 1.9 < e:
-            hgt = (1.2, 2.4, 3.6, 4.6, 3.6, 2.4)[k % 6]
-            top = 37.6 - hgt
-            a.solid(F, [(x, 37.6), (x + 0.9, 37.6), (x + 0.9 + hgt * 0.36, top), (x + hgt * 0.36, top)], 0.3)
-            x += 2.2
-            k += 1
-    # ---- B: the colon column: Lissitzky's circle between the lamps, pierced by a bar
+    x = fld["A"][0] + 0.9
+    while x < fld["A"][2] - 1.5:
+        want = (1.0, 2.0, 3.2, 4.4, 3.2, 2.0)[k % 6]
+        drawn = False
+        for hgt in (want, want * 0.75, want * 0.5, 0.8):
+            top = ybar0 - 0.35 - hgt
+            poly = [(x, ybar0 - 0.35), (x + 0.8, ybar0 - 0.35), (x + 0.8 + hgt * 0.36, top), (x + hgt * 0.36, top)]
+            if _poly(a, F, poly):
+                drawn = True
+                break
+        x += 2.1 if drawn else 0.7
+        k += 1 if drawn else 0
+    # ---- B: the colon column: Lissitzky's circle between the lamps, pierced by a bar; a wedge
+    # under the lower lamp points down into the band
     cx, cy = M.COLON_X, (M.COLON_Y[0] + M.COLON_Y[1]) / 2
     a.solid(F, a.arc_pts(cx, cy, 2.3, 2.3, 0, 360, 0.2), 0.3)
     a.line(F, (cx - 3.6, cy + 3.0), (cx + 3.6, cy - 3.0), 0.5)
     yl = M.COLON_Y[1] + 3.485 + 0.9
-    a.solid(F, [(cx - 3.3, yl), (cx + 3.3, yl), (cx, yl + 2.2)], 0.3)
-    # ---- D: in each slot, a tower of bars under a hatched shaft
-    for xl, xr in ((M.IN12_X[0] + 9.735, M.IN12_X[1] - 9.735), (M.IN12_X[2] + 9.735, M.IN12_X[3] - 9.735)):
-        a.hatch(F, [(xl, 3.0), (xr, 3.0), (xr, 22.0), (xl, 22.0)], 45, 0.6, 0.15)
-        for k in range(4):
-            y = 23.4 + k * 2.1
-            a.solid(F, [(xl + 0.4 + k * 0.35, y), (xr - 0.4, y), (xr - 0.4, y + 1.0), (xl + 0.4 + k * 0.35, y + 1.0)], 0.3)
-    # ---- C: the seconds field: a black circle rolling onto a white wedge, the name upright
-    x0, x1 = a.valance[0] + 0.3, a.valance[1] - 0.3
-    a.text(F, "ТЕРМИНАЛ", 121.5, 6.0, 1.6, thick=0.32)
-    a.text(F, "06", 133.8, 9.2, 3.4, thick=0.55)
-    a.solid(F, a.arc_pts(102.9, 8.6, 3.4, 3.4, 0, 360, 0.2), 0.3)
-    a.hatch(F, [(107.2, 12.6), (128.8, 7.8), (128.8, 12.6)], 30, 0.45, 0.15)
-    a.line(F, (106.4, 12.4), (129.6, 7.4), 0.45)
-    a.solid(F, [(x0, 12.75), (x1, 12.75), (x1, 13.1), (x0, 13.1)], 0.3)
+    _poly(a, F, [(cx - 3.3, yl), (cx + 3.3, yl), (cx, yl + 2.2)])
+    # ---- D: in each slot, a hatched shaft over a tower of bars that steps in
+    for key in ("D1", "D2"):
+        xl, y0, xr, y1 = fld[key]
+        a.hatch(F, [(xl, y0), (xr, y0), (xr, 21.5), (xl, 21.5)], 45, 0.6, 0.15)
+        for j in range(4):
+            y = 23.0 + j * 2.2
+            _bar(a, F, xl + 0.45 + j * 0.4, y, xr - 0.45, y + 1.1)
+    # ---- C: the seconds field: a white circle rolling up a white wedge, the name upright over it
+    x0, yc0, x1, yc1 = fld["C"]
+    a.solid(F, a.arc_pts(103.0, 8.7, 3.3, 3.3, 0, 360, 0.2), 0.3)
+    _poly(a, F, [(107.6, 12.4), (131.4, 6.6), (131.4, 12.4)])
+    a.text(F, "ТЕРМИНАЛ", 118.2, 6.2, 1.6, thick=0.32)
+    a.text(F, "06", 135.7, 9.4, 3.2, thick=0.55)
+    a.line(F, (x0 + 0.4, 12.85), (x1 - 0.4, 12.85), 0.3)
 
-    # ---- the back: one diagonal band across the whole face, hatched; bars along the bottom
-    # between the strips; the name upright at the right-hand end; a circle and a wedge
+    # ---- the back: the name upright at the end, a bar under the title, towers of bars between the
+    # ИН-12s, bars along the bottom between the strips, and round the ИН-17 pair two thick rings,
+    # a band of hatching across them and a wedge
     W, H = a.W, a.H
-    band = [(-4.0, H + 2.0), (8.0, H + 2.0), (W + 4.0, -2.0), (W - 8.0, -2.0)]
-    a.hatch(Bk, band, math.degrees(math.atan2(-(H + 4.0), W - 8.0)), 0.55, 0.15)
-    a.line(Bk, (-4.0, H + 2.0), (W - 8.0, -2.0), 0.6)
-    a.line(Bk, (8.0, H + 2.0), (W + 4.0, -2.0), 0.6)
-    a.text(Bk, "ТЕРМИНАЛ-06", M.W - 5.6, 23.9, 2.0, thick=0.4, rot=90)
-    for s, e in _free_spans(1.5, W - 1.5, [(x - 1.3, x + 1.3) for x in _strip_xs(a)], 0.6):
-        y = H - 1.35
-        if e - s > 2.0:
-            a.solid(Bk, [(s, y - 0.45), (e, y - 0.45), (e, y + 0.35), (s, y + 0.35)], 0.3)
-    a.solid(Bk, a.arc_pts(118.9, 17.0, 3.0, 3.0, 0, 360, 0.2), 0.3)
-    a.circle(Bk, 118.9, 17.0, 5.2, 0.5)
+    a.text(Bk, "ТЕРМИНАЛ-06", W - 5.6, 23.9, 2.0, thick=0.4, rot=90)
+    _bar(a, Bk, 8.2, 6.05, 45.8, 6.75)
+    for key in ("D1", "D2"):
+        xl, y0, xr, y1 = fld[key]
+        for j in range(8):
+            y = 8.0 + j * 2.6
+            _bar(a, Bk, xl + 0.5 + (j % 2) * 0.8, y, xr - 0.5 - ((j + 1) % 2) * 0.8, y + 1.2)
+    for p, q in a.runs(Bk, (1.0, H - 1.1), (W - 1.0, H - 1.1), 0.8):
+        for d in (0.0, 0.3, 0.6, 0.9, 1.2):
+            if q[0] - p[0] - 2 * d >= 3.0 and _bar(a, Bk, p[0] + d, H - 1.45, q[0] - d, H - 0.75):
+                break
+    for x in M.IN17_X:
+        a.circle(Bk, x, M.Y17, 8.3, 0.6)
+    xs0, xs1 = M.IN17_X
+    a.hatch(Bk, [(xs0 + 4.0, M.Y17 + 13.5), (xs0 + 9.0, M.Y17 + 13.5), (xs1 - 4.0, M.Y17 - 13.5), (xs1 - 9.0, M.Y17 - 13.5)],
+            -45, 0.5, 0.15)
 
 
 def _strip_xs(a):
@@ -558,33 +713,59 @@ def _strip_xs(a):
 
 
 # ======================================================================== 3. THE CIRCUIT
+CATHODES = "1627504983"         # the ИН-12's cathodes in the order they stand in the tube: the
+#                                 firmware's cathodeMask (knowledge/ANIMATIONS-effects-reference.txt)
+
+
 def circuit(a):
     """The circuit itself as ornament. Borrowed: the board's own copper and the tubes' insides -
-    the ten-strand bus that threads the ИН-12 sockets on the back, the ten numerals every tube
-    stacks one behind another, and each socket's pinout."""
+    the ten-strand bus that threads the ИН-12 sockets on the back, the ten cathodes each tube stacks
+    one behind another in the order the firmware knows them, the anode's hexagonal mesh, and every
+    socket's pinout."""
     M, B = a.M, a.B
     F, Bk = "F", "B"
-    # ---- the bus behind the board, drawn on the front wherever the clock shows it: in the slots
-    # D, the colon column B and the seconds field C, each copper strand of the back traced in silk
-    # exactly over itself (the ИН-12 bus K0-K9, and S10's bundle over the ИН-17s)
+    fld = _fields(a)
+    # ---- B and D: the bus behind the board, traced in silk exactly over its copper, where the
+    # clock shows it - the ten strands crossing the colon column and the two slots
+    where = [_in(fld[k]) for k in ("B", "D1", "D2")]
     for net, ly, p, q, w in B.tracks:
-        if ly == "B.Cu" and net[:1] == "K":                  # K0-K9 and KS0-KS9
-            a.line(F, p, q, 0.15)
-    # ---- A: either side of every LED, the tube's digit stack - its ten numerals one behind
-    # another, as a cold tube shows them
-    for tx, ty, gh in [(x, 32.9, 3.3) for x in M.IN12_X + M.IN15_X] + [(x, 33.7, 2.6) for x in M.IN17_X]:
-        for side in (-1, 1):
-            _stack(a, F, tx + side * 5.9 - 1.0, ty, gh)
-    # ---- C: one large stack in front of the ИН-12's anode mesh (the mesh knocked out round it)
-    gx, gy, gh = 114.8, 5.0, 7.4
-    _stack(a, F, gx, gy, gh)
-    a.keep(F, gx - 1.0, gy - 0.6, gx + 0.62 * gh + 9 * 0.28 + 1.0, gy + gh + 1.2)
-    mesh = [(a.valance[0] + 0.4, 4.2), (a.valance[1] - 0.4, 4.2), (a.valance[1] - 0.4, 12.9), (a.valance[0] + 0.4, 12.9)]
-    a.hatch(F, mesh, 60, 0.9, 0.15)
-    a.hatch(F, mesh, -60, 0.9, 0.15)
+        if ly == "B.Cu" and net[:1] == "K" and net[1:].isdigit():
+            a.line(F, p, q, 0.15, clip=lambda x, y: any(f(x, y) for f in where))
+    # ---- A: a tape of the cathodes in their order, 1 6 2 7 5 0 4 9 8 3 over and over, running
+    # the length of the band and on behind each LED (a numeral that would touch one is left out,
+    # and the tape goes on as if it were there)
+    gh, pitch = 2.2, 2.0
+    x = fld["A"][0] + 0.8
+    k = 0
+    y = 33.45                                           # under the ИН-17 glass as well (its foot is at 33.21)
+    while x + 0.62 * gh < fld["A"][2] - 0.4:
+        if a.glyph_fits(F, x, y, gh):
+            a.glyph(F, CATHODES[k % 10], x, y, gh)
+        x += pitch
+        k += 1
+    for net, ly, p, q, w in B.tracks:                    # and the LEDs' anode runs, over their copper
+        if ly == "B.Cu" and net.startswith("BL_A"):
+            a.line(F, p, q, 0.15, clip=_in(fld["A"]))
+    # ---- C: the stack itself, large: the ten cathodes one behind another, each a little smaller
+    # and further on, the ones in front hiding the wires behind; the anode's hexagonal mesh behind
+    # them all
+    x, y0, h = fld["C"][0] + 1.4, fld["C"][1] + 0.9, 7.2
+    base = y0 + h
+    for k, ch in enumerate(CATHODES):
+        hk = h * 0.94 ** k
+        a.glyph(F, ch, x, base - hk, hk, 0.2 if k == 0 else 0.15, occlude=0.35)
+        x += 0.62 * hk * 0.86
+    _hexmesh(a, F, (fld["C"][0] + 0.3, fld["C"][1] + 0.3, fld["C"][2] - 0.3, fld["C"][3] - 0.3), 0.75)
 
-    # ---- the back: each socket's pinout round its ring (the digit, symbol or anode each pin
-    # carries), the bus order beside XP11, and the order of XP12's pins beneath them
+    # ---- the back: the bus order beside XP11 and what each of XP12's pins carries under it; then
+    # each socket's pinout round its ring (the digit, symbol or anode each pin carries; inside the
+    # ring where the outside is taken)
+    for pin, net in zip(M.XP11, M.P.HEADERS["11"]):
+        a.text(Bk, net[1:], pin[0] + 2.45, pin[1], 1.0)
+    for pin, net in zip(M._XP12, M.P.HEADERS["12"]):
+        lab = _net_label(net)
+        if lab:
+            a.text(Bk, lab, pin[0], pin[1] + 2.6, 1.0)
     for ref, (f, x0, y0) in B.placed.items():
         if not ref.startswith("V") or ref in ("V7", "V8"):
             continue
@@ -597,21 +778,34 @@ def circuit(a):
             dx, dy = p.x - x0, p.y - y0
             d = math.hypot(dx, dy) or 1.0
             r = p.w / 2 + 0.3 + 0.95
-            for extra in (0.0, 0.3, 0.6):
-                if a.text(Bk, lab, p.x + dx / d * (r + extra), p.y + dy / d * (r + extra), 1.0, log=extra == 0.6):
+            tries = (0.0, 0.3, 0.6, -2 * r, -2 * r - 0.3)
+            for extra in tries:
+                if a.text(Bk, lab, p.x + dx / d * (r + extra), p.y + dy / d * (r + extra), 1.0, log=extra == tries[-1]):
                     break
-    for pin, net in zip(M.XP11, M.P.HEADERS["11"]):
-        a.text(Bk, net[1:], pin[0] + 2.3, pin[1], 1.0)
-    for pin, net in zip(M._XP12, M.P.HEADERS["12"]):
-        lab = _net_label(net)
-        if lab:
-            a.text(Bk, lab, pin[0], pin[1] + 2.6, 1.0)
+    # and, as the front shows the back's bus, the back shows the front's copper: S1's bundle, the
+    # colon's three lines and S10's anode, traced in silk right behind themselves
+    for net, ly, p, q, w in B.tracks:
+        if ly == "F.Cu":
+            a.line(Bk, p, q, 0.15)
 
 
-def _stack(a, face, x, y, h):
-    """Ten numerals one behind another, each set a little up and to the right: a digit stack."""
-    for k, ch in enumerate("0123456789"):
-        a.glyph(face, ch, x + k * 0.28, y + 0.5 - k * 0.05, h, 0.15)
+def _hexmesh(a, face, box, s):
+    """A hexagonal mesh of cell edge s over a box: the anode of a nixie tube."""
+    x0, y0, x1, y1 = box
+    inb = _in(box)
+    dx, dy = 1.5 * s, math.sqrt(3) * s
+    i = 0
+    x = x0
+    while x < x1 + s:
+        yoff = 0.0 if i % 2 == 0 else dy / 2
+        y = y0 - dy + yoff
+        while y < y1 + dy:
+            pts = [(x + s * math.cos(math.radians(60 * j)), y + s * math.sin(math.radians(60 * j))) for j in range(6)]
+            for j in (0, 1, 2):                           # three edges a cell; the neighbours draw the rest
+                a.line(face, pts[j], pts[(j + 1) % 6], 0.15, clip=inb)
+            y += dy
+        x += dx
+        i += 1
 
 
 IN15_SYM = {"VOLT": "V", "HENRY": "H", "HERTZ": "Hz", "FARAD": "F", "WATT": "W", "AMP": "A", "OHM": "Ω", "SIEMENS": "S",
