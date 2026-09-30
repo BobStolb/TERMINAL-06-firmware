@@ -1,0 +1,32 @@
+{
+  "_notes": [
+    "Thresholds in thousands of tokens. Keys missing here fall back to the defaults in context.py.",
+    "usd_per_window_percent: API-equivalent USD per 1% of the 5-hour usage window. 5.0 is an example placeholder, not a measurement. Measure it on your plan: one turn's cost from the gauge / the % that turn used.",
+    "usd_per_weekly_percent: the same per 1% of the weekly limit. 20.0 is an example placeholder. Replace it with the calibration line that --record-usage prints.",
+    "block: pause the first message after a break of idle_min minutes once the context is >= min_context_k. A second message always passes. Slash commands never pause.",
+    "auto_continue: regexes (case-insensitive) for the app's automatic message after a limit reset. Such a message is never paused (nobody may be there to run /compact). Claude gets a note to keep the context lean instead.",
+    "quota: the hook notes the estimate from note_at_pct. The watcher exits at watch_trigger_pct or after watch_max_min minutes."
+  ],
+  "note_at_k": 150,
+  "compact_at_k": 300,
+  "repeat_every_k": 100,
+  "post_compact_overhead_k": 60,
+  "block": {
+    "enabled": true,
+    "min_context_k": 300,
+    "idle_min": 60
+  },
+  "auto_continue": {
+    "patterns": [
+      "usage limit.*reset.*continue"
+    ]
+  },
+  "usd_per_window_percent": 5.0,
+  "usd_per_weekly_percent": 20.0,
+  "quota": {
+    "note_at_pct": 80,
+    "watch_trigger_pct": 85,
+    "watch_max_min": 60,
+    "watch_interval_s": 120
+  }
+}
