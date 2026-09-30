@@ -142,11 +142,14 @@ than the strips lives between the boards. It has three bands:
   * the Nano across the top-right corner, its USB proud of the edge;
   * the 12 V jack through the other edge;
   * fuse, polarity diode and 5 V regulator;
-  * the 185 V converter in one tight loop, with its driver and control block beside it.
+  * the 185 V converter in one tight loop, with its driver and control block beside it, and
+    (rev B) an over-voltage clamp that stops the switch at 225-270 V without the comparator.
 * **The tube band, behind the display:**
   * the three К155ИД1 for the ИН-15 pair and the ИН-17 pair under the top strip;
   * U2 beside the left strip;
-  * the six anode channels as three identical cells over the bottom strips.
+  * the six anode channels as three cells over the bottom strips: two resistors and two optos
+    per pair of tubes. Rev B draws the resistors for МЛТ-0,5 (15.24 mm), so the seconds' cell lays
+    its two back to back in one row and the minutes' and hours' cells keep two rows 5.0 mm apart.
 * **The bottom band, 30 mm below the display:**
   * the MCP23017 with its LED network stacked on port B;
   * the RTC module;
@@ -205,13 +208,22 @@ square with 45° corners. A polish pass then re-routes each net alone. The resul
   (`PCB/lib/TS06.pretty`). Nothing needs hot air or paste.
 * **Every IC is in a socket and the Nano is on two PBS-15 strips**, so a dead chip or Nano is
   a swap, not a desolder.
-* **References are on the silkscreen** of TS06-DRV's component face.
+* **References are on the silkscreen** of TS06-DRV's component face, and (rev B) the legends a
+  builder needs: the block names, the 185 V areas fenced and marked "DANGER 185 V", "12 V DC,
+  centre +" at the jack, "HV SET" at the trimmer, "fit U12 before U11", "USB only with 12 V on",
+  the RTC module's "- NC C D +" and its outline, J1's pinout and every strip's pin 1 on the face
+  towards the display, and the title. All at the fab's floor: 1.0 mm text, 0.15 mm lines, off
+  every pad.
 * **No wiring harness between the boards.** The fascia cable (JST PH, spec pin order) is the
   only cable.
-* **The anode channels are copies of one cell**, so a mistake in one is easy to see in all.
+* **The anode channels are drawn from one pattern**, so a mistake in one is easy to see in all.
 * **High voltage is kept in its own net class**, with 0.6 mm clearance enforced by KiCad's DRC
-  from the project file. Every bare high-voltage pad keeps 0.8 mm (IPC-2221B A6) from every
-  other part's pad.
+  from the project file. On TS06-DRV (rev B) every bare high-voltage pad keeps 0.8 mm
+  (IPC-2221B table 6-1, A6) from all other copper on both faces, the ground pours included: a
+  rule in `TS06-DRV.kicad_dru` that KiCad's DRC and zone filler apply, that the router routes to,
+  and that `checkcopper.py --hv-pad 0.8` checks. Cathode pads keep 0.5 mm from other nets.
+* **No copper within 3.8 mm of a standoff hole** on TS06-DRV (rev B), both faces: keep-out areas
+  KiCad holds, clear of a 7 mm washer (3.5) and a 5.5 mm hex spacer's corners (3.18).
 
 **Solder the strips while the two boards are plugged together.** See the review, finding 2.
 
@@ -260,7 +272,12 @@ standoff and a strip body share the 11 mm gap. H4 was moved 2 mm to clear XP12 (
 
 ### Open before fabrication
 
-* **Bench gates:** the ИН-17 lead order, the ИН-15 pinouts, the ИН-17 pip and the RTC module.
+* **Bench gates:** the ИН-17 lead order, the ИН-15 pinouts, the ИН-17 pip and the RTC module
+  (rev B draws the module lying beside its PLS-5; check its body falls on the outlined side).
+* **Rev B on the bench:** with U12 out of its socket and RP1 at either end, the OV clamp must
+  hold the rail between 225 and 270 V (typically ~242 V) - bring it up on a current-limited
+  12 V supply with C7 bled. L1 is the Bourns 5900-221-RC (axial, 1.8 A): check the supplier's
+  datasheet revision before ordering.
 * **Parts to measure:** the PBS and PLS heights of the batch being bought.
 * **Test fit:** the colon lamps against the M10 glass.
 

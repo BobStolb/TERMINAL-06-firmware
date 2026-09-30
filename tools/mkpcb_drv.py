@@ -36,9 +36,27 @@ ZERO VIAS, AND HOW. A through-hole pad is copper on both faces, so it is the onl
 may change face; every other stretch of every net is on one face. The decoder fans are laid
 by hand, one face each where they interleave; everything else is routed one net at a time by
 tools/netroute.py, which never places a via, and its result is saved in mkpcb_drv_routes.json
-so the board regenerates exactly without re-routing.
+so the board regenerates exactly without re-routing. The saved route is the source of truth:
+--route pins PYTHONHASHSEED so a fresh route is repeatable, and TS06_ROUTES / TS06_OUT send a
+trial route and board to scratch. --hand checks the hand-laid copper alone against the rules.
+The generator exits non-zero if check() or check_mate() finds anything.
+
+REV B (30.09.26), from the grills of rev A:
+  * an over-voltage clamp independent of U12 and of the divider (VD5-VD7, R75, R76, VT2);
+    a Schottky across U14 (VD3), a TVS after the fuse (VD4), the A6 pull-down and the button
+    lines' RC at J1 (R72-R74, C18, C19);
+  * IPC-2221B A6: every HV pad 0.8 mm from all other copper, pours included (Board.pad_rules,
+    the router, TS06-DRV.kicad_dru); cathode pads 0.5 mm where routable (Board.soft_pad_rules);
+  * 3.8 mm copper keep-outs round the eight standoff holes, as KiCad rule areas;
+  * the 0.5 W resistors drawn for МЛТ-0,5 (15.24 mm, 1.1 mm holes, rows 5.0 mm apart), L1 the
+    Bourns 5900-221-RC lying, VT21's holes 1.2 mm, J1's 0.85 mm, U13 on a male PLS-5;
+  * the silkscreen legends (legends()), at the fab's 1.0 mm / 0.15 mm floor.
 """
 import json, math, os, sys
+if __name__ == "__main__" and "--route" in sys.argv and os.environ.get("PYTHONHASHSEED") != "0":
+    # the router must give the same copper on every run: pin Python's string hashing, the one
+    # thing that could reorder anything it iterates (red-team F6); the saved route stays the truth
+    os.execvpe(sys.executable, [sys.executable] + sys.argv, dict(os.environ, PYTHONHASHSEED="0"))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcbkit as K
 import ts06pair as P
@@ -47,6 +65,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 NAME = "TS06-DRV"
 OUT = os.environ.get("TS06_OUT") or os.path.join(ROOT, "PCB", NAME, NAME + ".kicad_pcb")
 PLACE_ONLY = "--place" in sys.argv
+REV, DATE = "B", "30.09.26"
 
 W, H = 191.4, 100.0
 DW = 191.4                                  # the display board's width: x here = DW - x there
@@ -57,11 +76,24 @@ DW = 191.4                                  # the display board's width: x here 
 SB, SC = 7.62, 15.4
 Y0 = 26.0                                   # this board's top edge is 26 mm above the display's
 YT, YB = 2.2 + Y0, 41.3 + Y0                # the strip rows, shared with TS06-DISP
-CLASSES = [("HV", 0.6, 0.4, P.HV_PATTERNS),
+CLASSES = [("HV", 0.6, 0.4, P.HV_PATTERNS_DRV),
            ("CATH", 0.25, 0.25, P.CATH_PATTERNS),
            ("PWR", 0.25, 0.5, ["+5V", "+12V", "VIN_J", "VIN_F", "GATE_D", "GATE"])]
 B = K.Board(NAME, W, H, P.parts(P.DRV), CLASSES, default=("Default", 0.2, 0.25))
 PT = P.parts(P.DRV)
+# Rev B rules (grill E3, E10, F12):
+#  * a bare HV pad keeps 0.8 mm (IPC-2221B table 6-1, A6, 171-250 V) from every other net's copper:
+#    tracks, pads and the pours, both faces. Board.check() and the router hold it, and the project's
+#    .kicad_dru gives it to KiCad's DRC and zone filler;
+#  * a cathode pad (up to ~60 V off the К155ИД1) keeps 0.5 mm from other nets where the copper can
+#    be routed so: the router holds it, check() reports what it could not (hand-laid entries);
+#  * no copper, tracks or pour, within 3.8 mm of a standoff hole's centre: a 7 mm M3 washer reaches
+#    3.5 mm and a 5.5 mm hex spacer's corners 3.18. Rule areas in the board make KiCad hold it too.
+B.pad_rules = {"HV": 0.8}
+B.soft_pad_rules = {"CATH": 0.5}
+B.hole_ko = 3.8
+B.min_text = (1.0, 0.15)                    # the fab's floor: 1.0 mm text, 0.15 mm stroke
+B.dnp = {r for r, p in PT.items() if "DNP" in p.value}
 
 
 def pl(ref, x, y, rot=0, back=False, fp=None):
@@ -77,6 +109,9 @@ def near(ref, x0, y0, x1, y1, rots=(0, 90, 180, 270), keepout=()):
     """Place a small part in the free spot of a region (display frame) nearest its copper."""
     ko = [(a, b + Y0, c, d + Y0) for a, b, c, d in keepout]
     r = K.place_near(B, ref, PT[ref].fp, (x0, y0 + Y0, x1, y1 + Y0), rots, keepout=ko, weight=LOW_W)
+    if r is None and os.environ.get("TS06_LOOSE"):         # exploring a placement: say so and go on
+        print(f"  no room for {ref} in ({x0}, {y0})-({x1}, {y1})")
+        return None
     assert r is not None, f"no room for {ref} in ({x0}, {y0})-({x1}, {y1})"
     return r
 
@@ -102,6 +137,13 @@ HOLES = [(W - 3.5, 40.5), (3.5, 40.5), (DW - 50.535, 3.3), (3.5, 7.5),
 for i, (hx, hy) in enumerate(HOLES):
     B.place(f"H{i + 1}", "TS06_MountingHole_M3", hx, hy + Y0)
     B.holes.append((hx, hy + Y0, 3.2))
+    # the keep-out as a KiCad rule area on both faces: no track and no pour within 3.8 mm (pads are
+    # checked by Board.check(): an area that forbids pads would forbid the hole itself)
+    # (a 32-gon circumscribing the circle, so the circle is inside it)
+    rk = B.hole_ko / math.cos(math.pi / 32)
+    B.rule_areas.append(dict(name=f"H{i + 1} keep-out", pads=True,
+                             poly=[(round(hx + rk * math.cos(k * math.pi / 16), 3), round(hy + Y0 + rk * math.sin(k * math.pi / 16), 3))
+                                   for k in range(32)]))
 
 # ======================================================================== the tube band
 # The decoders under the top strip, pins 16..9 facing it; U2 turned over beside XS11.
@@ -111,39 +153,55 @@ pl("U15", 35.25, 15.62, rot=90)
 pl("U17", 58.65 + SB, 15.62, rot=90)
 pl("U2", 166.2 + SC, 27.26, rot=180)
 
-# The anode channel cells. Each pair of anode pins gets its two series resistors lying one above
-# the other, each ending straight over its pin, and its two optos standing above them, emitter
-# pin over the resistor it feeds; the 185 V feed runs between the optos and the resistors.
-Y_U, Y_L, Y3 = 33.8, 37.6, 30.3
+# The anode channel cells. Each pair of anode pins gets its two series resistors, each ending
+# straight over its pin, and its two optos standing above them, emitter pin over the resistor it
+# feeds; the 185 V feed runs between the optos and the resistors.
+# Rev B: the resistors are drawn for МЛТ-0,5 (Ø4.2 x 10.8 mm, 15.24 mm between holes). The seconds'
+# cell, with room on both sides, lays its two resistors in ONE row, back to back from their two
+# pins; the minutes' and hours' cells keep two rows, now 5.0 mm apart, both running west, and their
+# optos rise 1.4 mm to make that room. The minutes' cell leaves the room east of it to the colon.
+Y_R, Y3 = 37.6, 30.3                        # a one-row cell: its resistors, its optos' output row
+Y_U, Y_L, Y3H = 32.9, 37.9, 28.9            # a two-row cell's rows and its optos' output row
+RP = 15.24                                  # the resistors' pitch
 
 
-def cell_left(xl, r_up, r_lo, o_up, o_lo):
+def cell_row(xl, r_left, r_right, o_left, o_right):
+    """One row: the resistor on the left pin runs left, the one on the right pin runs right, and
+    each one's opto stands over its far end, emitter (pin 3) straight above the pad it feeds."""
     xr = xl + 2.54
-    pl(r_up, xr - 12.7, Y_U)
-    pl(r_lo, xl - 12.7, Y_L)
-    pl(o_up, xr - 12.7 + 2.54, Y3 - 7.62, rot=270)
-    pl(o_lo, xr - 15.9, Y3 - 7.62, rot=270)
+    pl(r_left, xl - RP, Y_R)                # pad 1 (emitter) RP west, pad 2 (anode) on the left pin
+    pl(r_right, xr + RP, Y_R, rot=180)      # pad 1 RP east, pad 2 on the right pin
+    pl(o_left, xl - RP + 2.54, Y3 - 7.62, rot=270)
+    pl(o_right, xr + RP + 2.54, Y3 - 7.62, rot=270)
 
 
-def cell_right(xl, r_up, r_lo, o_up, o_lo):
-    pl(r_up, xl + 12.7, Y_U, rot=180)
-    pl(r_lo, xl + 2.54 + 12.7, Y_L, rot=180)
-    pl(o_up, xl + 15.24, Y3 - 7.62, rot=270)
-    pl(o_lo, xl + 21.04, Y3 - 7.62, rot=270)
+def cell_stack(xl, r_up, r_lo, o_up, o_lo, ox_up, ox_lo):
+    """Two rows, both resistors running left from their pins, the upper row 5.0 mm above."""
+    xr = xl + 2.54
+    pl(r_up, xr - RP, Y_U)
+    pl(r_lo, xl - RP, Y_L)
+    pl(o_up, ox_up, Y3H - 7.62, rot=270)
+    pl(o_lo, ox_lo, Y3H - 7.62, rot=270)
 
 
-cell_left(63.585 + SB, "R31", "R32", "U9", "U10")         # S10 / S1
-cell_right(101.64 + SC, "R30", "R29", "U8", "U7")         # M1 / M10
-cell_left(156.44 + SC, "R27", "R28", "U5", "U6")          # H10 / H1
+cell_row(63.585 + SB, "R32", "R31", "U10", "U9")         # S1 (left pin) / S10 (right pin)
+XM = 101.64 + SC + 2.54                     # the minutes' right pin (M10)
+cell_stack(101.64 + SC, "R29", "R30", "U7", "U8", XM - 12.7, XM - 18.5)            # M10 / M1
+# the hours' optos stay where the Nano's D5 / D6 resistors stand over them
+cell_stack(156.44 + SC, "R27", "R28", "U5", "U6", 174.38 - 10.16, 174.38 - 15.9)   # H10 / H1
 
-# The colon: one ballast per lamp standing over its pin, the return switch beside them.
-pl("R59", 126.5 + SC, 24.6, rot=270)                      # COLON_L
-pl("R58", 130.5 + SC, 24.6, rot=270)                      # COLON_U
-pl("VT1", 121.0 + SC, 33.0, rot=270)
+# The colon: one ballast per lamp standing over its pin, 5.0 mm apart, the return switch beside
+# them and the reservoir's bleeder (R60 / R61) above it, in the room the minutes' cell leaves.
+XC = DW - 47.99                             # XS22 pin 1 (COLON_U); pin 2 is 2.54 west
+pl("R59", XC - 3.54, 22.0, rot=270)                      # COLON_L, over XS22.2 (1 mm west: the column's room)
+pl("R58", XC + 1.46, 22.0, rot=270)                      # COLON_U
+pl("VT1", XC - 8.71, 33.0, rot=270)
+pl("R60", XC - 22.51, 23.1)
+pl("R61", XC - 22.51, 28.1)
 
-# The AM/PM static anode resistors, over their pins.
-pl("R56", 34.31, 37.0, rot=180)
-pl("R57", 26.69, 33.2, rot=180)
+# The AM/PM static anode resistors: each from its pin east, in two rows 5.0 mm apart.
+pl("R56", 34.31, Y_L)
+pl("R57", 26.69, Y_U)
 
 # ======================================================================== the top band
 # The Nano lies across the top right corner, its digital row facing down into the board and its
@@ -157,29 +215,36 @@ pl("F1", 24.0, -23.30)
 pl("VD2", 36.24, -17.00, rot=180)
 pl("U14", 21.5, -6.50)
 pl("C8", 40.5, -22.20)
+# Rev B: the Schottky across U14 (E5), under it, anode straight below its output pin; and the
+# TVS after the fuse (E8), along the band's foot beside it, cathode (VIN_F) towards the fuse.
+pl("VD3", 26.58 - 10.16, -2.5)
+pl("VD4", 36.5, -2.3)
 
 # The 185 V converter: inductor, switch, catch diode, reservoir in one tight loop; the gate
 # driver beside the switch; the comparator, divider and trimmer beside the driver.
-pl("L1", 47.5, -12.50)
-pl("VT21", 59.0, -7.00)
-pl("VD1", 67.8, -16.00, rot=180)
-pl("C7", 72.5, -20.00)
-pl("U11", 81.0, -5.30, rot=180)
-pl("R67", 69.0, -12.40, rot=180)
+# Rev B: L1 is the Bourns 5900 axial choke, lying along the top edge; the switch stands under
+# its SW end with the driver to its left, and the diode and reservoir close the loop to its right.
+pl("L1", 46.5, -19.6)
+pl("VT21", 71.9, -9.5)
+pl("VD1", 86.5, -4.5, rot=180)
+pl("C7", 87.5, -12.5, rot=180)
+pl("U11", 57.0, -11.2)
 # The control block, laid out by hand: the divider comes down from the 185 V side on the left
-# (R62), turns at FB_MID (R63 standing), and FB meets the comparator's input pin, the 15k and
-# the trimmer on the right; the 2.5 V reference divider and the output pull-down stand in a row
-# on the left, beside the driver input they feed.
-pl("U12", 104.0, -8.0, rot=180)
-pl("R62", 96.0, -23.7)
-pl("R63", 111.6, -23.7, rot=270)
-pl("R64", 114.5, -14.0)
-pl("RP1", 124.5, -8.0)
-pl("R69", 84.8, -11.0, rot=90)
-pl("R70", 88.3, -11.0, rot=90)
-pl("R71", 91.8, -11.0, rot=90)
-pl("R65", 114.5, -22.0)
-pl("C14", 96.5, -20.3)
+# (R62), turns at FB_MID (R63 standing), and FB meets the comparator's input pin, the 18k and
+# the trimmer on the right; the 2.5 V reference divider and the output pull-down stand beside the
+# comparator, and the independent over-voltage clamp (rev B) stands in its own block to the east.
+pl("U12", 107.0, -3.5, rot=180)
+pl("R62", 92.0, -23.4)
+pl("R63", 111.0, -23.4, rot=270)
+pl("R64", 111.0, -4.0)
+pl("RP1", 124.5, -8.3)
+# The clamp: the zener string zig-zags down from the 185 V end, then the base resistor, the
+# transistor and its base-emitter resistor next to where PWM_G passes on its way to the driver.
+ZX = 128.2
+pl("VD5", ZX, -23.2)
+pl("VD6", ZX + 10.16, -19.2, rot=180)
+pl("VD7", ZX, -15.2)
+pl("R75", ZX + 10.16, -11.2, rot=180)
 
 # ======================================================================== where lines change face
 # A through-hole pad is copper on both faces, so a series resistor is the one "via" a zero-via
@@ -197,8 +262,8 @@ for ref, x in (("R66", 126.0), ("R1", 122.5), ("R53", 119.0), ("R26", 115.5)):
     pl(ref, x + SC, HOP_Y - Y0, rot=270)
 for ref, x, y in (("R25", 134.6, 24.0), ("R24", 137.6, 24.0), ("R23", 140.6, 24.0)):
     pl(ref, x + SC, y - Y0, rot=270)
-pl("R22", 143.1 + SC, 35.3 - Y0, rot=270)        # H1
-pl("R21", 148.8 + SC, 35.3 - Y0, rot=270)        # H10
+pl("R22", 143.1 + SC, 34.0 - Y0, rot=270)        # H1 (rev B: 1.3 mm up with the hours' optos)
+pl("R21", 148.8 + SC, 34.0 - Y0, rot=270)        # H10
 
 # ======================================================================== the bottom band
 # The expander and the LED network, stacked: port B straight up into the network, the network
@@ -213,7 +278,8 @@ pl("J1", 122.0 + SC, 69.0, rot=180, back=True)
 # hours' cell. A7, A6, SCL and SDA come west through the hours' optos on the front face, in that
 # order top to bottom, and each ends in its own part in the same order; they leave on the back face,
 # the filters' lines down the column's right side to J1, the pull-ups' lines west to the clock module.
-HOP_X = 137.4 + SC                          # the column's signal pads
+HOP_X = 136.4 + SC                          # the column's signal pads; rev B: 1 mm west, so that two lines
+# pass down its east side and still keep 0.8 mm from U6's emitter pin (IPC A6)
 pl("C6", HOP_X, 48.0 - Y0, rot=180)         # A7: pad 1, the signal, on the right
 pl("C5", HOP_X, 50.5 - Y0, rot=180)         # A6
 pl("R55", HOP_X - 2.54, 53.1 - Y0)          # SCL: pad 2, the signal, on the right
@@ -228,7 +294,7 @@ pl("C4", 155.5 + SC, 48.5 - Y0, rot=270)
 # Each goes to the free spot of its region nearest the pads it connects to (pcbkit.place_near).
 FANS = (5.0, -0.6, 80.5 + SB, 17.3)             # the hand-laid decoder fans: no part over them
 XALANES = (5.0, 17.0, 51.8, 21.3)          # port A's lanes under the two ИН-15 decoders
-XALEFT = (4.5, 17.0, 10.0, 74.0)           # ... up the left edge
+XALEFT = (4.5, 17.0, 11.2, 74.0)           # ... up the left edge
 XABOT = (5.0, 68.4, 46.5, 74.0)            # ... and under the expander
 BLRIB = (20.0, 42.0, 166.0 + SC, 45.9)          # the LED ribbon under the bottom strips
 GAP = (150.0 + SC, -1.0, 157.5 + SC, 30.0)           # between the hours' cell and U2: the Nano's lines go south
@@ -237,11 +303,14 @@ OPTLANES = (52.0 + SB, 19.2, 136.0 + SC, 21.6)       # D2-D4's anode lines run w
 XAFAN = (5.0, 17.0, 52.0, 30.5)            # port A's lines rise up the left edge into U16 / U15
 NECK = (78.0 + SB, -1.0, 157.5 + SC, 21.0)           # the Nano's lines come down through here
 for r in ("C9", "C10", "C11"):
-    near(r, 17.0, -25.5, 45.0, -4.6)
-for r in ("C12", "R68", "C13", "C3"):
-    near(r, 38.0, -25.5, 127.0, -4.6)
-for r in ("R60", "R61"):                    # the reservoir's bleeder, on the 185 V feed between cells
-    near(r, 67.0 + SB, 29.0, 100.5 + SC, 39.4, keepout=(OPTLANES,))
+    near(r, 14.0, -25.5, 56.0, -0.8)
+for r in ("R67", "R68", "C12"):             # the gate resistors and the driver's decoupling
+    near(r, 30.0, -13.2, 79.0, -0.8)
+for r in ("VT2", "R76"):                    # the clamp's transistor
+    near(r, 108.0, -25.5, 143.0, -1.0)
+for r in ("R69", "R70", "C14", "R71", "R65", "C13"):     # reference, hysteresis, pull-down
+    near(r, 88.5, -21.2, 126.0, -1.0)
+near("C3", 88.5, -25.5, 143.0, -1.0)             # 5 V bulk, towards the Nano
 for r in ("C15", "C16"):
     near(r, 8.0, 21.4, 46.0, 25.5, rots=(0,), keepout=(XALANES,))
 near("C17", 58.0 + SB, 21.7, 80.0 + SB, 26.5, rots=(0,), keepout=(OPTLANES,))
@@ -253,6 +322,9 @@ for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
     near(r, 45.0, 17.4, 157.0 + SC, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
 near("C1", 10.0, 44.5, 26.0, 57.5, keepout=(XALEFT, XABOT, BLRIB))   # the expander's own decoupling
 JACK = tuple(v - (Y0 if i % 2 else 0) for i, v in enumerate(B.court("J1")))   # nothing under J1's housing
+# Rev B (E11): the A6 pull-down and the button lines' 1k + 10 nF, at J1.
+for r in ("R73", "C18", "R74", "C19", "R72"):
+    near(r, 122.0, 50.0, 160.0, 73.5, keepout=(JACK,))
 
 # ======================================================================== hand-laid copper
 # The decoder fans, laid the way a person lays them: every line a straight rise, a 45 degree
@@ -264,15 +336,19 @@ def T(net, layer, *pts, w=LV):
     B.track(net, layer, list(pts), w)
 
 
-def rise(net, layer, pad, x_to, y_top=YT, bend=None):
-    """From a decoder's top-row pad straight up, then 45 degrees across to the strip pin."""
+def rise(net, layer, pad, x_to, y_top=YT, bend=None, end=0.0):
+    """From a decoder's top-row pad straight up, then 45 degrees across to the strip pin (landing
+    `end` mm short of it and going in straight, where the pin beside is a square pad)."""
     x, y = pad
     dx = x_to - x
     if abs(dx) < 1e-6:
         T(net, layer, (x, y), (x, y_top))
         return
-    yb = y_top + abs(dx) if bend is None else bend
-    T(net, layer, (x, y), (x, yb), (x_to, y_top))
+    if bend is not None:
+        T(net, layer, (x, y), (x, bend), (x_to, y_top))
+        return
+    yb = y_top + end + abs(dx)
+    T(net, layer, (x, y), (x, yb), (x_to, yb - abs(dx)), (x_to, y_top))
 
 
 def P_(ref, pin):
@@ -287,7 +363,8 @@ for pin in (16, 15, 14, 13, 11, 10, 9):
     rise(n, "B.Cu", P_("U16", pin), XS12[n][0])
 T("CAT_A_NANO", "B.Cu", P_("U16", 8), (32.0, DEC_Y - 1.29), (32.0, YT + 1.29), XS12["CAT_A_NANO"])
 T("CAT_A_P", "B.Cu", P_("U16", 1), (10.39, DEC_Y - 2.54), XS12["CAT_A_P"])
-T("CAT_A_MICRO", "B.Cu", P_("U16", 2), (14.2, DEC_Y + 1.27), (9.12, DEC_Y + 1.27), (7.85, DEC_Y), XS12["CAT_A_MICRO"])
+# rev B: the wraps round pin 1 of U16 and U17 pass 1.43 below the row (was 1.27): 0.5 mm from the pin (E10)
+T("CAT_A_MICRO", "B.Cu", P_("U16", 2), (14.04, DEC_Y + 1.43), (9.28, DEC_Y + 1.43), (7.85, DEC_Y), XS12["CAT_A_MICRO"])
 
 # U15 (ИН-15Б), front face; AMP wraps the chip's right end.
 for pin in (16, 15, 14, 13):
@@ -302,11 +379,11 @@ T("CAT_B_AMP", "F.Cu", P_("U15", 8), (55.0, DEC_Y), (55.0, YT + 4.0), XS12["CAT_
 # chip's right end on the front so that the A0-A3 bus can enter between its rows on the back.
 for pin in (14, 13, 11, 10, 9, 16):
     n = PT["U17"].pins[str(pin)]
-    rise(n, "B.Cu", P_("U17", pin), XS12[n][0])
+    rise(n, "B.Cu", P_("U17", pin), XS12[n][0], end=0.35 if n == "KS6" else 0.0)   # KS6 passes XS12.1's square pad
 rise("KS0", "F.Cu", P_("U17", 15), XS12["KS0"][0])
 T("KS7", "F.Cu", P_("U17", 8), (78.97 + SB, DEC_Y - 2.54), (78.97 + SB, YT + 2.54), XS12["KS7"])
 T("KS9", "B.Cu", P_("U17", 1), (56.11 + SB, DEC_Y - 2.54), XS12["KS9"])
-T("KS8", "B.Cu", P_("U17", 2), (59.92 + SB, DEC_Y + 1.27), (54.9 + SB, DEC_Y + 1.27), (54.9 + SB, YT + 1.33), XS12["KS8"])
+T("KS8", "B.Cu", P_("U17", 2), (59.76 + SB, DEC_Y + 1.43), (54.9 + SB, DEC_Y + 1.43), (54.9 + SB, YT + 1.33), XS12["KS8"])
 
 # U2 (ИН-12 bus), beside XS11. The column facing the strip (K7 K8 K9) goes straight across on the
 # front; the far column threads through the chip on the back, each line through the gap above
@@ -349,8 +426,12 @@ T("GND", "F.Cu", (x, y), (x, y + 2.0), (xg, y + 2.0), w=W_RAIL)
 # level, the westernmost pin on the top lane: D2-D4 west to the minutes' and S10's resistors standing
 # under the module's end, D5 and D6 to the hours' resistors above their optos, D7, D8 and D11 down
 # the gap between the hours' cell and U2 (D7 and D8 to J1, D11 to the backlight switch under U2).
-def fan(n, x, y, lane, x_to, y_to):
-    T(n, "B.Cu", (x, y), (x, lane - 0.5), (x - 0.5, lane), (x_to + 0.5, lane), (x_to, lane + 0.5), (x_to, y_to))
+def fan(n, x, y, lane, x_to, y_to, jog=None):
+    pts = [(x, y)]
+    if jog:                                 # step west under the next pin first (a standoff below)
+        pts += [(x, y + jog[1]), (x - jog[0], y + jog[1])]
+        x -= jog[0]
+    T(n, "B.Cu", *pts, (x, lane - 0.5), (x - 0.5, lane), (x_to + 0.5, lane), (x_to, lane + 0.5), (x_to, y_to))
 
 
 for pin, lane, ref in ((5, 21.6, "R25"), (6, 22.25, "R24"), (7, 22.9, "R23"), (8, 24.1, "R22"), (9, 24.75, "R21")):
@@ -361,7 +442,8 @@ GAP_X, GAP_Y = 152.4 + SC, 44.0                  # the gap's first line (D7) and
 for k, (pin, lane) in enumerate(((10, 25.9), (11, 26.55), (14, 27.2))):
     n = PT["U1"].pins[str(pin)]
     x, y = P_("U1", pin)
-    fan(n, x, y, lane, GAP_X + 0.6 * k, GAP_Y)
+    # D11's pin is over H8's keep-out (rev B, F12): it steps west under D10's pin before it drops
+    fan(n, x, y, lane, GAP_X + 0.6 * k, GAP_Y, jog=(3.2, 1.2) if n == "D11" else None)
 
 # The analogue row's A6, A7, SCL and SDA drop through the digital row's gaps on the front face, close
 # up into four lanes down the same gap, and turn west through the hours' optos - between each opto's
@@ -380,9 +462,9 @@ for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5)))
     elif n == "A6":
         pts += [(pad[0] + 0.6 + (yl - pad[1]), yl), (pad[0] + 0.6, pad[1]), pad]
     elif n == "SCL":
-        pts += [(pad[0] + (pad[1] - yl), yl), pad]
+        pts += [(pad[0] + 0.8, yl), (pad[0], yl + 0.8), pad]      # rev B: a short 45, clear of SDA's turn
     else:                                   # SDA, the lowest, turns down first
-        xt = 139.15 + SC
+        xt = HOP_X + 1.4                    # rev B: 0.8 mm from U6's emitter pin (IPC A6)
         pts += [(xt, yl), (xt, pad[1] - (xt - pad[0])), pad]
     T(n, "F.Cu", *pts)
 
@@ -394,8 +476,8 @@ for k, (pin, jog) in enumerate(((26, 26.0), (25, 25.0), (24, 25.5), (23, 24.5)))
 # D9, D10, D12 and D13 come down the corridor on the bus's outside and end in their series resistors
 # at its exit (HOP), where they change face.
 HOP = {"D9": "R66", "D10": "R1", "D12": "R53", "D13": "R26"}   # where the corridor's other lines end
-X_COR = 128.0 + SC                          # the corridor's first line (A3)
-PITCH = 0.6
+X_COR = 129.5 + SC                          # the corridor's first line (A3); rev B: east of H3's 3.8 mm keep-out
+PITCH = 0.5                                 # rev B: 0.5 (0.25 mm gaps), so the eight lines still clear R25
 Y_RUN = 36.5                                # A3's lane between U17's rows
 for k, (pin, dy) in enumerate(((22, 1.9), (21, 2.5), (20, 3.1), (19, 3.7), (16, 4.3))):
     n = PT["U1"].pins[str(pin)]
@@ -439,8 +521,9 @@ B.keepouts.append((x_l + 0.2, c[1], W, c[3], "*"))           # U2's body and its
 # the order the decoder pins want. The decoders' 5 V pins cross it on the front face.
 XA_DEST = {7: ("U16", 3), 6: ("U16", 4), 5: ("U16", 6), 4: ("U16", 7),
            3: ("U15", 3), 2: ("U15", 4), 1: ("U15", 6), 0: ("U15", 7)}
-XA_P, XA_BOT, XA_LEFT, XA_TOP = 0.45, 95.0, 9.0, 43.5
-BUS_W = 0.24                                # 0.45 pitch leaves 0.21 mm, not a rounding error under 0.2
+XA_P, XA_BOT, XA_LEFT, XA_TOP = 0.41, 95.0, 10.3, 43.6    # rev B: the bus 1.3 mm in and 0.28 mm tighter,
+# clear of H2 and H5's 3.8 mm keep-outs on the left and of U3's end pins on the right
+BUS_W = 0.2                                 # 0.41 pitch leaves 0.21 mm
 for i in range(8):
     x, y = P_("U3", 21 + i)
     yb, xl, yt = XA_BOT + i * XA_P, XA_LEFT - i * XA_P, XA_TOP + (7 - i) * XA_P
@@ -456,7 +539,7 @@ for i in range(8):
 # each line peeling off up into its strip pin - the nearest pin on the top lane.
 # BL_A8 is a short diagonal to its pin beside the network; BL_A7 crosses the ribbon on the front.
 BL_DEST = {1: ("XS21", 2), 2: ("XS21", 5), 3: ("XS23", 1), 4: ("XS23", 4), 5: ("XS24", 1), 6: ("XS24", 4)}
-BL_Y = 69.0
+BL_Y = 69.1                                 # rev B: 0.1 mm lower, 0.8 mm from the anode pins above (IPC A6)
 for k, i in enumerate((6, 5, 4, 3, 2, 1)):
     x, y = P_("RN1", 8 + i)
     yl = BL_Y + k * XA_P
@@ -477,7 +560,7 @@ def place_refs(board, skip=("H",)):
     """Every reference on the silkscreen of its part's face, for the person with the BOM and a
     soldering iron: on the part's body where it fits (between a resistor's pads, inside a
     socket's rows), else just outside its courtyard, never over a pad or another reference."""
-    boxes = []                                  # placed text boxes (x0, y0, x1, y1, back)
+    boxes = list(LEGEND_BOXES)                  # placed text boxes (x0, y0, x1, y1, back): the legends first
     pads = [(p.x - max(p.w, p.h) / 2, p.y - max(p.w, p.h) / 2, p.x + max(p.w, p.h) / 2,
              p.y + max(p.w, p.h) / 2) for p in board.pads]
     holes = [(hx - hd / 2, hy - hd / 2, hx + hd / 2, hy + hd / 2) for hx, hy, hd in board.holes]
@@ -485,6 +568,12 @@ def place_refs(board, skip=("H",)):
     for r in board.placed:
         for sx, sy, ly in board.silk_points(r):
             silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
+    for kind, ly, d in board.gfx:               # and the legends' own lines
+        if kind == "line":
+            n = max(1, int(math.hypot(d[2] - d[0], d[3] - d[1]) / 0.2))
+            for i in range(n + 1):
+                sx, sy = d[0] + (d[2] - d[0]) * i / n, d[1] + (d[3] - d[1]) * i / n
+                silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
 
     def free(bx, back):
         m = 0.2
@@ -512,7 +601,7 @@ def place_refs(board, skip=("H",)):
         cx, cy = (c[0] + c[2]) / 2, (c[1] + c[3]) / 2
         wide = (c[2] - c[0]) >= (c[3] - c[1])
         cands = []
-        for size in (1.0, 0.8):
+        for size in (1.0,):                   # the fab's floor: 1.0 mm text, 0.15 mm stroke
             tw, th = len(ref) * 0.8 * size + 0.1, size
             for rot in ((0, 90) if wide else (90, 0)):
                 bw, bh = (tw, th) if rot == 0 else (th, tw)
@@ -531,8 +620,180 @@ def place_refs(board, skip=("H",)):
         else:
             tx, ty, rot, size, bw, bh = cands[0]
             boxes.append((tx - bw / 2, ty - bh / 2, tx + bw / 2, ty + bh / 2, f.back))
-            board.ref_at[ref] = (round(tx - x, 3), round(ty - y, 3), rot, 0.8)
+            board.ref_at[ref] = (round(tx - x, 3), round(ty - y, 3), rot, 1.0)
             print(f"  reference {ref}: no clear spot, left on the body")
+
+
+# ======================================================================== the legends (rev B)
+# The boards are ordered in black mask with white silk. The fab floor (Rezonit and JLC): lines at
+# least 0.15 mm, text at least 1.0 mm tall with a 0.15 mm stroke, nothing printed on a pad.
+LEGEND_BOXES = []                           # (x0, y0, x1, y1, back): the legends' text, kept clear by the references
+LEGEND_MISSED = []
+TEXT_W = 0.8                                # a character's advance in text heights, generously
+
+
+def _tbox(t, x, y, size, rot=0):
+    w, h = len(t) * TEXT_W * size + 0.1, size
+    if rot in (90, 270):
+        w, h = h, w
+    return (x - w / 2, y - h / 2, x + w / 2, y + h / 2)
+
+
+class _Silk:
+    """What a legend keeps clear of on its face: pads and holes (0.25 mm), the board edge (0.6 mm),
+    every part's printed outline, the legends already down and - for a block label, which belongs
+    on bare board - every courtyard on that face."""
+
+    def __init__(self, board):
+        self.b = board
+        self.pads = [(p.x - max(p.w, p.h) / 2, p.y - max(p.w, p.h) / 2, p.x + max(p.w, p.h) / 2,
+                      p.y + max(p.w, p.h) / 2) for p in board.pads]
+        self.pads += [(hx - hd / 2, hy - hd / 2, hx + hd / 2, hy + hd / 2) for hx, hy, hd in board.holes]
+        self.silk = {}
+        for r in board.placed:
+            for sx, sy, ly in board.silk_points(r):
+                self.silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
+        self.courts = [(board.court(r), board.placed[r][0].back) for r in board.placed if not r.startswith("H")]
+
+    def free(self, bx, back, courts):
+        m, g = 0.25, 0.25
+        if bx[0] < 0.6 or bx[1] < 0.6 or bx[2] > self.b.W - 0.6 or bx[3] > self.b.H - 0.6:
+            return False
+        for q in self.pads:
+            if bx[0] - m < q[2] and q[0] < bx[2] + m and bx[1] - m < q[3] and q[1] < bx[3] + m:
+                return False
+        ly = "B.SilkS" if back else "F.SilkS"
+        for i in range(int((bx[0] - g) // 1), int((bx[2] + g) // 1) + 1):
+            for j in range(int((bx[1] - g) // 1), int((bx[3] + g) // 1) + 1):
+                for sx, sy in self.silk.get((ly, i, j), ()):
+                    if bx[0] - g < sx < bx[2] + g and bx[1] - g < sy < bx[3] + g:
+                        return False
+        for q in LEGEND_BOXES:
+            if q[4] == back and bx[0] - m < q[2] and q[0] < bx[2] + m and bx[1] - m < q[3] and q[1] < bx[3] + m:
+                return False
+        if courts:
+            for c, cb in self.courts:
+                if cb == back and bx[0] < c[2] and c[0] < bx[2] and bx[1] < c[3] and c[1] < bx[3]:
+                    return False
+        return True
+
+    def mark(self, pts, ly):
+        for sx, sy in pts:
+            self.silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
+
+
+def legends(board):
+    """Rev B's silkscreen: block labels, the 185 V area fenced and marked, the connectors' pinouts,
+    the strips' names and pin 1, the trimmer, the fitting order, the USB warning and the title."""
+    S_ = _Silk(board)
+
+    def put(t, x, y, size=1.0, back=False, rot=0, reach=6.0, courts=True, thick=None):
+        """The text at the free spot nearest (x, y), within `reach` mm."""
+        cands = [(0.0, 0.0)]
+        k = 1
+        while k * 0.25 <= reach:
+            r = k * 0.25
+            for i in range(-k, k + 1):
+                cands += [(i * 0.25, -r), (i * 0.25, r)]
+            for j in range(-k + 1, k):
+                cands += [(-r, j * 0.25), (r, j * 0.25)]
+            k += 1
+        for dx, dy in cands:
+            bx = _tbox(t, x + dx, y + dy, size, rot)
+            if S_.free(bx, back, courts):
+                board.text(t, x + dx, y + dy, "B.SilkS" if back else "F.SilkS", size, thick=thick or max(0.15, round(size * 0.15, 3)), rot=rot)
+                LEGEND_BOXES.append(bx + (back,))
+                return (x + dx, y + dy)
+        LEGEND_MISSED.append(f"legend '{t}' found no free spot within {reach} mm of ({x}, {y})")
+        return None
+
+    def fence(poly, width=0.2, label_at=()):
+        """A closed outline, broken wherever it would print on a pad or a hole."""
+        pads = [(p.x, p.y, max(p.w, p.h) / 2) for p in board.pads] + [(hx, hy, hd / 2) for hx, hy, hd in board.holes]
+        pts = list(poly) + [poly[0]]
+        for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+            n = max(1, int(math.hypot(x1 - x0, y1 - y0) / 0.1))
+            run = []
+            for i in range(n + 1):
+                x, y = x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n
+                ok = all(math.hypot(x - px, y - py) > pr + 0.25 + width / 2 for px, py, pr in pads)
+                if ok:
+                    run.append((x, y))
+                if (not ok or i == n) and len(run) > 1:
+                    board.line(round(run[0][0], 3), round(run[0][1], 3), round(run[-1][0], 3), round(run[-1][1], 3), "F.SilkS", width)
+                    S_.mark(run, "F.SilkS")
+                if not ok:
+                    run = []
+
+    # the 185 V areas: the converter with its control and clamp, and the anode cells over the strips
+    y_top = 0.9
+    fence([(64.5, y_top), (141.6, y_top), (141.6, 25.9), (64.5, 25.9)])
+    fence([(19.0, 44.6), (177.0, 44.6), (177.0, 69.7), (19.0, 69.7)])
+    put("DANGER 185 V", 100.0, 26.6 - 1.2, 1.5, courts=True, reach=10.0)
+    put("DANGER 185 V", 97.0, 45.9 + 0.6, 1.5, courts=True, reach=12.0)
+    # block labels, on bare board
+    put("POWER 12 V", 10.0, 24.5, 1.2, reach=6.0)
+    put("12 V DC, centre +", 8.0, 26.1, 1.0, reach=4.0)
+    put("HV CLAMP", 134.0, 25.5, 1.0, reach=6.0)
+    put("DECODERS", 59.5, 38.0, 1.2, reach=8.0)
+    put("ANODES", 95.0, 60.0, 1.2, reach=10.0)
+    put("AM/PM", 20.0, 52.5, 1.2, reach=8.0)
+    put("COLON", 143.4, 45.6, 1.0, reach=6.0)
+    put("BACKLIGHT", 30.0, 71.5, 1.2, reach=10.0)
+    put("RTC", 118.0, 79.0, 1.2, reach=8.0)
+    put("FASCIA", 137.0, 86.0, 1.2, reach=8.0)
+    put("LOGIC", 160.0, 20.8, 1.2, reach=8.0)
+    put("USB only with 12 V on", 168.0, 20.6, 1.0, reach=6.0, courts=False)
+    # the fitting order and the trimmer
+    x, y = B.P("RP1", 2)
+    put("HV SET", x, y + 2.9, 1.0, reach=4.0, courts=False)
+    x, y = B.P("U11", 4)
+    put("fit U12 before U11", x + 6.0, y + 2.4, 1.0, reach=5.0, courts=False)
+    # the RTC module's pins, one label over each pad: pad 1 GND ... pad 5 +
+    for pin, t in ((1, "-"), (2, "NC"), (3, "C"), (4, "D"), (5, "+")):
+        x, y = B.P("U13", pin)
+        put(t, x, y - 2.0, 1.0, reach=1.2, courts=False)
+    # the TO-92 transistors: E by pin 1
+    for ref in ("VT1", "VT2", "VT20"):
+        x, y = B.P(ref, 1)
+        put("E", x, y, 1.0, reach=2.6, courts=False)
+    # on the face towards the display: J1's pinout and every strip's pin 1
+    x0, y0 = B.P("J1", 1)
+    x6, y6 = B.P("J1", 6)
+    put("1 +5V 2 GND 3 A6 4 A7 5 D7 6 D8", (x0 + x6) / 2, y0 - 3.0, 1.0, back=True, reach=6.0, courts=False)
+    for k in DISP_STRIP:
+        x, y = B.P(f"XS{k}", 1)
+        x2, y2 = B.P(f"XS{k}", 2)
+        dx, dy = x - x2, y - y2
+        put("1", x + dx * 0.75, y + dy * 0.75, 1.0, back=True, reach=1.5, courts=False)
+    # the title
+    put(f"TERMINAL-06  TS06-DRV rev {REV}  {DATE}", 88.0, 88.0, 1.5, reach=12.0)
+
+
+def silk_check(board):
+    """Every legend line and text at the fab's floor and off every pad."""
+    bad = list(LEGEND_MISSED)
+    pads = [(p.x, p.y, max(p.w, p.h) / 2, p.ref, p.name) for p in board.pads]
+    for kind, ly, d in board.gfx:
+        if kind == "line":
+            x0, y0, x1, y1, w = d
+            if w < 0.15 - 1e-9:
+                bad.append(f"silk line {d} thinner than 0.15 mm")
+            for px, py, pr, ref, nm in pads:
+                if K.pt_seg((px, py), (x0, y0), (x1, y1)) < pr + 0.15 + w / 2 - 1e-6:
+                    bad.append(f"silk line {d} on pad {ref}.{nm}")
+        elif kind == "text":
+            t, x, y, size, th, mirror, rot, just = d
+            if size < 1.0 - 1e-9 or th < 0.15 - 1e-9:
+                bad.append(f"silk text '{t}' {size} mm / {th} mm, under the fab's 1.0 / 0.15")
+            bx = _tbox(t, x, y, size, rot)
+            for px, py, pr, ref, nm in pads:
+                if bx[0] - 0.15 < px + pr and px - pr < bx[2] + 0.15 and bx[1] - 0.15 < py + pr and py - pr < bx[3] + 0.15:
+                    bad.append(f"silk text '{t}' on pad {ref}.{nm}")
+    for ref, (dx, dy, rot, size) in board.ref_at.items():
+        if size < 1.0 - 1e-9:
+            bad.append(f"reference {ref} at {size} mm")
+    return bad
 
 
 # ======================================================================== the two boards mate
@@ -562,7 +823,9 @@ def check_mate():
 # above this line is the source of truth for WHERE things are; the route file only records the
 # copper the router found for that placement, and it is thrown away and re-found whenever the
 # placement changes.
-ROUTES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mkpcb_drv_routes.json")
+# The saved route is the source of truth for the routed copper: a fresh --route is deterministic
+# (PYTHONHASHSEED is pinned above) but is only ever a proposal until it is saved here.
+ROUTES = os.environ.get("TS06_ROUTES") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "mkpcb_drv_routes.json")
 FIXED = set(B.tracks)                          # every hand-laid track: kept, never ripped
 LOCKED = {t[0] for t in B.tracks if t[0].startswith(("K", "CAT_", "XA", "XB", "BL_A"))} | {"D2", "D3", "D4", "D5", "D6", "D9"}
 WIDTHS = {"+12V": 0.8, "VIN_J": 0.8, "VIN_F": 0.8, "SW": 0.8, "+5V": 0.4, "GND": 0.4}
@@ -671,6 +934,13 @@ if __name__ == "__main__":
                     if B.placed[a][0].back == B.placed[b][0].back:
                         print(f"  overlap {a} / {b}")
         sys.exit(0)
+    if "--hand" in sys.argv:                # the hand-laid copper alone against the rules, before a route
+        bad = [b for b in B.check(verbose=False) if "pieces:" not in b and "lands on nothing" not in b]
+        for b in bad:
+            print("  [HAND]", b)
+        for s in B.soft:
+            print("  [SOFT]", s)
+        sys.exit(1 if bad else 0)
     if "--route" in sys.argv or not os.path.exists(ROUTES):
         failed = route()
         print("unrouted:", " ".join(failed) if failed else "none")
@@ -685,21 +955,25 @@ if __name__ == "__main__":
     # into it reaches nothing (KiCad: "starved thermal"). They are joined by their tracks, so the
     # pours leave them alone and the slivers, touching no pad, are removed as islands. KiCad's DRC
     # names them after each re-route; the list keeps every one it has named.
-    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12"), ("C16", "2"), ("U5", "2"), ("U16", "12")}
+    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12"), ("C16", "2"), ("U5", "2"), ("U16", "12"), ("U3", "15")}
     B.hide_refs = True
+    legends(B)
     place_refs(B)
-    B.text("TS06-DRV rev A", 30.0, 72.3, "F.SilkS", 1.0)
-    B.text("TERMINAL-06  driver", 30.0, 70.8, "F.SilkS", 0.8)
-    bad = B.check()
+    bad = B.check() + silk_check(B)
     print(f"check: {len(bad)} problem(s)")
+    print(f"cathode pads under 0.5 mm (soft, E10): {len(B.soft)}")
+    for s in B.soft:
+        print("  [SOFT]", s)
     mate = check_mate()
     print("mate:", "every strip pin and standoff lines up" if not mate else "")
     for m in mate:
         print("  [MATE]", m)
-    n = B.write(OUT, title=NAME, comment="TERMINAL-06 driver board, THT pair with TS06-DISP")
+    n = B.write(OUT, title=NAME, rev=REV, date=DATE, comment="TERMINAL-06 driver board, THT pair with TS06-DISP")
     B.write_project(OUT.replace(".kicad_pcb", ".kicad_pro"))
+    B.write_rules(OUT.replace(".kicad_pcb", ".kicad_dru"), [B.HV_PAD_RULE])
     B.write_library()
     vias = 0
     print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, {vias} vias")
     png = os.path.join(os.path.dirname(OUT), "copper.png")
     B.plot(png, ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else None))
+    sys.exit(1 if bad or mate else 0)
