@@ -12,9 +12,16 @@ The pair meets the brief electrically:
 * a display board that carries nothing but the tubes;
 * two boards that plug together with no harness.
 
-Both boards pass KiCad 10's DRC with no errors and nothing unconnected (see `PCB/README.md`,
-"Checked"). An independent audit traced every anode and every digit through both boards
-and the firmware.
+Both boards pass KiCad 10's DRC with nothing unconnected. TS06-DRV has no errors; TS06-DISP
+has two, the accepted overlap of the colon lamps' courtyards with the M10 tube, which waits on
+a test fit (see `PCB/README.md`, "Checked"). An independent audit traced every anode and every
+digit through both boards and the firmware.
+
+`tools/verify_pair.sh` runs every check in one command, including two that read the written
+files with KiCad's own geometry: the mate of all 63 strip pins and 4 standoffs, and the pours
+as KiCad fills them. **The committed boards store no zone fill:** refill before plotting Gerbers
+(press B, or `kicad-cli pcb export gerbers --check-zones`). The display's LED return, BL_K,
+exists only as a pour, so a Gerber plotted unfilled leaves all nine LEDs open.
 
 **One finding blocked an order, and it was mechanical:** the two ИН-17 were placed 13 mm apart,
 where their Ø20 stems need 20.5. It came from the tube coordinates every board so far had used.
@@ -266,16 +273,19 @@ for gates 3 and 4.
 * **Decoupling:** each decoder has its 100 nF on the 5 V rail, but not tight against its
   pins, where the port-A bus runs. For static TTL decoders this is fine. The MCP23017, the
   comparator and the driver have theirs close.
-* **The I²C lines run ≈ 140 mm** from the Nano to the expander, with the RTC on the way.
+* **The I²C lines carry about 235 mm of copper each** (238 and 233 mm; about 140 mm point to
+  point) from the Nano to the expander, with the RTC on the way.
   At 100 kHz with 4.7 kΩ pull-ups, that is well inside the bus's capacitance budget.
 * **TS06-DRV's ground pours are in pieces.**
   * The ground is a routed tree: every GND pad is joined by track. The pours on both faces
     only add area around it.
-  * Between the hand-laid buses, the pours break into many islands: `audit.py` counts 95 on
-    the front and 137 on the back. Each touches a ground pad, since KiCad removes those that
-    do not.
-  * Three pads whose back-face pour was only a sliver keep out of the pours, which is what
-    cleared KiCad's "starved thermal" errors.
+  * Between the hand-laid buses, the pours break into islands. KiCad's own fill keeps **13
+    pieces on the front and 14 on the back**, the largest holding 91 % and 75 % of the copper.
+    This review first quoted 95 and 137 from `audit.py`, whose grid model also counted pieces
+    that touch no ground copper, which KiCad removes. `audit.py` now counts only the kept
+    pieces, and `verify_pair.sh` reports KiCad's own count (the red-team's finding F5).
+  * Six pads whose pour was only a sliver keep out of the pours (`no_zone` in the
+    generator), which is what cleared KiCad's "starved thermal" errors.
   * It works, but it is not a ground plane. The "plane" alternative layout (below) tests
     whether a placement built around an unbroken back-face ground can do better.
 * **The case model's tight spots:**
@@ -361,7 +371,25 @@ check out against their datasheets:
 
 ### Red-team of the checks
 
-Pending: its report will be added here.
+This agent attacked the verification itself: it planted faults and watched which checks
+caught them. It found no blocker. The copper is sound, but several checks said more than they
+proved:
+
+| ID | Finding | Status |
+|---|---|---|
+| R1 | Metal standoffs and case screws sit over signal copper with only solder mask between. K6 and A3 are 0.81 mm from H3's edge, and XA7 0.63 mm from H2's. No check looked | BOM **fixed**: nylon. Keep-outs of r ≥ 3.8 mm as KiCad rule areas: **rev B** + **DISP** |
+| R2 | The committed boards store no zone fill. DISP's BL_K exists only as a pour, so Gerbers plotted without a refill leave all nine LEDs open | **Stated** above and in the README. `verify_pair.sh` now fills with KiCad and reports the pieces. Committing filled boards and a fab export: at the rev B integration |
+| R3 | "Both boards pass DRC with no errors": DISP's two accepted items are errors, not warnings | **fixed** in this review and the README |
+| R4 | `checkpcb.py` read courtyards only from lines and circles. 80 of 103 DRV footprints (drawn as rectangles) had no edge or overlap check, and XP11's 0.17 mm overhang went unseen | **fixed**: rectangles and polygons are read. XP11 is accepted as the mirror of XS11 |
+| R5 | `audit.py`'s island count was a grid model, about 7× KiCad's fill on DRV | **fixed**: it counts kept pieces. `verify_pair.sh` reports KiCad's own count |
+| R6 | The route does not reproduce: a fresh `--route` stuck at 2 nets sharing (A7, D7). The committed board comes from the saved JSON | **rev B**: deterministic routing, the JSON named as the source |
+| R7 | DISP's "1.04×" counted a poured net in its floor; like for like it is 1.14× | **DISP**: restated |
+| R8 | Cathode clearance: 19 gaps under 0.45 mm on DRV, the least 0.32 mm | **rev B** (E10) |
+| R9 | `check_mate()` reads the generators' lists, not the files. It passed a Ø2.5 hole, a moved hole and strips on the wrong faces | **fixed**: `tools/kicad_checks.py mate` reads the written files with pcbnew, and `verify_pair.sh` runs it. Tested: it catches a Ø2.5 hole and a strip moved 2 mm |
+| R10 | "checkcopper --hv clean" holds only for the list in `ts06pair.HV_PATTERNS` | The list is now stated in the README |
+| R11 | `checkcopper`, `checkpcb` and `audit` silently skipped any footprint whose position carries an angle, which KiCad writes once a part is rotated in the GUI | `checkpcb` and `audit` **fixed** and tested with planted angles. `checkcopper`: **rev B** |
+| R12 | Stale text: the 28-pin XP12, 60 strip pins, 95/137 islands, three `no_zone` pads, a 135 mm lead, the case README's 176 mm boards | **fixed** here and in the README; the rest is in the owners' passes |
+| R13 | V9/V10 socket contacts missing from the BOM; the DNP bleeders have no `dnp` attribute on the board | BOM **fixed**. The attribute: **rev B** |
 
 ## Placement alternatives, scored
 
@@ -379,7 +407,7 @@ before its author's verdict was read.
 | Segments (hand-laid + routed) | 1067 (369 + 698) | 1071 (303 + 768) |
 | Signal copper / its floor (MST) | 5608 / 4265 mm = **1.31** | 5129 / 3752 mm = **1.37** |
 | Straight (0°/90°) share | **85.6 %** | 81.5 % |
-| Ground pour islands, front / back | 95 / 137 | 72 / 98 |
+| Ground pour islands, front / back (`audit.py`'s old grid count; KiCad keeps 13 / 14 on the baseline) | 95 / 137 | 72 / 98 |
 | KiCad 10 DRC | 0 errors, 0 unconnected | 1 error (a starved thermal, fixable), 0 unconnected |
 | Firmware | as is | a new anode table |
 | USB | through the right-hand cheek | through the case's base |
@@ -553,8 +581,8 @@ dimension comes from.
    * J1 on TS06-DRV is a top-entry PH on the display-facing side, at world X 44–54, Y 9.
      The cable leaves it straight forward, towards the fascia.
    * The fascia's own connector is side-entry, near world X 152, so its cable turns down to
-     the floor. The path is 135 mm. **Make the PHR-6 lead 180–200 mm** so the module can be
-     lifted out. At 150 mm the slack is 15 mm.
+     the floor. The path is 139 mm with the fascia centred on the tube row. **Make the PHR-6
+     lead 180–200 mm** so the module can be lifted out. At 150 mm the slack is 11 mm.
    * The model also shows where the fascia is tight:
      * its top-right screw hole is 1.2–2.6 mm from SW5's КМД1 body;
      * a mounting boss comes within 0.4 mm of R5;

@@ -127,6 +127,8 @@ ACCEPT_CHECKPCB = {
         (r"COURTYARD OFF-BOARD +H3 ", 0.25, "H3 standoff above the colon"),
         (r"COURTYARD OVERLAP +V3 / V7$", None, "colon lamp V7 vs M10"),
         (r"COURTYARD OVERLAP +V3 / V8$", None, "colon lamp V8 vs M10"),
+        # seen since checkpcb reads fp_rect courtyards (red-team, 30.09.26): the mirror of XS11
+        (r"COURTYARD OFF-BOARD +XP11 ", 0.25, "XP11 at the left edge, its pads inside"),
     ],
     "TS06-DRV": [
         (r"COURTYARD OFF-BOARD +U1 ", 2.6, "Nano USB proud of the edge"),
@@ -562,6 +564,47 @@ for B in TS06-DISP TS06-DRV; do
   fi
   judge "$B drc" drc "$B" "$D/out/$B.json" "$DRC_HOW"
 done
+
+# ------------------------------------------------------------------------------ KiCad's own geometry
+# tools/kicad_checks.py reads the WRITTEN files with pcbnew: the mate (positions, nets, drills and
+# faces of all 63 strip pins and the 4 standoff holes) and the pours as KiCad fills them. It needs
+# KiCad's Python, so it runs in the Docker image; a local kicad-cli alone cannot run it.
+if [ -n "$DRC_HOW" ] && [ -z "$KCLI" ]; then
+  K="$TMP/kgeo"
+  mkdir -p "$K/PCB/TS06-DISP" "$K/PCB/TS06-DRV" "$K/tools"
+  [ -d "$K/PCB/lib" ] || cp -R PCB/lib "$K/PCB/lib"
+  for B in TS06-DISP TS06-DRV; do cp "PCB/$B/$B.kicad_pcb" "PCB/$B/$B.kicad_pro" "PCB/$B/fp-lib-table" "$K/PCB/$B/"; done
+  [ -f "PCB/TS06-DRV/TS06-DRV.kicad_dru" ] && cp PCB/TS06-DRV/TS06-DRV.kicad_dru "$K/PCB/TS06-DRV/"
+  [ -f "PCB/TS06-DISP/TS06-DISP.kicad_dru" ] && cp PCB/TS06-DISP/TS06-DISP.kicad_dru "$K/PCB/TS06-DISP/"
+  cp tools/kicad_checks.py "$K/tools/"
+  chmod -R a+rwX "$K" 2>/dev/null
+  HOSTK=$K
+  if command -v cygpath >/dev/null 2>&1; then HOSTK=$(cygpath -w "$K"); fi
+  USERFLAG=""
+  if [ "$(uname -s)" = Linux ]; then USERFLAG="--user $(id -u):$(id -g)"; fi
+  for what in mate fill; do
+    # shellcheck disable=SC2086
+    MSYS_NO_PATHCONV=1 docker run --rm $USERFLAG -v "$HOSTK":/w -w /w -e HOME=/tmp "$IMG" \
+      python3 tools/kicad_checks.py "$what" PCB/TS06-DISP/TS06-DISP.kicad_pcb PCB/TS06-DRV/TS06-DRV.kicad_pcb 2>&1 \
+      | grep -v -E "Debug:|^$" > "$TMP/k$what.log"
+    lines=$(grep -E "^(PASS|FAIL) $what" "$TMP/k$what.log")
+    if [ -z "$lines" ]; then
+      report FAIL "kicad $what" "tools/kicad_checks.py $what did not finish" "$TMP/k$what.log"
+      continue
+    fi
+    while IFS= read -r line; do
+      st=${line%% *}; rest=${line#* "$what" }
+      case $what in
+        mate) report "$st" "pair mate (written files)" "$rest" "$TMP/k$what.log" ;;
+        fill) report "$st" "${rest%%.kicad_pcb:*} pours (KiCad)" "${rest#*.kicad_pcb: }" "$TMP/k$what.log" ;;
+      esac
+    done <<EOF_LINES
+$lines
+EOF_LINES
+  done
+else
+  report SKIP "pair mate (written files)" "needs KiCad's Python (pcbnew): run with Docker, not a local kicad-cli"
+fi
 
 # ------------------------------------------------------------------------------ BOM and case
 if (cd "$G" && "$PY" tools/bom_pair.py) > "$TMP/bom.log" 2>&1; then

@@ -131,7 +131,7 @@ Every other Nano pin keeps its function.
 * **On its front:** 4 × ИН-12, 2 × ИН-17, 2 × ИН-15, 2 × ИНС-1 and 9 LEDs.
 * **On its back, seven male strips:**
   * XP11 on the left edge (the ИН-12 bus);
-  * XP12 on the top edge (28 pins: the ИН-17 bundle and both ИН-15);
+  * XP12 on the top edge (31 pins: the ИН-17 bundle and both ИН-15, with 3 spares after pin 10);
   * XP21–XP25 on the bottom edge (anodes, colon, LEDs).
 
 **TS06-DRV**, 191.4 × 100 mm, sits 11 mm behind the display on M3 standoffs (a standard 8.5 mm
@@ -219,11 +219,24 @@ square with 45° corners. A polish pass then re-routes each net alone. The resul
 
 `tools/verify_pair.sh` runs every check below on both boards in one command, with the accepted items
 listed in its header. `TS06-pair-testing.md` explains it for the owner, with how to view the boards
-and the staged bench bring-up.
+and the staged bench bring-up. Two of its checks read the written files with KiCad's own geometry
+(`tools/kicad_checks.py`, under the KiCad image's Python):
+* **`mate`:** all 63 strip pins and the 4 standoff holes, with their positions, nets, drills
+  and faces;
+* **`fill`:** the pours as KiCad fills them.
+
+**The committed boards store no zone fill.** Refill before plotting Gerbers: press B in the PCB
+editor, or use `kicad-cli pcb export gerbers --check-zones`. TS06-DISP's LED return, BL_K, is a
+pour with no tracks, so a Gerber plotted unfilled leaves all nine LEDs open.
+
+`checkcopper.py --hv` is run with the pair's HV list, `ts06pair.HV_PATTERNS`:
+`HV185,SW,BLEED_*,FB_MID,COLON_*,ANODE_*,EMIT_*`. The cathode nets have their own class,
+CATH, at 0.25 mm.
 
 Both boards are generated from `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` and pass every
-checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
-the project file). The results as of 29.09.26, on the widened boards:
+board checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
+the project file). `checksch.py` and `checkmatch.py` need a schematic, and the pair has none yet.
+The results as of 29.09.26, on the widened boards:
 
 | | TS06-DISP | TS06-DRV |
 |---|---|---|

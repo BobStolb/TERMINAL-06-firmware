@@ -84,19 +84,30 @@ fps = extract_footprints(src)
 parts = []
 for f in fps:
     ref = (re.search(r'\(property "Reference" "([^"]+)"', f) or [None, "?"])[1]
-    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
+    # A footprint rotated in KiCad's GUI carries its angle, "(at x y a)". An earlier regex
+    # wanted exactly two numbers and silently skipped such parts (red-team, 30.09.26).
+    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)', f)
     if not at: continue
     ox, oy = float(at.group(1)), float(at.group(2))
+    ang = math.radians(float(at.group(3) or 0))
+    ca, sa = math.cos(ang), math.sin(ang)
+    def rot(lx, ly):                    # KiCad: positive angles turn counter-clockwise, Y down
+        return lx * ca + ly * sa, -lx * sa + ly * ca
     # The face a part mounts on. Back parts are authored directly on B.* layers in this
     # repo, never flipped, so the footprint's own layer line says which face it is.
     side = "B" if re.search(r'\n\t\(layer "B\.Cu"\)', f) else "F"
     pads = []
-    for pm in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
+    for pm in re.finditer(r'\(pad "([^"]*)" (\w+) \w+\n\t\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)\n'
                           r'\t\t\(size ([\d.]+) ([\d.]+)\)[\s\S]*?\(layers ([^)]*)\)', f):
+        dx, dy = rot(float(pm.group(3)), float(pm.group(4)))
+        # a pad's stored angle is absolute; its bounding box turns with it
+        pa = math.radians(float(pm.group(5) or 0))
+        w0, h0 = float(pm.group(6)), float(pm.group(7))
+        w = abs(w0 * math.cos(pa)) + abs(h0 * math.sin(pa))
+        h = abs(w0 * math.sin(pa)) + abs(h0 * math.cos(pa))
         pads.append({"n": pm.group(1), "kind": pm.group(2),
-                     "x": ox + float(pm.group(3)), "y": oy + float(pm.group(4)),
-                     "w": float(pm.group(5)), "h": float(pm.group(6)),
-                     "layers": pm.group(7)})
+                     "x": ox + dx, "y": oy + dy, "w": w, "h": h,
+                     "layers": pm.group(8)})
     # Each graphic is read as a whole block before its layer is tested. A non-greedy reach
     # for the CrtYd layer token runs past the end of a silkscreen circle into the next
     # courtyard line, and counted a tube's 7.3 mm silk ring as its courtyard.
@@ -112,9 +123,22 @@ for f in fps:
         ccx, ccy, cex, cey = map(float, cm.groups())
         r = math.hypot(cex - ccx, cey - ccy)
         cy.append((ccx - r, ccy - r, ccx + r, ccy + r))
+    # Rectangles and polygons: 80 of TS06-DRV's 103 footprints draw their courtyard as one
+    # fp_rect, and were never checked against the board edge (red-team, 30.09.26).
+    for blk in re.findall(r'\(fp_rect\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        v = re.search(r'\(start ([\d.-]+) ([\d.-]+)\)\n\t\t\(end ([\d.-]+) ([\d.-]+)\)', blk)
+        if v: cy.append(tuple(map(float, v.groups())))
+    for blk in re.findall(r'\(fp_poly\n[\s\S]*?\n\t\)', f):
+        if not re.search(r'\(layer "[FB]\.CrtYd"\)', blk): continue
+        pts = [tuple(map(float, q)) for q in re.findall(r'\(xy ([\d.-]+) ([\d.-]+)\)', blk)]
+        for i in range(len(pts)):
+            cy.append(pts[i] + pts[(i + 1) % len(pts)])
     box = None
     if cy:
-        xs = [p for s in cy for p in (s[0], s[2])]; ys = [p for s in cy for p in (s[1], s[3])]
+        # every segment end, turned with the footprint, then boxed
+        pts = [rot(x, y) for s in cy for x, y in ((s[0], s[1]), (s[2], s[3]), (s[0], s[3]), (s[2], s[1]))]
+        xs = [q[0] for q in pts]; ys = [q[1] for q in pts]
         box = (ox + min(xs), oy + min(ys), ox + max(xs), oy + max(ys))
     parts.append({"ref": ref, "side": side, "x": ox, "y": oy, "pads": pads, "box": box})
 

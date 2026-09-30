@@ -91,19 +91,26 @@ def txtbox(t, x, y, sz, rot=0.0):
 pads, silk, refs = [], [], []
 for f in extract_footprints(SRC):
     ref = (re.search(r'\(property "Reference" "([^"]+)"', f) or [None,"?"])[1]
-    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)\)', f)
+    # "(at x y a)" once a part is rotated in KiCad: an earlier regex wanted exactly two
+    # numbers and silently dropped every such footprint (red-team, 30.09.26).
+    at = re.search(r'\n\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)', f)
     if not at: continue
     ox, oy = float(at.group(1)), float(at.group(2))
-    for m in re.finditer(r'\(pad "([^"]*)" (\w+) (\w+)\n\t\t\(at ([\d.-]+) ([\d.-]+)\)\n'
+    _a = math.radians(float(at.group(3) or 0)); _ca, _sa = math.cos(_a), math.sin(_a)
+    for m in re.finditer(r'\(pad "([^"]*)" (\w+) (\w+)\n\t\t\(at ([\d.-]+) ([\d.-]+)(?: ([\d.-]+))?\)\n'
                          r'\t\t\(size ([\d.]+) ([\d.]+)\)([\s\S]{0,320}?)\n\t\)', f):
-        b = m.group(8)
+        b = m.group(9)
         net = (re.search(r'\(net (?:\d+ )?"([^"]*)"', b) or [None,None])[1]
         lay = (re.search(r'\(layers ([^)]*)\)', b) or [None,""])[1]
         L = ["F.Cu","B.Cu"] if ("*.Cu" in lay or "F&B" in lay) else \
             [x for x in ("F.Cu","B.Cu") if x in lay]
-        w, h = float(m.group(6)), float(m.group(7))
-        pads.append({"id": f"{ref}.{m.group(1)}", "x": ox+float(m.group(4)),
-                     "y": oy+float(m.group(5)), "w": w, "h": h, "net": net, "layers": L,
+        w0, h0 = float(m.group(7)), float(m.group(8))
+        _pa = math.radians(float(m.group(6) or 0))            # a pad's stored angle is absolute
+        w = abs(w0 * math.cos(_pa)) + abs(h0 * math.sin(_pa))
+        h = abs(w0 * math.sin(_pa)) + abs(h0 * math.cos(_pa))
+        lx, ly = float(m.group(4)), float(m.group(5))
+        pads.append({"id": f"{ref}.{m.group(1)}", "x": ox + lx * _ca + ly * _sa,
+                     "y": oy - lx * _sa + ly * _ca, "w": w, "h": h, "net": net, "layers": L,
                      "kind": m.group(2),
                      "round": m.group(3) == "circle" or (m.group(3) == "oval" and w == h)})
     for pm in re.finditer(r'\(property "(Reference|Value)" "([^"]*)"\n\t\t\(at ([\d.-]+) ([\d.-]+) ?([\d.-]*)\)\n'
@@ -322,6 +329,7 @@ for z in zones:
 # through tracks and vias exactly as in section A - a surface-mount GND pad on the back of
 # a board poured on the front is reached by nothing else. So every pad of the net is
 # grouped by what really connects: islands, pads, tracks and vias together.
+KEPT = defaultdict(set)     # per pour: the islands that touch copper of their own net
 for net in sorted(POURED):
     items = [("pad", i) for i, p in enumerate(pads) if p["net"] == net] + \
             [("trk", i) for i, t in enumerate(tracks) if t["net"] == net] + \
@@ -350,6 +358,7 @@ for net in sorted(POURED):
                 t = tracks[k[1]]
                 if t["layer"] != z["layer"]: continue
                 hit = near(*t["a"], t["w"]/2 + 2*G) | near(*t["b"], t["w"]/2 + 2*G)
+            KEPT[zi] |= hit
             for h in hit:
                 node = ("isl", zi, h)
                 par.setdefault(node, node)
@@ -444,15 +453,22 @@ for _ly in ("F.Cu", "B.Cu"):
           % (_ly, 100 * _grain[_ly, "along"] / _tl,
              "east-west," if _ly == "F.Cu" else "north-south,",
              100 * _grain[_ly, "across"] / _tl, 100 * _grain[_ly, "diagonal"] / _tl))
+# Islands are counted as KiCad keeps them: a piece that touches no copper of its own net is
+# removed by the fill (island_removal_mode 0), and one under 1 mm2 is mostly a sliver the
+# fill's minimum width drops. The raw grid count, pieces with no pad included, overstated
+# DRV's pours by about 7x against KiCad's own fill (92/139 against 13/14; red-team, 30.09.26).
 _isl = []
-for _z, _PX, _PY, _lab in islands:
+for _zi, (_z, _PX, _PY, _lab) in enumerate(islands):
     _sz = _np.bincount(_lab[_lab >= 0].ravel()) if (_lab >= 0).any() else _np.zeros(0, int)
-    _tot = _sz.sum() * G * G or 1.0
-    _isl.append(len(_sz))
-    print('  pour %-3s %-5s %4d island(s), the largest holds %.0f%% of its %.0f mm2 of copper, '
-          "%d under 1 mm2" % (_z["net"], _z["layer"], len(_sz),
-                              100 * (_sz.max() if _sz.size else 0) * G * G / _tot, _tot,
-                              int((_sz * G * G < 1.0).sum())))
+    _keep = [k for k in sorted(KEPT.get(_zi, ())) if k < len(_sz) and _sz[k] * G * G >= 1.0]
+    _ks = _np.array([_sz[k] for k in _keep]) if _keep else _np.zeros(0, int)
+    _tot = _ks.sum() * G * G or 1.0
+    _isl.append(len(_keep))
+    print('  pour %-3s %-5s %4d island(s) kept, the largest holds %.0f%% of its %.0f mm2 of copper '
+          "(raw grid: %d pieces, %d with none of the net's copper, %d under 1 mm2)"
+          % (_z["net"], _z["layer"], len(_keep),
+             100 * (_ks.max() if _ks.size else 0) * G * G / _tot, _tot, len(_sz),
+             len(_sz) - len(KEPT.get(_zi, ())), int((_sz * G * G < 1.0).sum())))
 if _rows:
     print()
     print("  the copper that wanders furthest from its own floor:")
