@@ -2,7 +2,8 @@
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
 * **Running (5 agents, each notifies on completion; checkpoints in the scratchpad):** museum2,
-  fascia-art (worktree), case-power (worktree), disp-art (worktree), artifact-inventory (read-only).
+  fascia-art (worktree), case-power (worktree), disp-art (worktree), migration-1 (viewer2, Front panel view).
+  The artifact inventory is done (25fce9a).
   Each change agent ends in a review item in `scratchpad/embassy/review/<id>/`: view it, scan it, carry
   it, and for worktree agents review and cherry-pick their commits (verify_pair must stay 27 PASS).
 * **Done 07:20:** the rev B finisher. Fab packages (2dc04ec), docs (429b736), viewer v3 published
@@ -112,6 +113,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 06:45 | case power: Soviet connectors, cutouts, lids, moving the port (worktree) | 1 (4 running) |
 | 30.09 06:45 | DISP art: decorative silkscreen artwork, 3 directions, default unchanged (worktree) | 1 (5 running: fan-out 4 plus the finisher) |
 | 30.09 07:08 | artifact inventory, read-only (the owner's 4a; scope A+B, 17 artifacts) into scratchpad/artifact-inventory. quota.json 06:48, 5-hour 35 % (Nixie 6.4 %) | 1 (6 running: the cap) |
+| 30.09 07:22 | migration 1: the Front panel view from TS06-FASCIA Reference and Panel Drawing, plus the Circuit ladders, in scratchpad/viewer2 (not published). quota.json 07:08, 5-hour 41 % (Nixie 10 %) | 1 (5 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
