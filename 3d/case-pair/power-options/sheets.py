@@ -546,7 +546,7 @@ def sheet_rear(G, N, BD, CON, out):
     text(d, (M(v["X_OUT_R"], 0)[0] - 250, M(0, v["Y_TOP"])[1]), "Where each place is:", 15, INK)
     text(d, (M(v["X_OUT_R"], 0)[0] - 250, M(0, v["Y_TOP"])[1] + 22), "the whole case, from behind", 14, MUTE)
     lines(d, M(v["X_OUT_L"], 0)[0] + 24, M(0, v["Y_TOP"])[1], [("1 rear, over XS1", GREEN), ("2 rear, lower", ORANGE),
-          ("3 right cheek, raised", GREEN), ("4 left cheek", ORANGE), ("5 bottom", RED)], 14, TXT, 6)
+          ("3 right cheek, further back", GREEN), ("4 left cheek", ORANGE), ("5 bottom", RED)], 14, TXT, 6)
     lines(d, x2 + 16, yy + 14, [
         "Room = rear panel's inner face (Z %.1f) - TS06-DRV's back face (Z %.1f) - the tallest part under the body." % (v["Z_REAR_IN"], v["Z_DRV_B"]),
         "Need = the connector's body behind the panel (inferred: no length seen) + 5 mm for the solder cups and the bend.",

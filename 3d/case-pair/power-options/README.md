@@ -206,7 +206,8 @@ or make a short tail from the Soviet connector to a 5.5 x 2.1 jack, so any brick
      made.
    - Check before cutting: the body's length behind the flange and the flange hole size.
    - Pictures: `render-2rm14-rear.png` and `render-2rm14-inside.png`.
-2. **Long-bush panel DC jack through the right cheek, raised to Z 57** (place 3).
+2. **Long-bush panel DC jack through the right cheek, its axis moved 6.3 mm towards the back
+   (Z 50.7 to 57), 12.8 off the board** (place 3).
    - Keeps any standard 12 V brick. The barrel seats fully by the jack's own design, whatever the
      nose.
    - No part is in the way (computed). No board change: XS1 is left off and a 20 mm lead goes to

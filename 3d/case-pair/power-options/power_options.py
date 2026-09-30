@@ -325,7 +325,7 @@ def main():
     P_MID = (178.0, 49.5)              # the empty patch X 167-191, Y 24-60, clear of the H2 screw head and U16
     N["rear"] = [place(G, "2RM14", *P_HI, parts), place(G, "DCJ", *P_HI, parts), place(G, "DIN5", *P_HI, parts),
                  place(G, "SHR20", *P_HI, parts), place(G, "SHR20", *P_MID, parts), place(G, "2RM14", *P_MID, parts)]
-    # the long-bush jack through the right cheek, its axis raised clear of the board
+    # the long-bush jack through the right cheek, its axis moved back (Z 57) so its body clears the board
     ax_z = 57.0
     N["cheek_jack"] = dict(axis_y=v["JACK_Y"], axis_z=ax_z, above_board=round(ax_z - v["Z_DRV_B"], 2),
                            below_rear=round(v["Z_REAR_IN"] - ax_z, 2), body_d=12.0, rear=17.0,

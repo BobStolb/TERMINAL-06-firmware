@@ -6,7 +6,7 @@
 //   xvfb-run openscad -o x.png -D 'OPTION="rear2rm"' power_options.scad
 //     rear2rm       2РМ14 on the rear panel over XS1's place, plain right cheek (favourite 1)
 //     rear2rm_cut   the same with the rear panel and top plate see-through: the lead to XS1's pads
-//     cheekjack     a long-bush panel DC jack through the right cheek, raised to Z 57 (favourite 2)
+//     cheekjack     a long-bush panel DC jack through the right cheek, axis moved back to Z 57 (favourite 2)
 //
 // Connector sizes: flange 24, hole spacing 17, seat Ø14 seen (search excerpts of the 2РМ table);
 // lengths, the cable part's shape and the panel jack's body are INFERRED (see README.md).
@@ -22,7 +22,7 @@ JACK_CB_D = 0;
 RM_X = 182.5;  RM_Y = JACK_Y;
 RM_FLANGE = 24;  RM_HOLES = 17;  RM_HOLE_D = 3.2;   // seen, seen, inferred
 RM_CUT = 16;  RM_FRONT = 12;  RM_REAR = 13;         // inferred (L max 25 seen)
-// ---- favourite 2: long-bush DC jack through the right cheek, axis raised clear of the board
+// ---- favourite 2: long-bush DC jack through the right cheek, axis moved back (Z 57) clear of the board
 CJ_Y = JACK_Y;  CJ_Z = 57.0;  CJ_HOLE = 12.7;  CJ_REAR = 17;   // hole seen (0.5 in), the rest inferred
 PAD1 = [177.4, JACK_Y];  PAD2 = [183.4, JACK_Y];   // XS1 pads 1 (VIN_J) and 2 (GND), board file
 
@@ -80,7 +80,7 @@ module rear_with_hole(alpha = 1) {
             text(l[0], size = 4.5, font = "DejaVu Sans:style=Bold");
 }
 
-module cheek_r_jack() difference() {                // favourite 2: the right cheek with the raised jack's hole
+module cheek_r_jack() difference() {                // favourite 2: the right cheek with the moved jack's hole
     cheek(false);
     xcyl(X_IN_R - 1, X_OUT_R + 1, CJ_Y, CJ_Z, CJ_HOLE);
 }
