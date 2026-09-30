@@ -492,13 +492,15 @@ class NetRouter:
         for _ in range(passes):
             better = 0
             for n in nets:
-                old = [t for t in self.B.tracks if t[0] == n]
+                # the routed copper only: unroute() keeps the hand-laid tracks, so putting them back as
+                # well would lay them twice (a --route board then had duplicate segments)
+                old = [t for t in self.B.tracks if t[0] == n and t not in self.fixed]
                 if not old:
                     continue
                 L0 = sum(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5 for _, _, a, b, _ in old)
                 self.unroute(n)
                 left, _ = self.route(n, layers.get(n, LAYERS), widths.get(n))
-                new = [t for t in self.B.tracks if t[0] == n]
+                new = [t for t in self.B.tracks if t[0] == n and t not in self.fixed]
                 L1 = sum(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5 for _, _, a, b, _ in new)
                 if left or L1 > L0 + 1e-6:
                     self.unroute(n)
