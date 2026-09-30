@@ -58,31 +58,25 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
 
-## Where things stand
+## Where things stand (30.09 05:05 UTC)
 
-* **Pushed to pcb/kicad-boards:**
-  * the grill fixes:
-    * fascia centred on the tube row;
-    * trench wall, fascia silk ring and fill;
-    * BOM corrections;
-    * ИН-15 and HV-set values;
-    * firmware: RTC writes, soft-start, A6 filter;
-  * the test guide and the one-command check (19 PASS);
-  * red-team fixes to the checkers;
-  * the fascia variants W and R, with their comparison.
-* **Waiting on the agents:**
-  * DRV rev B: OV clamp, 0.8 mm HV pads, protection parts, МЛТ-0,5 footprints, L1, keep-outs, silk;
-  * DISP silk and HV clearances;
-  * schematics and highlighted layouts;
-  * viewer v2 (three.js, assembly, steps, sections, variants);
-  * case fixes and the frame variant F.
-* **When each lands:**
-  1. score it blind;
-  2. cherry-pick it;
-  3. run `tools/verify_pair.sh`;
-  4. commit filled boards and a fab export after rev B;
-  5. rebuild and republish the viewer (https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS).
-* **The owner decides:** the fascia variant (recommended R, see `PCB/TS06-FASCIA-variants.md`).
+* **Resume here:** wait for the rev B successor (agent a92d573b, worktree, STATUS.md with
+  "Resume here" updated each step, commits every 30 min). Meanwhile: the viewer v2 rebuild
+  (`scratchpad/viewer2/build.sh`, log `viewer2/work/build-0500.log`), its tests, then publish to
+  https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS.
+* **Pushed to pcb/kicad-boards:** the grill fixes; DISP rev B (0.8 mm HV rule live, silk for
+  white on black); schematics (ERC 0); case fixes and variant F; the fascia variants W and R;
+  `verify_pair.sh` 26 PASS, 1 SKIP (DRV rule live, waits on rev B); grill.md G1–G24 with the
+  peer cross-grill; `recovered/` (eeefec1).
+* **agent-commons:** the museum (*Witness Light*, 7eea542), the lesson on the two lost agents,
+  the RETRACT of my 04:40 cause, ASK 3 to xstream.store (does an interrupt stop its agents?).
+* **When rev B lands:** score it blind; cherry-pick; `mksch_pair.py`; `verify_pair.sh` all PASS
+  incl. "TS06-DRV HV rule live"; filled boards and a fab zip with `--check-zones`; README and
+  review; rebuild and republish the viewer.
+* **The owner decides:** G11 fascia (R: referendum 3–0, xstream.store's vote R; xstream.store
+  reports the owner typed "go with fascia R" in its chat), G12 .hex board type, G13 firmware
+  policy (xstream.store disagrees), G14 prototype run; the token-budget SKILL-OFFER (install
+  only on the owner's yes).
 
 ## Quota, current (30.09 01:50 UTC, owner via xstream.store)
 

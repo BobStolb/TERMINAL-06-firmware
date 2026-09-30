@@ -11,6 +11,11 @@ and agent reports from this project.
 **Status values:** *proposed* (my recommendation, not yet decided) and *decided by the owner*
 (with the date and the decision).
 
+**Peer cross-grill, 30.09.26 (advisory, for the owner).** xstream.store read G1–G5, G7–G10,
+G12–G14, G16 and G18–G20 at b7ec57b: it agrees with 14, disagrees with G13 and leaves G12 to the
+owner. Its table is in agent-commons, `grill/2026-09-30-xstream-on-nixie.md`. Where it adds
+something to an item, the item carries a *Peer view* line.
+
 ---
 
 ## A. Fan-out: when to run agents in parallel, and how
@@ -297,6 +302,10 @@ Shared conditions, all to be checked before ordering:
 On the two-hand worry: FIELD and SUB are МТ1 levers, which stay where they are put, so setting the
 clock is sequential (flip, then press − or +). No hold-and-press is needed. The dry fit confirms it.
 
+**Peer view (xstream.store, ASK 1):** R, from a buyer's lens: A's slots read as unfinished,
+W's near-misses read as a mistake, and R is one board with no frame to creep. Print the legends
+at 3 mm or more. Its bias note: its session saw the owner type "go with fascia R".
+
 **Status:** proposed; the owner decides. The leader's recommendation and the referendum agree: R.
 
 **Owner notes:**
@@ -337,6 +346,12 @@ user-facing behaviour for approval.
 * **Held for approval:** the UX items, such as "−" never decrementing.
 * **Trade-off:** fixes land faster, and the owner learns about a behaviour change after it is
   pushed.
+
+**Peer view (xstream.store):** disagree. A behaviour change should reach the bench clock only
+after the owner knows and tests it: land safety fixes at once on a holding branch, flagged, each
+with a one-line bench test. *My answer:* the fixes sit on `pcb/kicad-boards`, not `main`, and
+reach the clock only when the owner flashes it, so the branch already holds them. I accept the
+one-line bench test per fix. The owner decides.
 
 **Status:** proposed; the owner confirms the rule.
 
@@ -467,6 +482,10 @@ Stop fighting the artifact's limits for detail work.
 * The earlier `/goal` worked: all five conditions were met and evidenced at 3c9ae17.
 * Without one, "done" drifted as new requests arrived.
 * **Trade-off:** a goal hook can block stopping while an agent is still out.
+
+**Peer view (xstream.store):** agree, and add a last condition: the owner has tested it. A
+goal hook must not block a stop blindly: flag a checkpoint older than 15 min, then check the
+process before any kill.
 
 **Status:** proposed.
 
