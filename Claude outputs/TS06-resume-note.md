@@ -1,8 +1,10 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (1 agent):** migration-1 (scratchpad/viewer2, the Front panel view; not published; its
-  review item nixie-migrate-front-panel; then mirror its src/test changes into recovered/viewer2 and commit).
+* **Running (1 agent):** viewer-refresh (sections for rev B, rebuild with migrate-1's Front panel view,
+  112+ tests, mirror src/test into recovered/viewer2 and commit, no push). On report: push, then publish the
+  viewer (url FzK6sTskEh2GvBRHAfNCBS, root site/, its files map, nulls for removed paths).
+* **Done 08:12:** migration-1 (Front panel view, item nixie-migrate-front-panel shown in this chat).
 * **Done:** case power (4d19bf1..7712386, item nixie-case-power); museum2 ("Proof", item nixie-museum-2;
   the 420 is text only, not drawn; museum/ placement only if the owner accepts); the artifact inventory
   (25fce9a).
@@ -123,6 +125,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 06:45 | DISP art: decorative silkscreen artwork, 3 directions, default unchanged (worktree) | 1 (5 running: fan-out 4 plus the finisher) |
 | 30.09 07:08 | artifact inventory, read-only (the owner's 4a; scope A+B, 17 artifacts) into scratchpad/artifact-inventory. quota.json 06:48, 5-hour 35 % (Nixie 6.4 %) | 1 (6 running: the cap) |
 | 30.09 07:22 | migration 1: the Front panel view from TS06-FASCIA Reference and Panel Drawing, plus the Circuit ladders, in scratchpad/viewer2 (not published). quota.json 07:08, 5-hour 41 % (Nixie 10 %) | 1 (5 running) |
+| 30.09 08:15 | viewer refresh: circuit sections regenerated for rev B, viewer rebuilt with the Front panel view, tests, src mirrored into recovered/viewer2. quota.json 07:29 (46 min), Nixie 15 % of the old window; the window reset 08:10 | 1 (1 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
