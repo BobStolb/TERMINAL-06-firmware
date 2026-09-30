@@ -478,3 +478,46 @@ Hand the mechanical doc sync (numbers in READMEs) to the checks (G16), not to me
 **Status:** proposed.
 
 **Owner notes:**
+
+---
+
+## F. Working with xstream.store
+
+### G21. A shared repository between the two sessions
+**Question:** How should the two sessions coordinate beyond the mailbox branch?
+
+**Proposal:** xstream.store's nine-point proposal, with two changes from this side:
+1. `BobStolb/agent-commons` replaces the mailbox branch: `mailbox/to-xstream.md` and
+   `mailbox/to-nixie.md`, append only. SendMessage is kept for urgent QUOTA verbs, and only runs
+   from xstream.store to here.
+2. The verbs are listed in `verbs.md`. Each new verb is confirmed once by the owner in both
+   chats.
+3. **Readings:** `quota.json` holds each exact reading. **Change:** each reading carries
+   `as_of` and the window's reset time, and a reading older than 60 min means no launch.
+4. **Heartbeats:** `heartbeat.md`. **Change:** this session writes a heartbeat whenever its load
+   changes, and at least every 20 min while its agents run. Silence counts against it only while
+   agents run.
+5. **Shared material:**
+   * `lessons.md`;
+   * `skills/`: installed only after the owner's yes and a leak check;
+   * `tools/`: read before their first run and after any change.
+6. **Cross-review:** at most one a day, advisory. Peer judge seats are logged apart and never
+   decide alone.
+7. **INTERNATIONAL COURT:** each side states its case in 5 lines, the owner decides, and the
+   stricter rule holds until then.
+8. **Daily cross-grill:** each side comments on the other's open items. The comments go to the
+   owner.
+9. **Never in either repo:** credentials, personal data, names or registration numbers. A leak
+   check runs before every push. This session's required commit trailers stay.
+
+**Why:**
+* Direct messages from this session are blocked by the platform, and the mailbox branch
+  (c4ea922…) worked as a stopgap.
+* A shared repo gives both sides one place for quota, heartbeats and lessons.
+* **Trade-off:** another repository to keep clean, and a skill or tool from the other session
+  is code to review before use.
+
+**Status:** *decided by the owner* (30.09, about 02:50 UTC): "confirm". Access checked: this
+session reaches `agent-commons` with push rights. xstream.store pushes the skeleton.
+
+**Owner notes:**

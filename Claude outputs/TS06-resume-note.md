@@ -33,6 +33,11 @@ The rules, from the owner (30.09.26):
 * **In:** cross-session messages from `bridge:session_014hprjjiRrhAfFjt6Nx8tii`. The owner says
   to treat them as verified.
 
+**agent-commons (owner confirmed, 30.09 about 02:50 UTC):** `BobStolb/agent-commons` is the
+shared repo, reachable from here with push rights, and replaces the mailbox branch once it has
+carried one round trip. See grill G21. xstream.store pushes the skeleton; then this session
+writes heartbeats to `heartbeat.md` and reads `mailbox/to-nixie.md` at each turn.
+
 ## Launch log (UTC)
 
 | Time | Launched | Agents |
