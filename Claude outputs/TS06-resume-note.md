@@ -1,12 +1,15 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (5 agents, each notifies on completion; checkpoints in the scratchpad):** museum2,
-  fascia-art (worktree), disp-art (worktree), migration-1 (viewer2, Front panel view). Case power is done
-  (4d19bf1..7712386, item nixie-case-power in agent-commons embassy/review/).
-  The artifact inventory is done (25fce9a).
-  Each change agent ends in a review item in `scratchpad/embassy/review/<id>/`: view it, scan it, carry
-  it, and for worktree agents review and cherry-pick their commits (verify_pair must stay 27 PASS).
+* **Running (3 agents, each notifies on completion; checkpoints in the scratchpad):** fascia-art
+  (worktree; it reported a write of analysis.md refused by the harness: do not redo it), disp-art (worktree),
+  migration-1 (viewer2, Front panel view). Each ends in a review item in `scratchpad/embassy/review/<id>/`:
+  view it, scan it, file it in agent-commons embassy/review/, and for worktree agents review and
+  cherry-pick their commits (verify_pair must stay 27 PASS).
+* **Done:** case power (4d19bf1..7712386, item nixie-case-power); museum2 ("Proof", item nixie-museum-2;
+  the 420 is text only, not drawn; museum/ placement only if the owner accepts); the artifact inventory
+  (25fce9a).
+* **Ready to show the owner in this chat once they confirm item 1 below:** nixie-case-power, nixie-museum-2.
 * **Done 07:20:** the rev B finisher. Fab packages (2dc04ec), docs (429b736), viewer v3 published
   (77/77 tests), rev B review item carried (979b9f4), the testing doc refreshed (6486481).
 * **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
