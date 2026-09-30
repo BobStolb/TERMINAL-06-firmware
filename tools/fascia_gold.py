@@ -5,6 +5,8 @@
     python3 tools/fascia_gold.py all OUTDIR [--base A|R]        # every variant into OUTDIR
     python3 tools/fascia_gold.py --list
     python3 tools/fascia_gold.py VARIANT OUT.kicad_pcb --preview OUT.png   # a quick flat picture
+    python3 tools/fascia_gold.py all OUTDIR --drc                       # KiCad 10 DRC on each, against the base's own
+    (the KiCad 3D renders come from tools/render_kicad.py; KiCad runs in Docker unless KICAD_CLI names a binary)
 
 VARIANT is one of ladder, divider, fans, guilloche. --base picks the board: A is PCB/TS06-FASCIA
 (176 x 40, controls on y 14), R is PCB/TS06-FASCIA-rhythm (191.4 x 40, controls on y 16). The
@@ -50,7 +52,7 @@ THE VARIANTS (one line each; the owner's review has pictures):
   guilloche a rose-engine rosette behind the dial's scale, the rule as three braided cords, SUB in a
             double engraved frame, the - and + on coin medallions.
 """
-import argparse, math, os, re, sys, uuid
+import argparse, collections, json, math, os, re, shutil, subprocess, sys, tempfile, uuid
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -211,6 +213,10 @@ def layout(G, A):
     L["plate"] = {n: fa.text_box(txt[n]) for n in ("MODE", "FIELD", "SUB")}
     L["ny"] = txt["MODE"]["y"]
     L["e3"], L["e5"] = L["nbox"][2][2] + 2.2, L["nbox"][4][2] + 2.2       # where DISPLAY's and FORMAT/DATE's traces start
+    L["compact"] = (L["F"][0] - L["D"][0]) < 50                            # R: FIELD is close to the dial (Plates' own test)
+    if L["compact"]:                                                       # and Plates starts the traces a little sooner there
+        L["e3"] -= 1.0
+        L["e5"] -= 1.4
     L["throw_y"] = L["F"][1] + THROW + PAD_R                                # centre of FIELD's contact pad
     return L
 
@@ -232,7 +238,8 @@ def g_ladder(A, G, L):
     A.arc("gold", D, 10.2, ANG[0], ANG[-1], 0.5, "dial")
     A.arc("gold", D, 12.3, ANG[0], ANG[-1], 0.5, "dial")
     for k, a in enumerate(ANG):
-        A.line("gold", P(D, 10.2, a), P(D, 12.3, a), 0.7, "dial")
+        stop = k in (0, 5)                      # 1 and 6 are the end stops: their rungs are heavier
+        A.line("gold", P(D, 10.2, a), P(D, 12.3, a), 1.1 if stop else 0.7, "dial")
     # the two dial contacts in parallel (an OR), then FIELD's gap, then the SUB coil, then earth
     x0 = max(e3, e5) + 3.2
     Lc = 6.0
@@ -287,15 +294,57 @@ def g_ladder(A, G, L):
     A.ground((mid, y), (0, 1), 0.5, "btn", stem=2.0, gap=1.2, halves=(2.4, 1.5, 0.6))
 
 
+def seq_chain(A, p, u, parts, w, grp, body_w=1.6):
+    """Parts laid one after another from p in direction u: ('wire', mm) or ('res', mm) (a GOST body:
+    an outlined rectangle, its leads the wires either side). Returns the end point."""
+    u = unit(u)
+    for kind, ln in parts:
+        q = add(p, u, ln)
+        if kind == "wire":
+            A.line("gold", p, q, w, grp)
+        else:
+            A.rect(add(p, u, ln / 2), u, ln, body_w, 0.3, grp)
+        p = q
+    return p
+
+
+def a7_ladder(A, cx, y0, sp, grp="a7"):
+    """The lever ladder as the board wires it: +5V - R6 (10k) - A7 - two legs, each a lever contact
+    and a resistor to earth: FIELD's R7 (20k, drawn as two 10k bodies) and SUB's R8 (10k)."""
+    w = 0.45
+    yn = y0 + 9.0
+    A.ring((cx, y0), 0.7, 0.4, grp)                                   # the +5V terminal
+    p = seq_chain(A, (cx, y0 + 0.9), (0, 1), [("wire", 2.0), ("res", 3.4), ("wire", yn - (y0 + 0.9 + 5.4))], w, grp)
+    A.dot((cx, yn), 0.7, grp)
+    xl, xr = cx - sp / 2, cx + sp / 2
+    A.polyline([(xl, yn), (xr, yn)], w, grp)
+    yg = yn + 15.6
+    for x, bodies in ((xl, 2), (xr, 1)):
+        A.line("gold", (x, yn), (x, yn + 2.0), w, grp)
+        A.dot((x, yn + 2.0), 0.6, grp)                                 # the lever's contact, open
+        A.dot((x, yn + 4.6), 0.6, grp)
+        a = math.radians(70)
+        A.line("gold", (x, yn + 4.6), (x + 1.2 * math.cos(a) * 1.0, yn + 4.6 - 2.3 * math.sin(a) * 1.0), w, grp)
+        parts = [("wire", 2.0)]
+        for i in range(bodies):
+            parts += ([("wire", 0.6)] if i else []) + [("res", 3.4)]
+        end = seq_chain(A, (x, yn + 4.6 + 0.6), (0, 1), parts, w, grp)
+        A.line("gold", end, (x, yg), w, grp)
+    A.polyline([(xl, yg), (xr, yg)], w, grp)
+    A.dot((cx, yg), 0.7, grp)
+    A.ground((cx, yg), (0, 1), w, grp, stem=1.2, gap=1.0, halves=(2.0, 1.3, 0.6))
+
+
 def g_divider(A, G, L):
     """The dial is the real A6 divider: taps round the arc, a resistor between each pair, tails to
-    GND (position 1) and +5V (position 6); the rule in the same PCB language, pads with teardrops."""
-    D, F, S = L["D"], L["F"], L["S"]
+    GND (position 1) and +5V (position 6); beside the levers the real A7 ladder; the rule in the same
+    PCB language, pads with teardrops."""
+    D, F, S, M = L["D"], L["F"], L["S"], L["M"]
     R, e3, e5, ty = L["rows"], L["e3"], L["e5"], L["throw_y"]
     r0 = 11.3
     tw = 0.5
     pr = 0.95
-    body_len, body_w, lead = 2.9, 1.7, 0.6
+    body_len, body_w = 2.9, 1.7
     span = math.degrees(body_len / 2 / r0)
     g = "div"
     for k, a in enumerate(ANG):
@@ -306,8 +355,7 @@ def g_divider(A, G, L):
         c = P(D, r0, m)
         tang = (-math.sin(math.radians(m)), math.cos(math.radians(m)))
         A.rect(c, tang, body_len, body_w, 0.3, g)
-        # leads: the arc between the pad and the body
-        pa = math.degrees(pr / r0)
+        pa = math.degrees(pr / r0)                       # leads: the arc between the lug and the body
         A.arc("gold", D, r0, a0 + pa * 0.6, m - span, tw, g)
         A.arc("gold", D, r0, m + span, a1 - pa * 0.6, tw, g)
     # tails round the dead side to the two ends of the chain, then their symbols (GND at 1, +5V at 6)
@@ -317,30 +365,42 @@ def g_divider(A, G, L):
     eg, ep = P(D, r0, -endA), P(D, r0, endA)
     A.ring(eg, pr - 0.3, 0.6, g)
     A.ring(ep, pr - 0.3, 0.6, g)
-    A.ground(eg, (-1, 0), 0.45, g, stem=1.8, gap=1.0, halves=(1.6, 1.0, 0.4))
+    A.ground(eg, (-1, 0), 0.45, g, stem=1.8, gap=1.1, halves=(2.0, 1.3, 0.6))
     A.line("gold", ep, add(ep, (-1, 0), 1.8), 0.45, g)
     A.ring(add(ep, (-1, 0), 2.8), 1.0, 0.4, g)
     # the rule: FIELD's contact pad, the SUB box, and the traces from 3 and 5, in 45-degree routing
-    w = 0.6
-    r = 2.6
+    w, r = 0.6, 2.6
     fx, sx = F[0], S[0]
     bx0, bx1 = sx - 11.5, sx + 11.5
-    by0, by1 = S[1] - 9.0, L["plate"]["SUB"][3] + 2.0
+    by0 = S[1] - 9.0
+    by1 = L["plate"]["SUB"][3] + (1.4 if L["compact"] else 2.0)
     rr = "rule"
     A.rrect("gold", bx0, by0, bx1, by1, 3.0, w, rr)
-    top_y, bot_y, h = 1.9, L["H"] - 3.6, 1.8
+    top_y, bot_y, h = (2.2 if L["compact"] else 1.9), L["H"] - 3.6, 1.8
     d3 = R[2] - top_y
     p3 = [(e3, R[2]), (e3 + d3, top_y), (sx - h, top_y), (sx, top_y + h), (sx, by0)]
-    d5 = bot_y - R[4]
-    p5 = [(e5, R[4]), (e5 + d5, bot_y), (sx - h, bot_y), (sx, bot_y - h), (sx, by1)]
     A.route(p3, w, r, rr)
+    entries = [(sx, by0), (bx0, ty)]
+    if L["compact"]:                                     # R: 5's trace drops 45 degrees and enters the box's side
+        dd = 3.2
+        p5 = [(e5, R[4]), (e5 + dd, R[4] + dd), (bx0, R[4] + dd)]
+        entries.append((bx0, R[4] + dd))
+    else:
+        d5 = bot_y - R[4]
+        p5 = [(e5, R[4]), (e5 + d5, bot_y), (sx - h, bot_y), (sx, bot_y - h), (sx, by1)]
+        entries.append((sx, by1))
     A.route(p5, w, r, rr)
     A.pad((e3, R[2]), 0.85, rr, d=(1, -1), w=w, tear=2.0)
-    A.pad((e5, R[4]), 0.85, rr, d=(1, 1), w=w, tear=2.0)
+    if not L["compact"]:                                 # (on R a pad would touch FORMAT/DATE: Plates starts the trace bare there too)
+        A.pad((e5, R[4]), 0.85, rr, d=(1, 1), w=w, tear=2.0)
     A.pad((fx, ty), PAD_R, rr, d=(1, 0), w=w, tear=2.2)
     A.line("gold", (fx, ty), (bx0, ty), w, rr)
-    for c in ((sx, by0), (sx, by1), (bx0, ty)):
+    for c in entries:
         A.ring(c, 1.0, 0.4, rr)
+    # the lever ladder in the clear between SUB's box and the buttons
+    free0, free1 = bx1 + 0.3, M[0] - 6.0
+    sp = 3.8 if free1 - free0 < 14 else 5.6
+    a7_ladder(A, (free0 + free1) / 2.0, 6.5, sp)
     # the buttons: the same key frames as Plates use, so - and + read the same
     y = L["ny"]
     for x, sg in ((L["M"][0], "-"), (L["Pl"][0], "+")):
@@ -404,17 +464,21 @@ def g_guilloche(A, G, L):
     r_in, r_out = base - amp - 0.5, base + amp + 0.5        # the bounding rules stand 0.3 mm (mask) clear of the lobes
     A.circle("gold", D, r_in, 0.2, g)
     A.circle("gold", D, r_out, 0.2, g)
+    win = 4.6                                               # each index bar stands in a window of the weave
     for i in range(4):
         ph = i * 360.0 / m / 4
-        pts = []
-        n = 720
+        run, n = [], 720
         for j in range(n + 1):
             th = 360.0 * j / n
-            rr = base + amp * math.sin(math.radians(m * th + ph * m))
-            pts.append(P(D, rr, th))
-        A.polyline(pts, 0.2, g)
+            cut = any(abs(((th - a + 180) % 360) - 180) < win for a in ANG)
+            if cut:
+                A.polyline(run, 0.2, g)
+                run = []
+                continue
+            run.append(P(D, base + amp * math.sin(math.radians(m * th + ph * m)), th))
+        A.polyline(run, 0.2, g)
     for a in ANG:
-        A.line("gold", P(D, 10.5, a), P(D, 12.0, a), 0.9, g)
+        A.line("gold", P(D, r_in + 0.4, a), P(D, r_out - 0.4, a), 0.9, g)
     # the rule as braided cords
     w = 0.28
     sx = S[0]
@@ -467,7 +531,7 @@ def braid(A, cl, w, grp, lam=3.4, amp=0.75, taper=1.8):
 
 
 VARIANTS = {"ladder": g_ladder, "divider": g_divider, "fans": g_fans, "guilloche": g_guilloche}
-DOCS = {k: v.__doc__.strip().split("\n")[0] for k, v in VARIANTS.items()}
+DOCS = {k: " ".join(v.__doc__.strip().split("\n\n")[0].split()) for k, v in VARIANTS.items()}
 
 
 # ============================================================================ the circuit, read from the board
@@ -481,8 +545,8 @@ def circuit(src):
 
     parts = {}
     for fp in find(tree, "footprint"):
-        ref = [p[2].strip('"') for p in find(fp, "property") if p[1] == '"Reference"'][0]
-        val = [p[2].strip('"') for p in find(fp, "property") if p[1] == '"Value"'][0]
+        ref = ([p[2].strip('"') for p in find(fp, "property") if p[1] == '"Reference"'] or [""])[0]
+        val = ([p[2].strip('"') for p in find(fp, "property") if p[1] == '"Value"'] or [""])[0]
         pads = []
         for p in find(fp, "pad"):
             net = find(p, "net")
@@ -511,7 +575,11 @@ def circuit(src):
     assert lev["SW2"] == {"LEVA", "A7"} and lev["SW3"] == {"LEVB", "A7"}, lev
     j1 = [n for (pn, n) in parts["J1"][1] if pn.isdigit()]
     assert j1 == ["+5V", "GND", "A6", "A7", "D7", "D8"], j1
-    return dict(chain=chain, order=order, value=res["R1"][0], j1=j1)
+    vals = {r: parts[r][0] for r in ("R6", "R7", "R8")}
+    assert vals == {"R6": "10k", "R7": "20k", "R8": "10k"}, vals
+    assert {parts[r][1][0][1] for r in ("R6",)} <= {"+5V", "A7"} and {n for _, n in parts["R6"][1]} == {"+5V", "A7"}
+    assert {n for _, n in parts["R7"][1]} == {"LEVA", "GND"} and {n for _, n in parts["R8"][1]} == {"LEVB", "GND"}
+    return dict(chain=chain, order=order, value=res["R1"][0], j1=j1, ladder=vals)
 
 
 def fa_sexp():
@@ -528,7 +596,7 @@ def front_copper_free(src):
         return [c for c in n if isinstance(c, list) and c and c[0] == k]
 
     for fp in find(tree, "footprint"):
-        ref = [p[2] for p in find(fp, "property") if p[1] == '"Reference"'][0]
+        ref = ([p[2] for p in find(fp, "property") if p[1] == '"Reference"'] or ['""'])[0]
         for p in find(fp, "pad"):
             ly = " ".join(find(p, "layers")[0][1:]) if find(p, "layers") else ""
             if not re.search(r'"(F\.Cu|\*\.Cu|F&B\.Cu)"', ly):
@@ -675,6 +743,71 @@ def build(variant, base="A", out=None):
     return A, G, problems, stats, n, cir
 
 
+# ============================================================================ KiCad DRC
+IMG = os.environ.get("KICAD_IMAGE", "mirror.gcr.io/kicad/kicad:10.0")
+DRU = """(version 1)
+(rule "front labels at least 3 mm (the owner's rule)"
+\t(layer "F.SilkS")
+\t(constraint text_height (min 3mm)))
+(rule "front gold labels at least 3 mm"
+\t(layer "F.Cu")
+\t(constraint text_height (min 3mm)))
+(rule "front silk stroke at least 0.15 mm"
+\t(layer "F.SilkS")
+\t(constraint text_thickness (min 0.15mm)))
+(rule "silk to silk 0.2 mm"
+\t(layer "F.SilkS")
+\t(constraint silk_clearance (min 0.2mm)))
+"""
+
+
+def drc(board, base):
+    """KiCad 10's DRC (refilled zones, every severity, with the owner's label rules) on a board, run in
+    a scratch copy of the base's project. Returns ({(severity, type): count}, unconnected count)."""
+    bdir = {"A": "TS06-FASCIA", "R": "TS06-FASCIA-rhythm"}[base]
+    tmp = tempfile.mkdtemp(prefix="fascia_drc.")
+    try:
+        proj = os.path.join(tmp, "PCB", "board")
+        os.makedirs(proj)
+        shutil.copytree(os.path.join(ROOT, "PCB", "lib"), os.path.join(tmp, "PCB", "lib"))
+        shutil.copy(board, os.path.join(proj, "board.kicad_pcb"))
+        shutil.copy(os.path.join(ROOT, "PCB", bdir, bdir + ".kicad_pro"), os.path.join(proj, "board.kicad_pro"))
+        open(os.path.join(proj, "board.kicad_dru"), "w").write(DRU)
+        shutil.copy(os.path.join(ROOT, "PCB", bdir, "fp-lib-table"), os.path.join(proj, "fp-lib-table"))
+        for r, ds, fs in os.walk(tmp):
+            os.chmod(r, 0o777)
+            for f in fs:
+                os.chmod(os.path.join(r, f), 0o666)
+        args = ["pcb", "drc", "--refill-zones", "--severity-all", "--units", "mm", "--format", "json"]
+        cli = os.environ.get("KICAD_CLI")
+        if cli:
+            cmd = [cli] + args + ["-o", os.path.join(tmp, "out.json"), os.path.join(proj, "board.kicad_pcb")]
+        else:
+            cmd = ["docker", "run", "--rm", "--user", "%d:%d" % (os.getuid(), os.getgid()), "-v", tmp + ":/w", "-w", "/w",
+                   "-e", "HOME=/tmp", IMG, "kicad-cli"] + args + ["-o", "/w/out.json", "/w/PCB/board/board.kicad_pcb"]
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        if not os.path.exists(os.path.join(tmp, "out.json")):
+            sys.exit("kicad-cli DRC failed:\n" + r.stdout + r.stderr)
+        d = json.load(open(os.path.join(tmp, "out.json")))
+        c = collections.Counter((v["severity"], v["type"]) for v in d.get("violations", []))
+        return c, len(d.get("unconnected_items", []))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def fmt_counts(c):
+    return ", ".join("%s %s x%d" % (k[0], k[1], n) for k, n in sorted(c.items())) or "none"
+
+
+def drc_report(name, board, base, base_run):
+    """DRC of one board against the committed base's: what is new. True when no new error and nothing unconnected."""
+    c, unc = drc(board, base)
+    new = {k: n - base_run[0].get(k, 0) for k, n in c.items() if n > base_run[0].get(k, 0)}
+    print("    DRC %s: %d violations (%s), %d unconnected; new against the committed %s board: %s" % (
+        name, sum(c.values()), fmt_counts(c), unc, base, fmt_counts(new)))
+    return not any(k[0] == "error" for k in new) and unc == 0
+
+
 # ============================================================================ a quick flat picture (not KiCad's render)
 def preview(A, G, path, px=14):
     from PIL import Image, ImageDraw
@@ -724,6 +857,7 @@ def main():
     ap.add_argument("--base", default="A", choices=sorted(fa.BASES))
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--preview", default="", metavar="PNG", help="also write a quick flat picture")
+    ap.add_argument("--drc", action="store_true", help="also run KiCad 10's DRC on each board and compare it with the base board's")
     a = ap.parse_args()
     if a.list or not a.variant:
         for k, v in DOCS.items():
@@ -731,6 +865,10 @@ def main():
         return
     todo = list(VARIANTS) if a.variant == "all" else [a.variant]
     failed = False
+    base_run = drc(fa.BASES[a.base], a.base) if a.drc else None
+    if a.drc:
+        print("the committed %s board's own DRC: %d violations (%s), %d unconnected" % (
+            a.base, sum(base_run[0].values()), fmt_counts(base_run[0]), base_run[1]))
     for v in todo:
         out = os.path.join(a.out, "%s-%s.kicad_pcb" % (v, a.base)) if a.variant == "all" else a.out
         if a.variant == "all":
@@ -745,6 +883,8 @@ def main():
         for p in problems:
             print("    " + p)
         failed |= bool(problems)
+        if a.drc and out:
+            failed |= not drc_report(v, out, a.base, base_run)
         if a.preview:
             preview(A, G, a.preview if a.variant != "all" else os.path.join(a.out, "%s-%s.png" % (v, a.base)))
     sys.exit(1 if failed else 0)
