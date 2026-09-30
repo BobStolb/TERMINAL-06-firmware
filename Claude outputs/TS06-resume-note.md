@@ -1,10 +1,12 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (1 agent, notifies on completion):** TS06-DRV rev B successor, worktree
-  `.claude/worktrees/agent-a92d573b002761b70`; its `recovered/drv-revb/STATUS.md` has "Resume here"
-  per step. At 06:05 it was routed, DRC clean, verify 26 PASS / 1 FAIL (case outputs stale, in 3d/),
-  and doing a reproducibility run (r5).
+* **Running (1 agent):** the rev B finisher, in the main checkout on `pcb/kicad-boards`
+  (commits, never pushes). Checkpoint `scratchpad/revb-finish/STATUS.md`. Rev B itself is merged
+  and pushed: 18 commits cherry-picked, case outputs rebuilt (19db010), verify_pair 27 PASS 0 SKIP.
+* **When the finisher reports:** review its commits and push; publish the viewer (url
+  FzK6sTskEh2GvBRHAfNCBS, root site/, its files map, nulls for removed paths); view its rev B
+  item and carry it to the embassy. Filling the committed boards (G8, first half) waits for the owner.
 * **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
   agent-commons `embassy/review/` (984c8f9, REVIEW-REQUEST in to-xstream.md). The answers wait for
   the owner's return; xstream.store copies them into `to-nixie.md`.
@@ -91,6 +93,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 ~02:30 | **MIA:** TS06-DRV rev B and viewer v2, both stopped when an owner message interrupted this turn (not stopped by the owner). Work recovered to `recovered/` (eeefec1) | −2 |
 | 30.09 04:55 | successor for TS06-DRV rev B, from the recovered patches, committing a checkpoint every 30 min. quota.json 04:44 (5 min old), 5-hour 12 % | 1 (2 running: the artist, rev B successor) |
 | 30.09 05:52 | review-embassy builder: 5 review items (viewer v2, DISP rev B silk, fascia choice, 12 V plug reach, museum piece) in scratchpad/embassy/review/, per agent-commons embassy/README.md and the Guided Decision Act. quota.json 05:26, 5-hour 19 % | 1 (2 running: rev B successor, embassy builder) |
+| 30.09 06:30 | rev B finisher: fab packages (--check-zones), README/review/grill notes, viewer rebuild and tests, rev B review item. quota.json 06:02, 5-hour 25 % | 1 (1 running: rev B finisher) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
