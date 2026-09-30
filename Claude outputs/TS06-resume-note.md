@@ -54,6 +54,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 04:45 | referendum on the fascia (G11), 3 citizen voters (maker, user, product designer), lighter model, read-only. quota.json 04:03 plus later readings, 5-hour 6 % | 3 (6 running: the cap) |
 | 30.09 ~02:30 | **MIA:** TS06-DRV rev B and viewer v2, both stopped when an owner message interrupted this turn (not stopped by the owner). Work recovered to `recovered/` (eeefec1) | −2 |
 | 30.09 04:55 | successor for TS06-DRV rev B, from the recovered patches, committing a checkpoint every 30 min. quota.json 04:44 (5 min old), 5-hour 12 % | 1 (2 running: the artist, rev B successor) |
+| 30.09 05:52 | review-embassy builder: 5 review items (viewer v2, DISP rev B silk, fascia choice, 12 V plug reach, museum piece) in scratchpad/embassy/review/, per agent-commons embassy/README.md and the Guided Decision Act. quota.json 05:26, 5-hour 19 % | 1 (2 running: rev B successor, embassy builder) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
