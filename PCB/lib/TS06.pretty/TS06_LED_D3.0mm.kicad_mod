@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+	(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 	(tags "LED 3mm THT front TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
@@ -58,6 +58,17 @@
 			(font
 				(size 0.8 0.8)
 				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "K"
+		(at -3.0 0 0)
+		(layer "F.SilkS")
+		(uuid "d011ccd0-3a42-5347-af58-13b878dbcb2e")
+		(effects
+			(font
+				(size 1.0 1.0)
+				(thickness 0.15)
 			)
 		)
 	)

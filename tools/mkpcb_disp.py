@@ -54,8 +54,11 @@ CLEARANCES (rev B, 30.09.26, from the electrical grill):
   * no copper, on either face, within 3.8 mm of a standoff hole's centre (the metal standoff
     and screw head): a KiCad rule area round each hole. It is why no strand crosses the colon
     column above the upper lamp any more.
+
+SILKSCREEN (rev B): white on black mask, drawn to the fab's minimums. What goes on which face,
+and why, is at the silkscreen section below.
 """
-import math, os, sys
+import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcbkit as K
 import sexp as S
@@ -377,15 +380,110 @@ B.track("COLON_RET", "F.Cu", [(xr, l2[1]), (xr, YB - 5.3), (X22["COLON_RET"][0],
 B.zone("BL_K", "F.Cu", clearance=0.5, min_th=0.3, gap=0.5, bridge=0.6)
 
 # ======================================================================== silkscreen
-# The back is where the board is assembled and where it plugs in, so that is where the words go:
-# the name, and each strip's reference beside its pin 1. The front carries the tube and LED
-# outlines from the footprints and nothing else - it is the face the customer looks past.
-B.text("TS06-DISP rev A", 35.0, H - 2.3, "B.SilkS", 1.0)
-B.text("TERMINAL-06  display", 35.0, H - 0.9, "B.SilkS", 0.8)
+# White on black mask (the owner's order, and his working unit's). The fab's minimums, Rezonit's
+# and JLC's alike: lines 0.15 mm, text 1.0 mm tall with a 0.15 mm stroke, nothing on a pad.
+# pcbkit strokes text at 0.15 x its height, so 1.0 mm is the smallest size used here.
+#
+# WHO SEES WHICH FACE, AND WHEN:
+#   * the FRONT is where the tubes, the lamps and the LEDs go in, and the clock's owner sees it
+#     between the tubes for years. So it carries only what fitting a part needs, and almost all
+#     of it is where the part itself will cover it: each tube's name inside its ring, the
+#     ИН-12's anode ring (its key), the ИН-17's gap ring, the lamps' dot-and-A, the LEDs' K.
+#     The two conventions and the 185 V mark go in the bottom band, behind the fascia.
+#   * the BACK is where every joint is soldered, and it faces TS06-DRV - the words go here:
+#     the title, the strips (names beside pin 1, the footprint's corner mark on pin 1), the
+#     conventions again, the standoffs, the high voltage, the tube names for the solderer.
+F_SILK, B_SILK = "F.SilkS", "B.SilkS"
+SILK_W = 0.15
+
+
+def warn_triangle(x, top, side, layer, width):
+    """An equilateral warning triangle, apex at (x, top), with a '!' in it - the stroke font has
+    no warning sign, so it is drawn."""
+    h = side * math.sqrt(3) / 2
+    for a, b in (((x, top), (x - side / 2, top + h)), ((x - side / 2, top + h), (x + side / 2, top + h)),
+                 ((x + side / 2, top + h), (x, top))):
+        B.line(round(a[0], 4), round(a[1], 4), round(b[0], 4), round(b[1], 4), layer, width)
+    sz = round(side * 0.36, 2)
+    B.text("!", x, round(top + h * 0.62, 3), layer, sz)
+
+
+# --- the front
+TUBE_NAMES = {"V1": "H10", "V2": "H1", "V3": "M10", "V4": "M1", "V5": "S10", "V6": "S1"}
+for ref in ("V1", "V2", "V3", "V4"):                  # above the pip hole, inside the socket's outline
+    f, x, y = B.placed[ref]
+    B.text(TUBE_NAMES[ref], x, y - 5.0, F_SILK, 1.5)
+for ref in ("V5", "V6"):                              # between the ИН-17's pad columns, above the anode
+    f, x, y = B.placed[ref]
+    B.text(TUBE_NAMES[ref], x, y - 1.3, F_SILK, 1.2)
+for ref, kind, name in (("V9", "ИН-15Б", "AM"), ("V10", "ИН-15А", "PM")):   # two different tubes: say which
+    f, x, y = B.placed[ref]
+    B.text(kind, x, y - 4.3, F_SILK, 1.2)
+    B.text(name, x, y + 5.0, F_SILK, 1.5)
+# the bottom band, behind the fascia: which way round the square pad is, and the anode voltage
+# on the strip joints
+B.text("LED: □ pad = K", 35.0, 40.5, F_SILK, 1.0)
+B.text("ИНС-1: □ pad = A •", 35.0, 42.3, F_SILK, 1.0)
+warn_triangle(93.0, 39.3, 3.8, F_SILK, SILK_W)
+B.text("185 V", 99.6, 41.0, F_SILK, 1.5)
+
+# --- the back (the stroke font mirrors it, so it reads from the back)
+B.text("TERMINAL-06 TS06-DISP rev B", 27.0, 1.9, B_SILK, 1.5)
+B.text("30.09.26 · this face to TS06-DRV", 27.0, 4.3, B_SILK, 1.0)
+for k, t in enumerate(("LED HL1-HL9: □ pad = K (cathode)",
+                       "ИНС-1 V7 V8: □ pad = A (anode, the dot)",
+                       "solder XP11-XP25 plugged into TS06-DRV")):
+    B.text(t, 79.0, 1.3 + 2.0 * k, B_SILK, 1.0)
+B.text("standoffs", 98.5, 33.2, B_SILK, 1.0)
+B.text("4 × M3, 11 mm", 98.5, 35.0, B_SILK, 1.0)
+# the strips: each name beside its pin 1, 0.25 clear of the strip's outline
 for ref, pins in (("XP21", XP21), ("XP22", XP22), ("XP23", XP23), ("XP24", XP24), ("XP25", XP25)):
-    B.text(ref, pins[0][0] - 3.1, YB, "B.SilkS", 0.8)                          # beside pin 1, clear of the outline
-B.text("XP11", XP11[-1][0] + 0.3, XP11[-1][1] + 2.3, "B.SilkS", 0.8)
-B.text("XP12", _XP12[-1][0] + 3.15, YT, "B.SilkS", 0.8)                        # past its last pin
+    B.text(ref, pins[0][0] - 3.6, YB, B_SILK, 1.0)
+B.text("XP11", 2.45, XP11[-1][1] + 2.35, B_SILK, 1.0)                           # under its last pin
+B.text("XP12", _XP12[0][0] - 3.6, YT, B_SILK, 1.0)
+# the tubes, for the one soldering their pins: under each ИН-12 ring (its inside carries the bus),
+# inside the other rings, whose insides are clear on this face
+for ref in ("V1", "V2", "V3", "V4"):
+    f, x, y = B.placed[ref]
+    B.text(TUBE_NAMES[ref], x - 2.0, 29.8, B_SILK, 1.5)
+for ref in ("V5", "V6"):
+    f, x, y = B.placed[ref]
+    B.text(TUBE_NAMES[ref], x, y - 1.3, B_SILK, 1.2)
+for ref, kind, name in (("V9", "ИН-15Б", "AM"), ("V10", "ИН-15А", "PM")):
+    f, x, y = B.placed[ref]
+    B.text(kind, x, y - 4.3, B_SILK, 1.2)
+    B.text(name, x, y + 5.0, B_SILK, 1.5)
+# the LEDs' cathodes and the lamps' anodes, beside the square pads
+for i in range(9):
+    f, x, y = B.placed[f"HL{i + 1}"]
+    B.text("K", x - 3.0, y, B_SILK, 1.0)
+for ref in ("V7", "V8"):
+    x, y = B.P(ref, 1)
+    B.text("A", x - 2.55, y, B_SILK, 1.0)
+# the standoffs' seats, and the voltage on the tube pins
+STANDOFF_MARK = 2.6
+for hx, hy, hd in B.holes:
+    B.circle(hx, hy, STANDOFF_MARK, B_SILK, SILK_W)
+warn_triangle(140.8, 24.5, 5.5, B_SILK, 0.2)
+B.text("185 V", 140.8, 32.0, B_SILK, 2.0)
+B.text("unplug,", 140.8, 35.2, B_SILK, 1.0)
+B.text("wait 15 s", 140.8, 36.9, B_SILK, 1.0)
+
+
+def widen_silk(tree):
+    """Every silkscreen stroke of a footprint to at least SILK_W: the strips come from KiCad's
+    stock headers, drawn at 0.12."""
+    for n in S.walk(tree):
+        if n[0] in ("fp_line", "fp_arc", "fp_circle", "fp_rect", "fp_poly"):
+            ly, st = S.find(n, "layer"), S.find(n, "stroke")
+            w = S.find(st, "width") if st else None
+            if ly and S.unq(ly[1]).endswith("SilkS") and w and float(w[1]) < SILK_W:
+                w[1] = S.num(SILK_W)
+    return tree
+
+
+for ref, (f, x, y) in B.placed.items():
+    widen_silk(f.tree)
 
 
 # ======================================================================== the checks this file adds
@@ -420,6 +518,145 @@ def copper_problems():
                     bad.append(f"[{layer}] {lab} is {d:.3f} from the standoff hole at ({hx}, {hy}), inside its keep-out")
     return bad
 
+
+def text_box(t, x, y, size, rot=0):
+    """A text's box. KiCad 10's stroke font, measured on this board: 0.82-0.93 x the height per
+    Latin character, 0.99 for Cyrillic, 1.15-1.7 x the height tall with the stroke (brackets and
+    descenders the most). tools/audit.py's box (0.78 per character) is smaller, so a pass here is
+    a pass there."""
+    w, h = max(len(t), 1) * size * 0.93 + size * 0.15, size * 1.5
+    return (x - w / 2, y - h / 2, x + w / 2, y + h / 2) if round(rot) % 180 == 0 else (x - h / 2, y - w / 2, x + h / 2, y + w / 2)
+
+
+def fp_silk_points(ref, step=0.1):
+    """Points along a placed footprint's silkscreen, arcs followed round their circle (pcbkit's
+    silk_points joins an arc's three points with chords, which cut inside a tube's outline)."""
+    f, x0, y0 = B.placed[ref]
+    out = []
+    P2 = lambda n, k: (float(S.find(n, k)[1]), float(S.find(n, k)[2]))
+
+    def run(a, b, ly):
+        k = max(1, int(math.hypot(b[0] - a[0], b[1] - a[1]) / step))
+        out.extend((x0 + a[0] + (b[0] - a[0]) * i / k, y0 + a[1] + (b[1] - a[1]) * i / k, ly) for i in range(k + 1))
+
+    for n in f.tree:
+        if not isinstance(n, list) or not n or n[0] not in ("fp_line", "fp_rect", "fp_circle", "fp_arc", "fp_poly"):
+            continue
+        lyn = S.find(n, "layer")
+        if not lyn or not S.unq(lyn[1]).endswith("SilkS") or K.Board._silk_on_pad(n, f):
+            continue
+        ly = S.unq(lyn[1])
+        if n[0] == "fp_line":
+            run(P2(n, "start"), P2(n, "end"), ly)
+        elif n[0] == "fp_rect":
+            a, b = P2(n, "start"), P2(n, "end")
+            for p, q in ((a, (b[0], a[1])), ((b[0], a[1]), b), (b, (a[0], b[1])), ((a[0], b[1]), a)):
+                run(p, q, ly)
+        elif n[0] == "fp_poly":
+            xy = [(float(q[1]), float(q[2])) for q in S.find_all(S.find(n, "pts"), "xy")]
+            for p, q in zip(xy, xy[1:] + xy[:1]):
+                run(p, q, ly)
+        else:
+            if n[0] == "fp_circle":
+                (ux, uy), e = P2(n, "center"), P2(n, "end")
+                r, a0, sweep = math.hypot(e[0] - ux, e[1] - uy), 0.0, math.tau
+            else:                                      # the circle through start, mid and end
+                (ax, ay), (mx, my), (bx, by) = P2(n, "start"), P2(n, "mid"), P2(n, "end")
+                d = 2 * (ax * (my - by) + mx * (by - ay) + bx * (ay - my))
+                ux = ((ax * ax + ay * ay) * (my - by) + (mx * mx + my * my) * (by - ay) + (bx * bx + by * by) * (ay - my)) / d
+                uy = ((ax * ax + ay * ay) * (bx - mx) + (mx * mx + my * my) * (ax - bx) + (bx * bx + by * by) * (mx - ax)) / d
+                r = math.hypot(ax - ux, ay - uy)
+                a0, am, a1 = (math.atan2(p[1] - uy, p[0] - ux) for p in ((ax, ay), (mx, my), (bx, by)))
+                sweep = (a1 - a0) % math.tau
+                if (am - a0) % math.tau > sweep:      # the arc runs the other way round
+                    sweep -= math.tau
+            k = max(8, int(abs(sweep) * r / step))
+            out += [(x0 + ux + r * math.cos(a0 + sweep * i / k), y0 + uy + r * math.sin(a0 + sweep * i / k), ly)
+                    for i in range(k + 1)]
+    return out
+
+
+def silk_problems():
+    """The fab's minimums and the legibility of what this file prints: every text 1.0 mm or more
+    with a 0.15 mm stroke, every line 0.15 mm or more; no text on a pad, a hole, another text or
+    a footprint's outline; nothing within 0.3 of the edge."""
+    bad = []
+    texts, marks = [], []
+    for kind, ly, d in B.gfx:
+        if kind == "text":
+            t, x, y, size, th, mirror, rot, just = d
+            if size < 1.0 - 1e-9 or th < SILK_W - 1e-9:
+                bad.append(f'"{t}" on {ly}: {size} mm text, {th} mm stroke, under the fab minimum')
+            texts.append((t, ly, text_box(t, x, y, size, rot)))
+        elif kind == "line":
+            if d[4] < SILK_W - 1e-9:
+                bad.append(f"line on {ly} is {d[4]} mm")
+            marks.append((ly, [(d[0], d[1]), (d[2], d[3])], d[4] / 2))
+        elif kind == "circle":
+            x, y, r, w = d
+            if w < SILK_W - 1e-9:
+                bad.append(f"circle on {ly} is {w} mm")
+            marks.append((ly, [(x + r * math.cos(a * math.tau / 72), y + r * math.sin(a * math.tau / 72)) for a in range(73)], w / 2))
+    outline = {F_SILK: [], B_SILK: []}
+    for ref in B.placed:
+        for x, y, ly in fp_silk_points(ref):
+            outline[ly].append((x, y))
+    hit = lambda bx, px, py, m: bx[0] - m <= px <= bx[2] + m and bx[1] - m <= py <= bx[3] + m
+    for i, (t, ly, bx) in enumerate(texts):
+        cu = ly[0] + ".Cu"
+        if bx[0] < 0.3 or bx[1] < 0.3 or bx[2] > W - 0.3 or bx[3] > H - 0.3:
+            bad.append(f'"{t}" on {ly} is within 0.3 of the board edge')
+        for p in B.pads:
+            if p.kind == "np_thru_hole" or p.on(cu):
+                r = (p.drill if p.kind == "np_thru_hole" else max(p.w, p.h)) / 2 + 0.15
+                if bx[0] - r < p.x < bx[2] + r and bx[1] - r < p.y < bx[3] + r:
+                    bad.append(f'"{t}" on {ly} is on or beside pad {p.ref}.{p.name}')
+        for hx, hy, hd in B.holes:
+            if bx[0] - hd / 2 - 0.3 < hx < bx[2] + hd / 2 + 0.3 and bx[1] - hd / 2 - 0.3 < hy < bx[3] + hd / 2 + 0.3:
+                bad.append(f'"{t}" on {ly} is on a standoff hole')
+        for t2, ly2, bx2 in texts[i + 1:]:
+            if ly2 == ly and bx[0] < bx2[2] and bx2[0] < bx[2] and bx[1] < bx2[3] and bx2[1] < bx[3]:
+                bad.append(f'"{t}" and "{t2}" overlap on {ly}')
+        if any(hit(bx, px, py, 0.1) for px, py in outline[ly]):
+            bad.append(f'"{t}" on {ly} runs into a footprint outline')
+        for ly2, pts, r in marks:
+            if ly2 == ly and t != "!" and any(hit(bx, px, py, r + 0.1) for px, py in pts):
+                bad.append(f'"{t}" on {ly} runs into a line or circle')
+    for ly, pts, r in marks:
+        cu = ly[0] + ".Cu"
+        for p in B.pads:
+            if p.kind != "np_thru_hole" and p.on(cu) and min(K.dist(([q], r), p.geom()) for q in pts) < 0.15:
+                bad.append(f"a silk mark on {ly} runs within 0.15 of pad {p.ref}.{p.name}")
+        if any(px < r + 0.3 or py < r + 0.3 or px > W - r - 0.3 or py > H - r - 0.3 for px, py in pts):
+            bad.append(f"a silk mark on {ly} is within 0.3 of the board edge")
+    return bad
+
+
+def written_silk_problems(text):
+    """The written board, read back: every silkscreen stroke and every visible silkscreen text,
+    the footprints' included, at the fab's minimums."""
+    bad = []
+    tree = S.parse(text)
+    for n in S.walk(tree):
+        if not n or n[0] not in ("fp_line", "fp_arc", "fp_circle", "fp_rect", "fp_poly", "gr_line", "gr_arc", "gr_circle",
+                                 "gr_rect", "gr_poly", "fp_text", "gr_text", "property"):
+            continue
+        ly = S.find(n, "layer")
+        if not ly or not S.unq(ly[1]).endswith("SilkS"):
+            continue
+        if n[0] in ("fp_text", "gr_text", "property"):
+            if S.find(n, "hide") is not None or "hide" in n:
+                continue
+            font = S.find(S.find(n, "effects") or [], "font") or []
+            sz, th = S.find(font, "size"), S.find(font, "thickness")
+            if not sz or float(sz[2]) < 1.0 - 1e-9 or not th or float(th[1]) < SILK_W - 1e-9:
+                bad.append(f"text {n[1]} on {S.unq(ly[1])} under 1.0 mm / 0.15 mm")
+        else:
+            st = S.find(n, "stroke")
+            w = S.find(st, "width") if st else None
+            if not w or float(w[1]) < SILK_W - 1e-9:
+                bad.append(f"{n[0]} on {S.unq(ly[1])} is {w[1] if w else '?'} mm")
+    return bad
 
 
 # ======================================================================== what KiCad is told
@@ -478,23 +715,42 @@ def write_all(out):
         fh.write(text)
     pro = out.replace(".kicad_pcb", ".kicad_pro")
     B.write_project(pro)
+    # the fab's text minimum, so KiCad's DRC holds it as well
+    with open(pro, encoding="utf8") as fh:
+        js = json.load(fh)
+    js["board"]["design_settings"]["rules"].update({"min_text_height": 1.0, "min_text_thickness": SILK_W})
+    with open(pro, "w", encoding="utf8", newline="\n") as fh:
+        json.dump(js, fh, indent=2)
     with open(out.replace(".kicad_pcb", ".kicad_dru"), "w", encoding="utf8", newline="\n") as fh:
         fh.write(DRU)
+    # the strips' rotated variants, with their silkscreen widened as on the board
     B.write_library()
+    for ref, (f, x, y) in B.placed.items():
+        r = B.librot(f)
+        if r and f.name.startswith("TS06_PinHeader_"):
+            name = B.libname(f)
+            p = os.path.join(K.PRETTY, name + ".kicad_mod")
+            with open(p, encoding="utf8") as fh:
+                t = widen_silk(S.parse(fh.read()))
+            with open(p, "w", encoding="utf8", newline="\n") as fh:
+                fh.write(S.dump(t) + "\n")
     return n, text
 
 
 if __name__ == "__main__":
     bad = B.check()
-    mine = copper_problems()
+    mine = copper_problems() + silk_problems()
     for b in mine:
         print("  [CHECK]", b)
     n, text = write_all(OUT)
+    late = written_silk_problems(text)
+    for b in late:
+        print("  [CHECK]", b)
     png = os.path.join(os.path.dirname(OUT), "copper.png")
     B.plot(png, ppm=8, color=lambda n: ((255, 90, 90) if n.startswith(("ANODE", "COLON")) else
                                          (80, 170, 255) if n.startswith(("K", "CAT")) else
                                          (180, 110, 255) if n.startswith(("BL", "M_A")) else (90, 220, 120)))
     print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
-    total = len(bad) + len(mine)
+    total = len(bad) + len(mine) + len(late)
     print(f"check: {total} problem(s)")
     sys.exit(1 if total else 0)

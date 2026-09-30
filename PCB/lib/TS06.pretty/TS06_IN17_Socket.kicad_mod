@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation.")
+	(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation. Silkscreen lines 0.15 mm, the fab minimum (30.09.26).")
 	(tags "nixie IN17 socket THT wire-landing TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
@@ -143,7 +143,7 @@
 		(mid 0 -7.35)
 		(end 4.35 -3.0)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -154,7 +154,7 @@
 		(mid 0 7.15)
 		(end -4.35 2.8)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -164,7 +164,7 @@
 		(start -4.35 -3.0)
 		(end -4.35 2.8)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -174,7 +174,7 @@
 		(start 4.35 -3.0)
 		(end 4.35 2.8)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -184,7 +184,7 @@
 		(center 2.7774 1.0910)
 		(end 3.5774 1.0910)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(fill no)

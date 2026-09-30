@@ -473,7 +473,7 @@
 		(layer "F.Cu")
 		(uuid "876d92bc-35b8-5dc7-9ee8-46af12d7d2ea")
 		(at 13.21 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL1"
@@ -536,13 +536,24 @@
 			)
 			(uuid "f9351337-54dd-50e1-b1e3-361eb23473cd")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "73b0150b-0a25-52a6-a036-0714874a2607")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "732184b7-7b7d-5406-bc1d-96e6a5950763")
+			(uuid "be46c143-9b67-5f24-9040-484b7927a345")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -550,7 +561,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 9 "BL_A1")
-			(uuid "cf27c0e6-e380-5df6-8563-b53244a301df")
+			(uuid "564e200e-a182-5f28-99fc-998bca3bd4c6")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -560,7 +571,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "8431e7d5-45da-57c6-8558-9dffa186cb13")
+			(uuid "9df28efa-0566-547d-97a8-a8e35ecb0903")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -570,7 +581,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "9df28efa-0566-547d-97a8-a8e35ecb0903")
+			(uuid "15a53598-2798-5f3a-a5ad-33732ff9b6b6")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -580,7 +591,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "15a53598-2798-5f3a-a5ad-33732ff9b6b6")
+			(uuid "48e1eb91-caf0-527d-8aa0-f9e4e2f67565")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -590,7 +601,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "48e1eb91-caf0-527d-8aa0-f9e4e2f67565")
+			(uuid "e2c92119-67d8-5116-8935-8668a000420a")
 		)
 		(fp_circle
 			(center 0 0)
@@ -601,7 +612,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "969cc098-0122-5538-80ff-164d698dda13")
+			(uuid "93e49996-dc52-5500-8ae2-0f1e47debde7")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -611,7 +622,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "4341534a-d84f-5d8f-859c-0bff3cd0da0f")
+			(uuid "aa70668e-286a-581a-bf07-09200d134cef")
 		)
 		(embedded_fonts no)
 	)
@@ -619,7 +630,7 @@
 		(layer "F.Cu")
 		(uuid "c34dba3b-4d85-5151-ab5d-ee9a09e35ea5")
 		(at 36.57 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL2"
@@ -682,13 +693,24 @@
 			)
 			(uuid "0a8ea7fa-902d-5bce-b7c4-6aa913e8cdac")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "bfd77ab1-45b9-53cb-a25a-e709b97be430")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "83647219-182a-5e35-9cef-933167287e65")
+			(uuid "15a6ece0-829e-526b-8327-18d30d601fa5")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -696,7 +718,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 10 "BL_A2")
-			(uuid "bdee25b2-facb-5504-900c-80873bc77b01")
+			(uuid "1977bf7f-60e1-5d44-ad2a-cd28318a7f42")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -706,7 +728,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "090c7305-211c-5848-a3f1-982120870c78")
+			(uuid "2fc05643-d84e-570f-8ca6-80900fe5b5d9")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -716,7 +738,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "2fc05643-d84e-570f-8ca6-80900fe5b5d9")
+			(uuid "631e1c51-3439-5163-9f6b-76b56276426c")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -726,7 +748,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "631e1c51-3439-5163-9f6b-76b56276426c")
+			(uuid "e59cdaab-c475-5d76-8c35-7a0a5f83acb3")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -736,7 +758,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "e59cdaab-c475-5d76-8c35-7a0a5f83acb3")
+			(uuid "8b8c24d2-0aae-51e2-aa31-93e8bd7dff6f")
 		)
 		(fp_circle
 			(center 0 0)
@@ -747,7 +769,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "a16990d6-da54-5f90-964a-a34be06c633b")
+			(uuid "60d0852a-34f3-5922-8e3b-c4aeae2b7484")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -757,7 +779,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "afeafe0a-ec82-53f8-ab8d-0afa74153295")
+			(uuid "952780e5-25be-5c26-92ac-003a521ad005")
 		)
 		(embedded_fonts no)
 	)
@@ -765,7 +787,7 @@
 		(layer "F.Cu")
 		(uuid "c2dc033b-a94c-5254-bfbb-93f5d4334212")
 		(at 63.99 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL3"
@@ -828,13 +850,24 @@
 			)
 			(uuid "9fbe3c86-6666-52e7-8224-b62baa718f3c")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "f2d8e512-9f1d-5e03-ac08-ca215539e82b")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "bd52c1f5-257d-5973-a6fe-ac173e2eec13")
+			(uuid "d114b3b1-f505-55da-a70b-238ff70dbbda")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -842,7 +875,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 11 "BL_A3")
-			(uuid "2efb84ab-1cf7-5bc7-838a-047890c5cee7")
+			(uuid "0bc3dfbc-cc5d-5ee1-98df-96604cf3b767")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -852,7 +885,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "94298c31-9492-5430-ba8b-71d41b6e61f7")
+			(uuid "9ff05a73-d7e7-533b-a698-95e711149ac0")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -862,7 +895,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "9ff05a73-d7e7-533b-a698-95e711149ac0")
+			(uuid "32079374-278d-5ad8-953a-2cd8c6c73879")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -872,7 +905,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "32079374-278d-5ad8-953a-2cd8c6c73879")
+			(uuid "85d5f0e3-9f83-5bfe-a6fa-5ae5e57c2148")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -882,7 +915,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "85d5f0e3-9f83-5bfe-a6fa-5ae5e57c2148")
+			(uuid "b6377dd6-c52d-5c8b-bded-7c3534554a1c")
 		)
 		(fp_circle
 			(center 0 0)
@@ -893,7 +926,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "af3db1e8-a53c-5c12-8875-701364957cc1")
+			(uuid "1bf11a7f-83e7-51a9-b298-c59e7ea82816")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -903,7 +936,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "6bf41141-8a78-5821-90a2-2c5a30cb0bd8")
+			(uuid "12c331da-87f5-5626-a1fe-e0acfd144708")
 		)
 		(embedded_fonts no)
 	)
@@ -911,7 +944,7 @@
 		(layer "F.Cu")
 		(uuid "adc8fdaa-d382-5698-b875-afd98946ee3e")
 		(at 87.37 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL4"
@@ -974,13 +1007,24 @@
 			)
 			(uuid "bb781565-86ee-5273-8e77-d5c8eb9d83a4")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "bfae8be9-3c00-5a65-8800-a59d7ee9db04")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "226d6043-1b1a-50ce-9055-c03260c23451")
+			(uuid "d02697c1-a449-5cf1-a217-8709bcfa10fc")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -988,7 +1032,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 12 "BL_A4")
-			(uuid "540d035d-be6b-5f3b-82d2-3a2d49273914")
+			(uuid "93885a0e-2469-5320-b2fc-a71300821f5f")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -998,7 +1042,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "7dc96154-d149-559e-abf0-3ba233fa377f")
+			(uuid "334472e5-76f0-557c-becf-ecfa4b0bfaa2")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1008,7 +1052,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "334472e5-76f0-557c-becf-ecfa4b0bfaa2")
+			(uuid "222f66db-6ec8-5237-bccd-980ca023becd")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1018,7 +1062,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "222f66db-6ec8-5237-bccd-980ca023becd")
+			(uuid "d1979754-a3c9-56d4-ac69-5b76b958b8b5")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1028,7 +1072,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "d1979754-a3c9-56d4-ac69-5b76b958b8b5")
+			(uuid "439aeace-d14c-5bd6-96d1-9f0fbd8ad622")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1039,7 +1083,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "406dfce1-f08c-5ab7-8e5b-454cebec304f")
+			(uuid "99039f3f-fae3-56d3-ae3a-95849a729ad3")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1049,7 +1093,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "319d1b0f-184e-5e5e-8298-b70bd8699abc")
+			(uuid "817b6915-c0f6-54b9-ae18-40087efac85c")
 		)
 		(embedded_fonts no)
 	)
@@ -1057,7 +1101,7 @@
 		(layer "F.Cu")
 		(uuid "22b04d63-2d54-59fe-9958-843ca4f1d663")
 		(at 108.635 36.509)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL5"
@@ -1120,13 +1164,24 @@
 			)
 			(uuid "9c01b29c-8251-5239-8ccc-3539a80444a4")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "77cb3a23-12fe-5fce-918d-072d1d75e165")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "9eb55af9-0b95-55bb-8420-8d65f047ba7e")
+			(uuid "a3302da9-7b78-5135-9b3d-135306eb8832")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -1134,7 +1189,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 13 "BL_A5")
-			(uuid "a629fe82-21cb-547d-bf73-6734c9beeebd")
+			(uuid "1e713e17-643e-58a9-b91e-6740b5361bf6")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -1144,7 +1199,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "a2560215-81ac-5149-8560-a554ca8851ea")
+			(uuid "b1dc077b-2d1d-5bb3-9194-27d006f69a08")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1154,7 +1209,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "b1dc077b-2d1d-5bb3-9194-27d006f69a08")
+			(uuid "145ca11c-9618-564b-a2f4-7224030dd3fc")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1164,7 +1219,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "145ca11c-9618-564b-a2f4-7224030dd3fc")
+			(uuid "2798cfa9-3814-5c5a-b3cd-d98169c7189e")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1174,7 +1229,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "2798cfa9-3814-5c5a-b3cd-d98169c7189e")
+			(uuid "e473e274-7fdc-5200-aa7e-228831047ee5")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1185,7 +1240,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "b81dae0a-2d16-5ceb-927e-8a745c344dd7")
+			(uuid "db39b04f-a5eb-58da-889c-4fcced4ad7d1")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1195,7 +1250,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "fe0cafa8-8c84-5239-9e67-a2631f7699d1")
+			(uuid "51be56d1-0e09-5cac-9f11-7f1503300596")
 		)
 		(embedded_fonts no)
 	)
@@ -1203,7 +1258,7 @@
 		(layer "F.Cu")
 		(uuid "79cf86eb-af1f-50b5-90e9-b23f6bbfbeef")
 		(at 129.135 36.509)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL6"
@@ -1266,13 +1321,24 @@
 			)
 			(uuid "ea00c016-d0c8-5b06-a74d-d34f375e7ac3")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "6473fe06-5921-55bf-9752-7221377c2bb1")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "7864c202-7415-5a30-af88-b2b49026083b")
+			(uuid "48ebb1e0-9740-5752-9969-18982a0876e6")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -1280,7 +1346,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 14 "BL_A6")
-			(uuid "8d45844f-24f8-524b-9c0b-387bd4bddbd5")
+			(uuid "8325b363-eb44-53aa-b659-9ee4abef06ff")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -1290,7 +1356,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "5cc93ade-543c-5bf4-a9b3-790cf420dc84")
+			(uuid "576896a6-bf2d-564e-9115-249af3c4a937")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1300,7 +1366,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "576896a6-bf2d-564e-9115-249af3c4a937")
+			(uuid "a7b1973a-316b-52cb-98c6-aa40e0e8bf2e")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1310,7 +1376,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "a7b1973a-316b-52cb-98c6-aa40e0e8bf2e")
+			(uuid "e6f23af6-8b72-50a9-bab8-2d0f31f753ae")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1320,7 +1386,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "e6f23af6-8b72-50a9-bab8-2d0f31f753ae")
+			(uuid "a3325663-b6ef-52d4-85ff-5fd63111ca7e")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1331,7 +1397,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "537bea5c-14eb-58cd-8872-f5200a1bcaa3")
+			(uuid "353ce21c-e85b-52d8-ae61-4aeff15e5981")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1341,7 +1407,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "2b89b806-c6d4-5407-a6df-beb85d970fe5")
+			(uuid "72603948-1674-5a83-a2f3-f39387c6b220")
 		)
 		(embedded_fonts no)
 	)
@@ -1349,7 +1415,7 @@
 		(layer "F.Cu")
 		(uuid "f167c6ec-e459-5419-a486-573ac892586b")
 		(at 150.4 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL7"
@@ -1412,13 +1478,24 @@
 			)
 			(uuid "3aacba57-3b82-5b04-bbce-e096acf55c8d")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "1302287b-0a3f-5ae3-8ebf-f96f7c29c56d")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "f8755d9c-9c38-5751-b61f-3b3873cd8adf")
+			(uuid "426b148f-a1c0-5806-bb49-708f697241ab")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -1426,7 +1503,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 15 "BL_A7")
-			(uuid "98949015-b0a0-5319-ac49-df3f393c9b28")
+			(uuid "b26dc5cd-48ee-5694-87cc-54cb0df570c6")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -1436,7 +1513,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "a875ba1c-96bf-50ed-b0e6-0b11bbccf680")
+			(uuid "2f3cde62-e760-56f8-bb47-f06e8cf4a0d3")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1446,7 +1523,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "2f3cde62-e760-56f8-bb47-f06e8cf4a0d3")
+			(uuid "64d4ebce-69c1-5238-ba35-dd86113e6402")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1456,7 +1533,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "64d4ebce-69c1-5238-ba35-dd86113e6402")
+			(uuid "cc37206b-c15b-563a-8573-871b202095a6")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1466,7 +1543,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "cc37206b-c15b-563a-8573-871b202095a6")
+			(uuid "e73cf481-117f-5a86-bbe6-004f5715a118")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1477,7 +1554,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "bb1a6c81-193d-5edd-9974-cb93d29baffd")
+			(uuid "c04d2e96-7dd7-5971-b070-5049e447716b")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1487,7 +1564,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "075f378e-5a2b-503e-b4f8-07a1164b3bcc")
+			(uuid "1df876c1-b1f2-55bc-aa6c-448aad9fcc89")
 		)
 		(embedded_fonts no)
 	)
@@ -1495,7 +1572,7 @@
 		(layer "F.Cu")
 		(uuid "38e65c09-5632-5ccf-8c24-d2336d429eb3")
 		(at 171.4 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL8"
@@ -1558,13 +1635,24 @@
 			)
 			(uuid "fc8ddd98-7671-5da2-a722-6f2cffc3278a")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "090f83fe-3237-553f-b25c-deec14d9176a")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "c62cb707-f5c5-5d5a-a114-3d036c7769a1")
+			(uuid "86c27d48-2af8-5bfb-b322-4e677f0693eb")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -1572,7 +1660,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 16 "BL_A8")
-			(uuid "f43eb3fb-9ad6-551d-8c2d-8ad8df5feaa4")
+			(uuid "a1988a56-e7c4-59f3-b309-cfd668661b67")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -1582,7 +1670,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "f8ed2771-e1d3-556d-8793-a904375d4f66")
+			(uuid "07138fcf-41ee-5789-8a48-4ccfeb5883dd")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1592,7 +1680,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "07138fcf-41ee-5789-8a48-4ccfeb5883dd")
+			(uuid "399ab44a-bcc6-5283-9dd6-fad1f15a422d")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1602,7 +1690,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "399ab44a-bcc6-5283-9dd6-fad1f15a422d")
+			(uuid "e3c451b6-36d3-547c-be9e-ef7fedff1dca")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1612,7 +1700,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "e3c451b6-36d3-547c-be9e-ef7fedff1dca")
+			(uuid "f5f4cbb6-2331-5f49-ae29-5ac14171d628")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1623,7 +1711,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "92ba49da-0757-5bfc-8748-45208f5c7ec5")
+			(uuid "5dde3dfb-eed9-5a5e-a518-a7195152af13")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1633,7 +1721,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "5b087993-86fc-5e26-870d-4aa4866e60a5")
+			(uuid "0b399c63-8964-597c-95e1-051a2e84f913")
 		)
 		(embedded_fonts no)
 	)
@@ -1641,7 +1729,7 @@
 		(layer "F.Cu")
 		(uuid "e076a4da-6277-55c2-9b2e-67bd79d91dbf")
 		(at 160.9 35.504)
-		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face.")
+		(descr "3 mm through-hole LED (KiCad LED_D3.0mm), pads centred on the body: pad 1 cathode (square), pad 2 anode. A 5 mm LED drops into the same holes; 3 mm is drawn because a 5.3 mm-tall body is what clears the back of the fascia from this board's face. Silkscreen (30.09.26): a K beside pad 1, the square pad and the cathode (the LED's flat side and short lead), 1.0 mm text with a 0.15 mm stroke, the fab minimum.")
 		(tags "LED 3mm THT front TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "HL9"
@@ -1704,13 +1792,24 @@
 			)
 			(uuid "679b1901-12d5-54b6-9354-cec92da11f3b")
 		)
+		(fp_text user "K"
+			(at -3 0 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "7eb38d0d-b6d0-50bb-95eb-4eb109ca72c0")
+		)
 		(pad "1" thru_hole rect
 			(at -1.27 0)
 			(size 1.8 1.8)
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 17 "BL_K")
-			(uuid "6956ecff-7ef7-51d7-93c0-916522082863")
+			(uuid "5879301d-ad7a-5c04-bb2f-e5b3be7ecbe9")
 		)
 		(pad "2" thru_hole circle
 			(at 1.27 0)
@@ -1718,7 +1817,7 @@
 			(drill 0.9)
 			(layers "*.Cu" "*.Mask")
 			(net 59 "M_A")
-			(uuid "2be875fe-0ec7-5ab0-acd2-13d5826bb997")
+			(uuid "4a51d40f-8c39-5e3a-8f07-c0b5fb716118")
 		)
 		(fp_line
 			(start -2.42 -2.21)
@@ -1728,7 +1827,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "8e379948-a947-5001-881c-a84864137559")
+			(uuid "407d1a6b-b7cd-589f-b0e5-56074c5763fa")
 		)
 		(fp_line
 			(start 2.42 -2.21)
@@ -1738,7 +1837,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "407d1a6b-b7cd-589f-b0e5-56074c5763fa")
+			(uuid "4a75cd37-7989-5473-af4d-e80b65f43dd6")
 		)
 		(fp_line
 			(start 2.42 2.21)
@@ -1748,7 +1847,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "4a75cd37-7989-5473-af4d-e80b65f43dd6")
+			(uuid "57318aaa-2523-59a8-aa2a-0b6ef0d01304")
 		)
 		(fp_line
 			(start -2.42 2.21)
@@ -1758,7 +1857,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "57318aaa-2523-59a8-aa2a-0b6ef0d01304")
+			(uuid "664ae719-f538-595c-b45e-d2fe022bbb3e")
 		)
 		(fp_circle
 			(center 0 0)
@@ -1769,7 +1868,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "72386f26-ab69-52cf-b62e-682a17c58251")
+			(uuid "af6c8c57-d138-55f3-a0ba-4d20208d0149")
 		)
 		(fp_line
 			(start -2.2 -1.2)
@@ -1779,7 +1878,7 @@
 				(type solid)
 			)
 			(layer "F.Fab")
-			(uuid "97df0d6f-390f-5501-9dbe-72c99745abc1")
+			(uuid "ee199e7c-3dec-5b3d-a8a0-c6a5c97b9f31")
 		)
 		(embedded_fonts no)
 	)
@@ -1787,7 +1886,7 @@
 		(layer "F.Cu")
 		(uuid "b459d5f9-5dc9-552c-bbb2-aa3fe8c3ed31")
 		(at 13.21 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V1"
@@ -1849,13 +1948,24 @@
 			)
 			(uuid "d3e4d45d-bdde-5cc0-9100-04681df367dc")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "67661465-a769-587d-920e-dfba3f8facf5")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 44 "K5")
-			(uuid "bd62376b-e0e8-5680-9a4b-353eec6d1430")
+			(uuid "5e84ded5-3479-5499-836e-1cd13140da04")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -1863,7 +1973,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 45 "K6")
-			(uuid "34779147-c177-55e8-96d9-2c0e28612c4b")
+			(uuid "356499e9-240c-5c85-9f22-6409cd0d2c0a")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -1871,7 +1981,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 46 "K7")
-			(uuid "6a119b82-6151-538d-bfc2-a84b57ee5026")
+			(uuid "17fe299e-16c7-56f4-9962-0e19b1fc968c")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
@@ -1879,7 +1989,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 47 "K8")
-			(uuid "6a0a7764-78f0-5db2-904f-e7e5c992bccb")
+			(uuid "52309a52-78b2-594a-a7aa-ae0e593bcb7e")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -1887,7 +1997,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 48 "K9")
-			(uuid "0d8ca457-d8e7-5518-8166-091f2f666438")
+			(uuid "58b2ee72-0101-520b-a782-3fb833f0e89e")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -1895,7 +2005,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 39 "K0")
-			(uuid "a56c403b-ceae-53d1-b39e-019eed5aa292")
+			(uuid "6a7c3a99-2e3e-5894-825f-7e1d3b9ac813")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -1903,14 +2013,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 3 "ANODE_H10")
-			(uuid "bcca60af-e3d7-56ce-b033-e7d54720440a")
+			(uuid "13ee6d0a-337c-5d44-b8d8-a6ae65d757a3")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "5fb7f131-58eb-55b8-bed4-f8311980aa6e")
+			(uuid "b2feecb6-603f-5a2a-aa5b-a3e583075062")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -1918,7 +2028,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 40 "K1")
-			(uuid "0f1f4349-f930-5c4c-9f08-c368d1839837")
+			(uuid "3bc0e0dd-ef68-5db8-b8f3-433dd2dd5861")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -1926,7 +2036,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 41 "K2")
-			(uuid "447601ee-45d0-52ba-b951-b83da015b4ce")
+			(uuid "8825b60c-669c-561b-a61f-66ce85a42b88")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
@@ -1934,7 +2044,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 42 "K3")
-			(uuid "a28c6b48-4702-562a-87bb-f464cf6807eb")
+			(uuid "c2901df1-2c56-52a0-b05c-9780de292946")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -1942,56 +2052,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 43 "K4")
-			(uuid "2ffd2d53-8fb9-5cc0-8ab7-44b1691c283c")
+			(uuid "64215fbf-51f2-56f1-a10e-f69abdb76ca6")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "e3ca67d6-471a-5ba6-9440-c44f52f4c705")
+			(uuid "09bb8101-43bf-5f68-b728-bb3a9ec0192d")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "b5435058-6731-5508-bc61-6d4f76b9d8d6")
+			(uuid "3093ceef-4e7e-55bf-9987-4bde1054131b")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "3093ceef-4e7e-55bf-9987-4bde1054131b")
+			(uuid "6e667fa6-a129-511a-9f1d-03dfa4f7345d")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "930a55ed-975f-5975-a522-7ce439e2c0b7")
+			(uuid "0fedc0e7-0dbb-5ded-8e46-0f172dac5caa")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "0fedc0e7-0dbb-5ded-8e46-0f172dac5caa")
+			(uuid "51ccd2f9-02f8-563e-9a44-ff894090d37f")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2001,7 +2111,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "51ccd2f9-02f8-563e-9a44-ff894090d37f")
+			(uuid "bf1e69e1-c620-5bd2-959e-7dbe7c381b60")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -2011,7 +2121,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "bf1e69e1-c620-5bd2-959e-7dbe7c381b60")
+			(uuid "1401b994-bc01-596c-8860-7a805da00314")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2021,7 +2131,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "1401b994-bc01-596c-8860-7a805da00314")
+			(uuid "5ad001ff-f1cf-5a78-b4b9-8f5f5a3c96b4")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -2031,7 +2141,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "5ad001ff-f1cf-5a78-b4b9-8f5f5a3c96b4")
+			(uuid "c346e5d2-605a-586e-b0e6-9ac1b3be0cf7")
 		)
 		(embedded_fonts no)
 	)
@@ -2039,7 +2149,7 @@
 		(layer "F.Cu")
 		(uuid "1b3c096e-06b6-5275-be74-4afaf0cf0601")
 		(at 36.57 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V2"
@@ -2101,13 +2211,24 @@
 			)
 			(uuid "c6645632-9341-5d2e-b774-8820e2f02f43")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "d99aaf52-52bc-596a-99a3-c2ebb79c6e84")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 44 "K5")
-			(uuid "9dffb25f-f599-50b8-a258-cf5793ac75ca")
+			(uuid "3757194c-7997-53bf-8ea6-47aefa87d36f")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -2115,7 +2236,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 45 "K6")
-			(uuid "3dc414ed-7f57-564d-a542-8d687db69a7b")
+			(uuid "2752d2f6-9ff1-5fcf-aa1b-188838a9cebb")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -2123,7 +2244,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 46 "K7")
-			(uuid "b6ffe522-7c1a-56ee-a635-5c762d4f0c70")
+			(uuid "fe10ee42-361f-5bed-bf85-ea88a0cdb3be")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
@@ -2131,7 +2252,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 47 "K8")
-			(uuid "d7e5799f-3000-58b8-9e4e-4edfd199a46b")
+			(uuid "fbd55cdc-8d45-5c0d-92b3-c9b7bf4daeb7")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -2139,7 +2260,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 48 "K9")
-			(uuid "7f81a4d0-f44f-5edc-b87f-b9d9ea51101a")
+			(uuid "24432136-e12f-5915-a6fd-1cb96b8b26e7")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -2147,7 +2268,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 39 "K0")
-			(uuid "7ce7561e-adc8-5296-a266-2a78d3853870")
+			(uuid "f002fc1b-92cf-57b1-8499-1523091f359f")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -2155,14 +2276,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 2 "ANODE_H1")
-			(uuid "2816bf72-e2c6-501f-898e-22359872980f")
+			(uuid "ef4c84f0-b3f1-5a91-bb2c-d36dad117737")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "172ef9cc-9798-5813-87d7-20c998701d74")
+			(uuid "447f3c2f-830b-514b-9260-7d18bdca7f01")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -2170,7 +2291,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 40 "K1")
-			(uuid "2eff7f74-efb3-5806-93c5-144f650aa7d3")
+			(uuid "e7f972bb-1a37-5426-a18d-2ec226062308")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -2178,7 +2299,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 41 "K2")
-			(uuid "f9d3f45f-3038-5ff0-b975-5374ff7e02fa")
+			(uuid "d7134864-5b78-524f-b55a-f122325365fb")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
@@ -2186,7 +2307,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 42 "K3")
-			(uuid "af7e1bc5-6608-5d45-929c-b5c80280b39d")
+			(uuid "e9d38a0b-08a7-5636-84f5-b7447b5cece0")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -2194,56 +2315,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 43 "K4")
-			(uuid "11e96334-9b67-50b1-a156-24eea9688922")
+			(uuid "551d3342-b8bc-56aa-9fda-da1d3675aaf0")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "6416961d-61bb-5bca-bc7d-67b923fd58d3")
+			(uuid "0c400b50-5479-532e-9d10-5b5a77b9b7ae")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "01d4a0db-640e-5806-9027-6385a6a9a303")
+			(uuid "c844b625-8d92-5d1d-bef9-b8252e2624ea")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "c844b625-8d92-5d1d-bef9-b8252e2624ea")
+			(uuid "d878556c-042b-516c-8523-622d65099857")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "3e97b309-17fe-5645-9f60-ac168df23228")
+			(uuid "3c57143b-0444-581c-b520-ffe2cc2b2672")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "3c57143b-0444-581c-b520-ffe2cc2b2672")
+			(uuid "663ee98f-4226-594a-b722-cee6e0c909e0")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2253,7 +2374,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "663ee98f-4226-594a-b722-cee6e0c909e0")
+			(uuid "c629ea52-915c-538e-b39d-2b453caa1b7c")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -2263,7 +2384,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "c629ea52-915c-538e-b39d-2b453caa1b7c")
+			(uuid "4e9936c2-1644-55bb-ad5b-7e70970d0c29")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2273,7 +2394,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "4e9936c2-1644-55bb-ad5b-7e70970d0c29")
+			(uuid "cace2997-4a86-5a34-bd6e-36c8dfeff771")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -2283,7 +2404,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "cace2997-4a86-5a34-bd6e-36c8dfeff771")
+			(uuid "e8ec0a78-1963-51bb-ba93-5a3d3d18f923")
 		)
 		(embedded_fonts no)
 	)
@@ -2291,7 +2412,7 @@
 		(layer "F.Cu")
 		(uuid "351fa76d-2743-5de9-a3c3-fb844ea8c117")
 		(at 63.99 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V3"
@@ -2353,13 +2474,24 @@
 			)
 			(uuid "b79d5c0e-d5a2-5917-b16b-004fbc579285")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "d1741245-62f6-5fc2-ab74-4a0a9e0c55b4")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 44 "K5")
-			(uuid "31f4c3c6-6215-5d4e-90a6-51a57ca28923")
+			(uuid "5972a954-7d04-5f5c-a8f7-aefa81502a60")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -2367,7 +2499,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 45 "K6")
-			(uuid "1343db13-ce59-53f7-b941-e194844ae9bf")
+			(uuid "60404e0b-a20f-53df-996e-19b9b7a9e9ac")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -2375,7 +2507,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 46 "K7")
-			(uuid "f6e5f6c5-1798-5fe7-8ef3-f181dac8b35f")
+			(uuid "9dbaf115-f700-5196-95fd-b779c75b85f2")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
@@ -2383,7 +2515,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 47 "K8")
-			(uuid "0f4e3c34-c9d2-5791-9a6f-d0763fd8868f")
+			(uuid "a79cdc3d-24b6-587c-8366-671e71c7484a")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -2391,7 +2523,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 48 "K9")
-			(uuid "44c0dc22-4f00-57db-98bc-2c0e9374ce16")
+			(uuid "4bf9075e-85a3-523b-9d5a-1db16ad4f03b")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -2399,7 +2531,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 39 "K0")
-			(uuid "b5c76107-f3c2-5fb1-a144-c36463577b8d")
+			(uuid "44483e5c-9fad-58bb-ac79-59b336a98cef")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -2407,14 +2539,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 5 "ANODE_M10")
-			(uuid "e2b67160-99cc-5c17-8b95-27c92c9eb0b5")
+			(uuid "45e5c6b7-709c-505b-9fe6-0324e8fa0f46")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "d5030485-f2cd-5c95-b1f5-7e6eaca3c91f")
+			(uuid "7031b300-9db6-5f54-ac7a-e4cb6728da96")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -2422,7 +2554,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 40 "K1")
-			(uuid "d928150f-a464-5973-93ce-2329d540a47a")
+			(uuid "74bbc68d-7ddd-51ed-8ead-8b64dbf76165")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -2430,7 +2562,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 41 "K2")
-			(uuid "180c1860-c28a-511a-9ce0-0524b0465c83")
+			(uuid "d00fdbf7-f2be-50fe-89c6-69a7264170fe")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
@@ -2438,7 +2570,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 42 "K3")
-			(uuid "311ce5fa-a71c-5b5c-939f-bf807adbe0f0")
+			(uuid "716946c0-87a9-5664-a243-f8073bb129e3")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -2446,56 +2578,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 43 "K4")
-			(uuid "13b24493-356c-5fd0-9c85-68e9b54c736d")
+			(uuid "b341180f-dab2-516f-983f-fcccb6d3d49e")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "bef17333-77aa-5274-8186-d994dda9449a")
+			(uuid "a7009aea-3848-53f5-b4da-727c2b45ad1f")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "7525f8cb-3c43-52d9-b90f-fe310a60ea2f")
+			(uuid "1d6252ad-4061-53ed-a1f9-fcf0445d6c87")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "1d6252ad-4061-53ed-a1f9-fcf0445d6c87")
+			(uuid "14abede5-e6b7-5fb7-8a9c-dee8750faeda")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "a19a72f9-1377-5323-8e9b-19b63a75861b")
+			(uuid "e6055c4b-676c-53c3-9ba4-ce6cc6a9c5fd")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "e6055c4b-676c-53c3-9ba4-ce6cc6a9c5fd")
+			(uuid "ec5641a9-7f41-5510-988b-99d8291faf0a")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2505,7 +2637,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "ec5641a9-7f41-5510-988b-99d8291faf0a")
+			(uuid "4b7e84b3-620e-5f4e-ae1e-61b980a25948")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -2515,7 +2647,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "4b7e84b3-620e-5f4e-ae1e-61b980a25948")
+			(uuid "fea38272-2185-501a-8582-fbe8bfe98ff1")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2525,7 +2657,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "fea38272-2185-501a-8582-fbe8bfe98ff1")
+			(uuid "493482ee-591d-53b0-b1dc-ccd1b6e4f850")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -2535,7 +2667,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "493482ee-591d-53b0-b1dc-ccd1b6e4f850")
+			(uuid "96512e36-4e6e-54aa-96ed-2613ad091534")
 		)
 		(embedded_fonts no)
 	)
@@ -2543,7 +2675,7 @@
 		(layer "F.Cu")
 		(uuid "40969da4-8edf-57d3-9e1c-06c5e32021e3")
 		(at 87.37 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V4"
@@ -2605,13 +2737,24 @@
 			)
 			(uuid "b17fbc57-409a-5904-afd0-0e68c528f8ca")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "28497028-13d0-5a4a-9343-419790f6f3ca")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 44 "K5")
-			(uuid "b1e8c8b1-4ecd-5dce-9a7f-fe6834f949c8")
+			(uuid "72fc7d33-582d-5776-a7d5-8af261b5871b")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -2619,7 +2762,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 45 "K6")
-			(uuid "c8a5fac2-f0aa-5a14-be30-4e63c853d128")
+			(uuid "59149cd4-aedc-5d9e-8803-64a53fa699fa")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -2627,7 +2770,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 46 "K7")
-			(uuid "70c8b418-19bc-504e-a7bb-78cc389e34df")
+			(uuid "6b2050fa-5edc-5ff8-b6c0-3e1124a8d334")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
@@ -2635,7 +2778,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 47 "K8")
-			(uuid "577b2fed-dc47-5df8-a106-f985129937bf")
+			(uuid "24566a10-d811-5c5a-8891-64b31b1bb097")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -2643,7 +2786,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 48 "K9")
-			(uuid "7f3353ca-c832-548d-9b2a-e5678bbfaffa")
+			(uuid "5329cbf3-b5df-5491-8b69-48f29d2e8e80")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -2651,7 +2794,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 39 "K0")
-			(uuid "129e6f20-1b6a-56be-9064-63719f4e1028")
+			(uuid "5f9902c1-b7f9-58a0-9d23-355f9e512314")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -2659,14 +2802,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 4 "ANODE_M1")
-			(uuid "50efe9af-a535-5f75-8e2b-930872e3fa41")
+			(uuid "f9d1d3dc-f937-53a2-84f1-932860a8510a")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "1f2c582e-8932-56fc-9a6a-3a439016a908")
+			(uuid "7488038c-831b-56f0-8551-6b80bf87c153")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -2674,7 +2817,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 40 "K1")
-			(uuid "8a49046e-f54c-5a92-9112-5bfac9532ffc")
+			(uuid "ef3ee555-5204-5ff0-8c91-c0773fd19724")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -2682,7 +2825,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 41 "K2")
-			(uuid "3a52fabe-6adf-5744-b847-588d58b6568e")
+			(uuid "18ad2ba7-f7cf-521f-b2d0-00ec67ad991a")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
@@ -2690,7 +2833,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 42 "K3")
-			(uuid "c8ecbfa6-5363-5ced-9cb9-0fa47a4af6b4")
+			(uuid "ab4ac750-8d50-5196-98b8-44d8da38c31c")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -2698,56 +2841,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 43 "K4")
-			(uuid "ab7d1a3e-f8cc-58a4-b7dc-bdadcc183e6c")
+			(uuid "24e78f43-be66-57fb-9bcd-e1bf24d58dc1")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "ac766977-fcb9-5d39-86ac-7a7aa6007d8c")
+			(uuid "5b8bbe6c-eac3-52bf-8802-6dc726b82b45")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "80715b4a-fbb7-503a-a1ba-809d25458366")
+			(uuid "f76aebac-483a-523e-a294-a1ba26779c15")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "f76aebac-483a-523e-a294-a1ba26779c15")
+			(uuid "3f3b94c9-cdc5-5c94-aff2-c93194ac2c1d")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "ad7613d3-69ee-5848-a505-b710943735f4")
+			(uuid "37e7a149-b6df-57f1-82e0-6e88793692d9")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "37e7a149-b6df-57f1-82e0-6e88793692d9")
+			(uuid "5bc23a3f-4046-51b6-9f95-6138dc0fa26f")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2757,7 +2900,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "5bc23a3f-4046-51b6-9f95-6138dc0fa26f")
+			(uuid "81c9402e-d961-5d95-b69c-7ab4b66262c6")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -2767,7 +2910,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "81c9402e-d961-5d95-b69c-7ab4b66262c6")
+			(uuid "582254d0-1fbc-537d-9e55-5ab2468c0e81")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -2777,7 +2920,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "582254d0-1fbc-537d-9e55-5ab2468c0e81")
+			(uuid "afd30aa5-2d67-5ba3-b27f-3c6c295249e0")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -2787,7 +2930,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "afd30aa5-2d67-5ba3-b27f-3c6c295249e0")
+			(uuid "b995f15e-a703-5351-8e91-66f98c31a462")
 		)
 		(embedded_fonts no)
 	)
@@ -2795,7 +2938,7 @@
 		(layer "F.Cu")
 		(uuid "05d139ed-5b70-552d-96ae-f65867ec4a44")
 		(at 108.635 23.209)
-		(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation.")
+		(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation. Silkscreen lines 0.15 mm, the fab minimum (30.09.26).")
 		(tags "nixie IN17 socket THT wire-landing TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V5"
@@ -2950,7 +3093,7 @@
 			(mid 0 -7.35)
 			(end 4.35 -3)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -2961,7 +3104,7 @@
 			(mid 0 7.15)
 			(end -4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -2971,7 +3114,7 @@
 			(start -4.35 -3)
 			(end -4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -2981,7 +3124,7 @@
 			(start 4.35 -3)
 			(end 4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -2991,7 +3134,7 @@
 			(center 2.7774 1.091)
 			(end 3.5774 1.091)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(fill no)
@@ -3044,7 +3187,7 @@
 		(layer "F.Cu")
 		(uuid "9facd856-7587-5d39-b50c-44443ee000bd")
 		(at 129.135 23.209)
-		(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation.")
+		(descr "IN-17 nixie, wire-ended: 10 numeral pads (0-9) and the anode pad (A) on a 5.6 x 11.7mm stadium. Pad drills 0.8 -> 1.0mm, oversized for wire landing. NO PIP HOLE: the tube's factory specification (TU, recorded in TERMINAL-06-measurements-IN17 under handling limits) forbids soldering closer than 8mm to the glass, so the tube stands on its leads with at least 6.4mm between glass and board (8mm to the joint on the back of 1.6mm stock) - the J-LEAD spacer's job. The exhaust pip then needs no hole provided it projects less than 6.4mm below the glass - that projection is not measured yet, so check it on a bench tube before the board is ordered. The source's 4.0mm hole, and the 4.2mm and 3.6mm holes this file carried before, also walled off the ring's interior: without one, a 0.2mm track can pass between two pads into the ring. Pad coordinates are judge2005/Eagle-and-KiCAD-Nixie-Libs' IN-17. CORRECTED 2026-09-15: the first version copied that library's Eagle part (nixies-us.lbr, Y-up) verbatim into this Y-down file, mirroring it top-to-bottom. The library's own KiCad part (nixies-us.mod) negates Y, and this file now matches it; the earlier note that the footprint needed a rotation offset was this mirror. Physically confirmed 2026-09-15 on a real tube: with the digits upright, the gap left by the missing 12th lead is on the right, just below centre, with the anode lead just above it. This footprint therefore places at 0 deg with the digits upright; no pre-rotated variant is needed. The F.SilkS ring on the right-hand column marks that gap (no pad: the lead is absent) so the orientation reads off the bare board. Courtyard is the glass envelope from 3d/IN17.FCStd (12.25 x 17.67mm) plus 0.25mm. The FreeCAD model draws all 12 leads symmetrically, so it confirms the hole pattern but cannot show orientation. Silkscreen lines 0.15 mm, the fab minimum (30.09.26).")
 		(tags "nixie IN17 socket THT wire-landing TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V6"
@@ -3199,7 +3342,7 @@
 			(mid 0 -7.35)
 			(end 4.35 -3)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -3210,7 +3353,7 @@
 			(mid 0 7.15)
 			(end -4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -3220,7 +3363,7 @@
 			(start -4.35 -3)
 			(end -4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -3230,7 +3373,7 @@
 			(start 4.35 -3)
 			(end 4.35 2.8)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
@@ -3240,7 +3383,7 @@
 			(center 2.7774 1.091)
 			(end 3.5774 1.091)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(fill no)
@@ -3293,7 +3436,7 @@
 		(layer "F.Cu")
 		(uuid "64647870-9a28-590e-b43b-6216078c761b")
 		(at 50.535 11.5)
-		(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame. Silk outline: the measured 6.97 mm envelope as two arcs that stop short of the pads (the full circle ran through both).")
+		(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame. Silk outline: the measured 6.97 mm envelope as two arcs that stop short of the pads (the full circle ran through both). Pad 1 (square) is the ANODE, the lead the lamp marks with a dot - the opposite of the LEDs, whose square pad is the cathode - so the silkscreen carries a dot and an A beside it (30.09.26). Silkscreen lines 0.15 mm, the fab minimum.")
 		(tags "neon INS1 colon THT wire-landing TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V7"
@@ -3355,13 +3498,35 @@
 			)
 			(uuid "84183497-c1e4-5879-8a40-709d983a7239")
 		)
+		(fp_circle
+			(center 1.75 -2.5)
+			(end 1.95 -2.5)
+			(stroke
+				(width 0.4)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "c02259a9-92c1-52f1-acd9-d30625e3f610")
+		)
+		(fp_text user "A"
+			(at 3.35 -2.5 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "a95e8bc2-9c51-5718-b5fb-f6acbf224bca")
+		)
 		(pad "1" thru_hole rect
 			(at 0 -2.5)
 			(size 2.2 2.2)
 			(drill 1.0)
 			(layers "*.Cu" "*.Mask")
 			(net 38 "COLON_U")
-			(uuid "608243e3-80a3-570c-8bc5-f383fe57bf8a")
+			(uuid "473302dd-ee58-5764-8fcc-f7eef892460c")
 		)
 		(pad "2" thru_hole circle
 			(at 0 2.5)
@@ -3369,29 +3534,29 @@
 			(drill 1.0)
 			(layers "*.Cu" "*.Mask")
 			(net 37 "COLON_RET")
-			(uuid "dbe1fcb9-1e2e-517d-9b37-ced13a63a702")
+			(uuid "2ad323f3-da03-5ad2-9fd6-f190a4bafbcd")
 		)
 		(fp_arc
 			(start 1.417477 -3.183706)
 			(mid 3.485 0)
 			(end 1.417477 3.183706)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "bff248cf-89ea-5644-8878-149f10378bb0")
+			(uuid "fbb21b19-0be4-5982-8890-a7b86591ec9f")
 		)
 		(fp_arc
 			(start -1.417477 -3.183706)
 			(mid -3.485 0)
 			(end -1.417477 3.183706)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "b514f3db-351d-5cca-b318-c26a73e32b9c")
+			(uuid "8b61e189-e5b1-5ddf-84bb-01aa89daa0a0")
 		)
 		(fp_line
 			(start -3.6 -4)
@@ -3401,7 +3566,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "01549e99-d862-5309-b0c0-3dcfe9ddf1be")
+			(uuid "388ed762-85c7-5227-af2e-9e07262dea98")
 		)
 		(fp_line
 			(start -3.6 4)
@@ -3411,7 +3576,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "e48fd3ba-b439-55ee-a920-dcd8645a7aeb")
+			(uuid "640edc47-57bd-5019-8da4-73cf7b658541")
 		)
 		(fp_line
 			(start -3.6 -4)
@@ -3421,7 +3586,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "388ed762-85c7-5227-af2e-9e07262dea98")
+			(uuid "05e173ab-6b15-5b2c-a7d8-b42fe9f63469")
 		)
 		(fp_line
 			(start 3.6 -4)
@@ -3431,7 +3596,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "640edc47-57bd-5019-8da4-73cf7b658541")
+			(uuid "395eb98b-40f0-59e2-8c1e-b154897797a7")
 		)
 		(embedded_fonts no)
 	)
@@ -3439,7 +3604,7 @@
 		(layer "F.Cu")
 		(uuid "a22a39f5-b16b-5833-a438-234c809a4304")
 		(at 50.535 25.5)
-		(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame. Silk outline: the measured 6.97 mm envelope as two arcs that stop short of the pads (the full circle ran through both).")
+		(descr "ИНС-1 colon neon, wire-ended. 5.0 mm nominal lead pitch, deliberately oversized pads/drill (2.2/1.0 mm) to absorb the +/-0.2 mm pitch measurement uncertainty against the FreeCAD reference model - same wire-landing philosophy as the fascia's panel hardware and the SEC IN-17 pads. Pad 1 is the lead nearer the board's TOP edge in this part's local frame. Silk outline: the measured 6.97 mm envelope as two arcs that stop short of the pads (the full circle ran through both). Pad 1 (square) is the ANODE, the lead the lamp marks with a dot - the opposite of the LEDs, whose square pad is the cathode - so the silkscreen carries a dot and an A beside it (30.09.26). Silkscreen lines 0.15 mm, the fab minimum.")
 		(tags "neon INS1 colon THT wire-landing TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V8"
@@ -3501,13 +3666,35 @@
 			)
 			(uuid "252d3f7e-d56e-5d3e-9037-c7e660540b1f")
 		)
+		(fp_circle
+			(center 1.75 -2.5)
+			(end 1.95 -2.5)
+			(stroke
+				(width 0.4)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "a834c17e-b0fd-5006-8b7f-3040552468c7")
+		)
+		(fp_text user "A"
+			(at 3.35 -2.5 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1.0 1.0)
+					(thickness 0.15)
+				)
+			)
+			(uuid "262e5d9c-95b9-5522-8882-af43f9ad3de8")
+		)
 		(pad "1" thru_hole rect
 			(at 0 -2.5)
 			(size 2.2 2.2)
 			(drill 1.0)
 			(layers "*.Cu" "*.Mask")
 			(net 36 "COLON_L")
-			(uuid "ae4d5771-0576-5e6f-822c-03e0da6e153a")
+			(uuid "b208e081-96de-56f0-87b4-281b621e3a74")
 		)
 		(pad "2" thru_hole circle
 			(at 0 2.5)
@@ -3515,29 +3702,29 @@
 			(drill 1.0)
 			(layers "*.Cu" "*.Mask")
 			(net 37 "COLON_RET")
-			(uuid "55248d69-d082-52f9-bea7-e83531dc9311")
+			(uuid "15440497-9884-5c91-ad68-87ed2262158c")
 		)
 		(fp_arc
 			(start 1.417477 -3.183706)
 			(mid 3.485 0)
 			(end 1.417477 3.183706)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "f580d13e-2d77-5426-97b2-ec95149078ab")
+			(uuid "c9733e0e-b57e-51fe-938c-2887a8064e32")
 		)
 		(fp_arc
 			(start -1.417477 -3.183706)
 			(mid -3.485 0)
 			(end -1.417477 3.183706)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "ca545317-2da9-5727-8bcf-3cbb052c94cf")
+			(uuid "f309c9f9-78c7-5c6f-8114-60ba150359b0")
 		)
 		(fp_line
 			(start -3.6 -4)
@@ -3547,7 +3734,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "0acc1c2a-d7b0-54e8-ab43-88971197de23")
+			(uuid "ac1349d0-469a-5ac3-a026-b6ab80edd5c9")
 		)
 		(fp_line
 			(start -3.6 4)
@@ -3557,7 +3744,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "10eaf977-2711-5652-928a-c625cf516b71")
+			(uuid "7d220149-adbf-5393-9883-3d53f1c4a10c")
 		)
 		(fp_line
 			(start -3.6 -4)
@@ -3567,7 +3754,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "ac1349d0-469a-5ac3-a026-b6ab80edd5c9")
+			(uuid "9f8c2ba2-27f0-50a2-aeb4-7d5e9a51f59c")
 		)
 		(fp_line
 			(start 3.6 -4)
@@ -3577,7 +3764,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "7d220149-adbf-5393-9883-3d53f1c4a10c")
+			(uuid "45c867b7-9bbe-5b20-8fac-b1c0c4ee8096")
 		)
 		(embedded_fonts no)
 	)
@@ -3585,7 +3772,7 @@
 		(layer "F.Cu")
 		(uuid "920f5711-130d-51b9-b730-03273b38a314")
 		(at 150.4 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V9"
@@ -3647,13 +3834,24 @@
 			)
 			(uuid "e5360d94-6ea5-5e05-a3a8-4d0f1530f86f")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "5942f539-9ef2-5764-936e-549225cef30e")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 34 "CAT_B_VOLT")
-			(uuid "34bb97ba-b3ea-5878-8b07-c2490f771e36")
+			(uuid "e4ea1ea2-8348-59c2-a3de-5ee7bd5a161a")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -3661,7 +3859,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 30 "CAT_B_HENRY")
-			(uuid "3e85d893-5429-5c21-a546-ef0e2bff25cb")
+			(uuid "1b832dd3-6664-5bf9-bd00-4bdf3d9b766e")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -3669,14 +3867,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 31 "CAT_B_HERTZ")
-			(uuid "45badf63-46ad-5535-82c5-e94e4db0aaf6")
+			(uuid "1109314d-abce-597e-83ee-926a73fe6f26")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "0aad0e70-a16c-5d8c-a23c-61708ac19614")
+			(uuid "0f96d126-f30a-531c-a24a-1e9e6bd02ed0")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -3684,7 +3882,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 29 "CAT_B_FARAD")
-			(uuid "92aec4e4-3ce5-5a34-8b56-a483dc7b2b7c")
+			(uuid "d241eb32-31cd-530b-8e79-83dc296b8e13")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -3692,7 +3890,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 35 "CAT_B_WATT")
-			(uuid "2626b231-7c0e-5eed-a50c-c25e50d4fcff")
+			(uuid "c30fe033-bc61-51f9-8818-becad6a868f2")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -3700,14 +3898,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 1 "ANODE_AM")
-			(uuid "f6d5b901-536e-5b5e-ba16-2cbdd69cd124")
+			(uuid "d7bb9823-9e99-59db-89c6-72bbda01619b")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "284ec456-48dc-5693-964f-dcc1b8c4330d")
+			(uuid "43f229a5-9aee-5d93-8709-e92228b5a0c8")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -3715,7 +3913,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 28 "CAT_B_AMP")
-			(uuid "6e667086-715d-5be0-a79d-651a4d0dd9eb")
+			(uuid "817c3520-02e2-53d2-9bfe-0482814f15e8")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -3723,14 +3921,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 32 "CAT_B_OHM")
-			(uuid "e11de062-f6c4-532a-a55a-45bf6289a543")
+			(uuid "3032ebfa-9924-5d7e-bc92-5fc69ec2ac3d")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "a90d0fb3-a063-5ca9-b53a-fddc21ce561c")
+			(uuid "84ccc272-3a12-5542-821f-1788aab85a21")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -3738,56 +3936,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 33 "CAT_B_SIEMENS")
-			(uuid "f510d28b-da1d-5486-8d10-280203637720")
+			(uuid "81388cb4-6828-5679-badd-6c3d668013df")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "825424a1-0045-50e6-b6e2-708cdbab8520")
+			(uuid "7cbc252f-f2e4-5994-af5d-0cc70736b084")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "b0fa1d0f-a75b-5b75-ba20-46b5c5174c81")
+			(uuid "03a468b1-e7cd-564d-b616-d1efa650528a")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "03a468b1-e7cd-564d-b616-d1efa650528a")
+			(uuid "83362d2c-d802-544b-943a-4c199b9fcd95")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "653258ef-5df6-5bce-8033-d18640689f67")
+			(uuid "fbfb100e-19e4-5822-a611-ea068ce8f2d9")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "fbfb100e-19e4-5822-a611-ea068ce8f2d9")
+			(uuid "23b943cd-b627-55d3-8678-4df860e64e7a")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -3797,7 +3995,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "23b943cd-b627-55d3-8678-4df860e64e7a")
+			(uuid "3a793111-c340-5474-a6e2-3ed55ca70a66")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -3807,7 +4005,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "3a793111-c340-5474-a6e2-3ed55ca70a66")
+			(uuid "3ae71098-98ca-5689-bea1-e437c544a815")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -3817,7 +4015,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "3ae71098-98ca-5689-bea1-e437c544a815")
+			(uuid "1df3a3e8-adc2-5ee0-8319-2f246b0825a9")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -3827,7 +4025,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "1df3a3e8-adc2-5ee0-8319-2f246b0825a9")
+			(uuid "e90e885d-6532-5bc9-b3fd-c7d9c0ae6f3d")
 		)
 		(embedded_fonts no)
 	)
@@ -3835,7 +4033,7 @@
 		(layer "F.Cu")
 		(uuid "78308623-d8cc-58aa-8526-b9b325077088")
 		(at 171.4 17.834)
-		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+		(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 		(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 		(attr through_hole)
 		(property "Reference" "V10"
@@ -3897,13 +4095,24 @@
 			)
 			(uuid "eb7f763e-a192-57ea-98c3-989b177ebd3f")
 		)
+		(fp_circle
+			(center 3.987 8)
+			(end 5.387 8)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "55326b77-d973-5cdb-8136-edd7f8a3776c")
+		)
 		(pad "1" thru_hole circle
 			(at -3.981 -8.002)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 19 "CAT_A_MEGA")
-			(uuid "8154dc78-a515-50cd-b848-aacd699b1f8a")
+			(uuid "00867a10-e527-5e35-b5d5-058486fc00bf")
 		)
 		(pad "2" thru_hole circle
 			(at 0 -8.99)
@@ -3911,7 +4120,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 21 "CAT_A_MILLI")
-			(uuid "992577c7-71bb-57c7-820e-8baae40cc762")
+			(uuid "86de3f19-fa2e-5ff1-a454-381bf25d80d7")
 		)
 		(pad "3" thru_hole circle
 			(at 3.987 -8.002)
@@ -3919,7 +4128,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 27 "CAT_A_PLUS")
-			(uuid "06cf5309-03df-5487-ab3d-127f704f1576")
+			(uuid "e19671c5-ee75-593c-9d1d-b219698bd287")
 		)
 		(pad "4" thru_hole circle
 			(at 5.741 -4.494)
@@ -3927,7 +4136,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 22 "CAT_A_MINUS")
-			(uuid "da03f12a-d05b-5c41-8ba5-916fd4345e35")
+			(uuid "abf20873-0075-5de2-a45e-1c78da577163")
 		)
 		(pad "5" thru_hole circle
 			(at 5.741 0)
@@ -3935,7 +4144,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 24 "CAT_A_P")
-			(uuid "ff68c75c-a8e6-5662-9f40-490fbf17f831")
+			(uuid "fec32540-c726-5bf8-963f-78ccd1844aef")
 		)
 		(pad "6" thru_hole circle
 			(at 5.741 4.495)
@@ -3943,7 +4152,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 20 "CAT_A_MICRO")
-			(uuid "bb63d9b2-f27c-5a8f-97be-67ad6485d92a")
+			(uuid "456a146a-50b1-5cfe-ba41-d75f988be376")
 		)
 		(pad "7" thru_hole circle
 			(at 3.987 8)
@@ -3951,14 +4160,14 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 6 "ANODE_PM")
-			(uuid "1a1ee285-b242-56cd-b5cf-d459d97b007b")
+			(uuid "7197f882-a240-544e-9b04-8cd92a4892d6")
 		)
 		(pad "8" thru_hole circle
 			(at 0 8.991)
 			(size 2.0 2.0)
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
-			(uuid "0d3c6617-eedd-5f6b-9ae3-dda311b34565")
+			(uuid "f8465388-30d1-5995-b479-882c75ca7f38")
 		)
 		(pad "9" thru_hole circle
 			(at -3.981 8)
@@ -3966,7 +4175,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 23 "CAT_A_NANO")
-			(uuid "e6e2c774-538a-52ed-9bc2-cc0f42d3447b")
+			(uuid "0275ac3e-1c9b-5f25-8d03-abdbbf00ae17")
 		)
 		(pad "10" thru_hole circle
 			(at -5.742 4.495)
@@ -3974,7 +4183,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 25 "CAT_A_PCT")
-			(uuid "52908100-7654-5987-be50-3cf8d47cc2fe")
+			(uuid "fea24777-2365-5e88-b0ec-a34e56d902fd")
 		)
 		(pad "11" thru_hole circle
 			(at -5.742 0)
@@ -3982,7 +4191,7 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 26 "CAT_A_PI")
-			(uuid "62f84498-54e6-5307-b881-c07722293322")
+			(uuid "b07d3d7f-c6f7-5217-a563-b5af5775ae81")
 		)
 		(pad "12" thru_hole circle
 			(at -5.742 -4.494)
@@ -3990,56 +4199,56 @@
 			(drill 1.2)
 			(layers "*.Cu" "*.Mask")
 			(net 18 "CAT_A_KILO")
-			(uuid "6da19d2b-7c80-5c3a-aa24-cddef04be075")
+			(uuid "63d9778a-2041-55c6-b4d9-3008d9d5d0ee")
 		)
 		(pad "" np_thru_hole circle
 			(at 0 0)
 			(size 5.0 5.0)
 			(drill 5.0)
 			(layers "*.Cu" "*.Mask")
-			(uuid "cbc55fd9-a2a6-5b3f-862d-a35c4e1b77a9")
+			(uuid "4dcc1c0e-0e36-5a36-ab96-c13b90522eaa")
 		)
 		(fp_arc
 			(start -4.5 -3.2)
 			(mid 0 -7.7)
 			(end 4.5 -3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "351498e5-c272-590e-aa99-fc7400a310fc")
+			(uuid "c20e347f-032f-5b62-8ff6-a30dc4fafd6c")
 		)
 		(fp_arc
 			(start 4.5 3.2)
 			(mid 0 7.7)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "c20e347f-032f-5b62-8ff6-a30dc4fafd6c")
+			(uuid "ac5620fc-ad85-59a9-9add-f33300fea010")
 		)
 		(fp_line
 			(start -4.5 -3.2)
 			(end -4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "12bf6dba-09f5-57c7-816f-61ffa2d05375")
+			(uuid "0148afba-348c-58d8-bca9-8f5ce8344357")
 		)
 		(fp_line
 			(start 4.5 -3.2)
 			(end 4.5 3.2)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "0148afba-348c-58d8-bca9-8f5ce8344357")
+			(uuid "43078951-9c84-562e-af01-d1df4c936460")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -4049,7 +4258,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "43078951-9c84-562e-af01-d1df4c936460")
+			(uuid "fb5f795b-8258-561f-a664-c587284a0f76")
 		)
 		(fp_line
 			(start -9.99 14.68)
@@ -4059,7 +4268,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "fb5f795b-8258-561f-a664-c587284a0f76")
+			(uuid "ad31d51b-3853-58dc-bad0-a3da5755d13e")
 		)
 		(fp_line
 			(start -9.99 -14.68)
@@ -4069,7 +4278,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "ad31d51b-3853-58dc-bad0-a3da5755d13e")
+			(uuid "97d47c16-9949-576d-8cfa-0238126fadc4")
 		)
 		(fp_line
 			(start 9.99 -14.68)
@@ -4079,7 +4288,7 @@
 				(type solid)
 			)
 			(layer "F.CrtYd")
-			(uuid "97d47c16-9949-576d-8cfa-0238126fadc4")
+			(uuid "3ef75e98-f35d-534a-9470-d0af5138a253")
 		)
 		(embedded_fonts no)
 	)
@@ -4133,7 +4342,7 @@
 			(start 1.38 -1.38)
 			(end 0 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4142,7 +4351,7 @@
 			(start 1.38 0)
 			(end 1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4151,7 +4360,7 @@
 			(start 1.38 1.27)
 			(end 1.38 24.24)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4160,7 +4369,7 @@
 			(start 1.38 1.27)
 			(end -1.38 1.27)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4169,7 +4378,7 @@
 			(start 1.38 24.24)
 			(end -1.38 24.24)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4178,7 +4387,7 @@
 			(start -1.38 1.27)
 			(end -1.38 24.24)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4402,7 +4611,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4411,7 +4620,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4420,7 +4629,7 @@
 			(start 1.27 -1.38)
 			(end 77.58 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4429,7 +4638,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4438,7 +4647,7 @@
 			(start 77.58 -1.38)
 			(end 77.58 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4447,7 +4656,7 @@
 			(start 1.27 1.38)
 			(end 77.58 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4857,7 +5066,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4866,7 +5075,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4875,7 +5084,7 @@
 			(start 1.27 -1.38)
 			(end 11.54 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4884,7 +5093,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4893,7 +5102,7 @@
 			(start 11.54 -1.38)
 			(end 11.54 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -4902,7 +5111,7 @@
 			(start 1.27 1.38)
 			(end 11.54 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5081,7 +5290,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5090,7 +5299,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5099,7 +5308,7 @@
 			(start 1.27 -1.38)
 			(end 6.46 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5108,7 +5317,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5117,7 +5326,7 @@
 			(start 6.46 -1.38)
 			(end 6.46 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5126,7 +5335,7 @@
 			(start 1.27 1.38)
 			(end 6.46 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5287,7 +5496,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5296,7 +5505,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5305,7 +5514,7 @@
 			(start 1.27 -1.38)
 			(end 9 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5314,7 +5523,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5323,7 +5532,7 @@
 			(start 9 -1.38)
 			(end 9 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5332,7 +5541,7 @@
 			(start 1.27 1.38)
 			(end 9 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5502,7 +5711,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5511,7 +5720,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5520,7 +5729,7 @@
 			(start 1.27 -1.38)
 			(end 9 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5529,7 +5738,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5538,7 +5747,7 @@
 			(start 9 -1.38)
 			(end 9 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5547,7 +5756,7 @@
 			(start 1.27 1.38)
 			(end 9 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5717,7 +5926,7 @@
 			(start -1.38 -1.38)
 			(end -1.38 0)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5726,7 +5935,7 @@
 			(start 0 -1.38)
 			(end -1.38 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5735,7 +5944,7 @@
 			(start 1.27 -1.38)
 			(end 14.08 -1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5744,7 +5953,7 @@
 			(start 1.27 -1.38)
 			(end 1.27 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5753,7 +5962,7 @@
 			(start 14.08 -1.38)
 			(end 14.08 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5762,7 +5971,7 @@
 			(start 1.27 1.38)
 			(end 14.08 1.38)
 			(stroke
-				(width 0.12)
+				(width 0.15)
 				(type solid)
 			)
 			(layer "B.SilkS")
@@ -5939,10 +6148,206 @@
 		(layer "Edge.Cuts")
 		(uuid "cf00f202-908e-5e8c-891a-ad2e1b99c715")
 	)
-	(gr_text "TS06-DISP rev A"
-		(at 35 41.7 0)
+	(gr_text "H10"
+		(at 13.21 12.834 0)
+		(layer "F.SilkS")
+		(uuid "30f64a4c-3951-5bd5-b1ab-d31b3a114229")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "H1"
+		(at 36.57 12.834 0)
+		(layer "F.SilkS")
+		(uuid "f7cda6b5-eabb-5ce4-9c79-0ac033987f0d")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "M10"
+		(at 63.99 12.834 0)
+		(layer "F.SilkS")
+		(uuid "c1f5660b-e7c5-5eaa-b7f2-e040416097e7")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "M1"
+		(at 87.37 12.834 0)
+		(layer "F.SilkS")
+		(uuid "9953bd99-de5f-5c8f-a401-3109088a7bf2")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "S10"
+		(at 108.635 21.909 0)
+		(layer "F.SilkS")
+		(uuid "d867f84f-d1f0-5e30-8502-0fce81126f9e")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+		)
+	)
+	(gr_text "S1"
+		(at 129.135 21.909 0)
+		(layer "F.SilkS")
+		(uuid "e08ef0d3-e969-5ce2-be19-fcba8a9e2f84")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+		)
+	)
+	(gr_text "ИН-15Б"
+		(at 150.4 13.534 0)
+		(layer "F.SilkS")
+		(uuid "49a6eb22-1fc5-56c7-b42e-030215eff0e6")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+		)
+	)
+	(gr_text "AM"
+		(at 150.4 22.834 0)
+		(layer "F.SilkS")
+		(uuid "05aeb29b-6502-50f1-9bb2-cf8607caa97e")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "ИН-15А"
+		(at 171.4 13.534 0)
+		(layer "F.SilkS")
+		(uuid "0e327bc6-3854-5b99-a3ab-99b20c0a52d6")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+		)
+	)
+	(gr_text "PM"
+		(at 171.4 22.834 0)
+		(layer "F.SilkS")
+		(uuid "212224ba-82b9-50e7-9250-be9801a0e63d")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "LED: □ pad = K"
+		(at 35 40.5 0)
+		(layer "F.SilkS")
+		(uuid "c18ba193-6995-5a72-8d40-431b2d49eab1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "ИНС-1: □ pad = A •"
+		(at 35 42.3 0)
+		(layer "F.SilkS")
+		(uuid "a641e04d-51c3-57a8-b1ae-3d0c8dd0180b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_line
+		(start 93 39.3)
+		(end 91.1 42.5909)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9c9d71fc-baf2-59df-a318-3839656da8a1")
+	)
+	(gr_line
+		(start 91.1 42.5909)
+		(end 94.9 42.5909)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b80fad9b-32f5-5d75-923d-172f081b1396")
+	)
+	(gr_line
+		(start 94.9 42.5909)
+		(end 93 39.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0ec68a6b-2ebc-5c3f-9dc8-c43a246c2b4a")
+	)
+	(gr_text "!"
+		(at 93 41.34 0)
+		(layer "F.SilkS")
+		(uuid "39d75665-718c-55fd-abab-cf26e06232f8")
+		(effects
+			(font
+				(size 1.37 1.37)
+				(thickness 0.206)
+			)
+		)
+	)
+	(gr_text "185 V"
+		(at 99.6 41 0)
+		(layer "F.SilkS")
+		(uuid "c99f45a7-33d2-5e50-88dd-d28e735511eb")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+		)
+	)
+	(gr_text "TERMINAL-06 TS06-DISP rev B"
+		(at 27 1.9 0)
 		(layer "B.SilkS")
-		(uuid "549500f3-a3ab-5c0f-9353-e13ac26d80e2")
+		(uuid "c2ab17d3-91e5-5126-986b-de62d4e00632")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "30.09.26 · this face to TS06-DRV"
+		(at 27 4.3 0)
+		(layer "B.SilkS")
+		(uuid "4541fdd9-83c2-5a9b-a2e1-c5f807861f68")
 		(effects
 			(font
 				(size 1 1)
@@ -5951,98 +6356,520 @@
 			(justify mirror)
 		)
 	)
-	(gr_text "TERMINAL-06  display"
-		(at 35 43.1 0)
+	(gr_text "LED HL1-HL9: □ pad = K (cathode)"
+		(at 79 1.3 0)
 		(layer "B.SilkS")
-		(uuid "7758b489-4458-545d-a3fc-84b0c22a2b82")
+		(uuid "f10b8a97-5fe3-5706-a223-4f350fa2eae8")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "ИНС-1 V7 V8: □ pad = A (anode, the dot)"
+		(at 79 3.3 0)
+		(layer "B.SilkS")
+		(uuid "c10aba25-56c2-51a6-ad8b-15f82b9b2773")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "solder XP11-XP25 plugged into TS06-DRV"
+		(at 79 5.3 0)
+		(layer "B.SilkS")
+		(uuid "054d6716-aef7-58d6-a489-90b95c9e317d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "standoffs"
+		(at 98.5 33.2 0)
+		(layer "B.SilkS")
+		(uuid "045fa717-9536-5654-8f7b-3b2853246fe4")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "4 × M3, 11 mm"
+		(at 98.5 35 0)
+		(layer "B.SilkS")
+		(uuid "2dbc51c2-d79f-563c-95fb-3a9cde93f9aa")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP21"
-		(at 8.84 41.3 0)
+		(at 8.34 41.3 0)
 		(layer "B.SilkS")
-		(uuid "727b4e46-62f5-5313-8bc0-2981c7481ed9")
+		(uuid "6ddf01b1-4ad8-51d3-82dd-cec6bb5c9c58")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP22"
-		(at 44.89 41.3 0)
+		(at 44.39 41.3 0)
 		(layer "B.SilkS")
-		(uuid "3614cdb8-7a33-5f7f-bbb5-aa83a580ee5d")
+		(uuid "63cf2487-18d6-529c-b3b0-851d83b5d5fd")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP23"
-		(at 66.18 41.3 0)
+		(at 65.68 41.3 0)
 		(layer "B.SilkS")
-		(uuid "1947012d-fced-5eb2-8a02-b658b0b25126")
+		(uuid "55d48537-6769-537f-a5aa-ddd75b5b9655")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP24"
-		(at 112.015 41.3 0)
+		(at 111.515 41.3 0)
 		(layer "B.SilkS")
-		(uuid "a5d3af3d-20d5-5aac-aa77-a557d873f07a")
+		(uuid "a256006e-1244-5171-a9d6-2d89d25d5ba8")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP25"
-		(at 151.45 41.3 0)
+		(at 150.95 41.3 0)
 		(layer "B.SilkS")
-		(uuid "b45769fd-7d4c-5322-86c6-c000cbd6265e")
+		(uuid "9c0c37be-95eb-5043-83bc-3b739dad23f6")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP11"
-		(at 1.9 29.56 0)
+		(at 2.45 29.61 0)
 		(layer "B.SilkS")
-		(uuid "7e51ed09-d524-5999-a778-25d108b8fdd1")
+		(uuid "05e6e3bf-6094-5826-b57c-971e3925fbf7")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)
 	)
 	(gr_text "XP12"
-		(at 186.7 2.2 0)
+		(at 103.75 2.2 0)
 		(layer "B.SilkS")
-		(uuid "d7e87c47-8d42-5d2f-b056-9ff3f417fa15")
+		(uuid "c83cb392-13c7-5fc1-a7c6-87ad3ed9806d")
 		(effects
 			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "H10"
+		(at 11.21 29.8 0)
+		(layer "B.SilkS")
+		(uuid "409bd921-594d-5f03-95d5-52a46589d16e")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "H1"
+		(at 34.57 29.8 0)
+		(layer "B.SilkS")
+		(uuid "1f1b822e-6c63-5ed7-b59b-345ba76dd781")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "M10"
+		(at 61.99 29.8 0)
+		(layer "B.SilkS")
+		(uuid "23f2e396-2867-5e7f-91a7-2bd368ceed9d")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "M1"
+		(at 85.37 29.8 0)
+		(layer "B.SilkS")
+		(uuid "a533615e-dc24-507f-bd62-b63db5688530")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "S10"
+		(at 108.635 21.909 0)
+		(layer "B.SilkS")
+		(uuid "b1aa6e94-9749-5caa-adda-e43d43ddf206")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "S1"
+		(at 129.135 21.909 0)
+		(layer "B.SilkS")
+		(uuid "c1c26ea2-4774-57d6-9f2f-56dbb02c1dd2")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "ИН-15Б"
+		(at 150.4 13.534 0)
+		(layer "B.SilkS")
+		(uuid "ba173e3b-19ad-50ad-8497-5c83e5b64838")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "AM"
+		(at 150.4 22.834 0)
+		(layer "B.SilkS")
+		(uuid "e72c0c60-d461-5665-aaa1-afa2b0b18efc")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "ИН-15А"
+		(at 171.4 13.534 0)
+		(layer "B.SilkS")
+		(uuid "9ab8b48c-ab7d-51e4-b6b4-cbf8432a06d5")
+		(effects
+			(font
+				(size 1.2 1.2)
+				(thickness 0.18)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "PM"
+		(at 171.4 22.834 0)
+		(layer "B.SilkS")
+		(uuid "32d550f2-b327-5a29-8185-17a1637522be")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.225)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 10.21 35.504 0)
+		(layer "B.SilkS")
+		(uuid "e6acaee3-57a8-57f2-9193-10d3ed3b43dc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 33.57 35.504 0)
+		(layer "B.SilkS")
+		(uuid "0314ba27-03dc-59b3-88a3-2c5588e0a363")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 60.99 35.504 0)
+		(layer "B.SilkS")
+		(uuid "2f00899e-c37e-58fd-9323-71724d4deb02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 84.37 35.504 0)
+		(layer "B.SilkS")
+		(uuid "c744f657-3ae3-5a1f-88fd-e6c08711bf2c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 105.635 36.509 0)
+		(layer "B.SilkS")
+		(uuid "83a824df-323d-557a-b0ae-d2adc427341d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 126.135 36.509 0)
+		(layer "B.SilkS")
+		(uuid "41fd03a1-c738-5e68-97e4-b6f3a6e412ad")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 147.4 35.504 0)
+		(layer "B.SilkS")
+		(uuid "1998b925-f056-5cbd-9c06-e2a55b436f1f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 168.4 35.504 0)
+		(layer "B.SilkS")
+		(uuid "3cc1d495-945e-52f1-86f4-60e46661f62a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "K"
+		(at 157.9 35.504 0)
+		(layer "B.SilkS")
+		(uuid "23a3e8ff-1383-55f1-8bda-2ad82e825078")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "A"
+		(at 47.985 9 0)
+		(layer "B.SilkS")
+		(uuid "07121b90-c28f-500f-8232-1d14d2fd1900")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "A"
+		(at 47.985 23 0)
+		(layer "B.SilkS")
+		(uuid "e6994514-f2c5-577c-b7d6-4b1041480e10")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_circle
+		(center 3.5 40.5)
+		(end 6.1 40.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "76e0086b-a48b-5311-afdd-902d0929db63")
+	)
+	(gr_circle
+		(center 187.9 40.5)
+		(end 190.5 40.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "e6298171-93f7-5d4b-8ec7-635f20076e97")
+	)
+	(gr_circle
+		(center 50.535 3.3)
+		(end 53.135 3.3)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "cbaeea4e-1c31-53c1-b67a-ce5c93d858c6")
+	)
+	(gr_circle
+		(center 187.9 7.5)
+		(end 190.5 7.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "1d94b4c6-71b4-5599-9b89-08ce715bbe8f")
+	)
+	(gr_line
+		(start 140.8 24.5)
+		(end 138.05 29.2631)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "b46dbf71-59eb-525b-a546-a71b228b52eb")
+	)
+	(gr_line
+		(start 138.05 29.2631)
+		(end 143.55 29.2631)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "21b48680-ac1b-5b61-8c3f-c15f9fcefdee")
+	)
+	(gr_line
+		(start 143.55 29.2631)
+		(end 140.8 24.5)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(layer "B.SilkS")
+		(uuid "9e2b8330-f413-5fe9-b3a3-beedf12f28a9")
+	)
+	(gr_text "!"
+		(at 140.8 27.453 0)
+		(layer "B.SilkS")
+		(uuid "fed15869-ca76-5a8c-b885-490324692dbc")
+		(effects
+			(font
+				(size 1.98 1.98)
+				(thickness 0.297)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "185 V"
+		(at 140.8 32 0)
+		(layer "B.SilkS")
+		(uuid "0aed5a4e-7ee2-5cd4-a48b-8f9cd7dadb1f")
+		(effects
+			(font
+				(size 2 2)
+				(thickness 0.3)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "unplug,"
+		(at 140.8 35.2 0)
+		(layer "B.SilkS")
+		(uuid "bc8e25c4-b887-566b-baea-9f6b4dd258fc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "wait 15 s"
+		(at 140.8 36.9 0)
+		(layer "B.SilkS")
+		(uuid "f7e43eb4-39cd-5c19-abfc-58e6c4f9cd39")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
 			)
 			(justify mirror)
 		)

@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm.")
+	(descr "IN-12 nixie socket, also used for IN-15A/IN-15B (confirmed by hand to sit flush in this pattern). Hole positions from the real Gyver board's own drill file (PCB/IN-12_norm/Gerber_Drill_PTH.DRL, tool T11, 0.047in = 1.194mm, drilled at the proven 1.2mm): 12 holes on a stadium, not a circle. CORRECTED 2026-09-15: the first version wrote the Gerber's Y-up offsets straight into this Y-down file, mirroring every pad top-to-bottom; the hole pattern is mirror-symmetric, so the FreeCAD pin-marker overlay could not show it. Y is now negated. Its description also held unescaped double quotes, which stopped KiCad loading this file and, with it, the whole TS06 library. Pads are numbered by physical position, clockwise from the upper-left as seen from the component side, matching the Gyver silkscreen. Pad 7 (lower-right, 3.987,8.000) is the ANODE, confirmed two independent ways on the real board: its silkscreen ring sits at KiCad-relative (+3.93,+8.01), and in the traced copper it is the only position whose net is unique per tube (the 10 other connected positions are bussed across all four tubes). Pad 8 (bottom centre) has no trace on any tube: datasheet pin 12 (not connected on IN-12A and IN-15A, comma on IN-12B). Datasheet pin d lands on pad ((7 - d) mod 12) + 1 (rudatasheet.ru, tec.org.ru: pin 1 anode, pin 12 NC). The 5.00mm unplated centre hole is the Gyver board's own (Gerber_Drill_NPTH.DRL, T02 0.197in, at every tube centre): it clears the tube's 3.7mm tip-off pip, and without it the tube cannot sit flush. Courtyard is the glass envelope from 3d/IN12.FCStd (19.47 x 28.86mm) plus 0.25mm. Silkscreen (30.09.26): lines 0.15 mm, the fab minimum; a ring round pad 7, the anode and the datasheet's pin 1, as the Gyver board marks it - the tube's key when it is fitted.")
 	(tags "nixie IN12 IN15 socket THT TERMINAL-06")
 	(attr through_hole)
 	(property "Reference" "REF**"
@@ -60,6 +60,17 @@
 				(thickness 0.15)
 			)
 		)
+	)
+	(fp_circle
+		(center 3.987 8.0)
+		(end 5.387 8.0)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "c4679551-0802-5132-a51d-ff920e765bc0")
 	)
 	(pad "1" thru_hole circle
 		(at -3.981 -8.002)
@@ -157,7 +168,7 @@
 		(mid 0 -7.7)
 		(end 4.5 -3.2)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -168,7 +179,7 @@
 		(mid 0 7.7)
 		(end -4.5 3.2)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -178,7 +189,7 @@
 		(start -4.5 -3.2)
 		(end -4.5 3.2)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
@@ -188,7 +199,7 @@
 		(start 4.5 -3.2)
 		(end 4.5 3.2)
 		(stroke
-			(width 0.12)
+			(width 0.15)
 			(type solid)
 		)
 		(layer "F.SilkS")
