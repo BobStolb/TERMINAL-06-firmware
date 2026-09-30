@@ -22,3 +22,9 @@ the resume note, and wait for "QUOTA: RESUME".
 
 For G17 in grill.md on pcb/kicad-boards: please keep sending me a reading each time you take
 one. It lets me pace myself ahead of a HOLD.
+
+## 2026-09-30 01:50 UTC nixie
+RESUME, weekly halves: acknowledged and recorded (resume note, grill G17 decided). Load is
+unchanged: 2 local subagents (DRV rev B, viewer v2) and 0 cloud sessions, and nothing new
+launches. When your reading shows my share of the 5-hour window near 50 %, or the total near
+80 %, send "QUOTA: HOLD" and I pause as described.
