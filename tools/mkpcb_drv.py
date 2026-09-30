@@ -640,11 +640,12 @@ def place_refs(board, skip=("H",)):
 # least 0.15 mm, text at least 1.0 mm tall with a 0.15 mm stroke, nothing printed on a pad.
 LEGEND_BOXES = []                           # (x0, y0, x1, y1, back): the legends' text, kept clear by the references
 LEGEND_MISSED = []
-TEXT_W = 0.8                                # a character's advance in text heights, generously
+TEXT_W = 1.0                                # a character's advance in text heights, generously: KiCad's own
+TEXT_H = 1.3                                # extents (its DRC's silk checks) run to ~0.9 x and ~1.2 x the height
 
 
 def _tbox(t, x, y, size, rot=0):
-    w, h = len(t) * TEXT_W * size + 0.1, size
+    w, h = len(t) * TEXT_W * size + 0.1, TEXT_H * size
     if rot in (90, 270):
         w, h = h, w
     return (x - w / 2, y - h / 2, x + w / 2, y + h / 2)
@@ -665,6 +666,29 @@ class _Silk:
             for sx, sy, ly in board.silk_points(r):
                 self.silk.setdefault((ly, int(sx // 1), int(sy // 1)), []).append((sx, sy))
         self.courts = [(board.court(r), board.placed[r][0].back) for r in board.placed if not r.startswith("H")]
+        # the footprints' own printed marks (a diode's "K", say): (x0, y0, x1, y1, layer)
+        self.marks = []
+        for r, (f, x, y) in board.placed.items():
+            for n in K.S.walk(f.tree):
+                if not (isinstance(n, list) and n and n[0] == "fp_text" and len(n) > 2 and K.S.unq(n[1]) == "user"):
+                    continue
+                t, ly, at = K.S.unq(n[2]), K.S.find(n, "layer"), K.S.find(n, "at")
+                if t.startswith("${") or not ly or not K.S.unq(ly[1]).endswith("SilkS") or not at:
+                    continue
+                sz = K.S.find(K.S.find(K.S.find(n, "effects") or [], "font") or [], "size")
+                h = float(sz[1]) if sz else 1.0
+                half = max(len(t) * TEXT_W * h, TEXT_H * h) / 2       # either way round: the part may be turned
+                cx, cy = x + float(at[1]), y + float(at[2])
+                self.marks.append((cx - half, cy - half, cx + half, cy + half, K.S.unq(ly[1])))
+
+    def near_print(self, x, y, ly, d):
+        """Is (x, y) within d of a part's printed outline or mark on face `ly`?"""
+        for i in (int(x // 1) - 1, int(x // 1), int(x // 1) + 1):
+            for j in (int(y // 1) - 1, int(y // 1), int(y // 1) + 1):
+                for sx, sy in self.silk.get((ly, i, j), ()):
+                    if math.hypot(sx - x, sy - y) < d:
+                        return True
+        return any(m[4] == ly and m[0] - d < x < m[2] + d and m[1] - d < y < m[3] + d for m in self.marks)
 
     def free(self, bx, back, courts):
         m, g = 0.25, 0.25
@@ -719,7 +743,8 @@ def legends(board):
         return None
 
     def fence(poly, width=0.2, label_at=()):
-        """A closed outline, broken wherever it would print on a pad or a hole."""
+        """A closed outline, broken wherever it would print on a pad or a hole, or cross a part's own
+        printed outline or mark (KiCad's DRC reports silk on silk)."""
         pads = [(p.x, p.y, max(p.w, p.h) / 2) for p in board.pads] + [(hx, hy, hd / 2) for hx, hy, hd in board.holes]
         pts = list(poly) + [poly[0]]
         for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
@@ -727,7 +752,8 @@ def legends(board):
             run = []
             for i in range(n + 1):
                 x, y = x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n
-                ok = all(math.hypot(x - px, y - py) > pr + 0.25 + width / 2 for px, py, pr in pads)
+                ok = (all(math.hypot(x - px, y - py) > pr + 0.25 + width / 2 for px, py, pr in pads)
+                      and not S_.near_print(x, y, "F.SilkS", width / 2 + 0.6))   # 0.3 past a sampled arc's chord
                 if ok:
                     run.append((x, y))
                 if (not ok or i == n) and len(run) > 1:
@@ -759,7 +785,7 @@ def legends(board):
     x, y = B.P("RP1", 2)
     put("HV SET", x, y + 2.9, 1.0, reach=4.0, courts=False)
     x, y = B.P("U11", 4)
-    put("fit U12 before U11", x + 6.0, y + 2.4, 1.0, reach=5.0, courts=False)
+    put("fit U12 before U11", x + 6.0, y + 2.4, 1.0, reach=10.0, courts=False)
     # the RTC module's pins, one label over each pad: pad 1 GND ... pad 5 +
     for pin, t in ((1, "-"), (2, "NC"), (3, "C"), (4, "D"), (5, "+")):
         x, y = B.P("U13", pin)
@@ -968,12 +994,15 @@ if __name__ == "__main__":
     # into it reaches nothing (KiCad: "starved thermal"). They are joined by their tracks, so the
     # pours leave them alone and the slivers, touching no pad, are removed as islands. KiCad's DRC
     # names them after each re-route; the list keeps every one it has named.
-    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12"), ("C16", "2"), ("U5", "2"), ("U16", "12"), ("U3", "15")}
+    B.no_zone |= {("C5", "2"), ("U1", "4"), ("U15", "12"), ("C16", "2"), ("U5", "2"), ("U16", "12"), ("U3", "15"),
+                  ("R71", "2")}
     B.hide_refs = True
     legends(B)
     place_refs(B)
     bad = B.check() + silk_check(B)
     print(f"check: {len(bad)} problem(s)")
+    for b in bad:
+        print("  [CHECK]", b)
     print(f"cathode pads under 0.5 mm (soft, E10): {len(B.soft)}")
     for s in B.soft:
         print("  [SOFT]", s)

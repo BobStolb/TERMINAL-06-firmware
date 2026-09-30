@@ -48,10 +48,9 @@
 #                       edge by design (it is reached through the case cheek). FAILs past 2.6 mm.
 #   TS06-DRV checkpcb   COURTYARD OFF-BOARD XS11: 0.17 mm past the edge, because the strip must
 #                       sit exactly behind the display's XP11. FAILs past 0.25 mm.
-#   TS06-DRV drc        4 warnings: silk_edge_clearance x2, the Nano's (U1) outline past the edge
-#                       with its USB; lib_footprint_mismatch x2, VT21 (TO-220) and XS1 (DC jack),
-#                       whose stock silkscreen is clipped at their pads, so the board's copies
-#                       differ from the library files on purpose.
+#   TS06-DRV drc        2 warnings: silk_edge_clearance x2, the Nano's (U1) outline past the edge
+#                       with its USB. (Rev A's lib_footprint_mismatch x2, VT21 and XS1, are gone:
+#                       rev B's library copies drop the silk at pads as the board writer does.)
 #   case                2 rows are FAIL by design: "12 V plug engagement, plain 6 mm cheek" and
 #                       "review's 'Ø14 pocket from inside'". They are the two rejected ways of
 #                       passing the DC jack through the cheek, recorded to show why the model
@@ -143,8 +142,8 @@ ACCEPT_DRC = {
     ],
     "TS06-DRV": [
         ("silk_edge_clearance", {"U1"}, "Nano silk past the edge"),
-        ("lib_footprint_mismatch", {"VT21"}, "VT21 silk clipped at its pads"),
-        ("lib_footprint_mismatch", {"XS1"}, "XS1 silk clipped at its pads"),
+        # rev B (30.09.26): VT21's and XS1's lib_footprint_mismatch no longer occur - the library
+        # copies now drop the silk at pads as the board writer does - so they are not accepted any more
     ],
 }
 ACCEPT_CASE = ["12 V plug engagement, plain 6 mm cheek", "review's 'Ø14 pocket from inside'",
