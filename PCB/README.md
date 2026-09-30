@@ -154,6 +154,9 @@ than the strips lives between the boards. It has three bands:
   * the MCP23017 with its LED network stacked on port B;
   * the RTC module;
   * J1, the fascia connector. It is top-entry, so the cable leaves straight towards the fascia.
+    Rev B's 1 k + 10 nF on D7 and D8 and 1 M on A6 sit between the strips and J1, each part on its
+    own line's way in, so the lines still fan into J1 in its pin order
+    (`recovered/drv-revb/OPTIONS.md`: placed as a block in front of J1, they stalled the route).
 
 The strip order is a specification shared by both boards (`tools/ts06pair.py HEADERS`).
 `tools/mkpcb_drv.py` proves three things: every XS pin lands on its XP pin, it carries the
