@@ -1,8 +1,8 @@
 # TS06-DRV rev B: status
 
-Resume here: watch runs r3 (option 3, tree placement) and r4 (variant: R73/R74 standing in line on the gap's descent, scratch revb2/v4/tools); take the first that ends "0 nets sharing, 0 unrouted", copy its routes.json to tools/mkpcb_drv_routes.json (for r4 also its 4 pl() lines into tools/mkpcb_drv.py) and regenerate.
+Resume here: r3 converged (round 13) and is polishing; when it prints "wrote", copy scratch revb2/r3/routes.json to tools/mkpcb_drv_routes.json, run python3 tools/mkpcb_drv.py, then mksch_pair.py, bom_pair.py, verify_pair.sh, the scorecard. (r3's converged, unpolished tracks are kept in revb2/r3/state_round13.json.)
 
-Updated: 30.09.26 05:28 UTC. Last routing line: r3 round 10: 8 nets sharing, 0 unrouted, pres 34.6, 1471s (+5V GND HV185 M_A OPT_M1 OPT_M10 OPT_S10 PWM_G); r4 round 7: 12 nets sharing (A7 SCL SDA among them).
+Updated: 30.09.26 05:31 UTC. Last routing line: r3 round 13: 0 nets sharing, 0 unrouted, pres 116.8, 1628s. r4 stopped (kill 5089) at round 8, 9 nets sharing, no longer needed.
 
 ## Plan (written before the first edit)
 1. Apply the recovered patches (done: b4d187a, 13c6c29, 335f537).
@@ -31,6 +31,7 @@ Updated: 30.09.26 05:28 UTC. Last routing line: r3 round 10: 8 nets sharing, 0 u
 * Now: run r3 (option 3 placement, PYTHONHASHSEED=0), nohup, PID 4708, because the placement changed.
 * Now: run r4 (PID 5089) from a scratch copy of tools/ (revb2/v4/tools, PCB symlinked): R73/R74 standing N-S in line on D7/D8's rev A descent (x 165.1/168.2, pad 1 on top at y 74/76), C18 west of R73's pad 2, C19 east of R74's; same R72. Because a hedge on the RC block's shape costs nothing while r3 runs (2 routing processes max).
 * Now: conflict pairs of r3's round 10 read from its state file (scratch revb2/conf.py), because the sharing list alone does not say where.
+* Now: r4 stopped by PID, because r3 converged and the polish and the checks want the CPU.
 
 ## Checks (command: last count)
 * `python3 tools/mkpcb_drv.py --place`: runs, no overlap printed (option 3 placement).
