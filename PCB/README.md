@@ -142,6 +142,14 @@ Every other Nano pin keeps its function.
   * XP11 on the left edge (the ИН-12 bus);
   * XP12 on the top edge (31 pins: the ИН-17 bundle and both ИН-15, with 3 spares after pin 10);
   * XP21–XP25 on the bottom edge (anodes, colon, LEDs).
+* **Silkscreen: the circuit as ornament** (the owner's choice of 30.09.26, from three art
+  directions: "the best for display pcb is circuit as ornament"). It is drawn over rev B's labels
+  by `tools/mkpcb_disp.py`, which writes it by default (`tools/disp_art.py`; `--art none` writes
+  plain rev B). The art is the board's own circuit: the ИН-12 bus strands and the cathode order
+  1 6 2 7 5 0 4 9 8 3 on the front, only where the finished clock shows the board, and every
+  socket's pinout on the back. White silk only, lines from 0.15 mm, clear of every pad; the copper
+  is unchanged. Three back-face pin labels are left out for room (H and m, the top pins of the two
+  ИН-15; A, the ИН-15Б's ampere cathode); XP12's legend names all three.
 
 **TS06-DRV**, 191.4 × 100 mm, sits 11 mm behind the display on M3 standoffs (a standard 8.5 mm
 PBS socket plus a 2.5 mm PLS body). Its seven socket strips are on its **back** face, towards
@@ -299,7 +307,7 @@ pour with no tracks, so a Gerber plotted unfilled leaves all nine LEDs open. `to
 builds the fab packages that way (`../fab/`, grill.md G8) and checks that every poured copper
 layer's Gerber carries its pour regions. Filling the committed files is the owner's decision.
 
-**`tools/verify_pair.sh` on rev B (30.09.26, after 2dc04ec): 27 PASS, 0 FAIL, 0 SKIP.**
+**`tools/verify_pair.sh` on rev B (30.09.26, after 2dc04ec, and again with the circuit silk, 77e3b11): 27 PASS, 0 FAIL, 0 SKIP.**
 
 `checkcopper.py --hv` is run with the pair's HV list, `ts06pair.HV_PATTERNS`:
 `HV185,SW,BLEED_*,FB_MID,COLON_*,ANODE_*,EMIT_*`. The cathode nets have their own class,

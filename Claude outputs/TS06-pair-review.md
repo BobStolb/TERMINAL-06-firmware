@@ -83,6 +83,16 @@ Whether to turn it back to 180° is the owner's choice; that would mean routing 
 **What no check can show:** the clamp's trip voltage (225-270 V) is computed from the parts'
 tolerances. It is measured only on the bench (`PCB/README.md`, "Open before fabrication").
 
+## TS06-DISP silkscreen, 30.09.26
+
+The display board's silk now carries art: **the circuit as ornament**, the owner's choice of
+30.09.26 from three directions ("the best for display pcb is circuit as ornament"). It is the
+board's own circuit drawn in white silk: the ИН-12 bus strands and the cathode order on the
+front where the clock shows the board, every socket's pinout on the back. The copper did not
+change. `tools/verify_pair.sh` still gives 27 PASS (77e3b11), KiCad's DRC still shows only the
+two accepted colon courtyard errors, and the fab package is rebuilt (`fab/`, da9dc97).
+`--art none` on `tools/mkpcb_disp.py` writes plain rev B.
+
 ## What holds up
 
 * **A wrong cathode order at the bench is a firmware fix, not a new board.** Every cathode on
