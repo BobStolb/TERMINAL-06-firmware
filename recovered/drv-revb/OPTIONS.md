@@ -50,3 +50,15 @@ block goes further east (x 160-175 has room to H6's keep-out at x 184).
 **The router is not deterministic by itself.** `mkpcb_drv.py --route` re-executes itself with
 **PYTHONHASHSEED=0**: the hash seed is pinned. The sets are not sorted. Every run here is launched
 with the seed set explicitly.
+
+## Result (added after the route)
+
+| Run | Placement | Round 10 | Outcome |
+|---|---|---|---|
+| r1, r2 (predecessor) | `near()` at J1 | 9-11 nets, A6 A7 D7 D8 SCL among them | stalled: 5 nets (r1, round 45), 4 nets (r2, round 15) |
+| **r3** | option 3, as above | 8 nets, **none of them at J1** | **round 13: 0 nets sharing, 0 unrouted**; polished, 30 nets shorter |
+| r4 (hedge) | option 3, R73/R74 standing in line on the gap's descent | - | stopped at round 8 (9 nets, SDA among them) once r3 converged |
+
+Both runs used PYTHONHASHSEED=0. The committed route is r3's (`tools/mkpcb_drv_routes.json`).
+The board is written from it: check() 0, check_mate() `[]`, 0 cathode pads under 0.5 mm, KiCad
+DRC 0 errors. Option 4 was not needed.
