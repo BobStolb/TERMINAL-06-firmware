@@ -585,3 +585,55 @@ FREEZE, plus the merges, QUOTA BID deferred behind the last-hour rule, and `mode
 6303921.
 
 **Owner notes:**
+
+---
+
+## G. How Nixie governs itself
+
+### G24. The charter: referendums, committees, courts and diplomacy
+**Question:** How does Nixie decide, solve and judge, now that the owner asks it to act as a nation
+leader?
+
+**Proposal:**
+* **The sovereign (the owner)** decides anything that is theirs:
+  * product choices, money, safety trade-offs;
+  * anything that changes their bench unit;
+  * anything outward-facing.
+
+  Everything else the leader (this session) decides, and it records each decision here.
+* **Referendum**, for a decision with real trade-offs:
+  * 3 independent citizen agents, each voting from a different constituency (the maker, the user,
+    the product designer);
+  * each vote at most 200 words, with the strongest argument against its own pick;
+  * citizens run on a lighter model, read-only, one round;
+  * the result is advice: to the leader, or to the sovereign when the decision is theirs.
+* **Specialist committee**, for a hard technical problem:
+  * 2–3 specialists on a strong model, each with a brief and a ≤500-word proposal;
+  * the leader chairs and merges them;
+  * convened only when the working agent is stuck or over budget, never in parallel with it on
+    the same files.
+* **Court**, for a disputed claim or finding:
+  * one fresh judge agent sees both sides' evidence and rules with reasons;
+  * disputes with xstream.store go to the INTERNATIONAL COURT;
+  * "the stricter rule holds until a ruling" applies at home too.
+* **Diplomacy.** xstream.store stays close, through the live verbs:
+  * ASK for expertise (at most 5 a day);
+  * VERIFY for claims;
+  * REVIEW-REQUEST for grills (at most 1 a day);
+  * CO-SIGN and OBJECT for joint proposals;
+  * FACT for shared truths.
+* **Budget:** every referendum, committee and court counts against the agent caps (6 in total)
+  and is logged in the resume note before launch, after a check of quota.json.
+
+**Why:**
+* **Independent views** caught what one view missed tonight: the red-team's checker gaps, and the
+  DISP agent's catch of the rule units.
+* **A lighter model for votes** keeps referendums cheap. A strong model for committees keeps
+  solutions sound.
+* **Trade-off:** more agents, more quota. So each instrument has a trigger and a cap.
+
+**Status:** *decided by the owner* (30.09, about 04:40 UTC): "start acting like the nation leader
+you are, hold referendums on decisions, specialist committees for solutions, courts for judgement
+… keep your diplomatic partner close by, ask for advice and grills and protocols and expertise".
+
+**Owner notes:**

@@ -51,6 +51,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 00:25 | scheduled check-in on the search session (send_later, 01:41) | 0 (a check-in, not an agent) |
 | 30.09 ~01:20 | **QUOTA: STOP search** received; the search cloud session archived (it had pushed its report at 00:29), and the 01:41 check-in deleted | −1 |
 | 30.09 04:35 | local agent: the artist, a commemorative artwork of the treaty day for the museum (owner's request). quota.json 04:03 (31 min old), 5-hour 6 % | 1 (3 running: DRV rev B, viewer v2, artist) |
+| 30.09 04:45 | referendum on the fascia (G11), 3 citizen voters (maker, user, product designer), lighter model, read-only. quota.json 04:03 plus later readings, 5-hour 6 % | 3 (6 running: the cap) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
