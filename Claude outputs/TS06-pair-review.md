@@ -21,13 +21,19 @@ where their Ø20 stems need 20.5. It came from the tube coordinates every board 
 **It is fixed.** The owner chose to widen the boards to 191.4 mm and keep the Gyver pitch.
 Both boards were then re-placed, re-routed and re-verified (next section).
 
-Everything that could still go wrong is mechanical, and none of it needs new copper:
+A second round of four independent reviews (30.09.26, next section) found no blocker for the
+boards, and several things that DO need new copper on the driver board:
+* an independent over-voltage clamp for the 185 V rail (E1);
+* 0.8 mm between bare 185 V pads and other copper, per IPC-2221B (E3);
+* footprints for the 0.5 W resistors actually on sale (F4);
+* a real inductor, and a few protection parts.
+
+These make up **TS06-DRV rev B**, which is in progress. The display board needs only its
+silkscreen and a few clearances. The mechanical points from the first round still stand:
 * the stack height;
 * the order in which the strips are soldered;
 * a few tall parts;
 * the case openings for the two connectors.
-
-Those need an assembly note, a test fit, and the case drawn around the right numbers.
 
 ## What holds up
 
@@ -276,6 +282,87 @@ for gates 3 and 4.
   * the trench's left wall is 0.475 mm from H10's glass;
   * the sill is 0.59 mm from the ИН-17 LEDs.
 
+## The second grill, 30.09.26
+
+Four review agents worked independently at commit 40cc33b:
+* manufacturing, pinouts and assembly;
+* electrical, safety and EMC;
+* fascia, case and product;
+* a red-team of the checks themselves.
+
+Every finding below was checked against the files before it was acted on. The pinouts all
+check out against their datasheets:
+* К155ИД1, MCP23017, LM393, TC4420, TLP627, R-78E, MPSA42 and IRF840;
+* the Nano, the jack, the diodes, the electrolytics and the LEDs;
+* all 63 board-to-board pins.
+
+**Status key:**
+* **fixed:** with the commit;
+* **rev B:** part of the TS06-DRV revision now being routed;
+* **DISP:** the display board's silkscreen and clearance pass, now in progress;
+* **case:** the case-model pass, now in progress;
+* **open:** needs a decision or the bench.
+
+### Electrical, safety, EMC
+
+| ID | Finding | Checked | Status |
+|---|---|---|---|
+| E1 | Nothing independent limits the 185 V rail: without U12, or with it reversed, the converter runs open-loop (a model reaches 300 V in 40 ms with the display off) | Circuit: U12's open collector is the only thing holding PWM_G low | **rev B**: zener string + NPN on PWM_G. Until then, the bring-up rule is: fit and check U12 before U11 |
+| E2 | The static ИН-15s ran at 4.2–5.4 mA through 8k2, about twice their 2.5 mA rating | Arithmetic; the ИН-15 is not multiplexed | **fixed** 28ce526: 18k, 2.5 mA |
+| E3 | Bare HV pads were 0.60 mm from the GND pour and some LV tracks; IPC-2221B A6 at 171–250 V asks 0.8 mm | Table 6-1; the net-class clearance is 0.6 | **rev B** + **DISP**: a custom KiCad rule at 0.8 mm, a refill, and the tracks moved |
+| E4 | At power-on, L1's current ratcheted past saturation: D9 jumped straight to DUTY with C7 at 12 V | Firmware: `setPWM(GEN, DUTY)` in `setup()` | **fixed** 28ce526: an 85 ms soft-start. L1 itself: **rev B** |
+| E5 | USB power back-feeds the R-78E's output | The Nano's USB diode feeds +5V | **rev B**: a 1N5819 across U14. Until then, connect USB only with 12 V applied |
+| E6 | The ИН-12s are structurally dim at 6 slots: 13.5 % duty caps the average at about 0.95 mA | К155ИД1 7 mA sink limit | **open**: bench, dead-time or slot trade-off |
+| E7 | C7's ripple current, about 0.11 A rms at 31 kHz, meets or exceeds a general-purpose part's rating | Model | **open**: a 105 °C high-ripple C7, a low-ESR C8 |
+| E8 | A 19–24 V adapter would kill U11 (20 V max) and VT21's gate | Datasheet limits | **rev B**: a 1.5KE18A after F1 |
+| E9 | RP1 could set up to 252 V | 2.5 V × (1 + 1500k / 15k) | **fixed** 28ce526: 18k + 5k trimmer gives 165–210 V |
+| E10 | Cathode pads 0.32–0.35 mm from LV and other cathode tracks | Board geometry | **rev B** + **DISP**: 0.5 mm where it can be routed |
+| E11 | The fascia inputs float when the lead is unplugged; D7/D8 have no filtering | Circuit | **rev B**: 1 M from A6 to GND; 1 k + 10 nF on D7 and D8. The firmware no longer rewrites the RTC on a spurious PROGRAM (d7aafdc) |
+| E12 | The switch node rings with no snubber; R67 is 10 Ω | Model only | **open**: R67 22–47 Ω and an RC snubber, sized on the bench |
+| E13 | Off anodes can float up and ghost; the bleeders are DNP | TLP627 dark current | **open**: fit the DNP bleeders if the bench shows ghosting |
+| E14 | The input is about 5.1 W, not 3.5 W; A0–A2 each sink 6.4 mA, not 3.2 | SN74141 input loads | **fixed** in this review |
+
+### Manufacturing, pinouts, assembly
+
+| ID | Finding | Status |
+|---|---|---|
+| M1 | U13: the DS3231 mini's header is female, so the board needs a male PLS-5. Pad 1 (square) is GND, and the module's "+" is its pin 1: matching square to square reverses it | BOM **fixed** d7aafdc; footprint and "− NC C D +" legend **rev B** |
+| M2 | No Ø12 mm radial 220 µH part saturates above about 1.3 A; the note asks for 1.8 A | **rev B**: a real part, a new footprint |
+| M3 | F1's footprint is named after an 11 A part | BOM **fixed**: 1.1 A, e.g. MF-R110 |
+| M4 | МЛТ-0,5 / С2-23-0,5 (Ø4.2 × 10.8, 0.8 mm leads) fit neither the 0.8 mm drill nor the 3.8 mm row spacing | **rev B**: 1.1 mm drill, 15.24 mm pitch, ≥5 mm rows |
+| M5 | The tube socket contact is unspecified, and the 1.2 mm hole was sized for the tube's own pin | BOM line **fixed** (72 contacts); which contact is **open** |
+| M6 | TLP627 is obsolete | BOM **fixed**: TLP627MF, from authorised stock |
+| M7 | VT21 and J1 holes are tight once the fab's tolerance is applied | **rev B** |
+| M8 | All silkscreen is 0.12 mm, below the fab minimum of 0.15 mm | **rev B** + **DISP** |
+| M9 | The LEDs and ИНС-1 have no polarity marks, and the square pad means opposite things on them | **DISP** |
+| M10 | Soldering the strips while mated needs an order and a jig | In the viewer's assembly steps |
+| M11 | The display's bottom edge has no support for 184 mm | **open**, optional: a 5th standoff at DISP (97, 40.5) |
+| M12 | Tracks run 2.2–2.4 mm from mounting-hole centres, under metal standoffs and screw heads | BOM **fixed**: nylon. Copper keep-outs: **rev B** + **DISP** |
+| M13 | BOM gaps: cable crimps, ИН-17 spacers, socket contacts | **fixed** d7aafdc |
+| M14 | Standoff length should err long: 11 mm + a 0.5 mm shim | **open**: bench |
+| M15 | The saved boards carry unfilled pours, and Gerbers plot the stored fill | Fascia **fixed** a7c3660; DRV/DISP refilled and saved at integration |
+
+### Fascia, case, product
+
+| ID | Finding | Status |
+|---|---|---|
+| P1 | The case's right trench wall covered ИН-15А, and its check printed OK | **fixed** a7c3660 |
+| P2 | A Ø34.7 mm silkscreen ring off-centre on the fascia's face, running off its edge | **fixed** a7c3660, with the stale ground fill |
+| P3 | SW5's body hits the fascia's top-right mounting boss | **open**: the fascia variant decides (below) |
+| P4 | The fascia was centred on the board, not on the tubes; its controls sit 0.1–9 mm off the tube centres | Centring **fixed** a7c3660 (X 4.305). Alignment: **open**, the variants |
+| P5 | Open slots beside the fascia show TS06-DRV | **open**: the full-width fascia or the frame closes them |
+| P6 | A fascia boss lands on R5's pad (−1.2 mm to its courtyard) | The check now FAILs. **open**: variant |
+| P7 | The brow top, the base and the left wall can't take their screws; the left screw points at H10's glass | **case** |
+| P8 | The module goes in blind past square-edged sub-millimetre clearances | **case**: lead-ins |
+| P9 | Printed parts set the spacing that precise FR4 hole patterns span | **case** |
+| P10 | Every pass through SET TIME rewrote the clock and lost the date. "−" never decrements | Rewrite **fixed** d7aafdc. "−" is **open** (a UX decision) |
+| P11 | The spec's assembly time and PCB cost no longer describe this build | **open**: re-cost |
+| m1–m5 | The rotary modelled at the withdrawn Ø26.94; legends too small (1.5–1.7 mm); the rear panel held only at its corners, with vents over the switch node; the whole top orange | m1, m4, m5: **case**. m2: **open**, after the fascia variant |
+
+### Red-team of the checks
+
+Pending: its report will be added here.
+
 ## Placement alternatives, scored
 
 The driver board's placement was challenged by layouts built from different concepts, each
@@ -445,7 +532,7 @@ dimension comes from.
      * a mounting boss comes within 0.4 mm of R5;
      * the rotary's rim is 0.5 mm below the fascia's top edge, so the sill has to step back
        over it.
-6. **Heat is not a problem.** The clock draws about 3.5 W, most of it in the tubes. Slots at
+6. **Heat is not a problem.** The clock draws about 5 W (0.43 A at 12 V; electrical review E14), most of it in the tubes and the converter. Slots at
    the top of the rear panel are enough; no fan and no heatsink on VT21 (it switches, it
    does not dissipate).
 7. **Service.**
