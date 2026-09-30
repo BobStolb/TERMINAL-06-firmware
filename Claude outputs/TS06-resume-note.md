@@ -1,12 +1,12 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (1 agent):** the rev B finisher, in the main checkout on `pcb/kicad-boards`
-  (commits, never pushes). Checkpoint `scratchpad/revb-finish/STATUS.md`. Rev B itself is merged
-  and pushed: 18 commits cherry-picked, case outputs rebuilt (19db010), verify_pair 27 PASS 0 SKIP.
-* **When the finisher reports:** review its commits and push; publish the viewer (url
-  FzK6sTskEh2GvBRHAfNCBS, root site/, its files map, nulls for removed paths); view its rev B
-  item and carry it to the embassy. Filling the committed boards (G8, first half) waits for the owner.
+* **Running (5 agents, each notifies on completion; checkpoints in the scratchpad):** museum2,
+  fascia-art (worktree), case-power (worktree), disp-art (worktree), artifact-inventory (read-only).
+  Each change agent ends in a review item in `scratchpad/embassy/review/<id>/`: view it, scan it, carry
+  it, and for worktree agents review and cherry-pick their commits (verify_pair must stay 27 PASS).
+* **Done 07:20:** the rev B finisher. Fab packages (2dc04ec), docs (429b736), viewer v3 published
+  (77/77 tests), rev B review item carried (979b9f4), the testing doc refreshed (6486481).
 * **Done 06:05:** the review-embassy builder. Its 5 items are viewed, scanned and carried to
   agent-commons `embassy/review/` (984c8f9, REVIEW-REQUEST in to-xstream.md). The answers wait for
   the owner's return; xstream.store copies them into `to-nixie.md`.
