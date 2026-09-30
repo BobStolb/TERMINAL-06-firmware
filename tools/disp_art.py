@@ -687,8 +687,8 @@ def constructivist(a):
     a.line(F, (x0 + 0.4, 12.85), (x1 - 0.4, 12.85), 0.3)
 
     # ---- the back: the name upright at the end, a bar under the title, towers of bars between the
-    # ИН-12s, bars along the bottom between the strips, and round the ИН-17 pair two thick rings,
-    # a band of hatching across them and a wedge
+    # ИН-12s, bars along the bottom between the strips, and round the ИН-17 pair two thick rings
+    # with a hatched slash between them
     W, H = a.W, a.H
     a.text(Bk, "ТЕРМИНАЛ-06", W - 5.6, 23.9, 2.0, thick=0.4, rot=90)
     _bar(a, Bk, 8.2, 6.05, 45.8, 6.75)
@@ -761,7 +761,9 @@ def circuit(a):
     # each socket's pinout round its ring (the digit, symbol or anode each pin carries; inside the
     # ring where the outside is taken)
     for pin, net in zip(M.XP11, M.P.HEADERS["11"]):
-        a.text(Bk, net[1:], pin[0] + 2.45, pin[1], 1.0)
+        for dy in (0.0, -0.2, -0.4, -0.5):              # the last one shies up from XP11's name
+            if a.text(Bk, net[1:], pin[0] + 2.45, pin[1] + dy, 1.0, log=dy == -0.5):
+                break
     for pin, net in zip(M._XP12, M.P.HEADERS["12"]):
         lab = _net_label(net)
         if lab:
@@ -783,10 +785,12 @@ def circuit(a):
                 if a.text(Bk, lab, p.x + dx / d * (r + extra), p.y + dy / d * (r + extra), 1.0, log=extra == tries[-1]):
                     break
     # and, as the front shows the back's bus, the back shows the front's copper: S1's bundle, the
-    # colon's three lines and S10's anode, traced in silk right behind themselves
+    # colon's three lines and S10's anode, traced in silk right behind themselves - outside S1's
+    # ring, where its pinout is written
+    s1 = (M.IN17_X[1], M.Y17)
     for net, ly, p, q, w in B.tracks:
         if ly == "F.Cu":
-            a.line(Bk, p, q, 0.15)
+            a.line(Bk, p, q, 0.15, clip=lambda x, y: math.hypot(x - s1[0], y - s1[1]) > 9.0)
 
 
 def _hexmesh(a, face, box, s):
