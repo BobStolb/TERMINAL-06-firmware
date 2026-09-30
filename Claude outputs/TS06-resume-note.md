@@ -7,6 +7,14 @@ The rules, from the owner (30.09.26):
   owner sleeps, no new fan-out wider than 4 agents. Budget: about 5 % of the weekly limit a day.
 * `get_usage` is not in this session's tools, so usage cannot be read here. The caps are the
   only guard; launch nothing new that would pass them.
+* **30.09 01:15, owner: "negotiate to 50/50 since you're the only two running".** This session
+  cannot message the local one, so the proposal goes through the owner:
+  * a 50 % share of every 5-hour window and of the daily plan (about 7 % of the weekly limit a
+    day each, if the local plan stays at 14 %);
+  * the concurrency caps unchanged.
+
+  It counts as live once the local session sends "QUOTA: RESUME" confirming 50/50. Until then
+  nothing new launches here in any case: 6 agents are running, which is the cap.
 
 ## Launch log (UTC)
 
