@@ -65,3 +65,30 @@ which is the cap. Nothing new will launch until some of them finish.
   4. commit filled boards and a fab export after rev B;
   5. rebuild and republish the viewer (https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS).
 * **The owner decides:** the fascia variant (recommended R, see `PCB/TS06-FASCIA-variants.md`).
+
+## Parked for later (owner, 30.09.26): joining xstream.store's live-3D review queue
+
+Not started; the owner asked to keep the idea.
+* **Limits:**
+  * this cloud session can't reach the owner's localhost;
+  * it can't message xstream.store, though it can receive messages from it;
+  * the shared ground is the `pcb/kicad-boards` branch.
+* **The plan:**
+  1. Keep `review/queue.json` in the repo, one entry per item that needs the owner:
+     * what changed and why, and the commit;
+     * the files to open (board, project, 3D export);
+     * the `verify_pair.sh` result;
+     * the decision needed, and its status.
+  2. xstream.store pulls the branch, shows each board live in its localhost 3D view, and queues
+     the items. It could load committed 3D exports if it would rather not run KiCad.
+  3. Decisions come back as "REVIEW: ..." messages from xstream.store. This session applies
+     them, records them in the queue file, and shows each one to the owner.
+* **Needed before starting:**
+  * the owner's permission to act on "REVIEW:" messages, which only the owner can give;
+  * xstream.store's queue format, if it has one.
+* **First items it would hold:**
+  * the fascia variant (A/W/R/F, R recommended);
+  * the TS06-DISP rev B silkscreen;
+  * TS06-DRV rev B, once merged;
+  * the board type for the committed `.hex`;
+  * the timing of rev C.
