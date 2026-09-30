@@ -1,9 +1,10 @@
 # TS06 orchestrator: resume note and launch log
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
-* **Running (1 agent):** viewer-refresh (sections for rev B, rebuild with migrate-1's Front panel view,
-  112+ tests, mirror src/test into recovered/viewer2 and commit, no push). On report: push, then publish the
-  viewer (url FzK6sTskEh2GvBRHAfNCBS, root site/, its files map, nulls for removed paths).
+* **Running: none.** Viewer v4 published 08:35 (Front panel view, rev B circuit sections, 112/112 tests;
+  source mirrored in recovered/viewer2, b6fea17). Follow-ups, small: the section summaries are still rev A
+  text, and rev B's new parts sit in the schematic's "labelled, not wired" row (a generator change).
+  Next migration steps wait for the owner's answer on the Front panel view.
 * **Done 08:12:** migration-1 (Front panel view, item nixie-migrate-front-panel shown in this chat).
 * **Done:** case power (4d19bf1..7712386, item nixie-case-power); museum2 ("Proof", item nixie-museum-2;
   the 420 is text only, not drawn; museum/ placement only if the owner accepts); the artifact inventory
