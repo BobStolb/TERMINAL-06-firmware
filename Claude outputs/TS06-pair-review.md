@@ -501,7 +501,7 @@ branch.
 | PBS + PLS heights | the standoff length | calipers, finding 1 |
 | Colon vs M10 courtyard | nothing electrical | test fit |
 | ~~ИН-17 pair spacing: 13.0, needs 20.5~~ | fixed: boards widened to 191.4, the pair at 20.5 | gate 5 confirms the Ø20 stem |
-| The fascia (176 mm) under a 191.4 mm tube row | the fascia's position only | centre it, or widen the fascia to match: the owner's call |
+| The fascia under the 191.4 mm tube row | the fascia's board and the case bosses | four variants built and scored in `PCB/TS06-FASCIA-variants.md` (recommended: R, the controls on the tube grid): the owner's call |
 | Firmware: 6-slot timing | ghosting, flicker, brightness | bench, first pair |
 | ~~Firmware: `rtc.adjust()` on every boot~~, stale `.hex` | every board type | the RTC writes are fixed; rebuild the `.hex` for the board you flash (finding 8) |
 
