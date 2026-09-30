@@ -82,3 +82,11 @@ artifacts into this product page".
 * **Migration:** about one view per agent run, 6–8 runs for scope (b).
 * **Page size:** it is 25 MB in 79 files today. The limits are 16 MB per file and 256 MB per version, so the images fit as assets.
 * **Main risk:** content lost in the move. The per-item tests and the review pairs guard against it.
+
+## Progress
+* 30.09.26 07:25: inventory done (read-only, 17 artifacts): `Claude outputs/TS06-artifact-inventory.md`.
+  * Primary views: History 6, Family 8, Front panel 2, Parts and buying 1.
+  * The two Concept Plates copies are different revisions (Rev C and Rev A).
+  * Open Deck is a subset of Plate Set.
+  * The Buy List ticks live only in the owner's browser.
+  * Eight pages carry seller or personal details (not copied).
