@@ -241,6 +241,34 @@ def route():
     return failed
 
 
+def repair():
+    """For a negotiation that stalls with a few nets still sharing: take up only those nets and
+    route them again one at a time, everything else fixed as a hard obstacle, trying the orders
+    until one leaves nothing shared; then polish. Returns the nets still sharing."""
+    import itertools
+    import netroute as NR
+    R = NR.NetRouter(B, turn45=6.0)
+    R.dirmul = {ly: [1.0, 1.5] * 4 for ly in ("F.Cu", "B.Cu")}
+    N = NR.Negotiator(R, route_order(), widths=WIDTHS)
+    stuck = sorted(N.conflicts())
+    print("repair: sharing", stuck, flush=True)
+    keep = [t for t in B.tracks if t[0] not in stuck]
+    for k, order in enumerate(itertools.permutations(stuck)):
+        if k >= 48:
+            break
+        B.tracks[:] = keep
+        left = []
+        for n in order:
+            rest, _ = R.route(n, NR.LAYERS, WIDTHS.get(n))
+            left += [n] if rest else []
+        con = N.conflicts()
+        print(f"  order {order}: unrouted {left}, sharing {sorted(con)}", flush=True)
+        if not left and not con:
+            R.polish(route_order(), widths=WIDTHS, verbose=False)
+            break
+    return sorted(set(N.conflicts()) | {n for n in route_order() if len(R.pieces(n)) > 1})
+
+
 def load_routes():
     with open(ROUTES) as fh:
         for n, ly, (a, b), w in json.load(fh):
@@ -281,7 +309,15 @@ if __name__ == "__main__":
         K.plot_placement(B, os.path.join(OUTDIR, "placement.png"), ppm=7)
         sys.exit(0)
     failed = []
-    if "--route" in A or not os.path.exists(ROUTES):
+    if "--repair" in A:                      # the copper saved per round, then the stuck nets again
+        with open(ROUTES + ".partial" if not os.path.exists(ROUTES) or "--partial" in A else ROUTES) as fh:
+            for n, ly, (a, b), w in json.load(fh):
+                B.tracks.append((n, ly, tuple(a), tuple(b), w))
+        failed = repair()
+        print("after repair:", " ".join(failed) if failed else "none", flush=True)
+        with open(ROUTES, "w") as fh:
+            json.dump([[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in B.tracks], fh, indent=0)
+    elif "--route" in A or not os.path.exists(ROUTES):
         failed = route()
         print("unrouted/sharing:", " ".join(failed) if failed else "none", flush=True)
     else:
@@ -307,4 +343,4 @@ if __name__ == "__main__":
         json.dump(sc, fh, indent=1)
     print(json.dumps(sc))
     print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(B.placed)} parts, {n} nets, {len(B.tracks)} segments, 0 vias")
-    B.plot(os.path.join(OUTDIR, "copper.png"), ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else None))
+    B.plot(os.path.join(OUTDIR, "copper.png"), ppm=8, color=lambda n: ((255, 90, 90) if B.cls(n) == "HV" else (87, 217, 121)))

@@ -1,0 +1,64 @@
+{
+ "converged": true,
+ "nets_failed": [],
+ "check_problems": 0,
+ "vias": 0,
+ "track_mm": 5588.8,
+ "segments": 1236,
+ "axis_fraction": 0.777,
+ "hand_laid_segments": 0,
+ "dip_pin1_orientations": 4,
+ "dips": 14,
+ "y_used": [
+  5.8,
+  100.0
+ ],
+ "x_used": [
+  2.3,
+  178.4
+ ],
+ "usb_court": [
+  132.2,
+  70.9,
+  178.4,
+  89.2
+ ],
+ "jack_court": [
+  8.1,
+  84.0,
+  19.6,
+  100.0
+ ],
+ "c7_at": [
+  39.8971,
+  78.0984
+ ],
+ "nano_at": [
+  136.271,
+  87.6302
+ ],
+ "remap": {
+  "opto": [
+   "D13",
+   "D6",
+   "D4",
+   "D3",
+   "D2",
+   "D5"
+  ],
+  "bl": [
+   8,
+   7,
+   6,
+   5,
+   4,
+   3,
+   2,
+   1
+  ],
+  "xaswap": false
+ },
+ "cand": "PCB/TS06-DRV-search/cands/cand_11fr.json",
+ "mate_problems": 0,
+ "placement_problems": []
+}

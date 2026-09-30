@@ -204,13 +204,16 @@ C("C17", "100n", "+5V", "GND", group="decoder")
 # already use). The Nano's digital row leaves the module D2..D11 west to east; with the hours'
 # optos nearest the module and the minutes' and seconds' further west, the eastern pins must
 # drive the nearer tubes or the lines cross on the one face they have (tools/mkpcb_drv.py).
-TUBE_PIN4 = {"H10": "D6", "H1": "D5", "M10": "D4", "M1": "D3", "S10": "D2", "S1": "D13"}
+# pcb/drv-alt-search: the search board's map (tools/placesearch.py chose it; PCB/TS06-DRV-search/REPORT.md).
+# The baseline's was {"H10": "D6", "H1": "D5", "M10": "D4", "M1": "D3", "S10": "D2", "S1": "D13"}; the
+# firmware's opts[] follows as {KEY5, KEY3, KEY1, KEY0, KEY4, KEY2}. tools/mkpcb_drv.py is drawn for the old one.
+TUBE_PIN4 = {"H10": "D13", "H1": "D6", "M10": "D4", "M1": "D3", "S10": "D2", "S1": "D5"}
 for i, nm in enumerate(TUBES):
     u = f"U{i + 5}"
     part(u, "TLP627", DIP4, {1: "OPT_" + nm, 2: "GND", 3: "EMIT_" + nm, 4: "HV185"}, DRV, "anodes",
          f"Anode switch for {nm}: 1 LED anode, 2 LED cathode, 3 emitter, 4 collector.")
-    R(f"R{21 + i}", "470R", TUBE_PIN4[nm], "OPT_" + nm, R_V if nm in ("M10", "M1", "S10", "S1") else
-      "TS06_R_Axial_DIN0207_P10.16mm", group="anodes", note="Opto LED, ~8 mA.")
+    R(f"R{21 + i}", "470R", TUBE_PIN4[nm], "OPT_" + nm, R_V,       # all six stand (pcb/drv-alt-search)
+      group="anodes", note="Opto LED, ~8 mA.")
     R(f"R{27 + i}", M.ANODE_R[nm], "EMIT_" + nm, "ANODE_" + nm, R_HV, "anodes",
       "Anode series resistor, one per tube; TBC values wait for bench gate 2.")
     R(f"R{33 + 2 * i}", "510k DNP", "ANODE_" + nm, "BLEED_" + nm, R_V, "anodes",
@@ -219,7 +222,7 @@ for i, nm in enumerate(TUBES):
 
 # Which LED each port-B bit lights - free for the firmware, chosen so the eight lines leave the
 # network in the order the strips want them (tools/mkpcb_drv.py). GPBk lights HL{BL_OF_GPB[k]}.
-BL_OF_GPB = [1, 2, 3, 4, 5, 6, 7, 8]
+BL_OF_GPB = [8, 7, 6, 5, 4, 3, 2, 1]        # pcb/drv-alt-search: reversed (the baseline had 1..8)
 
 # ---- AM/PM: one expander, two decoders
 MCP = {9: "+5V", 10: "GND", 11: None, 12: "SCL", 13: "SDA", 14: None, 15: "GND", 16: "GND", 17: "GND",

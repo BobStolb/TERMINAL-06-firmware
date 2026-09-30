@@ -1,0 +1,189 @@
+round 0: 61 nets sharing, 0 unrouted, pres 0.6, 150s
+   sharing: +12V +5V A0 A1 A2 A3 A7 ANODE_H1 BLEED_H10 BL_A1 BL_A2 CAT_A_NANO CAT_A_P CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS COLON_RET D13 D3 D4 D5 D6 FB GND HV185 K0 K1 K2 K3 K4 K5 K6 K7 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS9 M_A PWM_G SCL SDA VREF XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB3 XB4 XB5 XB6 XB7
+round 1: 78 nets sharing, 0 unrouted, pres 0.9, 245s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_H1 ANODE_M1 BL_A1 BL_A2 BL_A3 BL_A4 BL_A5 BL_A6 CAT_A_KILO CAT_A_MICRO CAT_A_NANO CAT_A_P CAT_A_PCT CAT_A_PI CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS COLON_RET D13 D2 D3 D4 D5 D6 EMIT_H10 FB FB_LOW GND HV185 K0 K1 K2 K3 K4 K5 K7 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 M_A OPT_H10 PWM_G SCL SDA VIN_J XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 2: 81 nets sharing, 0 unrouted, pres 1.3, 350s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_H1 ANODE_H10 ANODE_M10 ANODE_S1 B1 B20 BL_A1 BL_A2 BL_A3 BL_A4 BL_A5 BL_A6 BL_A7 BL_A8 CAT_A_MICRO CAT_A_P CAT_A_PCT CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT COLON_RET D11 D13 D2 D3 D4 D5 D6 EMIT_H10 GND HV185 K0 K1 K2 K3 K4 K6 K7 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 M_A OPT_M10 PWM_G SCL SDA VIN_J VREF XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6
+round 3: 77 nets sharing, 0 unrouted, pres 2.0, 477s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_H1 ANODE_M10 ANODE_S1 BLEED_H10 BL_A1 BL_A2 BL_A4 BL_A5 BL_A6 BL_A7 BL_A8 CAT_A_MEGA CAT_A_MICRO CAT_A_MILLI CAT_A_MINUS CAT_A_NANO CAT_A_PCT CAT_A_PLUS CAT_B_AMP CAT_B_SIEMENS CAT_B_VOLT COLON_L D13 D2 D4 D5 D6 EMIT_H10 GND HV185 K0 K1 K2 K3 K4 K5 K6 K7 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 OPT_S10 PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA6 XA7 XB0 XB1 XB2 XB3 XB4 XB5 XB6 XB7
+round 4: 74 nets sharing, 0 unrouted, pres 3.0, 624s
+   sharing: +12V +5V A0 A1 A2 A3 A6 A7 ANODE_H1 ANODE_H10 ANODE_S1 ANODE_S10 BL_A1 BL_A2 BL_A4 BL_A6 BL_A7 BL_K CAT_A_MICRO CAT_A_NANO CAT_A_P CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS COLON_L D11 D13 D2 D4 D5 D6 EMIT_H10 EMIT_M1 FB_LOW GND HV185 K0 K1 K2 K3 K4 K5 K7 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 KS8 KS9 OPT_H1 OPT_H10 OPT_S1 PWM_G SCL SDA XA0 XA1 XA2 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB5 XB6
+round 5: 64 nets sharing, 0 unrouted, pres 4.6, 778s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_H1 BL_A1 BL_A2 BL_A4 BL_A6 BL_A7 BL_A8 CAT_A_P CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT D10 D11 D13 D2 D3 D4 D5 D6 EMIT_H1 GND HV185 K0 K1 K2 K3 K4 K5 K6 K7 K8 K9 KS0 KS4 KS5 KS6 KS7 KS8 KS9 OPT_S1 PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB3 XB4 XB5
+round 6: 63 nets sharing, 0 unrouted, pres 6.8, 955s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_H1 BL_A1 BL_A2 BL_A6 BL_A7 BL_A8 CAT_A_MICRO CAT_A_P CAT_B_AMP CAT_B_HENRY CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT COLON_RET D10 D13 D2 D3 D4 D6 D9 EMIT_H10 GND HV185 K0 K1 K2 K3 K4 K6 K8 K9 KS0 KS3 KS4 KS5 KS6 KS7 KS9 PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB5 XB6
+round 7: 60 nets sharing, 0 unrouted, pres 10.3, 1157s
+   sharing: +5V A0 A1 A2 A3 A7 ANODE_H1 BLEED_H10 BL_A1 BL_A2 BL_A6 BL_A7 BL_A8 CAT_B_AMP CAT_B_HENRY CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT COLON_RET D11 D13 D4 D5 D6 D8 GND HV185 K0 K1 K2 K3 K4 K5 K8 K9 KS0 KS3 KS4 KS7 KS8 KS9 M_A PWM_G SCL SDA XA0 XA1 XA2 XA3 XA4 XA5 XA6 XA7 XB0 XB1 XB2 XB3 XB5 XB6 XB7
+round 8: 49 nets sharing, 0 unrouted, pres 15.4, 1366s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_H1 BL_A1 BL_A2 CAT_B_AMP CAT_B_OHM CAT_B_SIEMENS CAT_B_VOLT D13 D4 D6 GND HV185 K0 K1 K2 K4 K5 K6 K8 K9 KS0 KS1 KS2 KS3 KS4 KS5 KS6 KS7 M_A SCL XA0 XA1 XA2 XA3 XA4 XA5 XA7 XB0 XB1 XB2 XB3 XB6
+round 9: 37 nets sharing, 0 unrouted, pres 23.1, 1562s
+   sharing: +5V A0 A1 A2 A3 A6 A7 ANODE_H1 B20 BL_A1 BL_A2 CAT_B_AMP D13 D5 D6 GND HV185 K0 K1 K2 K3 K4 K5 K6 K8 KS0 KS4 SCL XA0 XA1 XA2 XA3 XA4 XA5 XA6 XB4 XB6
+round 10: 32 nets sharing, 0 unrouted, pres 34.6, 1750s
+   sharing: +5V A0 A1 A2 A3 A7 ANODE_H1 BL_A1 CAT_B_AMP D13 D6 HV185 K0 K1 K2 K4 K5 K8 K9 KS0 KS4 KS6 KS7 KS8 OPT_H10 XA0 XA1 XA2 XA3 XA4 XA5 XB6
+round 11: 26 nets sharing, 0 unrouted, pres 51.9, 1816s
+   sharing: +5V A0 A1 A2 A3 A7 ANODE_H1 BL_A1 CAT_B_AMP CAT_B_VOLT D13 D5 HV185 K0 K1 K2 K6 K8 K9 KS0 KS4 KS7 KS8 XA0 XA5 XB6
+round 12: 23 nets sharing, 0 unrouted, pres 77.8, 1885s
+   sharing: A0 A1 A2 A3 A7 ANODE_H1 BL_A1 CAT_B_AMP D13 D5 HV185 K0 K1 K2 K8 K9 KS0 KS1 KS7 XA0 XA3 XA5 XB6
+round 13: 18 nets sharing, 0 unrouted, pres 116.8, 1920s
+   sharing: A0 A1 A2 A3 ANODE_H1 BL_A1 CAT_B_AMP CAT_B_VOLT D13 K0 K1 K2 K8 K9 KS0 KS1 XA0 XB6
+round 14: 14 nets sharing, 0 unrouted, pres 175.2, 1938s
+   sharing: A0 A1 A2 BL_A1 BL_A2 D13 GND K0 K1 K2 K8 K9 KS0 KS1
+round 15: 15 nets sharing, 0 unrouted, pres 262.7, 2065s
+   sharing: +5V A0 A1 A2 A3 A7 BL_A1 BL_A2 GND K2 K8 K9 KS0 KS1 SDA
+round 16: 10 nets sharing, 0 unrouted, pres 394.1, 2219s
+   sharing: A0 A1 BL_A1 BL_A2 D11 K3 K8 KS0 KS1 KS7
+round 17: 8 nets sharing, 0 unrouted, pres 591.2, 2228s
+   sharing: A0 A1 BL_A1 BL_A2 K3 K8 KS0 KS1
+round 18: 6 nets sharing, 0 unrouted, pres 886.7, 2237s
+   sharing: A0 A1 BL_A1 BL_A2 KS0 KS1
+round 19: 6 nets sharing, 0 unrouted, pres 1330.1, 2245s
+   sharing: A0 A1 BL_A1 BL_A2 KS0 KS1
+round 20: 6 nets sharing, 0 unrouted, pres 1995.2, 2254s
+   sharing: A0 A1 BL_A1 BL_A2 KS0 KS1
+round 21: 6 nets sharing, 0 unrouted, pres 2992.7, 2262s
+   sharing: A0 A1 BL_A1 BL_A2 KS1 KS8
+round 22: 4 nets sharing, 0 unrouted, pres 4489.1, 2271s
+   sharing: A0 A1 BL_A1 BL_A2
+round 23: 5 nets sharing, 0 unrouted, pres 6733.6, 2279s
+   sharing: A0 A1 BL_A1 KS7 SDA
+round 24: 3 nets sharing, 0 unrouted, pres 10100.5, 2288s
+   sharing: A0 A1 KS7
+round 25: 3 nets sharing, 0 unrouted, pres 15150.7, 2296s
+   sharing: A0 A1 KS7
+round 26: 4 nets sharing, 0 unrouted, pres 22726.1, 2303s
+   sharing: A0 A1 A2 KS7
+round 27: 2 nets sharing, 0 unrouted, pres 34089.1, 2313s
+   sharing: A0 A1
+round 28: 2 nets sharing, 0 unrouted, pres 51133.6, 2320s
+   sharing: A0 A1
+round 29: 2 nets sharing, 0 unrouted, pres 76700.4, 2327s
+   sharing: A0 A1
+round 30: 2 nets sharing, 0 unrouted, pres 115050.6, 2334s
+   sharing: A0 A1
+round 31: 2 nets sharing, 0 unrouted, pres 172576.0, 2342s
+   sharing: A0 A1
+round 32: 2 nets sharing, 0 unrouted, pres 258863.9, 2349s
+   sharing: A0 A1
+round 33: 2 nets sharing, 0 unrouted, pres 388295.9, 2356s
+   sharing: A0 A1
+round 34: 2 nets sharing, 0 unrouted, pres 582443.8, 2363s
+   sharing: A0 A1
+round 35: 2 nets sharing, 0 unrouted, pres 873665.8, 2370s
+   sharing: A0 A1
+round 36: 2 nets sharing, 0 unrouted, pres 1310498.6, 2377s
+   sharing: A0 A1
+round 37: 0 nets sharing, 0 unrouted, pres 1965748.0, 2385s
+   sharing: 
+  A0: 134.7 -> 127.6 mm
+  A1: 252.7 -> 225.1 mm
+  A2: 207.9 -> 192.4 mm
+  A3: 153.2 -> 142.3 mm
+  XA0: 94.7 -> 91.6 mm
+  XA1: 36.3 -> 34.8 mm
+  XA2: 43.7 -> 35.3 mm
+  XA3: 34.0 -> 30.1 mm
+  XA4: 70.4 -> 60.8 mm
+  XA5: 78.6 -> 55.0 mm
+  XA6: 63.5 -> 59.0 mm
+  XA7: 49.8 -> 48.2 mm
+  XB0: 25.0 -> 16.8 mm
+  XB1: 18.3 -> 16.9 mm
+  XB2: 21.5 -> 19.7 mm
+  XB3: 29.7 -> 23.8 mm
+  XB4: 26.8 -> 23.7 mm
+  XB5: 20.6 -> 19.6 mm
+  XB6: 37.0 -> 36.0 mm
+  XB7: 18.7 -> 16.9 mm
+  BL_A1: 131.6 -> 99.9 mm
+  BL_A2: 82.7 -> 80.0 mm
+  BL_A3: 34.3 -> 33.3 mm
+  BL_A4: 42.6 -> 40.4 mm
+  BL_A5: 28.8 -> 28.3 mm
+  BL_A6: 47.0 -> 42.9 mm
+  BL_A8: 63.4 -> 60.3 mm
+  SDA: 95.7 -> 91.0 mm
+  SCL: 107.0 -> 97.3 mm
+  A6: 36.1 -> 27.1 mm
+  A7: 61.6 -> 33.9 mm
+  D2: 65.6 -> 52.7 mm
+  D3: 42.4 -> 38.2 mm
+  D4: 82.5 -> 70.0 mm
+  D5: 140.8 -> 125.1 mm
+  D6: 74.9 -> 41.2 mm
+  D9: 16.6 -> 10.5 mm
+  D10: 32.2 -> 30.5 mm
+  D11: 40.7 -> 35.7 mm
+  D13: 36.0 -> 32.0 mm
+  HV185: 389.8 -> 361.5 mm
+  ANODE_H1: 51.8 -> 45.2 mm
+  ANODE_M1: 18.4 -> 16.6 mm
+  ANODE_M10: 17.1 -> 15.6 mm
+  ANODE_S1: 26.3 -> 16.7 mm
+  ANODE_S10: 42.3 -> 42.1 mm
+  BLEED_H10: 5.8 -> 3.6 mm
+  COLON_L: 12.4 -> 10.9 mm
+  COLON_RET: 42.9 -> 37.6 mm
+  EMIT_H10: 14.1 -> 8.3 mm
+  +12V: 108.2 -> 106.4 mm
+  VIN_J: 20.8 -> 20.3 mm
+  +5V: 505.6 -> 412.3 mm
+  B1: 5.1 -> 4.9 mm
+  B20: 5.0 -> 4.9 mm
+  BL_K: 9.3 -> 8.9 mm
+  CAT_A_KILO: 4.6 -> 4.2 mm
+  CAT_A_MEGA: 4.6 -> 3.6 mm
+  CAT_A_MILLI: 3.8 -> 3.7 mm
+  CAT_A_MINUS: 3.9 -> 3.6 mm
+  CAT_A_NANO: 15.1 -> 12.1 mm
+  CAT_A_P: 37.9 -> 23.5 mm
+  CAT_A_PCT: 4.9 -> 4.5 mm
+  CAT_A_PI: 4.8 -> 4.3 mm
+  CAT_A_PLUS: 4.0 -> 3.6 mm
+  CAT_B_AMP: 42.0 -> 37.6 mm
+  CAT_B_HENRY: 6.6 -> 5.8 mm
+  CAT_B_OHM: 9.7 -> 8.3 mm
+  CAT_B_SIEMENS: 10.1 -> 8.3 mm
+  CAT_B_VOLT: 9.9 -> 8.5 mm
+  K0: 29.3 -> 25.6 mm
+  K1: 28.7 -> 25.7 mm
+  K2: 29.3 -> 25.7 mm
+  K4: 38.3 -> 24.6 mm
+  K5: 42.0 -> 23.5 mm
+  K6: 38.2 -> 23.5 mm
+  K7: 24.9 -> 21.6 mm
+  K8: 16.6 -> 15.7 mm
+  KS0: 23.6 -> 22.4 mm
+  KS1: 21.8 -> 18.8 mm
+  KS3: 22.3 -> 17.2 mm
+  KS4: 23.4 -> 18.4 mm
+  KS5: 22.8 -> 20.3 mm
+  KS6: 22.3 -> 19.1 mm
+  KS7: 13.7 -> 11.4 mm
+  KS9: 17.5 -> 13.9 mm
+  M_A: 157.3 -> 155.4 mm
+  OPT_H1: 3.9 -> 3.7 mm
+  OPT_H10: 6.9 -> 4.6 mm
+  OPT_S1: 4.2 -> 3.6 mm
+  PWM_G: 278.6 -> 248.4 mm
+  VREF: 63.8 -> 62.9 mm
+  GND: 948.3 -> 805.0 mm
+polish pass: 93 nets shorter
+unrouted/sharing: none
+check: 0 problem(s)
+mate: every strip pin and standoff lines up
+{"converged": true, "nets_failed": [], "check_problems": 0, "vias": 0, "track_mm": 5588.8, "segments": 1236, "axis_fraction": 0.777, "hand_laid_segments": 0, "dip_pin1_orientations": 4, "dips": 14, "y_used": [5.8, 100.0], "x_used": [2.3, 178.4], "usb_court": [132.2, 70.9, 178.4, 89.2], "jack_court": [8.1, 84.0, 19.6, 100.0], "c7_at": [39.8971, 78.0984], "nano_at": [136.271, 87.6302], "remap": {"opto": ["D13", "D6", "D4", "D3", "D2", "D5"], "bl": [8, 7, 6, 5, 4, 3, 2, 1], "xaswap": false}, "cand": "PCB/TS06-DRV-search/cands/cand_11fr.json", "mate_problems": 0, "placement_problems": []}
+wrote PCB/TS06-DRV-search/c11fr/TS06-DRV-search.kicad_pcb: 103 parts, 130 nets, 1236 segments, 0 vias
+Traceback (most recent call last):
+  File "/home/user/TERMINAL-06-firmware/tools/mkpcb_drv_search.py", line 310, in <module>
+    sys.exit(0)
+^^^^^^^^^^^^^^^^
+  File "/home/user/TERMINAL-06-firmware/tools/pcbkit.py", line 833, in plot
+    raw = b"".join(b"\x00" + bytes(v for px in row for v in px) for row in img)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/TERMINAL-06-firmware/tools/pcbkit.py", line 833, in <genexpr>
+    raw = b"".join(b"\x00" + bytes(v for px in row for v in px) for row in img)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/TERMINAL-06-firmware/tools/pcbkit.py", line 833, in <genexpr>
+    raw = b"".join(b"\x00" + bytes(v for px in row for v in px) for row in img)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not iterable
