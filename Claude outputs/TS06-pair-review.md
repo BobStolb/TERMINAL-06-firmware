@@ -17,6 +17,8 @@ has two, the accepted overlap of the colon lamps' courtyards with the M10 tube, 
 a test fit (see `PCB/README.md`, "Checked"). An independent audit traced every anode and every
 digit through both boards and the firmware.
 
+**The pair now has schematics** (`PCB/TS06-*/TS06-*.kicad_sch`, from `tools/mksch_pair.py`), one sheet per section. They are checked against the boards net for net, and KiCad's ERC, run on this pair for the first time, reports 0 violations. Its first run found two real errors, both undriven power inputs. PWR_FLAGs now mark where 12 V and GND really arrive.
+
 `tools/verify_pair.sh` runs every check in one command, including two that read the written
 files with KiCad's own geometry: the mate of all 63 strip pins and 4 standoffs, and the pours
 as KiCad fills them. **The committed boards store no zone fill:** refill before plotting Gerbers

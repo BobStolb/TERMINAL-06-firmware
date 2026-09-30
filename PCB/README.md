@@ -235,7 +235,7 @@ CATH, at 0.25 mm.
 
 Both boards are generated from `tools/mkpcb_disp.py` and `tools/mkpcb_drv.py` and pass every
 board checker in this repo, plus KiCad 10's own DRC (`kicad-cli pcb drc --refill-zones`, HV class from
-the project file). `checksch.py` and `checkmatch.py` need a schematic, and the pair has none yet.
+the project file). Since 30.09.26 the pair has schematics as well, generated from the same netlist by `tools/mksch_pair.py`, one sheet per section. `checksch.py` finds no dangling pin, `checkmatch.py` agrees net for net with each board (130 and 59 nets), and KiCad's ERC reports 0 violations at every severity. `verify_pair.sh` runs all three.
 The results as of 29.09.26, on the widened boards:
 
 | | TS06-DISP | TS06-DRV |

@@ -501,6 +501,22 @@ for B in TS06-DISP TS06-DRV; do
   else
     report SKIP "$B audit" "numpy is not installed for $PY (pip install numpy)"
   fi
+
+  # the schematic (tools/mksch_pair.py) against itself and against the board
+  SCH="PCB/$B/$B.kicad_sch"
+  if [ -f "$SCH" ]; then
+    "$PY" tools/checksch.py "$SCH" > "$TMP/$B.checksch.log" 2>&1
+    l=$(grep -m 1 "dangling" "$TMP/$B.checksch.log")
+    case $l in *" 0 dangling"*) report PASS "$B checksch" "$l" ;; *) report FAIL "$B checksch" "$l" "$TMP/$B.checksch.log" ;; esac
+    "$PY" tools/checkmatch.py "$SCH" "$PCB" > "$TMP/$B.checkmatch.log" 2>&1
+    if grep -q "they agree" "$TMP/$B.checkmatch.log"; then
+      report PASS "$B checkmatch" "$(head -n 1 "$TMP/$B.checkmatch.log"): they agree"
+    else
+      report FAIL "$B checkmatch" "the schematic and the board disagree" "$TMP/$B.checkmatch.log"
+    fi
+  else
+    report FAIL "$B checksch" "no schematic at $SCH (tools/mksch_pair.py writes it)"
+  fi
 done
 
 # ------------------------------------------------------------------------------ KiCad DRC
@@ -604,6 +620,20 @@ if [ -n "$DRC_HOW" ] && [ -z "$KCLI" ]; then
     done <<EOF_LINES
 $lines
 EOF_LINES
+  done
+  # KiCad's ERC on each schematic, with its sub-sheets and symbol library
+  for B in TS06-DISP TS06-DRV; do
+    [ -f "PCB/$B/$B.kicad_sch" ] || continue
+    cp PCB/$B/*.kicad_sch "$K/PCB/$B/" 2>/dev/null
+    [ -f "PCB/$B/sym-lib-table" ] && cp "PCB/$B/sym-lib-table" "$K/PCB/$B/"
+    chmod -R a+rwX "$K" 2>/dev/null
+    # shellcheck disable=SC2086
+    MSYS_NO_PATHCONV=1 docker run --rm $USERFLAG -v "$HOSTK":/w -w /w -e HOME=/tmp "$IMG" \
+      kicad-cli sch erc --severity-all -o "/w/$B.erc.rpt" "PCB/$B/$B.kicad_sch" 2>&1 | grep -v -E "Debug:|^$" > "$TMP/$B.erc.log"
+    n=$(sed -n 's/.*Found \([0-9]*\) violations.*/\1/p' "$TMP/$B.erc.log" | head -n 1)
+    if [ "$n" = 0 ]; then report PASS "$B erc" "KiCad ERC, all severities: 0 violations"
+    elif [ -n "$n" ]; then report FAIL "$B erc" "KiCad ERC: $n violations" "$K/$B.erc.rpt"
+    else report FAIL "$B erc" "kicad-cli sch erc did not finish" "$TMP/$B.erc.log"; fi
   done
 else
   report SKIP "pair mate (written files)" "needs KiCad's Python (pcbnew): run with Docker, not a local kicad-cli"
