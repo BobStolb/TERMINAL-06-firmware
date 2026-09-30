@@ -537,13 +537,64 @@ def nearest(X):
     return nm.replace("IN15B", "ИН-15Б").replace("IN15A", "ИН-15А"), X - cands[nm]
 
 
+def silk_rings_off_centre(pcb, tol=0.01):
+    """Every F.SilkS circle (board gr_circle, or a footprint's fp_circle placed on the board) that
+    encloses a control hole (a non-plated hole of 4 mm or more) without being centred on it.
+    Such a ring prints round nothing: the 30.09.26 fault, where TS06-FASCIA's height compression
+    left the rotary's 25 mm ring on F.SilkS centred 12 mm below the knob (PCB/README.md), and a
+    composite drawn from a board of that date showed it to the owner after the board was fixed.
+    Returns [(x, y, r, hole_x, hole_y), ...] in board mm."""
+    import sexp as S
+    t = S.parse(open(pcb, encoding="utf8").read())
+    holes, rings = [], []
+
+    def place(at, x, y):
+        a = math.radians(float(at[3])) if len(at) > 3 else 0.0
+        return (float(at[1]) + x * math.cos(a) + y * math.sin(a), float(at[2]) - x * math.sin(a) + y * math.cos(a))
+
+    def ring(c, at=None):
+        ly = S.find(c, "layer")
+        if not ly or S.unq(ly[1]) != "F.SilkS":
+            return
+        ce, en = S.find(c, "center"), S.find(c, "end")
+        x, y, ex, ey = float(ce[1]), float(ce[2]), float(en[1]), float(en[2])
+        r = math.hypot(ex - x, ey - y)
+        rings.append((place(at, x, y) if at else (x, y)) + (r,))
+
+    for c in S.find_all(t, "gr_circle"):
+        ring(c)
+    for fp in S.find_all(t, "footprint"):
+        at = S.find(fp, "at")
+        for c in S.find_all(fp, "fp_circle"):
+            ring(c, at)
+        for p in S.find_all(fp, "pad"):
+            if len(p) > 2 and p[2] == "np_thru_hole":
+                d = S.find(p, "drill")
+                if d and float(d[1]) >= 4.0:
+                    pa = S.find(p, "at")
+                    holes.append(place(at, float(pa[1]), float(pa[2])))
+    bad = []
+    for x, y, r in rings:
+        for hx, hy in holes:
+            off = math.hypot(x - hx, y - hy)
+            if off < r and off > tol:
+                bad.append((x, y, r, hx, hy))
+    return bad
+
+
 def composite(pcb, png, title, ctrl, x0=0.0, cy=CY, bw=W, note=""):
     """Front elevation in world X and Y: the tube glass above the fascia as the case holds it
     (top edge at Y 39, raked 12 deg, so 40 mm of board shows as 39.1), the fascia's own front
     face as tools/render.py draws it, the control bodies behind it dashed, and a centre line
     from every tube down through the panel. ctrl: {SW1..SW5: world X}; x0: the board's world X;
-    cy: its control row; bw: its width."""
+    cy: its control row; bw: its width. A board with a silk ring round a control hole but not
+    centred on it is refused (silk_rings_off_centre)."""
     import mkpcb_disp as DSP
+    bad = silk_rings_off_centre(pcb)
+    if bad:
+        sys.exit("%s: F.SilkS ring(s) enclose a control hole off-centre, not drawn: %s" % (
+            os.path.relpath(pcb, ROOT), "; ".join("ring (%.3f, %.3f) r %.2f round hole (%.3f, %.3f), %.3f mm off"
+                                                   % (x, y, r, hx, hy, math.hypot(x - hx, y - hy)) for x, y, r, hx, hy in bad)))
     subprocess.run([sys.executable, os.path.join(HERE, "render.py"), pcb, png + ".tmp.svg"],
                    capture_output=True, text=True, check=True)
     src = open(png + ".tmp.svg", encoding="utf8").read()

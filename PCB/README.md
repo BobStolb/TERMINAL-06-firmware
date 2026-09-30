@@ -80,6 +80,15 @@ After both fixes:
 * `checkpcb`, `checkcopper` and `audit`: clean.
 * `checkmatch`: agrees with the schematic.
 
+**One picture outlived the fix.** `PCB/TS06-FASCIA-rhythm/composite-0-centred.png`, the
+reference that the fascia variants are judged against, was drawn from a board older than
+the ring fix. So it still showed the ring 12 mm below the knob, and the owner's review
+reported it as "the SW1 white circle isn't centred on its hole". It is redrawn from the
+fixed board. `tools/mkpcb_fascia_rhythm.py` now refuses to draw a composite from a board
+whose F.SilkS ring encloses a control hole off-centre (`silk_rings_off_centre()`).
+`tools/render_kicad.py` renders a board in KiCad 10 with the black mask and white silk
+that are ordered.
+
 **J1 pin order is fixed for both builds: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8.** It used
 to be whatever the surface-mount routing preferred (D8, D7, GND, A7, +5V, A6). The
 through-hole board cannot route to that order, and two builds of one product must not
