@@ -436,8 +436,10 @@ from its board file first:
 
 ### "Plane": an unbroken ground plane on the back, parts as bridges (rejected)
 
-A cloud session on the 176 mm geometry, on branch `pcb/drv-alt-plane` (15b576f), scored
-from its board file and `REPORT.md`.
+A cloud session on the 176 mm geometry, on branch `pcb/drv-alt-plane` (15b576f). Its board
+file was scored here with `scorecard.py`: 2565 segments, 0 vias, 5673 mm of copper (4776 mm
+front, 897 mm back), 88.7 % axis-aligned, a 3935 mm floor (ratio 1.44), and 3 DIP
+orientations. That matches its own `REPORT.md`, whose DRC and island figures are below.
 
 | | plane | baseline |
 |---|---|---|
