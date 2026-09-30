@@ -14,7 +14,7 @@ With no SCH_OUT/sections.json, a small stub in the same schema is written instea
 from the netlist's own groups (tools/ts06pair.py), each with a generated parts list as its
 "schematic" and a generated layout drawing with the section's parts highlighted.
 """
-import html, json, os, shutil, sys
+import html, json, os, re, shutil, sys
 
 ALLOWED = {".svg", ".png", ".jpg", ".jpeg", ".webp"}
 MAXB = 15 * 1024 * 1024
@@ -41,6 +41,10 @@ def copy_real(src, site):
                 dst = os.path.join(site, "sch", os.path.relpath(p, src))
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.copy(p, dst)
+                if ext == ".svg":            # the host refuses XML with DTD machinery (30.09.26)
+                    t = open(dst, encoding="utf-8").read()
+                    t = re.sub(r"<!DOCTYPE[^>\[]*(\[[^\]]*\])?\s*>", "", t, count=1)
+                    open(dst, "w", encoding="utf-8").write(t)
                 n += 1
                 e[key].append("sch/" + os.path.relpath(p, src).replace(os.sep, "/"))
         out.append(e)
