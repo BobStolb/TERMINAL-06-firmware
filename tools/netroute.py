@@ -683,7 +683,19 @@ class Negotiator:
                                     out.setdefault(t[0], []).append(t)
         return out
 
-    def run(self, rounds=60, verbose=True):
+    def save_state(self, path, line, con, unrouted):
+        """The round's state on disk, so a run that is stopped loses nothing: `path` gets the last
+        line, the nets sharing and unrouted, and every routed (not hand-laid) track."""
+        import json
+        tmp = path + ".tmp"
+        with open(tmp, "w") as fh:
+            json.dump({"line": line, "sharing": sorted(con), "unrouted": sorted(unrouted),
+                       "tracks": [[n, ly, [list(a), list(b)], w] for n, ly, a, b, w in self.B.tracks
+                                  if (n, ly, a, b, w) not in self.R.fixed]}, fh)
+        os.replace(tmp, path)
+
+    def run(self, rounds=60, verbose=True, state=None):
+        """`state`: a file the state is written to after every round (save_state)."""
         import time
         t0 = time.time()
         for n in self.order:
@@ -691,10 +703,13 @@ class Negotiator:
         for k in range(rounds):
             con = self.conflicts()
             unrouted = [n for n in self.order if len(self.R.pieces(n)) > 1]
+            line = (f"round {k}: {len(con)} nets sharing, {len(unrouted)} unrouted, pres {self.pres:.1f}, "
+                    f"{time.time() - t0:.0f}s")
             if verbose:
-                print(f"round {k}: {len(con)} nets sharing, {len(unrouted)} unrouted, pres {self.pres:.1f}, "
-                      f"{time.time() - t0:.0f}s", flush=True)
+                print(line, flush=True)
                 print("   sharing:", " ".join(sorted(con)), flush=True)
+            if state:
+                self.save_state(state, line, con, unrouted)
             if not con and not unrouted:
                 return []
             # history where sharing persists

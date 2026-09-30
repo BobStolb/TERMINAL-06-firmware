@@ -321,10 +321,21 @@ for r in ("R33", "R34", "R35", "R36"):
 for r in ("R37", "R38", "R39", "R40", "R41", "R42", "R43", "R44"):
     near(r, 45.0, 17.4, 157.0 + SC, 40.0, keepout=(XAFAN, NECK, GAP, PLAZA, OPTLANES))
 near("C1", 10.0, 44.5, 26.0, 57.5, keepout=(XALEFT, XABOT, BLRIB))   # the expander's own decoupling
-JACK = tuple(v - (Y0 if i % 2 else 0) for i, v in enumerate(B.court("J1")))   # nothing under J1's housing
-# Rev B (E11): the A6 pull-down and the button lines' 1k + 10 nF, at J1.
-for r in ("R73", "C18", "R74", "C19", "R72"):
-    near(r, 122.0, 50.0, 160.0, 73.5, keepout=(JACK,))
+# Rev B (E11): the A6 pull-down and the button lines' 1k + 10 nF, between the strips and J1, each part
+# on its own net's way into J1 and none across another's (recovered/drv-revb/OPTIONS.md: placed by
+# near(), they fenced the funnel into J1 and the route stalled). Every line from the column or the
+# gap crosses the strip band on the back face (the LED ribbon's BL_A1/BL_A2 hold the front), then
+# fans into J1 in its pin order, A6 A7 D7_J D8_J west to east:
+#  * D7 and D8 come down the gap east of the funnel into R73 and R74, lying east-west, one above the
+#    other; D7_J and D8_J leave their west pads, past C18 and C19 standing below them, for J1's two
+#    east pins;
+#  * R72 lies east-west under the corridor, its A6 pad on A6's way down to J1 and its ground pad
+#    west of the funnel, towards the clock module's ground pin.
+pl("R73", 167.0, 80.0 - Y0, rot=180)        # pad 1 (D7) east, pad 2 (D7_J) 10.16 west
+pl("R74", 169.5, 83.0 - Y0, rot=180)        # D8 passes east of R73's pad 1
+pl("C18", 156.84, 83.0 - Y0, rot=270)       # pad 1 (D7_J) under R73's pad 2, ground below it
+pl("C19", 159.34, 86.0 - Y0, rot=270)       # pad 1 (D8_J) under R74's pad 2
+pl("R72", 148.0, 74.0 - Y0, rot=180)        # pad 1 (A6) east, pad 2 (GND) west
 
 # ======================================================================== hand-laid copper
 # The decoder fans, laid the way a person lays them: every line a straight rise, a 45 degree
@@ -856,7 +867,9 @@ def route():
     R.fixed = set(FIXED)
     R.dirmul = {ly: [1.0, 1.5, 1.0, 1.5, 1.0, 1.5, 1.0, 1.5] for ly in ("F.Cu", "B.Cu")}
     N = NR.Negotiator(R, route_order(), widths=WIDTHS)
-    failed = N.run(rounds=60)
+    # the state after every round (TS06_STATE, or beside a trial route file), so a stopped run loses nothing
+    state = os.environ.get("TS06_STATE") or (ROUTES + ".state" if os.environ.get("TS06_ROUTES") else None)
+    failed = N.run(rounds=60, state=state)
     if not failed:
         R.polish([n for n in route_order() if n not in LOCKED], widths=WIDTHS, verbose=True)
     with open(ROUTES, "w") as fh:

@@ -1,8 +1,8 @@
 # TS06-DRV rev B: status
 
-Resume here: write OPTIONS.md (the J1 congestion options), then re-place the fascia RC block and route.
+Resume here: watch run r3 (scratchpad revb2/r3/log.txt, state.json); on "0 nets sharing, 0 unrouted" copy its routes.json to tools/mkpcb_drv_routes.json and regenerate.
 
-Updated: 30.09.26 05:05 UTC. Last routing line: none yet in this session (predecessor r2: round 15, 4 nets sharing: +5V D8 GND SCL).
+Updated: 30.09.26 05:08 UTC. Last routing line: r3 launched 05:03 (PID 4708), round 0 not yet out. Predecessor r2: round 15, 4 nets sharing: +5V D8 GND SCL.
 
 ## Plan (written before the first edit)
 1. Apply the recovered patches (done: b4d187a, 13c6c29, 335f537).
@@ -13,6 +13,8 @@ Updated: 30.09.26 05:05 UTC. Last routing line: none yet in this session (predec
 6. README DRV row, STATUS, commit.
 
 ## Findings
+* (seen) Rev A's route (78105d6's mkpcb_drv_routes.json): SCL ran west along y 54.4 to x 126.7 then down to U13; rev B's R61 (МЛТ, GND pad at 136.1, 54.3) now sits on that line. SDA ran down the corridor (x 152.2) and west along y 75.8. A6, A7, D7, D8 all on the back face, nested, turning west at y 91.9-94.6.
+* (inferred) SCL's stall in r1/r2 may be that blocked rev A path; watch it in r3 (option 4 is the fallback).
 * (seen) The fascia RC parts (R72-R74, C18, C19) were put by `near()` in a fence 1-5 mm north of J1 (x 138-152, y 77-93, DRV frame): R74 and R73 stand lying N-S exactly where rev A's back-face bundle turned west into J1 (rev A copper.png, y 92-94).
 * (seen) The LED ribbon's BL_A1/BL_A2 run on the front face at y 69-71 from x 27 to 176, so everything crossing the strip band between the column/gap and J1 crosses on the back face.
 * (seen) Predecessor's stalls: r1 A6 A7 D7 D8 SCL (rounds 15-45, pres to 5e7: a hard, not a congestion, block); r2 +5V D8 GND SCL at round 15.
@@ -22,5 +24,12 @@ Updated: 30.09.26 05:05 UTC. Last routing line: none yet in this session (predec
 * Now: git am of the three patches on 78105d6, because the mission starts from them.
 * Now: placement render round J1 (scratch revb2/place/j1.png) and rev A's copper there, because the stall is there.
 
+* Now: OPTIONS.md on the J1 funnel, because the brief asks for it before any re-route (choice: option 3).
+* Now: R72-R74, C18, C19 placed by hand in mkpcb_drv.py, because near() had fenced the funnel.
+* Now: Negotiator.run(state=...) writes the round's line, sharing, unrouted and tracks after every round (TS06_STATE), because a stopped run must lose nothing.
+* Now: run r3 (option 3 placement, PYTHONHASHSEED=0), nohup, PID 4708, because the placement changed.
+
 ## Checks (command: last count)
-* `python3 tools/mkpcb_drv.py --place`: runs, no overlap printed.
+* `python3 tools/mkpcb_drv.py --place`: runs, no overlap printed (option 3 placement).
+* `python3 tools/mkpcb_drv.py --hand`: exit 0, no hand-laid problem.
+* `scratch/funnel2.py`: predecessor 3 crossings / 3 blocking pads; option 3: 1 (SCL x SDA, common) / 0.
