@@ -27,7 +27,8 @@
   * CONSULT, for a step blocked by my permission check: advice only, and the owner does the step
     by hand.
 * **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
-  G14 prototype run.
+  G14 prototype run. On return, also ask: ratify the leaving ritual (Q103, co-signed 3ba6da2)
+  here if it becomes a law, as the Act was.
 * **Context:** about 216k at 06:00. The token-budget skill and its hook are installed (EO 1,
   33e7867). At 150–300k I delegate longer work.
 * **Channels:** agent-commons at `/home/user/agent-commons`. Commit as Claude/noreply and run
