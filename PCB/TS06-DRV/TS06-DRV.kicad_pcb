@@ -7126,7 +7126,7 @@
 		(layer "F.Cu")
 		(uuid "d7859cfb-d8d8-54d3-a6e4-a5085cdd619c")
 		(at 46.5 6.4)
-		(descr "Inductor, axial, lying: Bourns 5900 series high-current choke (5900-221-RC: 220 uH, Isat 1.8 A), body Ø11.5 x 22.9 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 27.94 mm; 11.5 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Inductor, axial, lying: Bourns 5900 series high-current choke (5900-221-RC: 220 uH, Isat 1.8 A), body Ø11.5 x 22.9 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 27.94 mm; 11.5 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B; height=12mm (lying, Ø11.5 body).")
 		(tags "inductor axial choke Bourns 5900")
 		(property "Reference" "L1"
 			(at 13.97 0 0)
@@ -8336,7 +8336,7 @@
 		(layer "F.Cu")
 		(uuid "89b25708-295a-5f09-a461-367d3b0b0030")
 		(at 159.14 58.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R27"
 			(at 7.62 0 0)
@@ -8462,7 +8462,7 @@
 		(layer "F.Cu")
 		(uuid "525c628a-a4c8-5e5b-8e29-92070c5c5d08")
 		(at 156.6 63.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R28"
 			(at 7.62 0 0)
@@ -8588,7 +8588,7 @@
 		(layer "F.Cu")
 		(uuid "c6332eec-e787-5b17-8991-2590fd4445ae")
 		(at 104.34 58.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R29"
 			(at 7.62 0 0)
@@ -8714,7 +8714,7 @@
 		(layer "F.Cu")
 		(uuid "ff9247db-088b-5375-83d5-7edb6201c1d7")
 		(at 101.8 63.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R30"
 			(at 7.62 0 0)
@@ -8840,7 +8840,7 @@
 		(layer "F.Cu")
 		(uuid "6491ff05-ae08-578b-8118-ba5ec534fb77")
 		(at 88.985 63.6)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R31"
 			(at -7.62 0 0)
@@ -8966,7 +8966,7 @@
 		(layer "F.Cu")
 		(uuid "ffc721c2-d7c1-5eb5-9cf6-4aec64f59601")
 		(at 55.965 63.6)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R32"
 			(at 7.62 0 0)
@@ -11057,7 +11057,7 @@
 		(layer "F.Cu")
 		(uuid "a940166e-2610-5deb-8903-6d1f27f15ca4")
 		(at 34.31 63.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R56"
 			(at 7.62 0 0)
@@ -11183,7 +11183,7 @@
 		(layer "F.Cu")
 		(uuid "3e1c2565-8e66-51ed-b05b-35c85b29aed4")
 		(at 26.69 58.9)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R57"
 			(at 7.62 0 0)
@@ -11309,7 +11309,7 @@
 		(layer "F.Cu")
 		(uuid "8704e1de-d4a2-5329-9800-3721a813ddaf")
 		(at 144.87 48)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R58"
 			(at 0 7.62 90)
@@ -11435,7 +11435,7 @@
 		(layer "F.Cu")
 		(uuid "c79e857e-dd62-5c5a-aa1a-1f39b8d629e1")
 		(at 139.87 48)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R59"
 			(at 0 7.62 90)
@@ -11561,7 +11561,7 @@
 		(layer "F.Cu")
 		(uuid "28c67cfb-38a3-56e8-b5eb-783040af968b")
 		(at 120.9 49.1)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R60"
 			(at 7.62 0 0)
@@ -11687,7 +11687,7 @@
 		(layer "F.Cu")
 		(uuid "4bd79ef7-5106-5cb8-add3-d21351269c42")
 		(at 120.9 54.1)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R61"
 			(at 7.62 0 0)
@@ -11813,7 +11813,7 @@
 		(layer "F.Cu")
 		(uuid "b6a03cfd-4de6-5ae1-99c9-c10f70b63a35")
 		(at 92 2.6)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R62"
 			(at 7.62 0 0)
@@ -11939,7 +11939,7 @@
 		(layer "F.Cu")
 		(uuid "f6119f15-3ac2-527c-8a78-6fbb3a370b2f")
 		(at 111 2.6)
-		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body).")
 		(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 		(property "Reference" "R63"
 			(at 0 7.62 90)
@@ -15064,7 +15064,7 @@
 		(layer "F.Cu")
 		(uuid "d48c0622-efc9-5b8b-9b89-d97436b87d6b")
 		(at 181.6 53.26)
-		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B).")
+		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B); height=8.5mm (socket and chip).")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil Socket")
 		(property "Reference" "U2"
 			(at -3.81 -8.89 90)
@@ -17826,7 +17826,7 @@
 		(layer "F.Cu")
 		(uuid "d5c63d1f-dcb4-5da0-a736-2d22ffb94f8c")
 		(at 131.23 74.27)
-		(descr "Male PLS-5 (2.54 mm) for the DS3231 mini module, whose own female header plugs on; pads as TS06_PinHeader_1x05, pad 1 (square) is GND. The module (~14 x 16 mm) lies over the board on the outlined side, ~15 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B.")
+		(descr "Male PLS-5 (2.54 mm) for the DS3231 mini module, whose own female header plugs on; pads as TS06_PinHeader_1x05, pad 1 (square) is GND. The module (~14 x 16 mm) lies over the board on the outlined side, ~15 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B; height=15mm (the module lying on its header).")
 		(tags "pin header 1x05 DS3231 RTC module")
 		(property "Reference" "U13"
 			(at -5.08 7.64 90)
@@ -18207,7 +18207,7 @@
 		(layer "F.Cu")
 		(uuid "7999e6fb-0102-56a1-ad48-41427b034199")
 		(at 35.25 41.62)
-		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B).")
+		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B); height=8.5mm (socket and chip).")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil Socket")
 		(property "Reference" "U15"
 			(at 8.89 -3.81 0)
@@ -18551,7 +18551,7 @@
 		(layer "F.Cu")
 		(uuid "7ac32a48-96d5-5f0d-a8f8-dd87b59e4fdf")
 		(at 12.93 41.62)
-		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B).")
+		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B); height=8.5mm (socket and chip).")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil Socket")
 		(property "Reference" "U16"
 			(at 8.89 -3.81 0)
@@ -18897,7 +18897,7 @@
 		(layer "F.Cu")
 		(uuid "d60d07cb-fa83-5ed7-80b8-9e35a701411c")
 		(at 66.27 41.62)
-		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B).")
+		(descr "16-lead though-hole mounted DIP package, row spacing 7.62mm (300 mils), Socket. Copied from KiCad 10.0.6's stock library (DIP-16_W7.62mm_Socket) for the TERMINAL-06 THT board pair. OVAL PADS 1.6 x 1.2 mm (1.2 along the row), so that a line threading between two pins keeps 0.5 mm from each: the TS06-DRV decoder sockets (rev B); height=8.5mm (socket and chip).")
 		(tags "THT DIP DIL PDIP 2.54mm 7.62mm 300mil Socket")
 		(property "Reference" "U17"
 			(at 8.89 -3.81 0)

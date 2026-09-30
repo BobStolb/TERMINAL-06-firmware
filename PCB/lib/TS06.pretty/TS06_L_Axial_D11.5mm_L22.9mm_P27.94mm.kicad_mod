@@ -2,7 +2,7 @@
 	(version 20260206)
 	(generator "kicad-footprint-generator")
 	(layer "F.Cu")
-	(descr "Inductor, axial, lying: Bourns 5900 series high-current choke (5900-221-RC: 220 uH, Isat 1.8 A), body Ø11.5 x 22.9 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 27.94 mm; 11.5 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B.")
+	(descr "Inductor, axial, lying: Bourns 5900 series high-current choke (5900-221-RC: 220 uH, Isat 1.8 A), body Ø11.5 x 22.9 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 27.94 mm; 11.5 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B; height=12mm (lying, Ø11.5 body).")
 	(tags "inductor axial choke Bourns 5900")
 	(property "Reference" "REF**"
 		(at 13.97 -7.05 0)

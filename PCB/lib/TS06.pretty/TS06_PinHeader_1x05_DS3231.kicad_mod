@@ -2,7 +2,7 @@
 	(version 20260206)
 	(generator "kicad-footprint-generator")
 	(layer "F.Cu")
-	(descr "Male PLS-5 (2.54 mm) for the DS3231 mini module, whose own female header plugs on; pads as TS06_PinHeader_1x05, pad 1 (square) is GND. The module (~14 x 16 mm) lies over the board on the outlined side, ~15 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B.")
+	(descr "Male PLS-5 (2.54 mm) for the DS3231 mini module, whose own female header plugs on; pads as TS06_PinHeader_1x05, pad 1 (square) is GND. The module (~14 x 16 mm) lies over the board on the outlined side, ~15 mm tall. Drawn for the TERMINAL-06 THT driver board, rev B; height=15mm (the module lying on its header).")
 	(tags "pin header 1x05 DS3231 RTC module")
 	(property "Reference" "REF**"
 		(at -2.6 -2.4 0)

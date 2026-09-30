@@ -2,7 +2,7 @@
 	(version 20260206)
 	(generator "kicad-footprint-generator")
 	(layer "F.Cu")
-	(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B. Rotated 270 degrees, written by tools/pcbkit.py.")
+	(descr "Resistor, 0.5 W 350 V, lying: МЛТ-0,5 / С2-23-0,5, body Ø4.2 x 10.8 mm on Ø0.8 mm leads, 1.1 mm finished holes, pitch 15.24 mm. Drawn for the TERMINAL-06 THT driver board, rev B; height=4.7mm (lying, Ø4.2 body). Rotated 270 degrees, written by tools/pcbkit.py.")
 	(tags "resistor axial MLT-0.5 C2-23-0.5 0.5W")
 	(property "Reference" "REF**"
 		(at 3.4 7.62 0)
