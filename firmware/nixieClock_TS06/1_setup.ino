@@ -51,6 +51,13 @@ void setup() {
 
   // ---------- HV boost oscillator: 31 kHz on D9 ----------
   TCCR1B = TCCR1B & 0b11111000 | 1;
+  // Soft start: ramp the duty up over ~85 ms. Jumping straight to DUTY with the reservoir
+  // at 12 V leaves the inductor no reset time, and its current ratchets well past
+  // saturation for the first 15-20 ms (electrical grill E4).
+  for (uint16_t d = 20; d < DUTY; d += 2) {
+    setPWM(GEN, d);
+    delay(1);
+  }
   setPWM(GEN, DUTY);
 
   // ---------- RTC (before the multiplex ISR is armed) ----------

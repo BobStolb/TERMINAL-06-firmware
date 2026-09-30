@@ -267,8 +267,10 @@ part("U16", "K155ID1", DIP16, _decoder("U16", 4, "A", GLYPH_Q["U16"]), DRV, "amp
      "ИН-15А decoder, nibble on GPA7..4 per XA_IN.")
 C("C15", "100n", "+5V", "GND", group="ampm")
 C("C16", "100n", "+5V", "GND", group="ampm")
-R("R56", "8k2", "ANODE_AM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15Б (bench gate 2 checks it).")
-R("R57", "8k2", "ANODE_PM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15А.")
+# The ИН-15s are lit continuously, not multiplexed: (185 - 140 - 0.7) / 18k = 2.5 mA, the tube's
+# rated indication current. 8k2 ran them at 4.2-5.4 mA (electrical grill E2).
+R("R56", "18k", "ANODE_AM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15Б (bench gate 2 checks it).")
+R("R57", "18k", "ANODE_PM", "HV185", R_HV, "ampm", "Static anode resistor, ИН-15А.")
 R("R54", "4k7", "+5V", "SDA", R_V, group="ampm", note="I2C pull-ups.")
 R("R55", "4k7", "+5V", "SCL", R_V, group="ampm")
 
@@ -312,9 +314,11 @@ R("R60", "470k", "HV185", "BLEED_HV", R_HV, "hv", "Bleeder: the reservoir is saf
 R("R61", "470k", "BLEED_HV", "GND", R_HV, "hv")
 R("R62", "750k 1%", "HV185", "FB_MID", R_HV, "hv", "Divider top, two in series, each under 100 V.")
 R("R63", "750k 1%", "FB_MID", "FB", R_HV, "hv")
-R("R64", "15k 1%", "FB", "FB_LOW", group="hv")
-part("RP1", "10k", "TS06_Trimmer_3296W", {1: "FB_LOW", 2: "GND", 3: "GND"}, DRV, "hv",
-     "Rail set-point 152-252 V; wiper on the grounded end, so an open wiper lowers the rail.")
+# 2.5 V x (1 + 1500k / (R64 + RP1)): 18k + 0..5k sets 165-210 V, 185 V near mid-travel. 15k + 10k
+# reached 252 V at one end of the trimmer (electrical grill E9).
+R("R64", "18k 1%", "FB", "FB_LOW", group="hv")
+part("RP1", "5k", "TS06_Trimmer_3296W", {1: "FB_LOW", 2: "GND", 3: "GND"}, DRV, "hv",
+     "Rail set-point 165-210 V; wiper on the grounded end, so an open wiper lowers the rail.")
 part("U12", "LM393", DIP8, {1: "PWM_G", 2: "FB", 3: "VREF", 4: "GND", 5: "VREF", 6: "GND", 7: None, 8: "+5V"}, DRV, "hv",
      "Comparator: FB above VREF holds the driver input low. Second half parked.")
 R("R69", "10k 1%", "+5V", "VREF", group="hv", note="2.5 V reference.")

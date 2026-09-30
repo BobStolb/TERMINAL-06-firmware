@@ -10946,7 +10946,7 @@
 			)
 			(uuid "3304fa75-2a5c-5be8-b315-d6bdcfcd4eca")
 		)
-		(property "Value" "8k2"
+		(property "Value" "18k"
 			(at -6.35 -2.72 0)
 			(layer "F.Fab")
 			(effects
@@ -11095,7 +11095,7 @@
 			)
 			(uuid "b5555f77-5ec6-5e3d-8b85-4e7c6cc5c28f")
 		)
-		(property "Value" "8k2"
+		(property "Value" "18k"
 			(at -6.35 -2.72 0)
 			(layer "F.Fab")
 			(effects
@@ -12138,7 +12138,7 @@
 			)
 			(uuid "dfc52a6b-4cb8-53f8-a7af-abc9c867e310")
 		)
-		(property "Value" "15k 1%"
+		(property "Value" "18k 1%"
 			(at 5.08 2.37 0)
 			(layer "F.Fab")
 			(effects
@@ -13657,7 +13657,7 @@
 			)
 			(uuid "a98d7d63-9f0e-5c7d-8638-5b0d957345ba")
 		)
-		(property "Value" "10k"
+		(property "Value" "5k"
 			(at -2.54 3.67 0)
 			(layer "F.Fab")
 			(effects
