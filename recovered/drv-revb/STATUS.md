@@ -1,8 +1,8 @@
 # TS06-DRV rev B: status
 
-Resume here: wait for r5 (a fresh `--route` with no seed in the environment; scratch revb2/r5, PID 11427). When it writes its board, compare its routes.json with tools/mkpcb_drv_routes.json and record the result below. Nothing else is open in this mission's files.
+Resume here: nothing open in this mission's files. The one verify_pair FAIL ("case outputs") needs `python3 3d/case-pair/case_pair.py --extract` and a commit by the owner of 3d/.
 
-Updated: 30.09.26 05:53 UTC. Last routing line: r3 round 13: 0 nets sharing, 0 unrouted, pres 116.8, 1628s (then polished, 30 nets shorter). r5 started 05:50.
+Updated: 30.09.26 06:22 UTC. Last routing line: r5 round 13: 0 nets sharing, 0 unrouted (a fresh --route; every round line and the saved route identical to r3's).
 
 ## Plan (written before the first edit)
 1. Apply the recovered patches (done: b4d187a, 13c6c29, 335f537).
@@ -21,6 +21,7 @@ Updated: 30.09.26 05:53 UTC. Last routing line: r3 round 13: 0 nets sharing, 0 u
 * (seen) KiCad DRC on the routed board, first pass: 1 starved thermal (R71.2, F.Cu) and 13 silk warnings, all in rev B's legends (the fences crossed part outlines; the text boxes were smaller than KiCad's). After the fix: 0 errors, 0 unconnected, 2 warnings (the Nano's silk past the edge, accepted).
 * (seen) The case model read no height for rev B's new footprints and assumed 25 mm, which made the case 3 mm deeper. With `height=` in their descr it reads them, and the envelope is 81.6 mm deep (the committed rev A outputs say 83.6).
 * (seen) `polish()` put a net's hand-laid tracks back a second time when it kept the old route. A `--route` board then carried 8 duplicate SDA segments; a board written from the saved JSON did not. Fixed; `scratch/repolish.py` shows the polished route is identical before and after the fix.
+* (seen) r5, a fresh `--route` with no seed in the environment (the script re-executes itself with PYTHONHASHSEED=0): every round line equals r3's, and its routes.json is byte-identical to tools/mkpcb_drv_routes.json. The route reproduces.
 * (computed) DIP orientations went from 3 to 4: U11 at 0° in the recovered placement, 180° in rev A. It is not on the change list; it is reported, not changed.
 
 ## Log
@@ -37,7 +38,8 @@ Updated: 30.09.26 05:53 UTC. Last routing line: r3 round 13: 0 nets sharing, 0 u
 * Now: verify_pair run 3: 26 PASS, 1 FAIL (case outputs, in 3d/, outside this mission).
 * Now: polish's duplicate hand-laid tracks fixed and checked by re-polishing r3's converged state.
 * Now: J1's back-face pinout reversed to read in the order the pins stand on that face; DRC re-run, clean.
-* Now: r5, a fresh `--route` with no seed in the environment, to show that the script pins it and the route reproduces.
+* Now: r5, a fresh `--route` with no seed in the environment, to show that the script pins it and the route reproduces. Result: identical.
+* Now: final verify_pair on 70ab889: 26 PASS, 1 FAIL (case outputs).
 
 ## Checks (command: last count)
 * `python3 tools/mkpcb_drv.py`: check 0 problems, 0 cathode pads under 0.5 mm, check_mate clean, 1164 segments, 0 vias.
