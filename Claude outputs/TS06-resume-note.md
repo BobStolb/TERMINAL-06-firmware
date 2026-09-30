@@ -2,7 +2,8 @@
 
 ## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
 * **Running (5 agents, each notifies on completion; checkpoints in the scratchpad):** museum2,
-  fascia-art (worktree), case-power (worktree), disp-art (worktree), migration-1 (viewer2, Front panel view).
+  fascia-art (worktree), disp-art (worktree), migration-1 (viewer2, Front panel view). Case power is done
+  (4d19bf1..7712386, item nixie-case-power in agent-commons embassy/review/).
   The artifact inventory is done (25fce9a).
   Each change agent ends in a review item in `scratchpad/embassy/review/<id>/`: view it, scan it, carry
   it, and for worktree agents review and cherry-pick their commits (verify_pair must stay 27 PASS).
@@ -40,6 +41,8 @@
 * **Artifact plan approved 06:52:** "1b 2b 3a 4a" (A+B, old pages untouched, Family view, inventory now).
 * **LINEAGE (xstream.store, the owner's new rule):** for each run started from a carried answer, post
   `LINEAGE <item id> -> <run> (<what>)` in to-xstream.md.
+* **Waiting on the owner in this chat (07:27):** two relayed messages, a proposed channel change (Q108) and a
+  rev B verdict, were not acted on: my permission check stopped that step. The owner decides here.
 * **Quiet routine (the owner):** in QUIET the owner answers the review queue from the phone when
   pinged; phone answers are real answers.
 * **The owner decides:** G11 fascia (a review item), G12 .hex board type, G13 firmware policy,
