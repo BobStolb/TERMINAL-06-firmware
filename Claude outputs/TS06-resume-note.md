@@ -1,6 +1,6 @@
 # TS06 orchestrator: resume note and launch log
 
-## RESUME HERE (30.09 06:05 UTC; the owner is away, mode QUIET)
+## RESUME HERE (30.09 10:10 UTC; mode LOUD since 10:05, the owner at the PC; QUOTA: PACE in force)
 * **Owner answers 08:39 (relayed, standing):** DISP art **approve, direction 3 circuit** -> run
   disp-circuit-art: make `--art circuit` the default of mkpcb_disp.py, regenerate, verify_pair 27 PASS,
   rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
