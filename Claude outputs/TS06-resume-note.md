@@ -10,11 +10,14 @@
 * **Next run: order-ready** (brief: `scratchpad/order-ready/BRIEF.md`): the fascia fab zip on R with Plates +
   Divider gold (`mkfab.sh --gold`), `tools/dfm_check.sh` on all three boards, `fab/ORDER.md`, renders and item
   nixie-order-ready. Launched 01:00 (quota.json 00:54).
-* **Queued run 2: populated-renders** (brief: `scratchpad/order-ready/../populated-renders/BRIEF.md`). The owner,
+* **The owner, 01:27:** "run renders in parallel, dont wait, coordinate usage wwith xstream" and "save all your
+  work for the product page website artifact later". So: 2 runs at once for this job; all work committed to the
+  repo (3d/populated/, fab/preview/) for the product page later; nothing published now.
+* **Run 2: populated-renders, LAUNCHED 01:28 in parallel** (brief: `scratchpad/order-ready/../populated-renders/BRIEF.md`). The owner,
   01:2x: "I gave fabricate the pcb as a goal I though we still needed something like renders with components
   visible". Every footprint gets a 3D model (repo 3d/*.step first, KiCad library next, made last), a coverage
   check (0 missing), populated renders per board plus the assembled stack, a fit table, and item
-  nixie-populated-renders. Launch after order-ready reports, on a fresh quota.json. Then one review in this
+  nixie-populated-renders. When both report: one review in this
   chat (renders, fab zips, ORDER.md; questions: fascia R + Divider, quantity, colours, go), then the owner orders.
 * **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
 
