@@ -29,5 +29,12 @@ for B in TS06-DISP TS06-DRV "$FASCIA"; do
 done
 say "4 stack frame"; python3 tools/stack_frame.py "$OUT/stack.json" --fascia "$FASCIA"
 say "5 stack pictures"; node 3d/populated/stack/render_stack.mjs "$OUT/stack.json" "$OUT" "$OUT"
+python3 - "$OUT/TS06-stack-front.png" "$OUT/TS06-stack-iso.png" <<'PY'
+import sys
+sys.path.insert(0, "tools")
+import render_populated as r          # trim to the picture, 2400 px wide at most
+for f in sys.argv[1:]:
+    print(f, r.trim_png(f, r.MAX_W))
+PY
 say "6 fit table"; python3 tools/fit_table.py "$OUT" "$OUT/fit-table.md" "$OUT/fit-table.json" --fascia "$FASCIA"
 say "done: $OUT"

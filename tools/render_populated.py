@@ -13,8 +13,9 @@ tools/models3d.py attaches the models of tools/models3d.json (footprints the boa
 socketed chip on its socket, a part whose own model file does not exist), and the black-mask / white-silk
 stackup of render_kicad.py goes in if the board has none. KiCad (kicad-cli in Docker, the image of
 tools/render_kicad.py) then renders the copy; the library models are mounted read-only and named by -D, so
-the boards' ${KICAD10_3DMODEL_DIR} paths resolve. The GLB is exported with --fuse-shapes, which takes the
-TS06-DRV one from 19.6 MB to 15.0 MB (the limit for a committed model file is 15 MB). Pictures are trimmed to their content, kept to 2400 px
+the boards' ${KICAD10_3DMODEL_DIR} paths resolve. The GLB is exported with --fuse-shapes and without the copper
+tracks (they lie under the mask; --glb-tracks puts them in): TS06-DRV is then 13.4 MiB, against 19.6 MiB without either
+(the limit for a committed model file is 15 MB). Pictures are trimmed to their content, kept to 2400 px
 wide and checked to be under 3 MB; the GLB is checked to be at most 15 MB.
 
 Options: --views top,iso,bottom   --no-glb   --width 2400   --kicad3d DIR (KiCad's 3D library; default the
@@ -116,6 +117,7 @@ def main():
     ap.add_argument("--quality", default="high")
     ap.add_argument("--kicad3d")
     ap.add_argument("--glb-no-zones", action="store_true", help="leave the copper pours out of the GLB (smaller)")
+    ap.add_argument("--glb-tracks", action="store_true", help="put the copper tracks in the GLB (they sit under the mask; 1.6 MiB for TS06-DRV)")
     ap.add_argument("--glb-flags", default="", help="extra kicad-cli export glb flags, e.g. '--fuse-shapes --min-distance 0.01mm'")
     ap.add_argument("--bare", action="store_true", help="no map: the board with only the models it carries itself (the 'before' picture)")
     ap.add_argument("--keep", action="store_true")
@@ -135,7 +137,7 @@ def main():
         diag = (bw ** 2 + bh ** 2) ** 0.5
         board = "/w/%s.kicad_pcb" % key
         if not a.no_glb:
-            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads", "--include-tracks"] + ([] if a.glb_no_zones else ["--include-zones"]) +
+            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads"] + (["--include-tracks"] if a.glb_tracks else []) + ([] if a.glb_no_zones else ["--include-zones"]) +
                                                           ["--include-silkscreen", "--include-soldermask", "--fuse-shapes"] + a.glb_flags.split() +
                                                           ["-o", "/w/out.glb", board])
             if not os.path.exists(os.path.join(tmp, "out.glb")):

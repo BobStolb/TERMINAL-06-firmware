@@ -13,7 +13,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const [stackPath, glbDir, outDir, viewsArg] = process.argv.slice(2);
+const [stackPath, glbArg, outDir, viewsArg] = process.argv.slice(2);
+const glbDir = glbArg ? path.resolve(glbArg) : glbArg;
 if (!outDir) { console.error('usage: node render_stack.mjs STACK.json GLBDIR OUTDIR [front,iso]'); process.exit(2); }
 const views = (viewsArg || 'front,iso').split(',');
 const stack = JSON.parse(fs.readFileSync(stackPath, 'utf8'));
@@ -23,7 +24,7 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/ja
 const server = http.createServer((req, res) => {
   const u = decodeURIComponent(req.url.split('?')[0]);
   const f = u.startsWith('/glb/') ? path.join(glbDir, u.slice(5)) : path.join(HERE, u === '/' ? 'stack.html' : u.slice(1));
-  if (!f.startsWith(HERE) && !f.startsWith(path.resolve(glbDir))) { res.writeHead(403); res.end(); return; }
+  if (!f.startsWith(HERE) && !f.startsWith(glbDir)) { res.writeHead(403); res.end(); return; }
   fs.readFile(f, (err, data) => {
     if (err) { res.writeHead(404); res.end('not found'); return; }
     res.writeHead(200, { 'Content-Type': types[path.extname(f)] || 'application/octet-stream' });

@@ -25,10 +25,14 @@ All PNGs are transparent, trimmed to the board, at most 2400 px wide and under 3
 
 | File | What | Size |
 |---|---|---|
-| `TS06-DISP-populated.glb` | the populated display board | 6.4 MB |
-| `TS06-DRV-populated.glb` | the populated driver board (exported with `--fuse-shapes`; without it 19.6 MB) | 15.0 MB |
-| `TS06-FASCIA-rhythm-populated.glb` | the populated fascia R | 0.9 MB |
+| `TS06-DISP-populated.glb` | the populated display board | 6.0 MB (5.7 MiB) |
+| `TS06-DRV-populated.glb` | the populated driver board | 14.0 MB (13.4 MiB) |
+| `TS06-FASCIA-rhythm-populated.glb` | the populated fascia R | 0.6 MB |
 | `stack.json` | where each board stands in the case: a 4x4 matrix per board, the case numbers the fit table uses | small |
+
+The GLBs are exported with `--fuse-shapes` and **without the copper tracks** (they lie under the black mask; pads, silk,
+mask and every part are in). TS06-DRV with tracks and fused shapes is 15.7 MB (15.0 MiB), and 19.6 MB without
+`--fuse-shapes`, so the tracks stay out to keep each file under 15 MB; `--glb-tracks` puts them back.
 
 Frame of a board's GLB: KiCad's: metres, x right, y up out of the board, z = the board's y (down the page); the
 board's back face at y = 0, its component face at y = thickness (1.6 mm; fascia 2.0 mm). To stack them in three.js:
