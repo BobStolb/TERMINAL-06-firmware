@@ -4,7 +4,10 @@
 * **State 04:00:** all three boards order-ready (fab zips; DFM PASS; ORDER.md: 10 each, all black, matte if cheap).
   Populated renders + stack (fascia with gold) in 3d/populated/. Product page source whole in recovered/viewer2
   (Order tab, 137 tests), NOT published (owner's hand). Running: morning-pack (03:59, cap 0.6 M / 04:59).
-  REVIEW-REQUEST 1 -> PROCEED-WITH; REVIEW-REQUEST 2 (viewer-prep) sent 03:59 (ea7732e), verdict pending.
+  REVIEW-REQUEST 1 -> PROCEED-WITH; REVIEW-REQUEST 2 (viewer-prep) -> PROCEED-WITH (04:01, 04bcbdb): publishing and
+  the tube look HOLD for the owner (my recommendation: truthful 3D, a lit-digit picture elsewhere); conditions 1 (Order
+  tab row for the hole variant) and 3 (README npm line) sent to morning-pack; condition 2 is mine: in the morning item
+  show 3d-fascia-gold.png beside stack-front.png and say the yellow one is truer (the stack lighting reads cream).
 * **When morning-pack reports:** verify + merge (opt-in hole variant zip, IN17-two-seats.png, allowlist.md);
   REVIEW-REQUEST 3; then the MORNING ITEM nixie-order-ready in this chat (SendUserFile + numbered questions):
   pictures (stack-front with gold, DRV/DISP iso, Order tab), the zips, the verdicts + undo points, the allowlist,
