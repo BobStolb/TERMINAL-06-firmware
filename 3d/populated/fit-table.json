@@ -1,5 +1,6 @@
 {
  "fascia": "TS06-FASCIA-rhythm",
+ "gold": "divider",
  "rows": [
   {
    "board": "TS06-DRV",

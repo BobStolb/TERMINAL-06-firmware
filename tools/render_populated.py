@@ -4,6 +4,7 @@
     python3 tools/render_populated.py TS06-DRV  OUTDIR                    # all three views + the GLB
     python3 tools/render_populated.py TS06-DISP OUTDIR --views iso --no-glb
     python3 tools/render_populated.py PCB/TS06-FASCIA-rhythm/TS06-FASCIA-rhythm.kicad_pcb OUTDIR
+    python3 tools/render_populated.py TS06-FASCIA-rhythm OUTDIR --gold divider        # the fascia as it is ordered
 
 BOARD is a board name (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm: PCB/<name>/<name>.kicad_pcb) or a path.
 Writes OUTDIR/<name>-top.png, -iso.png, -bottom.png and OUTDIR/<name>-populated.glb.
@@ -18,6 +19,12 @@ tracks (they lie under the mask; --glb-tracks puts them in): TS06-DRV is then 13
 (the limit for a committed model file is 15 MB). Pictures are trimmed to their content, kept to 2400 px
 wide and checked to be under 3 MB; the GLB is checked to be at most 15 MB.
 
+--gold VARIANT (none, divider, ...; the fascia boards only, default none = the committed board with its plain silk): render the
+board that is ordered instead, the fascia with the Plates white print and that gold. Its art board is built in the scratch
+directory by tools/fascia_gold.py (its own checks must be clean), exactly as tools/mkfab.sh builds the board it plots; the
+model map still applies (it is keyed by the committed board's name), so the controls keep their bodies. Nothing under
+PCB/ is written. The pictures and the GLB keep the names <board>-top.png ... <board>-populated.glb.
+
 Options: --views top,iso,bottom   --no-glb   --width 2400   --kicad3d DIR (KiCad's 3D library; default the
 files this project uses, vendored in 3d/populated/kicad3d)   --keep (leave the scratch copy and say where).
 """
@@ -29,6 +36,7 @@ sys.path.insert(0, HERE)
 import sexp as S          # noqa: E402
 import models3d as M      # noqa: E402
 import render_kicad as RK  # noqa: E402
+import stack_frame as SF   # noqa: E402  (art_board: the fascia with its Plates print and gold)
 
 MAX_W = 2400
 MAX_PNG = 3 * 1024 * 1024
@@ -54,15 +62,17 @@ def board_path(arg):
     return p
 
 
-def scratch_board(path, tmp, kicad3d=None, bare=False):
+def scratch_board(path, tmp, kicad3d=None, bare=False, art=None):
     """Write the populated copy of the board into tmp; returns (name, plan rows, {VAR: dir}).
-    bare: attach nothing (only the models the board carries itself): the render as it was before the map."""
+    bare: attach nothing (only the models the board carries itself): the render as it was before the map.
+    art: a scratch board to read instead of path (the fascia with its gold); the model map and the project file are
+    those of the committed board `path`, whose name the copy keeps."""
     mp = M.load_map()
     dmap = M.dirs(mp, kicad3d)
     key = M.board_key(path)
     if bare:
         mp = {"vars": mp.get("vars", {}), "parts": {}, "boards": {key: {"footprints": {}, "refs": {}, "none": {}}}}
-    src = open(path, encoding="utf8").read()
+    src = open(art or path, encoding="utf8").read()
     tree = S.parse(src)
     rows = M.apply(tree, key, mp, dmap)
     open(os.path.join(tmp, key + ".kicad_pcb"), "w", encoding="utf8").write(RK.with_stackup(S.dump(tree) + "\n"))
@@ -119,6 +129,8 @@ def main():
     ap.add_argument("--glb-no-zones", action="store_true", help="leave the copper pours out of the GLB (smaller)")
     ap.add_argument("--glb-tracks", action="store_true", help="put the copper tracks in the GLB (they sit under the mask; 1.6 MiB for TS06-DRV)")
     ap.add_argument("--glb-flags", default="", help="extra kicad-cli export glb flags, e.g. '--fuse-shapes --min-distance 0.01mm'")
+    ap.add_argument("--gold", default="none", metavar="VARIANT",
+                    help="the fascia boards only: render the board as ordered, with the Plates print and this gold (none, divider, ...)")
     ap.add_argument("--bare", action="store_true", help="no map: the board with only the models it carries itself (the 'before' picture)")
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()
@@ -127,12 +139,17 @@ def main():
     tmp = tempfile.mkdtemp(prefix="render_populated.")
     os.chmod(tmp, 0o777)
     try:
-        key, rows, dmap = scratch_board(path, tmp, a.kicad3d, a.bare)
+        art = None
+        if a.gold != "none":
+            if a.bare:
+                sys.exit("--gold and --bare do not go together")
+            art = SF.art_board(os.path.splitext(os.path.basename(path))[0], a.gold, tmp)
+        key, rows, dmap = scratch_board(path, tmp, a.kicad3d, a.bare, art)
         miss = [r for r in rows if r["status"] == "missing"]
         if miss:
             print("WARNING: %d footprints without a model: %s" % (len(miss), ", ".join(r["ref"] for r in miss)))
         # extent of the board, as render_kicad does: plan views at one pixel scale
-        bx0, by0, bx1, by1 = RK.extent(open(path, encoding="utf8").read())
+        bx0, by0, bx1, by1 = RK.extent(open(art or path, encoding="utf8").read())
         bw, bh = bx1 - bx0, by1 - by0
         diag = (bw ** 2 + bh ** 2) ** 0.5
         board = "/w/%s.kicad_pcb" % key

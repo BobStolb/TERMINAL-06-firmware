@@ -3,6 +3,12 @@
 #
 #     tools/populated_all.sh                 # writes 3d/populated/
 #     tools/populated_all.sh /some/dir       # elsewhere (scratch run)
+#     tools/populated_all.sh --gold none     # the fascia as committed (plain silk) instead of as ordered
+#     tools/populated_all.sh --gold ladder   # another gold (R is laid out for the divider only: the others stop on their own checks)
+#
+# THE FASCIA is rendered as it is ordered: the committed R board with the Plates white print and the Divider gold
+# (the board tools/mkfab.sh plots), built in scratch by tools/fascia_gold.py. --gold VARIANT (or GOLD=VARIANT) changes
+# that; none renders the committed board. It goes to steps 3, 4 and 6; nothing under PCB/ is written.
 #
 # Steps, each of which can be run alone (the commands are the ones in 3d/populated/README.md):
 #   1  tools/build_models3d.py       OpenSCAD -> .wrl for the parts nothing else draws          (a few seconds)
@@ -16,8 +22,21 @@
 # Nothing under PCB/ or fab/ is read for writing; the boards are copied to scratch directories.
 set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-OUT=${1:-$ROOT/3d/populated}
 FASCIA=${FASCIA:-TS06-FASCIA-rhythm}
+GOLD=${GOLD:-}
+ARGS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --gold) [ $# -gt 1 ] || { echo "--gold needs a variant (none, divider, ladder, fans, guilloche)"; exit 2; }; GOLD=$2; shift 2 ;;
+    --gold=*) GOLD=${1#--gold=}; shift ;;
+    *) ARGS+=("$1"); shift ;;
+  esac
+done
+OUT=${ARGS[0]:-$ROOT/3d/populated}
+# the default: the Divider on R (the board that is ordered); the other fascia boards have no default gold
+if [ -z "$GOLD" ]; then
+  if [ "$FASCIA" = TS06-FASCIA-rhythm ]; then GOLD=divider; else GOLD=none; fi
+fi
 export PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH:-/opt/pw-browsers}
 cd "$ROOT"
 mkdir -p "$OUT"
@@ -25,9 +44,13 @@ say() { printf '\n== %s\n' "$*"; }
 say "1 models";   python3 tools/build_models3d.py
 say "2 coverage"; python3 tools/model_coverage.py
 for B in TS06-DISP TS06-DRV "$FASCIA"; do
-  say "3 render $B"; python3 tools/render_populated.py "$B" "$OUT"
+  if [ "$B" = "$FASCIA" ]; then
+    say "3 render $B (gold: $GOLD)"; python3 tools/render_populated.py "$B" "$OUT" --gold "$GOLD"
+  else
+    say "3 render $B"; python3 tools/render_populated.py "$B" "$OUT"
+  fi
 done
-say "4 stack frame"; python3 tools/stack_frame.py "$OUT/stack.json" --fascia "$FASCIA"
+say "4 stack frame"; python3 tools/stack_frame.py "$OUT/stack.json" --fascia "$FASCIA" --gold "$GOLD"
 say "5 stack pictures"; node 3d/populated/stack/render_stack.mjs "$OUT/stack.json" "$OUT" "$OUT"
 python3 - "$OUT/TS06-stack-front.png" "$OUT/TS06-stack-iso.png" <<'PY'
 import sys
@@ -36,5 +59,5 @@ import render_populated as r          # trim to the picture, 2400 px wide at mos
 for f in sys.argv[1:]:
     print(f, r.trim_png(f, r.MAX_W))
 PY
-say "6 fit table"; python3 tools/fit_table.py "$OUT" "$OUT/fit-table.md" "$OUT/fit-table.json" --fascia "$FASCIA"
+say "6 fit table"; python3 tools/fit_table.py "$OUT" "$OUT/fit-table.md" "$OUT/fit-table.json" --fascia "$FASCIA" --gold "$GOLD"
 say "done: $OUT"

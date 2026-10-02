@@ -1,6 +1,7 @@
 {
  "about": "tools/stack_frame.py from 3d/case-pair/case_pair.py; fascia board TS06-FASCIA-rhythm. Frame: X right, Y up, Z towards the viewer, mm, the ИН-12 glass front at Z 0.",
  "fascia_board": "TS06-FASCIA-rhythm",
+ "fascia_gold": "divider",
  "matrix": {
   "TS06-DISP": [
    1,

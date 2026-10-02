@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Where the three boards stand in the case: the placement of TS06-DISP, TS06-DRV and the fascia, from case_pair.py.
 
-    python3 tools/stack_frame.py OUT.json [--fascia TS06-FASCIA-rhythm]
+    python3 tools/stack_frame.py OUT.json [--fascia TS06-FASCIA-rhythm] [--gold divider]
 
 Imports 3d/case-pair/case_pair.py read-only (its committed boards.json, its own dims() and derive(), with the
 fascia board named swapped in as FASCIA_PCB= does), and writes, for each board, the 4x4 matrix that takes a
@@ -13,8 +13,12 @@ face of the board at y = 0) to the stack's frame in millimetres:
 That is the case model's world (X, Y, Z-from-the-glass, + towards the back) with Z flipped to three.js's
 right-handed "towards the viewer". The matrices are row-major lists of 16, ready for Matrix4.set().
 Also written: the case numbers the fit table compares against (frame values).
+
+--gold VARIANT (none, divider, ...): read the fascia the way it is ordered, the board with the Plates print and that
+gold, built in a scratch file by tools/fascia_gold.py (art_board() below). The art changes no footprint, hole or edge,
+so the numbers do not move; the json says which board it read. Nothing under PCB/ is written.
 """
-import importlib.util, json, math, os, sys
+import importlib.util, json, math, os, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
@@ -28,15 +32,38 @@ def load_case_pair():
     return cp
 
 
-def geometry(fascia="TS06-FASCIA-rhythm"):
+GOLDS = ("none", "ladder", "divider", "fans", "guilloche")
+BASE_OF = {"TS06-FASCIA-rhythm": "R", "TS06-FASCIA": "A"}      # the board fascia_gold.py builds on
+
+
+def art_board(fascia, gold, outdir):
+    """The fascia as ordered: PCB/<fascia> with the Plates print and the <gold> gold, built into outdir by
+    tools/fascia_gold.py (its own checks must be clean, as in tools/mkfab.sh). Returns the path of the scratch board.
+    gold none: the committed board itself (nothing is built). Nothing under PCB/ is written."""
+    if gold in (None, "", "none"):
+        return os.path.join(ROOT, "PCB", fascia, fascia + ".kicad_pcb")
+    if gold not in GOLDS:
+        sys.exit("unknown gold: %s (%s)" % (gold, ", ".join(GOLDS)))
+    if fascia not in BASE_OF:
+        sys.exit("--gold applies to the fascia boards (%s), not %s" % (", ".join(BASE_OF), fascia))
+    out = os.path.join(outdir, fascia + "-" + gold + ".kicad_pcb")
+    r = subprocess.run([sys.executable, os.path.join(HERE, "fascia_gold.py"), gold, out, "--base", BASE_OF[fascia]],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not os.path.exists(out):
+        sys.exit("tools/fascia_gold.py %s --base %s failed its own checks:\n%s%s" % (gold, BASE_OF[fascia], r.stdout, r.stderr))
+    print(r.stdout.splitlines()[0] if r.stdout else "gold board built")
+    return out
+
+
+def geometry(fascia="TS06-FASCIA-rhythm", gold=None):
     cp = load_case_pair()
     sys.path.insert(0, HERE)
     import sexp                                                  # noqa: E402
     B = json.load(open(os.path.join(ROOT, "3d", "case-pair", "boards.json"), encoding="utf8"))
     if fascia:
-        path = os.path.join(ROOT, "PCB", fascia, fascia + ".kicad_pcb")
-        cp.FASCIA_PCB = path
-        B["fascia"] = cp._fascia(sexp)
+        with tempfile.TemporaryDirectory(prefix="stack_frame.") as tmp:
+            cp.FASCIA_PCB = art_board(fascia, gold, tmp)
+            B["fascia"] = cp._fascia(sexp)
     d = cp.dims(B)
     G = cp.derive(B, d)
     return cp, B, d, G
@@ -67,7 +94,8 @@ def main(argv):
     fascia = "TS06-FASCIA-rhythm"
     if "--fascia" in argv:
         fascia = argv[argv.index("--fascia") + 1]
-    cp, B, d, G = geometry(fascia)
+    gold = argv[argv.index("--gold") + 1] if "--gold" in argv else "none"
+    cp, B, d, G = geometry(fascia, gold)
     v = G["v"]
     keep = ["BOARD_W", "DISP_H", "DISP_TOP_Y", "DRV_H", "DRV_TOP_Y", "DRV_BOT_Y", "DISP_BOT_Y", "PCB_T", "FASCIA_W", "FASCIA_H",
             "FASCIA_X0", "FASCIA_T", "FASCIA_RAKE", "SILL_TOP_Y", "Z_FACE", "Z_DISP_F", "Z_DISP_B", "Z_DRV_F", "Z_DRV_B",
@@ -77,6 +105,7 @@ def main(argv):
     json.dump({"about": "tools/stack_frame.py from 3d/case-pair/case_pair.py; fascia board %s. Frame: X right, Y up, Z towards "
                         "the viewer, mm, the ИН-12 glass front at Z 0." % fascia,
                "fascia_board": fascia,
+               "fascia_gold": gold,
                "matrix": matrices(G),
                "frame": {k: round(v[k], 4) for k in keep if k in v},
                "drv_parts": [[p[0], p[1], p[3]] for p in G["drv_parts"]]},
