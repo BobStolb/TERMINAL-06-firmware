@@ -22,7 +22,8 @@
 * **The owner, 01:4x, order answers:** quantity "I think promo qty is 10 per which costs literal pennies" -> 10 per
   board (told: the promo price is usually for boards up to 100x100 mm; ours are 191.4 mm, fascia 2.0 mm ENIG, so
   likely more; inferred). Asked "what are mask colours": explained; boards carry black mask + white silk (DISP, DRV;
-  fascia gets the same via fascia-dfm). ORDER.md gets qty 10 through fascia-dfm (messaged).
+  fascia gets the same via fascia-dfm). The owner: "all black, matte if cheap". ORDER.md gets qty 10 and the
+  colour through fascia-dfm (messaged).
 * **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
 
 ### Before the pause (30.09 10:10 UTC; mode LOUD since 10:05)
