@@ -1,6 +1,17 @@
 # TS06 orchestrator: resume note and launch log
 
-## RESUME HERE (02.10 04:00 UTC; QUIET since 02:42, owner asleep; job: PCB order-ready, then the morning item)
+## RESUME HERE (02.10 05:05 UTC; QUIET, owner asleep; nixie PAUSED: 0 runs; waiting for the owner's 5 answers)
+* **Morning item nixie-order-ready SHOWN in this chat 05:05** (6 pictures; filed agent-commons d559c05). Questions:
+  1 fascia holes +0.4 mm variant (fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip; juror and I say yes);
+  2 measure one ИН-17 (seat >= 6.4 mm per its ТУ; 0.31 mm behind the window on the longer STEP length);
+  3 publish the product page (owner's hand; full suite 138 PASS on a fresh build);
+  4 tube look on the page (truthful glass + lit-digit picture elsewhere, recommended, or glow back);
+  5 the order itself (owner's hand). The order waits only on 1 and 5.
+* **On answers:** write answer.json in embassy/review/nixie-order-ready/ + LINEAGE. If 1 = yes: make the holes zip
+  the ordered one (ORDER.md names it; fit table main rows 0.29; viewer Order tab), verify + DFM + page suite.
+  If 3 = yes: publish S/page-final/site (url FzK6sTskEh2GvBRHAfNCBS, files map from its publish-files.json, 83
+  files) -> rebuild first if anything changed. Jury verdicts 1-3: PROCEED-WITH (undo 2676d16, 94c955b, 5200716).
+* **Open, later:** pcbkit back-face model turns; fascia A/-wide old silk; firmware rev B controls (G13); migration.
 * **State 04:00:** all three boards order-ready (fab zips; DFM PASS; ORDER.md: 10 each, all black, matte if cheap).
   Populated renders + stack (fascia with gold) in 3d/populated/. Product page source whole in recovered/viewer2
   (Order tab, 137 tests), NOT published (owner's hand). Running: morning-pack (03:59, cap 0.6 M / 04:59).
