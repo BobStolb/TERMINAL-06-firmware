@@ -67,8 +67,8 @@ build time. Rebuild after `fab/` or the fit table changes.
 
 ## The tests
 
-`test/run.mjs` drives the built page in Chromium (software GL, so it is slow: about 25 minutes in all; `ONLY_NEW=1` runs just the
-populated-boards and Order checks, about 5 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
+`test/run.mjs` drives the built page in Chromium (software GL: about 6 minutes in all, 137 checks; `ONLY_NEW=1` runs just the 25 checks of the
+populated boards and the Order view, about 3 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
 and fails on any console error or request that leaves the machine. The checks cover the camera deck, the stepper, the sections, the front
 panel view, light, dark and phone widths, and, for the populated boards: the files and their limits, the GLBs loaded with their
 parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D view, and every row of the Order view.

@@ -579,10 +579,7 @@ function view(name) {
   const root = V.roots[V.current];
   if (!root) return;
   const b = visibleBox(root.group);
-  if (name === 'fit') { frameBox(b, V.current === 'asm' ? 'isoL' : 'front'); return; }
-  const c = b.getCenter(V3()), r = b.getBoundingSphere(new THREE.Sphere()).radius;
-  const d = V3(...DIRS[name]).normalize();
-  tweenTo(c, c.clone().add(d.multiplyScalar(fitDistance(r))));
+  frameBox(b, name === 'fit' ? (V.current === 'asm' ? 'isoL' : 'front') : name);       // frameBox: the sphere, or the box of a long thin board
 }
 function zoom(f) {
   const t = V.controls.target, off = V.camera.position.clone().sub(t);
