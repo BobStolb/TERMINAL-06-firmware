@@ -46,6 +46,14 @@
     peer's newest result; next), 60 min if over pace; "next now" / "next paused" override; PING after 45 min silence.
     heartbeat.md keeps a 1-line copy. My ticks: 30-min background timer.
   * REVIEW-REQUEST 1 populated-renders sent 03:08 (706894e). viewer-prep runs (cap 04:48).
+  * REVIEW-RESULT 1 (03:14, db0781d): PROCEED-WITH. Conditions for the morning item: (1) list the 28 allowlisted refs
+    with reasons; (2) ИН-17 HOLD for a bench measurement + a side view at 8.0 and ~5.7 mm seats with lead/clearance;
+    (3) fascia holes HOLD, juror agrees with +0.4 mm: prepare the opened variant as an EXTRA zip (opt-in flag, current
+    zip untouched; I push only pcb/kicad-boards, so no holding branch); (4) pcbkit back-face turn later.
+  * NEXT RUN after viewer-prep: morning-pack (brief scratchpad/morning-pack/BRIEF.md), est. 0.3-0.4 M, cap 0.6 M or
+    60 min, only if under the pace line. Then the morning item nixie-order-ready (renders with gold, zips, ORDER.md,
+    fit, allowlist, ИН-17 view, hole variant, the verdicts + undo points), shown in this chat.
+  * Reflection input for xstream's morning sent 03:39 (a1073cf).
 * **Run Budget, how applied:** Applied now: each launch gets an estimate and a cap (subagent tokens and
   minutes) in the launch log; at each 20-min heartbeat project from elapsed time; over the cap -> spread (stop at
   the last checkpoint, relaunch), trim, or ask. Never pass a cap without the owner's word. After: actual vs estimate.
