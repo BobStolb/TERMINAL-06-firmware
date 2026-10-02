@@ -28,3 +28,9 @@ python3 tools/render_kicad.py /tmp/fascia-R-divider.kicad_pcb fascia.png --side 
 ```
 
 Size limits kept by the script: at most 2400 px wide and 3 MB a file.
+
+Each board is shown whole, with a 2 mm margin. `tools/render_kicad.py` frames a board from a rule that holds for the
+fascia (191.4 x 40 mm) but not for TS06-DRV (191.4 x 100 mm), where KiCad draws about 9% larger than the rule says; the
+three-board picture used to lose TS06-DRV's left and top edges because of it. `tools/fab_preview.py` now measures the
+scale first (two white squares planted on a scratch copy are found in a test render) and frames the real render from
+that. It needs numpy and scipy as well as Pillow.

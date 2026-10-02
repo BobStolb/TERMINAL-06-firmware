@@ -8,6 +8,9 @@ the circuit-as-ornament silkscreen art; TS06-DRV unchanged), with KiCad 10.0.6's
 First built at b8d3f25 (the rev B merge).
 
 The fascia R (rev A, with the Divider gold) was added on 02.10.26: `TS06-FASCIA-R-revA-divider-fab.zip`, below.
+It was rebuilt the same day, after the design-for-manufacture check (`tools/dfm_check.py`, the table below) had found
+four things on it: thin silk, a small back legend, slivers of mask at four dial rings, and "None" as the finish in its job file.
+All four are fixed in the generators; TS06-DISP's and TS06-DRV's zips did not change.
 
 Not ordered: the prototype run is the owner's decision (grill G14). Filling the committed board files (G8, first half) is also the owner's decision.
 
@@ -53,16 +56,41 @@ script's own checks must be clean) and plots that. Nothing under `PCB/` is writt
 * The zip has 11 files: the same names as above with the prefix `TS06-FASCIA-R-divider`, and one more,
   `B_Paste.gbp` (the eight 1206 resistors are surface-mount on the back). There is no plated drill file or
   plated drill map: the board has no plated hole. The board is 2.0 mm thick (the job file says so), and its job
-  file says finish "None" (the board file has no stack-up): ask for ENIG, see `ORDER.md`.
+  file says finish ENIG, as the other two: the board file carries the same stack-up (black mask, white silk, ENIG), written by `tools/mkpcb_fascia_rhythm.py`.
 * The gold is in F.Cu as copper, 0.05 mm wider each side than the opening in F.Mask over it, so a mask
   misregistration shows gold and never bare board. `tools/mkfab.sh` reads the plotted Gerbers back with
   `tools/gerbers.py gold` (no KiCad): F.Cu must carry the gold; F.Mask must be open over all of it (about
   85% of the copper's area, the rest is the 0.05 mm rim); no opening may lie past the copper. The same check is
-  run on a mask with the gold's openings removed, and must FAIL. Found: the openings are present; the only
-  mask left over gold is a few 0.1 mm slivers inside four dial rings.
+  run on a mask with the gold's openings removed, and must FAIL. Found: the openings are present, and no thin web
+  of mask is left over the gold (the Divider's lines end clear of the dial rings' holes; before, four rings had 0.05 mm slivers).
 * The name carries the gold. `--gold VARIANT` picks another (`ladder`, `fans`, `guilloche`; `none` is the bare
   board, `TS06-FASCIA-R-revA-bare-fab.zip`). Only the divider is laid out for R; the other three stop on their own
   checks (`tools/fascia_gold.py` says why).
+
+## Design-for-manufacture check
+
+`python3 tools/dfm_check.py` (limits *inferred*, typical of a low-cost two-layer service; `ORDER.md` lists them) reads each
+board twice: KiCad's DRC under the fab limits, and the zip's own Gerbers and drills. Worst value found, and the
+rule's limit; the fascia R's column is after the fixes, with the value it had before.
+
+| Rule | Limit | TS06-DISP | TS06-DRV | Fascia R (before the fixes) |
+|---|---|---|---|---|
+| Track width | 0.15 | 0.25 | 0.25 | 0.25 |
+| Copper clearance | 0.15 | 0.25 | 0.21 | 0.375 |
+| Annular ring | 0.15 | 0.30 | 0.20 | over 0.40 |
+| Copper to edge | 0.30 | 0.75 | 0.75 | over 0.80 |
+| Silk line, DRC text stroke | 0.15 | 0.15 | 0.15 | 0.15 (0.12) |
+| Silk text height | 1.0 | 1.0 | 1.0 | 1.0 (0.8) |
+| Smallest silk aperture, front / back, from the zip | 0.15 | 0.15 / 0.15 | 0.15 / 0.15 | 0.15 / 0.15 (0.12 / 0.10) |
+| Smallest plated / non-plated drill | 0.3 / 0.5 | 0.9 / 3.2 | 0.8 / 3.2 | none / 2.7 |
+| Narrowest mask web, front | 0.10 | 0.3 | 0.3 | 0.100 (0.05) |
+| Narrowest mask web, back | 0.10 | 0.3 | 0.3 | over 0.35 |
+| Board size | within 500 x 400 | 191.4 x 44.0 | 191.4 x 100.0 | 191.4 x 40.0 |
+| **Result** | | all PASS | all PASS | all PASS (4 rows FAILed) |
+
+Rows that do not appear above (plated drill, non-plated drill and hole-to-hole in the DRC; the fascia's gold exposed) also
+PASS. The check's own self-test, a copy of TS06-DISP with one planted fault per rule, shows FAIL on all 17 rows, so the
+rows can fail. The mask web reading is the raster's (steps of 0.025 mm, about +-0.03 mm).
 
 ## Region check
 
