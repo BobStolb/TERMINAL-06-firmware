@@ -69,6 +69,7 @@ from fascia_art import P, ANG, NAMES, THROW, RULES
 READ = {"FIELD": (2, 3, 4, 5), "SUB": (3, 5), "-": (2, 3, 4, 5), "+": (2, 3, 4, 5)}
 PAD_R = 1.1            # radius of FIELD's contact pad: its top edge is the throw point (6.6 mm below centre)
 EDGE_MM = 1.4          # gold this far inside the edge (KiCad's rule is 0.5)
+HOLE_GAP = 0.1         # a gold line that joins a ring stops with its round end this far short of the ring's hole
 
 
 # ============================================================================ geometry helpers
@@ -180,12 +181,13 @@ class GArt(fa.Art):
         if d is not None and tear:
             self.teardrop(c, rp, d, w, tear, grp)
 
-    def ground(self, c, direction, w, grp, stem=1.4, gap=1.0, halves=(2.2, 1.4, 0.6)):
-        """A GOST earth: a stem, then three bars, each shorter, across the stem."""
+    def ground(self, c, direction, w, grp, stem=1.4, gap=1.0, halves=(2.2, 1.4, 0.6), start=0.0):
+        """A GOST earth: a stem, then three bars, each shorter, across the stem. The stem runs from start mm
+        along direction (from a ring's rim, say) to stem mm; the bars stand at its end."""
         d = unit(direction)
         n = (-d[1], d[0])
         e = add(c, d, stem)
-        self.line("gold", c, e, w, grp)
+        self.line("gold", add(c, d, start) if start else c, e, w, grp)
         for k, h in enumerate(halves):
             m = add(e, d, gap * k)
             self.line("gold", add(m, n, h), add(m, n, -h), w, grp)
@@ -349,30 +351,44 @@ def g_divider(A, G, L):
     r0 = 11.3
     tw = 0.5
     pr = 0.95
+    lug_r, lug_w = pr - 0.3, 0.6                         # a drilled lug: gold ring, black hole (the rotary's tap lugs)
     body_len, body_w = 2.9, 1.7
     span = math.degrees(body_len / 2 / r0)
     g = "div"
+
+    def stop(w, ring_r=lug_r, ring_w=lug_w):
+        """How far from a ring's centre a gold line of width w must end: its round end then stays HOLE_GAP clear
+        of the ring's hole. A line that ran on to the centre would cut the hole's disc of mask in two, and the
+        slivers (0.05 mm and thinner) are what a fab drops (tools/dfm_check.py, the mask web row)."""
+        return ring_r - ring_w / 2 + w / 2 + HOLE_GAP
+    ga = math.degrees(stop(tw) / r0)                     # the same, as an angle on the dial's arc
     for k, a in enumerate(ANG):
-        A.ring(P(D, r0, a), pr - 0.3, 0.6, g)            # a drilled lug: gold ring, black hole (the rotary's tap lugs)
+        A.ring(P(D, r0, a), lug_r, lug_w, g)
     for k in range(5):
         a0, a1 = ANG[k], ANG[k + 1]
         m = (a0 + a1) / 2
         c = P(D, r0, m)
         tang = (-math.sin(math.radians(m)), math.cos(math.radians(m)))
         A.rect(c, tang, body_len, body_w, 0.3, g)
-        pa = math.degrees(pr / r0)                       # leads: the arc between the lug and the body
-        A.arc("gold", D, r0, a0 + pa * 0.6, m - span, tw, g)
-        A.arc("gold", D, r0, m + span, a1 - pa * 0.6, tw, g)
+        A.arc("gold", D, r0, a0 + ga, m - span, tw, g)   # leads: the arc between the lug's rim and the body
+        A.arc("gold", D, r0, m + span, a1 - ga, tw, g)
     # tails round the dead side to the two ends of the chain, then their symbols (GND at 1, +5V at 6)
     endA = 172.0
-    A.arc("gold", D, r0, -endA, ANG[0], tw, g)
-    A.arc("gold", D, r0, ANG[-1], endA, tw, g)
+    A.arc("gold", D, r0, -endA + ga, ANG[0] - ga, tw, g)          # each end stops at the rim of the lug it joins
+    A.arc("gold", D, r0, ANG[-1] + ga, endA - ga, tw, g)
     eg, ep = P(D, r0, -endA), P(D, r0, endA)
-    A.ring(eg, pr - 0.3, 0.6, g)
-    A.ring(ep, pr - 0.3, 0.6, g)
-    A.ground(eg, (-1, 0), 0.45, g, stem=1.8, gap=1.1, halves=(2.0, 1.3, 0.6))
-    A.line("gold", ep, add(ep, (-1, 0), 1.8), 0.45, g)
-    A.ring(add(ep, (-1, 0), 2.8), 1.0, 0.4, g)
+    A.ring(eg, lug_r, lug_w, g)
+    A.ring(ep, lug_r, lug_w, g)
+    n0 = len(A.items)
+    A.ground(eg, (-1, 0), 0.45, g, stem=1.8, gap=1.1, halves=(2.0, 1.3, 0.6), start=stop(0.45))
+    n1 = len(A.items)
+    tr, tw_, tout = 1.0, 0.4, 3.2                                 # the +5V terminal ring, tout mm out from its lug
+    A.line("gold", add(ep, (-1, 0), stop(0.45)), add(ep, (-1, 0), tout - stop(0.45, tr, tw_)), 0.45, g)
+    A.ring(add(ep, (-1, 0), tout), tr, tw_, g)
+    # the GND symbol and the +5V terminal are one group, so check() does not keep them apart; at 2.8 mm out they
+    # stood 0.096 mm apart (a mask web under the fab's 0.1 mm), so the gap is asserted here
+    gap = min(fa.dist(a, b) for a in A.items[n0:n1] for b in A.items[n1:])
+    assert gap >= 0.3, "the GND symbol and the +5V terminal ring are %.3f mm apart, need 0.3" % gap
     # the rule: FIELD's contact pad, the SUB box, and the traces from 3 and 5, in 45-degree routing
     w, r = 0.6, 2.6
     fx, sx = F[0], S[0]
@@ -383,25 +399,27 @@ def g_divider(A, G, L):
     A.rrect("gold", bx0, by0, bx1, by1, 3.0, w, rr)
     top_y, bot_y, h = (2.2 if L["compact"] else 1.9), L["H"] - 3.6, 1.8
     d3 = R[2] - top_y
-    p3 = [(e3, R[2]), (e3 + d3, top_y), (sx - h, top_y), (sx, top_y + h), (sx, by0)]
+    ent_r, ent_w = 1.0, 0.4                              # an entry ring, where a trace meets the box
+    rim = stop(w, ent_r, ent_w)                          # the traces end at its rim, not in its hole
+    p3 = [(e3, R[2]), (e3 + d3, top_y), (sx - h, top_y), (sx, top_y + h), (sx, by0 - rim)]
     A.route(p3, w, r, rr)
     entries = [(sx, by0), (bx0, ty)]
     if L["compact"]:                                     # R: 5's trace drops 45 degrees and enters the box's side
         dd = 3.2
-        p5 = [(e5, R[4]), (e5 + dd, R[4] + dd), (bx0, R[4] + dd)]
+        p5 = [(e5, R[4]), (e5 + dd, R[4] + dd), (bx0 - rim, R[4] + dd)]
         entries.append((bx0, R[4] + dd))
     else:
         d5 = bot_y - R[4]
-        p5 = [(e5, R[4]), (e5 + d5, bot_y), (sx - h, bot_y), (sx, bot_y - h), (sx, by1)]
+        p5 = [(e5, R[4]), (e5 + d5, bot_y), (sx - h, bot_y), (sx, bot_y - h), (sx, by1 + rim)]
         entries.append((sx, by1))
     A.route(p5, w, r, rr)
     A.pad((e3, R[2]), 0.85, rr, d=(1, -1), w=w, tear=2.0)
     if not L["compact"]:                                 # (on R a pad would touch FORMAT/DATE: Plates starts the trace bare there too)
         A.pad((e5, R[4]), 0.85, rr, d=(1, 1), w=w, tear=2.0)
     A.pad((fx, ty), PAD_R, rr, d=(1, 0), w=w, tear=2.2)
-    A.line("gold", (fx, ty), (bx0, ty), w, rr)
+    A.line("gold", (fx, ty), (bx0 - rim, ty), w, rr)
     for c in entries:
-        A.ring(c, 1.0, 0.4, rr)
+        A.ring(c, ent_r, ent_w, rr)
     # the lever ladder in the clear between SUB's box and the buttons
     free0, free1 = bx1 + 0.3, M[0] - 6.0
     sp = 3.8 if free1 - free0 < 14 else 5.6

@@ -60,6 +60,47 @@ VER, GEN, GENV = 20260206, "pcbnew", "10.0"
 NS = uuid.uuid5(uuid.NAMESPACE_URL, "ts06/" + NAME)
 
 W, H, CR = 191.4, 40.0, 1.5            # the row's width; TS06-FASCIA's height and corner radius
+THK = 2.0                              # the board's thickness: the case is drawn for a 2.0 mm fascia
+# The stack-up TS06-DISP and TS06-DRV carry (black mask, white silk, ENIG), for THK: the fab's job file says its
+# finish from here, and the gold needs ENIG. Core = THK - 2 x 0.035 copper - 2 x 0.01 mask.
+STACKUP = """\t\t(stackup
+\t\t\t(layer "F.SilkS"
+\t\t\t\t(type "Top Silk Screen")
+\t\t\t\t(color "White")
+\t\t\t)
+\t\t\t(layer "F.Mask"
+\t\t\t\t(type "Top Solder Mask")
+\t\t\t\t(color "Black")
+\t\t\t\t(thickness 0.01)
+\t\t\t)
+\t\t\t(layer "F.Cu"
+\t\t\t\t(type "copper")
+\t\t\t\t(thickness 0.035)
+\t\t\t)
+\t\t\t(layer "dielectric 1"
+\t\t\t\t(type "core")
+\t\t\t\t(thickness %s)
+\t\t\t\t(material "FR4")
+\t\t\t\t(epsilon_r 4.5)
+\t\t\t\t(loss_tangent 0.02)
+\t\t\t)
+\t\t\t(layer "B.Cu"
+\t\t\t\t(type "copper")
+\t\t\t\t(thickness 0.035)
+\t\t\t)
+\t\t\t(layer "B.Mask"
+\t\t\t\t(type "Bottom Solder Mask")
+\t\t\t\t(color "Black")
+\t\t\t\t(thickness 0.01)
+\t\t\t)
+\t\t\t(layer "B.SilkS"
+\t\t\t\t(type "Bottom Silk Screen")
+\t\t\t\t(color "White")
+\t\t\t)
+\t\t\t(copper_finish "ENIG")
+\t\t\t(dielectric_constraints no)
+\t\t)
+"""
 CY = 16.0                              # the control row
 HOLES = [(4.5, 4.5), (W - 4.5, 4.5), (4.5, H - 4.5), (W - 4.5, H - 4.5)]   # M2.5, as before
 
@@ -87,6 +128,7 @@ LABEL = ["NORMAL", "SET TIME", "DISPLAY", "AMBIENT", "FORMAT/DATE", "INFO"]
 SUBLIVE = (2, 4)                       # positions 3 and 5 read SUB
 R_TICK0, R_TICK1, R_NUM = 9.2, 11.0, 13.4
 TXT, CHW = 1.4, 0.95                   # dial lettering size, and the stroke font's advance per size
+LEGEND_H = 1.0                         # the back legend's text height: the fab's silk text minimum
 
 NETS = ["", "GND", "+5V", "A6", "A7", "D7", "D8", "TAP2", "TAP3", "TAP4", "TAP5", "LEVA", "LEVB"]
 NI = {n: i for i, n in enumerate(NETS)}
@@ -288,7 +330,9 @@ def artwork(L):
     # the connector's pin order, on the back above it
     jx, jy = L["P"]["J1"]
     legend = "1 +5V 2 GND 3 A6 4 A7 5 D7 6 D8"
-    text(legend, jx - 9.4 - len(legend) * 0.8 * CHW / 2, H - 1.9, "B.SilkS", 0.8, 0.12, mirror=True)   # left of J1, clear of H4
+    # silk text: at least 1.0 mm tall with a 0.15 mm stroke (tools/dfm_check.py); it ends 10.4 mm left of J1's
+    # centre, so the longer text still stops 1.8 mm short of J1's courtyard
+    text(legend, jx - 10.4 - len(legend) * LEGEND_H * CHW / 2, H - 1.9, "B.SilkS", LEGEND_H, 0.15, mirror=True)
     text(NAME, W - 30.0, 3.0, "B.SilkS", 1.0, 0.15, mirror=True)
     return G
 
@@ -416,7 +460,7 @@ def write_pcb(L, G, tracks, path):
     out = []
     o = out.append
     o('(kicad_pcb\n\t(version %d)\n\t(generator "%s")\n\t(generator_version "%s")' % (VER, GEN, GENV))
-    o('\t(general\n\t\t(thickness 2.0)\n\t\t(legacy_teardrops no)\n\t)\n\t(paper "A3")')
+    o('\t(general\n\t\t(thickness %.1f)\n\t\t(legacy_teardrops no)\n\t)\n\t(paper "A3")' % THK)
     o('\t(title_block\n\t\t(title "%s")\n\t\t(rev "A")\n\t\t(company "TERMINAL-06")\n'
       '\t\t(comment 1 "the fascia on the tube grid, alignment %s: %s")\n\t)' % (NAME, L["key"], L["a"]["title"].replace('"', "'")))
     o('\n'.join(['\t(layers', '\t\t(0 "F.Cu" signal)', '\t\t(2 "B.Cu" signal)',
@@ -431,7 +475,7 @@ def write_pcb(L, G, tracks, path):
                  '\t\t(35 "F.Fab" user)', '\t\t(33 "B.Fab" user)',
                  '\t\t(39 "User.1" user "Keepouts")', '\t\t(41 "User.2" user)',
                  '\t\t(43 "User.3" user)', '\t\t(45 "User.4" user)', '\t)']))
-    o('\t(setup\n\t\t(pad_to_mask_clearance 0)\n\t\t(allow_soldermask_bridges_in_footprints no)\n'
+    o('\t(setup\n' + STACKUP % f3(THK - 0.09) + '\t\t(pad_to_mask_clearance 0)\n\t\t(allow_soldermask_bridges_in_footprints no)\n'
       '\t\t(tenting\n\t\t\t(front yes)\n\t\t\t(back yes)\n\t\t)\n\t)')
     for i, n in enumerate(NETS):
         o('\t(net %d "%s")' % (i, n))

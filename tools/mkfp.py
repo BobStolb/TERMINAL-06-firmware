@@ -16,9 +16,12 @@ fascia lives inside the bushing span, so the lugs are >=11.3 mm behind its rear 
 and point further away. NO panel part can be board-mounted onto the fascia. Every one
 is hand-wired to landing pads. This is what spec section 6 already concluded.
 """
-import os, uuid, math
+import os, re, uuid, math
 
 VER, GEN, GENV = 20260206, "pcbnew", "10.0"
+# The thinnest silk a low-cost 2-layer fab prints (inferred; tools/dfm_check.py checks the same number).
+# Every silk line and ring below is drawn at least this wide. Silk text is already 1.0 mm tall, 0.15 mm stroke.
+SILK_W = 0.15
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "PCB", "lib", "TS06.pretty")
 
 def U(): return f'(uuid "{uuid.uuid4()}")'
@@ -29,11 +32,11 @@ def txt(kind, val, y, layer, hide=False):
             f'\t\t{U()}{h}\n\t\t(effects\n\t\t\t(font\n\t\t\t\t(size 1 1)\n'
             f'\t\t\t\t(thickness 0.15)\n\t\t\t)\n\t\t)\n\t)')
 
-def circle(r, layer, w=0.12, fill="no"):
+def circle(r, layer, w=SILK_W, fill="no"):
     return (f'\t(fp_circle\n\t\t(center 0 0)\n\t\t(end {r} 0)\n\t\t(stroke\n\t\t\t(width {w})\n'
             f'\t\t\t(type solid)\n\t\t)\n\t\t(fill {fill})\n\t\t(layer "{layer}")\n\t\t{U()}\n\t)')
 
-def line(x1, y1, x2, y2, layer, w=0.12):
+def line(x1, y1, x2, y2, layer, w=SILK_W):
     return (f'\t(fp_line\n\t\t(start {x1:.4f} {y1:.4f})\n\t\t(end {x2:.4f} {y2:.4f})\n'
             f'\t\t(stroke\n\t\t\t(width {w})\n\t\t\t(type solid)\n\t\t)\n'
             f'\t\t(layer "{layer}")\n\t\t{U()}\n\t)')
@@ -65,6 +68,19 @@ def fab(s, y, size=0.8):
             f'\t\t(effects\n\t\t\t(font\n\t\t\t\t(size {size} {size})\n\t\t\t\t(thickness 0.12)\n'
             f'\t\t\t)\n\t\t)\n\t)')
 
+_UUID = re.compile(r'\(uuid "[0-9a-f-]{36}"\)')
+
+def keep_uuids(text, path):
+    """The uuids of the file already at path, when the new text has as many: U() is random, and a
+    regeneration should change a footprint only where its drawing changed, not every uuid in it."""
+    if not os.path.exists(path):
+        return text
+    old = _UUID.findall(open(path, encoding="utf8").read())
+    if len(old) != len(_UUID.findall(text)):
+        return text
+    it = iter(old)
+    return _UUID.sub(lambda m: next(it), text)
+
 def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0, hide_val=False,
           ref_layer="F.SilkS"):
     parts = [f'(footprint "{name}"', f'\t(version {VER})', f'\t(generator "{GEN}")',
@@ -80,7 +96,8 @@ def write(name, descr, tags, body, ref_y=-2.0, val_y=2.0, hide_val=False,
     parts.append(')')
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, name + ".kicad_mod")
-    open(p, "w", encoding="utf8").write("\n".join(parts) + "\n")
+    text = keep_uuids("\n".join(parts) + "\n", p)          # read the old file before open() truncates it
+    open(p, "w", encoding="utf8").write(text)
     print("wrote", os.path.relpath(p, os.path.join(os.path.dirname(OUT), "..", "..")))
 
 # ---------------------------------------------------------------- MT1 lever
@@ -150,8 +167,8 @@ write("TS06_Rotary_SR25_PanelMount",
 # the first choice and were wrong: their leads would punch eight pairs of holes through
 # the product's face. 1206 is still comfortably hand-solderable.
 b = [spad(1, -1.85, 0, 2.0, 1.7), spad(2, 1.85, 0, 2.0, 1.7)]
-b += [line(-1.6, -1.05, 1.6, -1.05, "B.SilkS", 0.1),
-      line(-1.6, 1.05, 1.6, 1.05, "B.SilkS", 0.1)]
+b += [line(-1.6, -1.05, 1.6, -1.05, "B.SilkS", SILK_W),
+      line(-1.6, 1.05, 1.6, 1.05, "B.SilkS", SILK_W)]
 b += [line(-3.2, -1.3, 3.2, -1.3, "B.CrtYd", 0.05), line(-3.2, 1.3, 3.2, 1.3, "B.CrtYd", 0.05),
       line(-3.2, -1.3, -3.2, 1.3, "B.CrtYd", 0.05), line(3.2, -1.3, 3.2, 1.3, "B.CrtYd", 0.05)]
 write("TS06_R_1206_HandSolder",
@@ -167,9 +184,9 @@ write("TS06_R_1206_HandSolder",
 # not a serviceable part.
 # Strain relief is the chassis's job: nothing here resists a pulled cable.
 b = [spad(i + 1, -7.5 + i * 3.0, 0, 3.2, 1.8) for i in range(6)]
-b += [line(-9.6, -1.6, -9.6, 1.6, "B.SilkS", 0.12),
-      line(-9.6, -1.6, -8.2, 0, "B.SilkS", 0.12),
-      line(-9.6, 1.6, -8.2, 0, "B.SilkS", 0.12)]
+b += [line(-9.6, -1.6, -9.6, 1.6, "B.SilkS", SILK_W),
+      line(-9.6, -1.6, -8.2, 0, "B.SilkS", SILK_W),
+      line(-9.6, 1.6, -8.2, 0, "B.SilkS", SILK_W)]
 b += [line(-9.9, -2.6, 9.9, -2.6, "B.CrtYd", 0.05), line(-9.9, 2.6, 9.9, 2.6, "B.CrtYd", 0.05),
       line(-9.9, -2.6, -9.9, 2.6, "B.CrtYd", 0.05), line(9.9, -2.6, 9.9, 2.6, "B.CrtYd", 0.05)]
 write("TS06_CablePads_6",
@@ -208,7 +225,7 @@ for x1, y1, x2, y2 in [(8.06,0.94,8.06,-3.31), (8.06,-3.31,7.04,-3.31), (7.04,-3
                        (-8.06,0.94,-8.06,-3.31), (-8.06,-3.31,-7.04,-3.31),
                        (-7.04,-3.31,-7.04,-1.71), (-7.04,-1.71,-5.76,-1.71),
                        (6.34,4.51,-6.34,4.51)]:
-    b.append(line(x1, y1, x2, y2, "B.SilkS", 0.12))
+    b.append(line(x1, y1, x2, y2, "B.SilkS", SILK_W))
 for x1, y1, x2, y2 in [(-8.6,-5.1,-8.6,5.1), (-8.6,5.1,8.6,5.1),
                        (8.6,5.1,8.6,-5.1), (8.6,-5.1,-8.6,-5.1)]:
     b.append(line(x1, y1, x2, y2, "B.CrtYd", 0.05))
