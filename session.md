@@ -1,33 +1,27 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 02.10.26 10:02 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
-* **Mode:** LOUD (the owner is back, 09:2x). In LOUD the Quiet Loop stops: no timed ticks.
-* **Runs:** none. Check after any compact:
-  * `git worktree list`;
-  * the newest commit in each `.claude/worktrees/agent-*`;
-  * a run with no notification and no commit for 30 min is lost. Relaunch it from its brief and its last checkpoint
-    commit.
-* **Job:** the PCB, ready to order. That is done. The order is the owner's own hand.
-* **Waiting for the owner:** the 5 answers to the morning item `nixie-order-ready`:
-  1. the holes variant;
-  2. measure one ИН-17;
-  3. publish the page;
-  4. the tube look;
-  5. the order.
-
-  The details and the steps for each answer are below.
-* **Done after the morning item:** xstream's compacting advice (ANSWER 9b73d01) is adopted:
-  * the keep-line template;
-  * CLAUDE.md "Compact instructions";
-  * this block kept short;
-  * pasted pictures copied into the repo at once.
-* **The keep line to give the owner:** `/compact keep: resume from session.md RESUME HERE; mode <LOUD|QUIET>; runs
-  <none | name, cap, on-report step>; open owner asks <...>; plain short replies; times from date -u`.
-* **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
+## RESUME HERE (updated 02.10.26 10:45 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+* **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
+* **Runs (launched 10:44, sonnet, worktrees; briefs in scratchpad `fascia-leaders/` and `page-final/BRIEF.md`):**
+  * **fascia-leaders:** 3 dial-leader styles (a level, b dogleg, c centred) as pictures, then STOPS. Cap 0.6 M / 60 min.
+    On report: show the owner the a/b/c picture, get the pick, then continue the same agent (SendMessage) with phase 2:
+    the pick as default, the holes zip as the ordered one, re-render, DFM + verify.
+  * **page-final:** ИН-17 at 19.72 mm glass (case_pair, model, seat ≈10.3 level with ИН-12, fit table, DISP + stack
+    re-render), then the glow switch on the page (off by default), build + tests. Cap 0.8 M / 90 min.
+    On report: review, cherry-pick, verify_pair 27 PASS, push.
+  * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
+    no commit and no notice = lost; relaunch from the brief.
+* **Then:** rebuild the page with both runs in, full suite, and PUBLISH (owner 10:37 "3 - yes") to
+  `https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS` with `publish-files.json`. The stack pictures are re-rendered last.
+* **Owner's answers 10:37** (answer.json in commons): 1 holes yes + uniform leaders; 2 ИН-17 19.72 mm (22 incl. the
+  pip); 3 publish yes; 4 glow as a switch; 5 order walk-through given 10:41. The order stays the owner's hand: all
+  three in one cart after the fascia zip is final.
 * **Standing word (owner, 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays by my
   own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
+* **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-leaders (pick pending),
+  page-final; open owner asks: leader pick a/b/c, then publish; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
-
 ---
 
 ## State (02.10.26 09:15 UTC)

@@ -279,3 +279,9 @@ Not started; the owner asked to keep the idea.
   * TS06-DRV rev B, once merged;
   * the board type for the committed `.hex`;
   * the timing of rev C.
+
+## Launch log, 2026-10-02 10:44 UTC (quota fresh 10:40: 5 h 4 %, week 57 %; xstream QUOTA RESUME 0ffc2a7)
+| Run | What | Estimate | Cap | Actual |
+|---|---|---|---|---|
+| fascia-leaders | 3 leader styles as pictures (stops for the owner's pick), then the holes zip as the ordered one | 0.3-0.4 M | 0.6 M / 60 min | |
+| page-final | ИН-17 at the measured 19.72 mm glass, re-render DISP + stack; glow switch on the page; build + tests | 0.4-0.5 M | 0.8 M / 90 min | |
