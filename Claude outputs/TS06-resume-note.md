@@ -30,8 +30,13 @@
   (my own run). Left open, not on the order: A/-wide/MAIN boards keep the old thin-silk footprint copies;
   Guilloche on A has 0.05 mm webs at its medallions; the R mask web reads 0.100 mm exactly (raster +-0.03).
   The agent split 4 Bash calls that the worktree guard called too complex, as the guard's message said.
-* **The Run Budget Act** (laws/2026-10-02-the-run-budget-act.md): co-signed for nixie 02:25 (ce61f77), waits for the
-  owner's ratification in both chats. Applied now: each launch gets an estimate and a cap (subagent tokens and
+* **The Run Budget Act** (laws/2026-10-02-the-run-budget-act.md): co-signed for nixie 02:25 (ce61f77), ratified by
+  the owner here 02:27 ("ratified"): IN FORCE (700058f). The Art. 3a amendment stays proposed.
+* **The Co-sign Act** (laws/2026-10-02-the-co-sign-act.md), the owner's proposal here 02:27: a law the owner proposes
+  takes force when both nations co-sign; issues go to court as a trial. My guards: Art. 4 (verbatim words, marked
+  reading) and Art. 5 (no escalation without the owner's word in that chat). Signed for nixie; in force at
+  xstream's co-sign.
+* **Run Budget, how applied:** Applied now: each launch gets an estimate and a cap (subagent tokens and
   minutes) in the launch log; at each 20-min heartbeat project from elapsed time; over the cap -> spread (stop at
   the last checkpoint, relaunch), trim, or ask. Never pass a cap without the owner's word. After: actual vs estimate.
 * **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
