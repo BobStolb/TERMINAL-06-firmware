@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The fit table: how tall the parts are on each board, as drawn, against the room the case model gives them.
 
-    python3 tools/fit_table.py GLBDIR OUT.md [OUT.json] [--fascia TS06-FASCIA-rhythm] [--gold divider]
+    python3 tools/fit_table.py GLBDIR OUT.md [OUT.json] [--fascia TS06-FASCIA-rhythm] [--gold divider] [--in17-seat MM]
 
 GLBDIR holds the three populated GLBs of tools/render_populated.py. Every number in a row comes from the models as
 placed on the boards (the bounding box of each part's meshes in the GLB, in the board's own frame: u = 0 on the
@@ -14,6 +14,10 @@ Columns: part, height, space, margin, PASS | TIGHT | FAIL.
     TIGHT  margin < 1 mm
     FAIL   margin < -0.25 mm: an interference bigger than the rounding in the sources (PLS body 2.5 against the model's 2.54, ...)
 Where the model and case_pair.py disagree about a part's size the row says so ("case_pair assumes ...").
+--in17-seat MM seats the ИН-17 glass MM above the board's front face instead of the case model's 8.0 (the tubes stand on
+wire leads, so the seat is a choice; `tools/in17_seats.py` draws two of them): the glass moves, the leads and the board do
+not, and two rows are added, the glass to the solder joint on the back against the ТУ's 8 mm, and the glass to the nearest
+part. Without the option the table is what it was.
 The control holes are read from the fascia board (the footprints' drills), not typed here. After the tally comes the
 holes04 variant (fab/HOLES-VARIANT.md): the same three bushing rows with every control hole opened 0.4 mm, read from the
 board `tools/mkpcb_fascia_rhythm.py --open-holes` writes. Those rows are shown beside the table, not in it: the tally, the
@@ -101,6 +105,7 @@ def main(argv):
     outjson = argv[3] if len(argv) > 3 and not argv[3].startswith("--") else None
     fascia = argv[argv.index("--fascia") + 1] if "--fascia" in argv else "TS06-FASCIA-rhythm"
     gold = argv[argv.index("--gold") + 1] if "--gold" in argv else "none"       # the fascia as ordered (see stack_frame.py)
+    in17_seat = float(argv[argv.index("--in17-seat") + 1]) if "--in17-seat" in argv else None
     cp, B, d, G = SF.geometry(fascia, gold)
     v = G["v"]
     M = SF.matrices(G)
@@ -168,9 +173,12 @@ def main(argv):
     leds = [r for r in disp if fp_of.get(r) == "TS06_LED_D3.0mm"]
     face_plane = -v["Z_FACE"]               # the window's face plane, in the viewer-ward Z of the stack frame (+1.0)
     # tubes only: the vertices above the board face (the sleeves and pins below do not count)
+    dz17 = 0.0 if in17_seat is None else in17_seat - v["IN17_STANDOFF"]     # the ИН-17 glass moves up or down; board and leads stay
+
     def tube_verts(r):
         a = disp[r]
-        return a[a[:, 1] > T + 1.0]
+        a = a[a[:, 1] > T + 1.0]
+        return a + np.array([0.0, dz17, 0.0]) if (r in glass17 and dz17) else a
     topY = max(world_box(tube_verts(r), Md)[1][1] for r in glass12)
     add("TS06-DISP", "front face", "ИН-12/15 glass top (Y %.2f) vs brow soffit (Y %.2f)" % (topY, soffit), topY, soffit,
         "case_pair: soffit 0.8 above the glass", what="window, Y")
@@ -179,11 +187,31 @@ def main(argv):
         "", what="window, Z")
     f17 = max(world_box(tube_verts(r), Md)[1][2] for r in glass17)
     add("TS06-DISP", "front face", "ИН-17 glass front (Z %+.2f) vs the window face plane (Z %+.2f)" % (f17, face_plane), f17, face_plane,
-        "3d/IN17.step is 24.3 mm from dome to the end of the glass stalk; case_pair.py IN17_D says 22.0 (outline drawing). With the glass 8.0 off the board, "
-        "the model's front stands %.1f mm proud of the ИН-12 plane. Measure a bench tube before ordering." % (f17 - world_box(tube_verts(glass12[0]), Md)[1][2]),
+        "3d/IN17.step is 24.3 mm from dome to the end of the glass stalk; case_pair.py IN17_D says 22.0 (outline drawing). With the glass %.1f off the board, "
+        "the model's front stands %.1f mm proud of the ИН-12 plane. Measure a bench tube before ordering." % (v["IN17_STANDOFF"] if in17_seat is None else in17_seat, f17 - world_box(tube_verts(glass12[0]), Md)[1][2]),
         what="window, Z")
     top17 = max(world_box(tube_verts(r), Md)[1][1] for r in glass17)
     add("TS06-DISP", "front face", "ИН-17 glass top (Y %.2f) vs brow soffit (Y %.2f)" % (top17, soffit), top17, soffit, "", what="window, Y")
+    if in17_seat is not None:
+        # the ТУ (knowledge/TERMINAL-06-measurements-IN17.txt): no solder closer than 8 mm to the glass, no bend closer than 3 mm
+        add("TS06-DISP", "front face", "ИН-17 glass to the solder joint on the back face (seat %.2f + board %.1f) vs the ТУ's 8 mm" % (in17_seat, T), 8.0, in17_seat + T,
+            "the lead runs straight from the glass base through the board; the ТУ allows no solder within 8 mm of the glass (and no bend within 3 mm: "
+            "%.1f mm of lead between that bend and the board face)" % (in17_seat - 3.0), what="in17 lead")
+        gl = np.vstack([tube_verts(r) for r in glass17])
+        near = []
+        for r in disp:
+            if r in glass17 or r.startswith("XP"):
+                continue
+            q = disp[r][disp[r][:, 1] > T]
+            if r in glass12:
+                q = tube_verts(r)
+            lo1, hi1 = world_box(gl, Md)
+            lo2, hi2 = world_box(q, Md)
+            gap = np.maximum(np.maximum(lo1 - hi2, lo2 - hi1), 0.0)
+            near.append((float(np.linalg.norm(gap)), r))
+        g, r = min(near)
+        add("TS06-DISP", "front face", "ИН-17 glass vs the nearest part on the front face (%s, %s)" % (r, fp_of.get(r, "").replace("TS06_", "")), 0.0, g,
+            "clearance row: margin = the gap between the part's and the glass's bounding boxes, so it can only understate the room", what="window, X")
     fl = max(world_box(disp[r], Md)[1][2] for r in lamps)
     add("TS06-DISP", "front face", "colon lamp tip (Z %+.2f) vs the window face plane (Z %+.2f)" % (fl, face_plane), fl, face_plane,
         "the lamps' height is inferred (tip flush with the ИН-12 faces)", what="window, Z")
@@ -253,6 +281,8 @@ def main(argv):
               fascia, "" if gold == "none" else ", with the Plates print and the %s gold (the board that is ordered)" % gold.capitalize()), "",
           "PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < %.2f mm (an interference larger than the rounding in the sources). "
           "A *clearance row* has height 0 and the margin is the gap itself." % FAIL_BELOW, ""]
+    if in17_seat is not None:
+        md += ["**ИН-17 seated %.2f mm above the board's front face** (the case model's is %.1f); the glass moves, the leads and the board do not." % (in17_seat, v["IN17_STANDOFF"]), ""]
     cur = None
     for x in rows:
         k = (x["board"], x["side"])
@@ -277,6 +307,8 @@ def main(argv):
     open(outmd, "w", encoding="utf8").write("\n".join(md))
     if outjson:
         out = {"fascia": fascia, "gold": gold, "rows": rows, "tally": t}
+        if in17_seat is not None:
+            out["in17_seat"] = in17_seat
         if vrows:
             out["holes_variant"] = {"extra_mm": 0.4, "about": "the three bushing rows on the board with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md); not in rows or tally", "rows": vrows}
         json.dump(out, open(outjson, "w", encoding="utf8"), indent=1, ensure_ascii=False)

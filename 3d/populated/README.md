@@ -62,6 +62,51 @@ FAILs as before: the two rejected jack openings and the fascia boss on R5 (varia
 stale source hash in `3d/case-pair/boards.json` (`tools/mkpcb_disp.py` was committed after the last extract); the
 geometry is identical, and that file was left as committed.
 
+The control holes in the table are read from the fascia board, not typed. Under the table is the same three bushing rows for the
+`holes04` variant (every control hole opened 0.4 mm, +0.29 a side instead of +0.09; `fab/HOLES-VARIANT.md`): shown beside the
+table, not in its tally or in `fit-table.json`'s rows, because the committed board and the zip in `fab/ORDER.md` keep the 0.09.
+`--in17-seat MM` seats the ИН-17 glass at another height (next section); without it the table is what it was.
+
+## ИН-17: one side view at two seats
+
+![The ИН-17 at two seats](IN17-two-seats.png)
+
+`IN17-two-seats.png`: the S10 tube seen from the right end of the stack (front of the clock on the left, orthographic along X, the
+board in section), at the case model's **8.0 mm** seat and at **5.7 mm**, the seat that brings the model's glass face level with the
+ИН-12. The window face plane (Z +1.00) and the ИН-12 front (Z 0) are the two lines. Command (about 15 s):
+`python3 tools/in17_seats.py 3d/populated/IN17-two-seats.png`, which also prints the numbers below;
+`python3 tools/fit_table.py 3d/populated /tmp/t.md /tmp/t.json --gold divider --in17-seat 5.7` gives the fit-table rows for a seat.
+
+Why two seats. The model's glass runs 24.3 mm from dome to the end of its stalk; the outline drawing says 22.0. If the drawing is
+right, 8.0 is already level and the FAIL is the model's; if the model is right, the glass must sit lower. A bench tube settles it.
+
+| | seat 8.0 | seat 5.7 | seat 6.4 (the ТУ's lowest) |
+|---|---:|---:|---:|
+| glass front, Z | +2.29 | -0.01 | +0.69 |
+| in front of the ИН-12 front by | 2.30 | 0.00 | 0.70 |
+| window plane minus glass front | -1.29 (past it) | +1.01 | +0.31 |
+| glass to the solder joint on the back (seat + 1.6) | 9.6 | **7.3** | 8.0 |
+| against the ТУ's "no solder within 8 mm" | +1.6 | **-0.7** | 0.0 |
+| lead between a 3 mm bend and the board face | 5.0 | 2.7 | 3.4 |
+| lead tail past the back face, lead trimmed to 15 / 20 mm | 5.4 / 10.4 | 7.7 / 12.7 | 7.0 / 12.0 |
+| nearest part to the glass (box gap): LED HL5 | 3.84 | 2.75 | 2.94 |
+
+**Do the leads reach their pads, with room for a bend? Yes, but the lower seat breaks the ТУ's solder rule.** The tube comes with 35 mm of
+lead (the kit manual trims to 15-20 mm); 7.3 mm is needed to reach the back face at 5.7 against 9.6 at 8.0, so the lead is long enough
+either way and there is room for a bend (the ТУ allows none within 3 mm of the glass: 2.7 mm of lead between that bend and the board
+face at 5.7, 5.0 at 8.0; how much splay the 11 pads need depends on the lead circle, which is not dimensioned, `knowledge/TERMINAL-06-measurements-IN17.txt`
+row 5). The binding number is the ТУ's "solder no closer than 8 mm from the glass": at 5.7 the joint on the back of the 1.6 mm board is
+7.3 mm from the glass, **0.7 mm inside the limit**. The lowest seat that keeps the 8 mm is 6.4 (the footprint's own 6.4 mm glass-to-board
+minimum): the glass front is then at Z +0.69, 0.70 mm in front of the ИН-12 faces and 0.31 mm behind the window plane, so with the model's
+24.3 mm glass the seat has 6.4 to 6.71 mm (where the front reaches the window plane) to sit in; a face level with the ИН-12 needs the 5.7 that the ТУ rule forbids. The exhaust pip has no hole in
+the footprint on the assumption that it projects under 6.4 mm; its length is not measured, and at 5.7 it would have to be under 5.7.
+
+**Does the glass clear every part under it? Yes.** Nothing stands under the glass in plan. The nearest part is the LED HL5, 2.73 mm
+below the glass outline in the board's plane (its top is 5.29 mm above the board, the glass base 5.7 mm: 0.41 mm apart in height, 2.75 mm
+apart in the box gap, 3.84 at 8.0). The ИН-12 beside it (M1) is 5.36 mm away sideways, the other ИН-17 8.25, the colon lamps 48.5 mm
+away (they are between the hours and minutes tubes). Silk art does not count. The gaps are bounding-box gaps, so they can only understate
+the room.
+
 ## Where the models come from
 
 * **The kicad Docker image has no 3D library.** There is no `*.3dshapes` directory in `mirror.gcr.io/kicad/kicad:10.0`
