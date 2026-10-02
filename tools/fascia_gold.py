@@ -46,6 +46,11 @@ ON R. Only divider is laid out for R (the favourite, so the owner can see it on 
 R puts FIELD 39 mm from the dial, so there position 5's trace drops 45 degrees into the frame's side, as
 in Plates, and takes no pad (it would touch FORMAT/DATE). The other three are laid out for A; on R
 they fail their checks (ladder refuses).
+--leaders STYLE (R only) picks the style of the white leaders from the dial's positions to their names, drawn by
+fascia_art.v_plates (slope: the committed face, the default; level, dogleg, centred: see tools/fascia_art.py). The
+silk is still Plates' item for item, whatever the style; the gold's own layout follows the names' rows. The level
+style sets the six names below the owner's 3 mm legend rule (down to the fab's 1.0 mm): check() allows that for those
+six only.
 
 THE VARIANTS (one line each; the owner's review has pictures):
   ladder    the SUB rule as a Soviet relay-logic ladder (GOST-style contacts, an OR join, FIELD's
@@ -205,10 +210,13 @@ class GArt(fa.Art):
 
 
 # ============================================================================ the constant silk and the layout
-def silk_base(G):
-    """Plates' silk, item for item (tools/fascia_art.py v_plates), and nothing else."""
+def silk_base(G, leaders=None):
+    """Plates' silk, item for item (tools/fascia_art.py v_plates), and nothing else. leaders: its leader style
+    (fascia_art.LEADER_STYLES; default fascia_art.LEADERS, slope: the committed face)."""
     A = GArt()
-    for it in fa.v_plates(G).items:
+    P0 = fa.v_plates(G, leaders)
+    A.name_min = P0.name_min
+    for it in P0.items:
         if it["ink"] == "silk":
             A.items.append(it)
     return A
@@ -411,6 +419,10 @@ def g_divider(A, G, L):
         dd = 3.2
         p5 = [(e5, R[4]), (e5 + dd, R[4] + dd), (bx0 - rim, R[4] + dd)]
         entries.append((bx0, R[4] + dd))
+        # the two side entries (FIELD's and position 5's) are rings of one group, so check() does not keep them apart: with the
+        # names' rows moved (fascia_art.py leader styles) trace 5 could drop onto FIELD's
+        gap5 = abs(entries[2][1] - entries[1][1]) - 2 * (ent_r + ent_w / 2)
+        assert gap5 >= 0.3, "position 5's entry ring and FIELD's are %.2f mm apart, need 0.3" % gap5
     else:
         d5 = bot_y - R[4]
         p5 = [(e5, R[4]), (e5 + d5, bot_y), (sx - h, bot_y), (sx, bot_y - h), (sx, by1 + rim)]
@@ -672,7 +684,8 @@ def check(A, G):
     st = dict(gold_gold=1e9, gold_silk=1e9, edge=1e9, screw=1e9, ctrl=1e9, dial=1e9)
     for x in it:
         if x["kind"] == "text":
-            if x["h"] < RULES["min_text"] - 1e-9:
+            least = A.name_min if (A.name_min is not None and x["s"] in NAMES) else RULES["min_text"]
+            if x["h"] < least - 1e-9:
                 note(("text", x["s"]), x["h"], "text %r is %.2f mm tall" % (x["s"], x["h"]))
             if x["ink"] == "gold":
                 note(("gtext", x["s"]), 0, "gold text %r: none expected" % x["s"])
@@ -747,14 +760,17 @@ def gold_items(A):
     return [x for x in A.items if x["ink"] == "gold"]
 
 
-def build(variant, base="A", out=None):
+def build(variant, base="A", out=None, leaders=None):
     src = open(fa.BASES[base], encoding="utf8").read()
     G = fa.geometry(src)
     fc = front_copper_free(src)
     if fc:
         sys.exit("the base has front copper, so gold would not be netless: %s" % fc)
     cir = circuit(src)
-    A = silk_base(G)
+    try:
+        A = silk_base(G, leaders)
+    except ValueError as e:
+        sys.exit("%s on %s: %s" % (variant, base, e))
     silk0 = [dict(x) for x in A.items]
     L = layout(G, A)
     try:
@@ -885,6 +901,8 @@ def main():
     ap.add_argument("out", nargs="?")
     ap.add_argument("--base", default="A", choices=sorted(fa.BASES))
     ap.add_argument("--base-pcb", default="", metavar="BOARD", help="read this board as the base (scratch copy of the same fascia) instead of the committed one")
+    ap.add_argument("--leaders", default=None, choices=fa.LEADER_STYLES,
+                    help="R: the leader style of the white print (fascia_art.py; default slope, the committed face; TS06_LEADERS sets the default)")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--preview", default="", metavar="PNG", help="also write a quick flat picture")
     ap.add_argument("--drc", action="store_true", help="also run KiCad 10's DRC on each board and compare it with the base board's")
@@ -907,7 +925,7 @@ def main():
         out = os.path.join(a.out, "%s-%s.kicad_pcb" % (v, a.base)) if a.variant == "all" else a.out
         if a.variant == "all":
             os.makedirs(a.out, exist_ok=True)
-        A, G, problems, st, n, cir = build(v, a.base, out)
+        A, G, problems, st, n, cir = build(v, a.base, out, a.leaders)
         ng = len(gold_items(A))
         print("%s on %s: %d gold items, %d silk items (Plates', unchanged), %d other board items identical to the base; %s" % (
             v, a.base, ng, len(A.items) - ng, n, "checks clean" if not problems else "%d problems:" % len(problems)))

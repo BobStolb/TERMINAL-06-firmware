@@ -5,6 +5,7 @@
     python3 tools/render_populated.py TS06-DISP OUTDIR --views iso --no-glb
     python3 tools/render_populated.py PCB/TS06-FASCIA-rhythm/TS06-FASCIA-rhythm.kicad_pcb OUTDIR
     python3 tools/render_populated.py TS06-FASCIA-rhythm OUTDIR --gold divider        # the fascia as it is ordered
+    python3 tools/render_populated.py TS06-FASCIA-rhythm OUTDIR --gold divider --leaders level   # another leader style (fascia_art.py)
 
 BOARD is a board name (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm: PCB/<name>/<name>.kicad_pcb) or a path.
 Writes OUTDIR/<name>-top.png, -iso.png, -bottom.png and OUTDIR/<name>-populated.glb.
@@ -135,6 +136,8 @@ def main():
     ap.add_argument("--glb-flags", default="", help="extra kicad-cli export glb flags, e.g. '--fuse-shapes --min-distance 0.01mm'")
     ap.add_argument("--gold", default="none", metavar="VARIANT",
                     help="the fascia boards only: render the board as ordered, with the Plates print and this gold (none, divider, ...)")
+    ap.add_argument("--leaders", default=None, metavar="STYLE",
+                    help="with --gold, the fascia R's leader style of the white print (slope, level, dogleg, centred; default slope, the committed face)")
     ap.add_argument("--bare", action="store_true", help="no map: the board with only the models it carries itself (the 'before' picture)")
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()
@@ -147,7 +150,9 @@ def main():
         if a.gold != "none":
             if a.bare:
                 sys.exit("--gold and --bare do not go together")
-            art = SF.art_board(os.path.splitext(os.path.basename(path))[0], a.gold, tmp)
+            art = SF.art_board(os.path.splitext(os.path.basename(path))[0], a.gold, tmp, a.leaders)
+        elif a.leaders:
+            sys.exit("--leaders needs --gold (the leaders are part of the art board)")
         key, rows, dmap = scratch_board(path, tmp, a.kicad3d, a.bare, art)
         miss = [r for r in rows if r["status"] == "missing"]
         if miss:

@@ -9,6 +9,8 @@
     python3 tools/dfm_check.py --open-holes          # the fascia R variant with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md):
                                                      # its zip is fab/TS06-FASCIA-R-revA-<gold>-holes04-fab.zip (tools/mkfab.sh --open-holes);
                                                      # with no board named it checks that one board; works with --g11 too
+    python3 tools/dfm_check.py --open-holes --leaders level   # the same for another leader style (slope, level, dogleg, centred;
+                                                     # tools/fascia_art.py): its zip is the one tools/mkfab.sh --leaders level wrote
 
 THE LIMITS ARE INFERRED. They are what a typical low-cost 2-layer service quotes as its standard class; no fab
 was asked and no price or page was fetched. The owner checks them against the fab chosen:
@@ -112,9 +114,14 @@ def open_up(tmp):
             os.chmod(os.path.join(r, f), 0o666)
 
 
+LEADERS = os.environ.get("TS06_LEADERS", "slope")      # the fascia's leader style (--leaders); slope is the committed face
+
+
 def fascia_zip(gold, open_holes=False):
-    """The fascia R's zip in fab/: named after the gold, and after the opened holes of the variant."""
-    return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s-fab.zip" % ("bare" if gold == "none" else gold, "-holes04" if open_holes else ""))
+    """The fascia R's zip in fab/: named after the gold, after the leader style when it is not slope, and after the opened
+    holes of the variant (tools/mkfab.sh names it the same way)."""
+    return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s%s-fab.zip" % (
+        "bare" if gold == "none" else gold, "" if LEADERS == "slope" else "-" + LEADERS, "-holes04" if open_holes else ""))
 
 
 def scratch(key, gold, mutate=None, open_holes=False):
@@ -373,6 +380,7 @@ def g11(gold, open_holes=False):
     the boss-to-R5 margin against typical fab tolerances. The dry fit of a real КМД1 and МТ1 needs parts (G14)."""
     import fascia_art as fa
     import fascia_gold as fg
+    fa.LEADERS = LEADERS
     TOL_OUTLINE, TOL_HOLE, BOSS_R = 0.2, 0.1, 3.5       # mm: outline +-0.2 and hole position +-0.1 are INFERRED fab tolerances;
     print("G11 conditions on the fascia R with the %s gold%s (measured from the art board that tools/fascia_gold.py builds, and its Gerbers)" % (
         gold, ", control holes opened 0.4 mm (the holes04 variant)" if open_holes else ""))
@@ -484,7 +492,12 @@ def main():
     ap.add_argument("--no-selftest", action="store_true")
     ap.add_argument("--g11", action="store_true")
     ap.add_argument("--open-holes", action="store_true", help="the fascia R variant with its control holes opened 0.4 mm (zip ...-holes04-fab.zip)")
+    ap.add_argument("--leaders", default=LEADERS, choices=("slope", "level", "dogleg", "centred"),
+                    help="the fascia R's leader style (tools/fascia_art.py; default slope, the committed face): its zip is the one "
+                         "tools/mkfab.sh --leaders STYLE wrote, ...-<gold>-<style>[-holes04]-fab.zip")
     a = ap.parse_args()
+    globals()["LEADERS"] = a.leaders
+    os.environ["TS06_LEADERS"] = a.leaders             # the art boards built here (tools/fascia_gold.py, a subprocess) take it from the environment
     todo = a.boards or (["TS06-FASCIA-rhythm"] if a.open_holes else list(BOARDS))
     if a.open_holes and todo != ["TS06-FASCIA-rhythm"]:
         ap.error("--open-holes applies to TS06-FASCIA-rhythm only")

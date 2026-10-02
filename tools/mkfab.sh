@@ -5,6 +5,8 @@
 #     tools/mkfab.sh TS06-DRV                 # one board
 #     tools/mkfab.sh TS06-FASCIA-rhythm       # the fascia R (rev A) with the default gold, divider
 #     tools/mkfab.sh TS06-FASCIA-rhythm --gold ladder     # another gold; --gold none is the bare board
+#     tools/mkfab.sh TS06-FASCIA-rhythm --leaders level   # another leader style for the white names (slope: the default, the
+#                                             # committed face; level, dogleg, centred: tools/fascia_art.py); the zip's name carries it
 #     tools/mkfab.sh --keep                   # keep the scratch directory and say where
 #     tools/mkfab.sh TS06-FASCIA-rhythm --open-holes      # the fascia with every control bushing hole opened by 0.4 mm
 #                                             # (8.8 -> 9.2, 8.0 -> 8.4): an EXTRA zip, fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip
@@ -53,6 +55,8 @@ KEEP=0
 BOARDS=""
 GOLD=divider
 GOLD_SET=0
+LEADERS=slope
+LEADERS_SET=0
 OPEN=0
 while [ $# -gt 0 ]; do
   a=$1; shift
@@ -62,7 +66,10 @@ while [ $# -gt 0 ]; do
     --gold) [ $# -gt 0 ] || { echo "--gold needs a variant (ladder, divider, fans, guilloche or none)"; exit 2; }
             GOLD=$1; GOLD_SET=1; shift ;;
     --gold=*) GOLD=${a#--gold=}; GOLD_SET=1 ;;
-    -h|--help) sed -n '2,44p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --leaders) [ $# -gt 0 ] || { echo "--leaders needs a style (slope, level, dogleg or centred)"; exit 2; }
+            LEADERS=$1; LEADERS_SET=1; shift ;;
+    --leaders=*) LEADERS=${a#--leaders=}; LEADERS_SET=1 ;;
+    -h|--help) sed -n '2,46p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     TS06-DISP|TS06-DRV|TS06-FASCIA-rhythm) BOARDS="$BOARDS $a" ;;
     TS06-*) echo "unknown board: $a (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm)"; exit 2 ;;
     *) echo "unknown argument: $a (try --help)"; exit 2 ;;
@@ -79,9 +86,14 @@ case $GOLD in
   ladder|divider|fans|guilloche|none) ;;
   *) echo "unknown gold: $GOLD (ladder, divider, fans, guilloche or none)"; exit 2 ;;
 esac
+case $LEADERS in
+  slope|level|dogleg|centred) ;;
+  *) echo "unknown leader style: $LEADERS (slope, level, dogleg or centred)"; exit 2 ;;
+esac
 case " $BOARDS " in
   *" TS06-FASCIA-rhythm "*) ;;
-  *) [ "$GOLD_SET" = 1 ] && { echo "--gold only applies to TS06-FASCIA-rhythm"; exit 2; } ;;
+  *) [ "$GOLD_SET" = 1 ] && { echo "--gold only applies to TS06-FASCIA-rhythm"; exit 2; }
+     [ "$LEADERS_SET" = 1 ] && { echo "--leaders only applies to TS06-FASCIA-rhythm"; exit 2; } ;;
 esac
 LAYERS="F.Cu,B.Cu,F.Mask,B.Mask,F.Silkscreen,B.Silkscreen,Edge.Cuts"   # through-hole boards: no paste
 LAYERS_FASCIA="$LAYERS,B.Paste"            # the fascia's resistors are SMD on the back: a back paste layer
@@ -140,6 +152,7 @@ for B in $BOARDS; do
   N=$B; Z="fab/$B-rev$REV-fab.zip"; PL=$LAYERS; ARTNOTE=""
   if [ "$B" = TS06-FASCIA-rhythm ]; then
     TAG=$GOLD; [ "$GOLD" = none ] && TAG=bare
+    [ "$LEADERS" != slope ] && TAG="$TAG-$LEADERS"
     [ "$OPEN" = 1 ] && TAG="$TAG-holes04"
     N="TS06-FASCIA-R-$TAG"; Z="fab/TS06-FASCIA-R-rev$REV-$TAG-fab.zip"; PL=$LAYERS_FASCIA
   fi
@@ -159,7 +172,7 @@ for B in $BOARDS; do
   if [ "$B" = TS06-FASCIA-rhythm ] && [ "$GOLD" != none ]; then
     # the art board, built in the scratch directory with the generator's own checks (base R)
     # shellcheck disable=SC2086
-    if ! python3 tools/fascia_gold.py "$GOLD" "$TMP/PCB/$N/$N.kicad_pcb" --base R $BASE_ARGS > "$TMP/$N.gold.log" 2>&1; then
+    if ! python3 tools/fascia_gold.py "$GOLD" "$TMP/PCB/$N/$N.kicad_pcb" --base R --leaders "$LEADERS" $BASE_ARGS > "$TMP/$N.gold.log" 2>&1; then
       echo "FAIL $B: tools/fascia_gold.py $GOLD --base R failed its own checks; not zipped"; sed 's/^/    /' "$TMP/$N.gold.log"; FAILED=1; continue
     fi
     ARTNOTE=$(head -n 1 "$TMP/$N.gold.log")

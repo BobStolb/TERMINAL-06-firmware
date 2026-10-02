@@ -51,6 +51,20 @@ are narrowed to 2.0 mm (still 3.2 mm tall), the legend rows open to 5.4 mm, the 
 2.7 mm, and position 5's trace (without a pad, which would sit under FIELD's) drops 45° and
 enters the SUB box from the side. The other three are laid out for A; on R their checks fail.
 
+LEADER STYLES (plates on R only; --leaders STYLE, or TS06_LEADERS in the environment for the tools that build the fascia
+in a subprocess). The default, slope, is the committed face. The three others answer "the leaders have no uniformity":
+  slope    the committed one: each leader leaves level with its mark and runs straight to its row; rows 5.4 mm apart,
+           the first 10.7 mm above the dial, so the six slopes differ (+1.2 to +4.4 mm of drop).
+  level    every leader is one level line from its mark to its name; each name sits at its mark's height. The names
+           are shrunk (same width ratio) to the largest size at which every check passes; that is below the owner's
+           3 mm legend rule (the check allows the six names down to the fab's 1.0 mm, NAME_MIN; the nameplates stay 3.2).
+  dogleg   names 3.2 mm in an even column; every leader: level out of its mark, one 45 degree bend, level into its name,
+           the bends on one vertical line.
+  centred  names 3.2 mm in an even column centred on the dial's height; straight leaders whose slopes are mirrored
+           about the dial and as small as the checks allow.
+The marks' heights are the tap lugs' (MARK_R, 11.3 mm from the shaft: the middle of Plates' index bars, the centre of
+the Divider's lugs). The style's numbers are in LEADER_TUNE.
+
 Every build runs check(): text size, stroke and line widths, spacing between items, the edge,
 the screw heads, the control rings, the knob and the levers' swing. Problems are listed and the
 exit status is 1 (the board is still written, to look at). The knob's size is not known: the
@@ -80,6 +94,24 @@ FONT = {"NORMAL": (6.005, 0.304, 5.571), "SET TIME": (6.767, 0.256, 6.286), "DIS
         "4": (1.052, 0.256, 0.619), "5": (1.052, 0.256, 0.571), "6": (1.052, 0.256, 0.571)}
 CAP_UP, CAP_DN, SLASH_DN = 0.543, 0.457, 0.696
 ITALIC_SLANT = 0.125                                # KiCad's italic shear, measured on "E"
+
+LEADER_STYLES = ("slope", "level", "dogleg", "centred")
+LEADERS = os.environ.get("TS06_LEADERS", "slope")   # the style v_plates draws when it is not told (slope: the committed face)
+MARK_R = 11.3                                       # the marks' height: sin(angle) * this (tap lugs; middle of the index bars)
+LEAD_R = 13.4                                       # a new-style leader starts where its level line crosses this radius
+LEAD_GAP = 0.35                                     # a new-style leader ends this far before its name's anchor
+NAME_MIN = 1.0                                      # the fab's silk text limit: the least a name may be in 'level'
+# per style, found by a search with both art checks (open-holes board, the Divider's gold), all in mm:
+#   level    h = the names' height: the largest at which every check passes (1.91; the box of FORMAT/DATE's slash, which
+#            reaches 0.74 h below its middle, is what meets INFO's box, 2.93 mm below)
+#   dogleg   pitch = the names' row spacing, offset = the column's centre below the dial's height, xb = the bends' x from
+#            the shaft, xn = the names' column x (0.4 right of the committed one, so the longest 45 degree run, 2.5 mm,
+#            still leaves 0.5 mm level into its name): every leader drops at least 0.6 mm
+#   centred  pitch = the rows' spacing, the column centred on the dial: the pitch at which the steepest leader is
+#            least steep (9.5 degrees; the committed face's go from 7 to 47)
+LEADER_TUNE = {"level": dict(h=1.9),
+               "dogleg": dict(pitch=4.7, offset=1.54, xb=13.25, xn=16.6),
+               "centred": dict(pitch=4.91, offset=0.0)}
 
 
 # ============================================================================ the base board
@@ -174,6 +206,7 @@ class Art:
 
     def __init__(self):
         self.items = []
+        self.name_min = None        # least height of the six position names, when the style allows less than RULES["min_text"]
 
     def add(self, **k):
         self.items.append(k)
@@ -360,8 +393,11 @@ def v_ledger(G):
     return A
 
 
-def v_plates(G):
-    """Engraved nameplates."""
+def v_plates(G, leaders=None, tune=None):
+    """Engraved nameplates. leaders: the leader style (LEADER_STYLES; default LEADERS = slope, the committed face)."""
+    style = leaders or LEADERS
+    if style not in LEADER_STYLES:
+        raise ValueError("unknown leader style %r (%s)" % (style, ", ".join(LEADER_STYLES)))
     A = Art()
     D = G["ctrl"]["SW1"]
     fx, sx = G["ctrl"]["SW2"][0], G["ctrl"]["SW3"][0]
@@ -375,13 +411,34 @@ def v_plates(G):
         TW = 2.0
         R = [D[1] - 10.7 + 5.4 * k for k in range(6)]
         ny, side5 = D[1] + 18.0, True
+    elif style != "slope":
+        raise ValueError("leader style %s is laid out for R only (slope is the one for A)" % style)
+    t = dict(LEADER_TUNE.get(style, {}))
+    t.update(tune or {})
+    if style != "slope":
+        if style == "level":                # every name at its mark's height, shrunk (the width ratio kept)
+            assert t["h"] >= NAME_MIN, "names below the fab's %.1f mm" % NAME_MIN
+            TW, TX = TW * t["h"] / TX, t["h"]
+            R = [D[1] + MARK_R * math.sin(math.radians(a)) for a in ANG]
+            A.name_min = NAME_MIN
+        else:                               # an even column of 3.2 mm names, t["offset"] below the dial's height
+            R = [D[1] + t["offset"] + t["pitch"] * (k - 2.5) for k in range(6)]
     # the scale: a white hairline arc and six heavy gold index bars
     A.arc("silk", D, 9.2, ANG[0] - 4, ANG[-1] + 4, 0.2, "scale_w")
     for k, a in enumerate(ANG):
         A.line("gold", P(D, 10.2, a), P(D, 12.3, a), 1.0, "bar%d" % k)
-    x_name = D[0] + 16.2
+    x_name = D[0] + t.get("xn", 16.2)       # the names' column
     for k, a in enumerate(ANG):
-        A.line("silk", lead_start(D, 12.3, a, 13.4), (x_name - 0.2, R[k]), 0.2, "lead%d" % k)
+        if style == "slope":
+            A.line("silk", lead_start(D, 12.3, a, 13.4), (x_name - 0.2, R[k]), 0.2, "lead%d" % k)
+        else:
+            s0, e = lead_start(D, MARK_R, a, LEAD_R), x_name - LEAD_GAP
+            dy = R[k] - s0[1]
+            if style == "dogleg" and abs(dy) > 0.05:    # level, one 45 degree bend (all on the line x = xb), level
+                xb = D[0] + t["xb"]
+                A.path("silk", [s0, (xb, s0[1]), (xb + abs(dy), R[k]), (e, R[k])], 0.2, "lead%d" % k)
+            else:                                       # level: one level line; centred: one straight line
+                A.line("silk", s0, (e, R[k]), 0.2, "lead%d" % k)
         A.text("silk", NAMES[k], x_name, R[k], TX, TT, "name%d" % k, width=TW)
     PH, PW, PT = 3.2, 2.6, 0.4             # the plates
     A.text("silk", "MODE", D[0], ny, PH, PT, "mode", just="center", width=PW, knockout=True)
@@ -543,10 +600,13 @@ def emit(A, ns):
     return "\n".join(out)
 
 
-def build(variant, base="A", out=None):
+def build(variant, base="A", out=None, leaders=None):
     src = open(BASES[base], encoding="utf8").read()
     G = geometry(src)
-    A = VARIANTS[variant](G)
+    try:
+        A = v_plates(G, leaders) if variant == "plates" else VARIANTS[variant](G)
+    except ValueError as e:
+        sys.exit("%s on %s: %s" % (variant, base, e))
     problems = check(A, G)
     stripped, at = strip_art(src)
     ns = uuid.uuid5(uuid.NAMESPACE_URL, "ts06/fascia-art/%s/%s" % (base, variant))
@@ -652,7 +712,8 @@ def check(A, G):
     it = A.items
     for x in it:
         if x["kind"] == "text":
-            if x["h"] < RULES["min_text"] - 1e-9:
+            least = A.name_min if (A.name_min is not None and x["s"] in NAMES) else RULES["min_text"]
+            if x["h"] < least - 1e-9:
                 bad.append("text %r is %.2f mm tall" % (x["s"], x["h"]))
             if x["t"] < RULES["min_silk"] - 1e-9:
                 bad.append("text %r stroke %.2f" % (x["s"], x["t"]))
@@ -705,8 +766,12 @@ def main():
     ap.add_argument("variant", nargs="?")
     ap.add_argument("out", nargs="?")
     ap.add_argument("--base", default="A", choices=sorted(BASES))
+    ap.add_argument("--leaders", default=None, choices=LEADER_STYLES,
+                    help="plates on R: the leader style (default slope, the committed face; TS06_LEADERS sets the default)")
     ap.add_argument("--list", action="store_true")
     a = ap.parse_args()
+    if a.leaders:
+        globals()["LEADERS"] = a.leaders
     if a.list or not a.variant:
         for k, fn in VARIANTS.items():
             print("%-9s %s" % (k, fn.__doc__.strip()))
