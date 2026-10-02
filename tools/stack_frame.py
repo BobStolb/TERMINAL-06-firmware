@@ -55,6 +55,33 @@ def art_board(fascia, gold, outdir):
     return out
 
 
+def control_holes(pcb):
+    """{ref: drill diameter in mm} of the bare bushing hole (np_thru_hole) of each control SW1..SW5 on a board file."""
+    sys.path.insert(0, HERE)
+    import sexp
+    t = sexp.parse(open(pcb, encoding="utf8").read())
+    out = {}
+    for fp in sexp.find_all(t, "footprint"):
+        ref = [sexp.unq(p[2]) for p in sexp.find_all(fp, "property") if sexp.unq(p[1]) == "Reference"][0]
+        if ref in ("SW1", "SW2", "SW3", "SW4", "SW5"):
+            d = [float(sexp.find(p, "drill")[-1]) for p in sexp.find_all(fp, "pad") if p[2] == "np_thru_hole"]
+            assert len(d) == 1, "%s: expected one bushing hole" % ref
+            out[ref] = d[0]
+    return out
+
+
+def open_holes_board(outdir, extra=0.4):
+    """The fascia R board with every control hole opened by `extra` mm, built into outdir by
+    `tools/mkpcb_fascia_rhythm.py --out FILE --open-holes extra` (the holes04 variant). Returns the path.
+    Nothing under PCB/ is written."""
+    out = os.path.join(outdir, "TS06-FASCIA-rhythm-holes.kicad_pcb")
+    r = subprocess.run([sys.executable, os.path.join(HERE, "mkpcb_fascia_rhythm.py"), "--out", out, "--open-holes", str(extra)],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not os.path.exists(out):
+        sys.exit("tools/mkpcb_fascia_rhythm.py --open-holes failed:\n%s%s" % (r.stdout, r.stderr))
+    return out
+
+
 def geometry(fascia="TS06-FASCIA-rhythm", gold=None):
     cp = load_case_pair()
     sys.path.insert(0, HERE)

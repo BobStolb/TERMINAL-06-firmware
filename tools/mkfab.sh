@@ -6,6 +6,8 @@
 #     tools/mkfab.sh TS06-FASCIA-rhythm       # the fascia R (rev A) with the default gold, divider
 #     tools/mkfab.sh TS06-FASCIA-rhythm --gold ladder     # another gold; --gold none is the bare board
 #     tools/mkfab.sh --keep                   # keep the scratch directory and say where
+#     tools/mkfab.sh TS06-FASCIA-rhythm --open-holes      # the fascia with every control bushing hole opened by 0.4 mm
+#                                             # (8.8 -> 9.2, 8.0 -> 8.4): an EXTRA zip, fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip
 #
 # For each board it:
 #   1. copies the board, its project (net classes), its .kicad_dru (the 0.8 mm HV pad rule, which the
@@ -30,6 +32,13 @@
 #      (<gold> is the variant, or "bare" for --gold none). If a rebuilt zip differs from the one already
 #      there only in the creation dates the Gerbers carry, the old zip is kept and the run says so.
 #
+# --open-holes (fascia only; with no board named it builds the fascia alone) is a variant held by being an extra file,
+# not by a branch: step 1 builds the scratch base board with `tools/mkpcb_fascia_rhythm.py --out FILE --open-holes` (the
+# committed board and PCB/lib are not touched; without the flag that script writes the committed board byte for byte),
+# the gold is drawn on it with `tools/fascia_gold.py --base-pcb`, and the zip's name carries `-holes04`. After the
+# Gerbers are read back, the non-plated drill file must hold exactly the opened sizes (one 9.2, four 8.4, four 2.7).
+# Nothing else changes: the three default zips and fab/ORDER.md are not rebuilt or edited by it. See fab/HOLES-VARIANT.md.
+#
 # It prints a Markdown table of the region counts (the one in fab/README.md) and exits 1 if any
 # board FAILed. Nothing but fab/*.zip is written in the working tree.
 #
@@ -44,19 +53,27 @@ KEEP=0
 BOARDS=""
 GOLD=divider
 GOLD_SET=0
+OPEN=0
 while [ $# -gt 0 ]; do
   a=$1; shift
   case $a in
     --keep) KEEP=1 ;;
+    --open-holes) OPEN=1 ;;
     --gold) [ $# -gt 0 ] || { echo "--gold needs a variant (ladder, divider, fans, guilloche or none)"; exit 2; }
             GOLD=$1; GOLD_SET=1; shift ;;
     --gold=*) GOLD=${a#--gold=}; GOLD_SET=1 ;;
-    -h|--help) sed -n '2,38p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,44p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     TS06-DISP|TS06-DRV|TS06-FASCIA-rhythm) BOARDS="$BOARDS $a" ;;
     TS06-*) echo "unknown board: $a (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm)"; exit 2 ;;
     *) echo "unknown argument: $a (try --help)"; exit 2 ;;
   esac
 done
+if [ "$OPEN" = 1 ]; then
+  BOARDS=${BOARDS:-TS06-FASCIA-rhythm}
+  case " $BOARDS " in
+    *" TS06-DISP "*|*" TS06-DRV "*) echo "--open-holes applies to the fascia only: tools/mkfab.sh TS06-FASCIA-rhythm --open-holes"; exit 2 ;;
+  esac
+fi
 BOARDS=${BOARDS:-TS06-DISP TS06-DRV TS06-FASCIA-rhythm}
 case $GOLD in
   ladder|divider|fans|guilloche|none) ;;
@@ -123,20 +140,31 @@ for B in $BOARDS; do
   N=$B; Z="fab/$B-rev$REV-fab.zip"; PL=$LAYERS; ARTNOTE=""
   if [ "$B" = TS06-FASCIA-rhythm ]; then
     TAG=$GOLD; [ "$GOLD" = none ] && TAG=bare
+    [ "$OPEN" = 1 ] && TAG="$TAG-holes04"
     N="TS06-FASCIA-R-$TAG"; Z="fab/TS06-FASCIA-R-rev$REV-$TAG-fab.zip"; PL=$LAYERS_FASCIA
   fi
   mkdir -p "$TMP/PCB/$N" "$TMP/out/$N/filled" "$TMP/out/$N/unfilled"
   cp "PCB/$B/$B.kicad_pro" "$TMP/PCB/$N/$N.kicad_pro"
   cp "PCB/$B/fp-lib-table" "$TMP/PCB/$N/"
   [ -f "PCB/$B/$B.kicad_dru" ] && cp "PCB/$B/$B.kicad_dru" "$TMP/PCB/$N/$N.kicad_dru"
+  BASE_PCB="PCB/$B/$B.kicad_pcb"; BASE_ARGS=""
+  if [ "$OPEN" = 1 ]; then
+    # the variant's base board: the generator's own board with every control hole opened by 0.4 mm, in the scratch directory
+    BASE_PCB="$TMP/$N.base.kicad_pcb"
+    if ! python3 tools/mkpcb_fascia_rhythm.py --out "$BASE_PCB" --open-holes > "$TMP/$N.open.log" 2>&1; then
+      echo "FAIL $B: tools/mkpcb_fascia_rhythm.py --open-holes failed; not zipped"; sed 's/^/    /' "$TMP/$N.open.log"; FAILED=1; continue
+    fi
+    BASE_ARGS="--base-pcb $BASE_PCB"
+  fi
   if [ "$B" = TS06-FASCIA-rhythm ] && [ "$GOLD" != none ]; then
     # the art board, built in the scratch directory with the generator's own checks (base R)
-    if ! python3 tools/fascia_gold.py "$GOLD" "$TMP/PCB/$N/$N.kicad_pcb" --base R > "$TMP/$N.gold.log" 2>&1; then
+    # shellcheck disable=SC2086
+    if ! python3 tools/fascia_gold.py "$GOLD" "$TMP/PCB/$N/$N.kicad_pcb" --base R $BASE_ARGS > "$TMP/$N.gold.log" 2>&1; then
       echo "FAIL $B: tools/fascia_gold.py $GOLD --base R failed its own checks; not zipped"; sed 's/^/    /' "$TMP/$N.gold.log"; FAILED=1; continue
     fi
     ARTNOTE=$(head -n 1 "$TMP/$N.gold.log")
   else
-    cp "PCB/$B/$B.kicad_pcb" "$TMP/PCB/$N/$N.kicad_pcb"
+    cp "$BASE_PCB" "$TMP/PCB/$N/$N.kicad_pcb"
   fi
   chmod -R a+rwX "$TMP" 2>/dev/null
   PCB="PCB/$N/$N.kicad_pcb"
@@ -219,6 +247,33 @@ EOF
     if ! python3 tools/gerbers.py gold "$TMP/out/$N/filled"; then
       echo "FAIL $B: the gold is not exposed in the Gerbers; not zipped"; FAILED=1; continue
     fi
+  fi
+  if [ "$OPEN" = 1 ]; then
+    # the opened holes must be in the drill file the fab drills from: one 9.2 (the dial), four 8.4, the four 2.7 screw holes
+    if ! python3 - "$TMP/out/$N/filled" <<'PYEOF'
+import collections, glob, re, sys
+f = glob.glob(sys.argv[1] + "/*-NPTH.drl")
+if not f:
+    sys.exit("no NPTH drill file")
+tool, cur, hits = {}, None, collections.Counter()
+for l in open(f[0], encoding="latin-1"):
+    l = l.strip()
+    m = re.match(r"T(\d+)C([\d.]+)", l)
+    if m:
+        tool[m.group(1)] = float(m.group(2))
+        continue
+    m = re.match(r"T(\d+)$", l)
+    if m:
+        cur = m.group(1)
+        continue
+    if cur and l.startswith("X"):
+        hits[tool[cur]] += 1
+got = dict(sorted(hits.items()))
+want = {2.7: 4, 8.4: 4, 9.2: 1}
+print("the NPTH drill file holds (diameter: holes) %s; the variant needs %s: %s" % (got, want, "PASS" if got == want else "FAIL"))
+sys.exit(0 if got == want else 1)
+PYEOF
+    then echo "FAIL $B: the opened holes are not what the drill file holds; not zipped"; FAILED=1; continue; fi
   fi
   rm -f "$TMP/old.zip"
   if [ -f "$Z" ]; then cp "$Z" "$TMP/old.zip"; fi

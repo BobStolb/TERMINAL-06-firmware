@@ -14,9 +14,13 @@ Columns: part, height, space, margin, PASS | TIGHT | FAIL.
     TIGHT  margin < 1 mm
     FAIL   margin < -0.25 mm: an interference bigger than the rounding in the sources (PLS body 2.5 against the model's 2.54, ...)
 Where the model and case_pair.py disagree about a part's size the row says so ("case_pair assumes ...").
+The control holes are read from the fascia board (the footprints' drills), not typed here. After the tally comes the
+holes04 variant (fab/HOLES-VARIANT.md): the same three bushing rows with every control hole opened 0.4 mm, read from the
+board `tools/mkpcb_fascia_rhythm.py --open-holes` writes. Those rows are shown beside the table, not in it: the tally, the
+rows of fit-table.json and everything else stay what the committed board gives (tools/stack_frame.py has the helpers).
 Needs numpy.
 """
-import json, math, os, struct, sys
+import json, math, os, struct, sys, tempfile
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -209,11 +213,21 @@ def main(argv):
     add("TS06-DISP", "back face", lamps[0] + " INS1_Lamp leads (trimmed length is the model's 10 mm leads)", bottom(disp, lamps[0]), v["STACK_GAP"],
         "the longest tail on the board that is not a header pin")
     # ---------------------------------------------------------------- the fascia
-    hole = {"SW1": 8.8, "SW2": 8.0, "SW3": 8.0, "SW4": 8.0, "SW5": 8.0}
+    hole = SF.control_holes(os.path.join(SF.ROOT, "PCB", fascia, fascia + ".kicad_pcb"))     # the footprints' drills, from the board
     bush = {"SW1": 8.62, "SW2": 7.82, "SW3": 7.82, "SW4": 7.82, "SW5": 7.82}
     for r, what in (("SW1", "rotary"), ("SW2", "lever"), ("SW4", "button")):
         add("fascia R", "front face", "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], hole[r]), bush[r] / 2, hole[r] / 2,
             "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill", what="hole")
+    # the holes04 variant: the same rows on the board with every control hole opened (fab/HOLES-VARIANT.md); not part of rows / the tally
+    vrows = []
+    if fascia == "TS06-FASCIA-rhythm":
+        with tempfile.TemporaryDirectory(prefix="fit_table.") as vtmp:
+            vhole = SF.control_holes(SF.open_holes_board(vtmp))
+        for r, what in (("SW1", "rotary"), ("SW2", "lever"), ("SW4", "button")):
+            m = vhole[r] / 2 - bush[r] / 2
+            vrows.append({"part": "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], vhole[r]), "height": round(bush[r] / 2, 2),
+                          "space": round(vhole[r] / 2, 2), "margin": round(m, 2), "status": status(m),
+                          "note": "the hole is %.1f mm wider than the committed one (+%.2f a side before)" % (vhole[r] - hole[r], hole[r] / 2 - bush[r] / 2)})
     for r, what in (("SW1", "rotary shaft"), ("SW2", "lever"), ("SW4", "button")):
         add("fascia R", "front face", "%s %s, reach beyond the front face" % (r, what), top(fas, r, TF), top(fas, r, TF) + 100.0,
             "", what="reach")
@@ -251,9 +265,21 @@ def main(argv):
     for x in rows:
         t[x["status"]] = t.get(x["status"], 0) + 1
     md += ["", "Rows: " + ", ".join("%d %s" % (n, s) for s, n in sorted(t.items())), ""]
+    if vrows:
+        md += ["## fascia R, front face: the holes04 variant", "",
+               "The same three bushing rows with every control hole opened 0.4 mm in diameter (`tools/mkpcb_fascia_rhythm.py --open-holes`; the extra zip "
+               "`fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`, `fab/HOLES-VARIANT.md`). The committed board, the zip in `fab/ORDER.md` and the rows above keep the "
+               "0.09 mm; these rows are not in the tally. The 1 mm line of PASS is for heights: for a clearance fit, +0.29 a side is three times the committed +0.09.", "",
+               "| Part | Height / position | Space / limit | Margin | |", "|---|---:|---:|---:|---|"]
+        for x in vrows:
+            md.append("| %s | %.2f | %.2f | %+.2f | **%s**<br>%s |" % (x["part"], x["height"], x["space"], x["margin"], x["status"], x["note"]))
+        md.append("")
     open(outmd, "w", encoding="utf8").write("\n".join(md))
     if outjson:
-        json.dump({"fascia": fascia, "gold": gold, "rows": rows, "tally": t}, open(outjson, "w", encoding="utf8"), indent=1, ensure_ascii=False)
+        out = {"fascia": fascia, "gold": gold, "rows": rows, "tally": t}
+        if vrows:
+            out["holes_variant"] = {"extra_mm": 0.4, "about": "the three bushing rows on the board with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md); not in rows or tally", "rows": vrows}
+        json.dump(out, open(outjson, "w", encoding="utf8"), indent=1, ensure_ascii=False)
     print("wrote %s: %s" % (outmd, t))
     for x in rows:
         print("%-22s %-20s %-5s h %6.2f space %6.2f margin %+6.2f  %s" % (x["board"], x["side"], x["status"], x["height"], x["space"], x["margin"], x["part"][:70]))

@@ -122,7 +122,13 @@ bash tools/mkfab.sh                                   # all three boards; prints
 bash tools/mkfab.sh TS06-FASCIA-rhythm --gold fans    # the fascia with another gold (see above)
 bash tools/mkfab.sh --keep                            # the same, and keeps the scratch directory (both exports, logs)
 python3 tools/dfm_check.py                            # design-for-manufacture tables (inferred generic limits), see ORDER.md
+bash tools/mkfab.sh TS06-FASCIA-rhythm --open-holes   # an EXTRA fascia zip, control holes opened 0.4 mm: HOLES-VARIANT.md
+python3 tools/dfm_check.py --open-holes               # the same DFM check on that extra zip
 ```
+
+`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is that extra zip (the dial hole 8.8 to 9.2, the lever and button holes 8.0 to 8.4).
+It is held back by being an extra file: the zip above and `ORDER.md` still describe the fascia as ordered. `HOLES-VARIANT.md` says what differs,
+the margins, and how to pick it.
 
 It needs `zip`, `python3` and KiCad 10's `kicad-cli`: a local one, or Docker with
 `mirror.gcr.io/kicad/kicad:10.0`, found the same way as in `tools/verify_pair.sh`. The committed

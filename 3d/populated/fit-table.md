@@ -73,3 +73,13 @@ PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < -0.25 mm (an interfer
 | SW4 body behind the fascia (19.7 deep); nearest TS06-DRV display-side part XS25 | 0.00 | 14.69 | +14.69 | **PASS**<br>clearance row: margin = the gap between the part's world bounding boxes (the fascia is raked 12 deg: conservative) |
 
 Rows: 1 FAIL, 23 PASS, 8 TIGHT
+
+## fascia R, front face: the holes04 variant
+
+The same three bushing rows with every control hole opened 0.4 mm in diameter (`tools/mkpcb_fascia_rhythm.py --open-holes`; the extra zip `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`, `fab/HOLES-VARIANT.md`). The committed board, the zip in `fab/ORDER.md` and the rows above keep the 0.09 mm; these rows are not in the tally. The 1 mm line of PASS is for heights: for a clearance fit, +0.29 a side is three times the committed +0.09.
+
+| Part | Height / position | Space / limit | Margin | |
+|---|---:|---:|---:|---|
+| SW1 rotary: bushing D8.62 in a D9.2 hole (per side) | 4.31 | 4.60 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |
+| SW2 lever: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |
+| SW4 button: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |

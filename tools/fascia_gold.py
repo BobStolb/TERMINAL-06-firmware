@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gold-trace variations for TS06-FASCIA: one white-silk base, four different golds.
 
-    python3 tools/fascia_gold.py VARIANT OUT.kicad_pcb [--base A|R]
+    python3 tools/fascia_gold.py VARIANT OUT.kicad_pcb [--base A|R] [--base-pcb BOARD.kicad_pcb]
     python3 tools/fascia_gold.py all OUTDIR [--base A|R]        # every variant into OUTDIR
     python3 tools/fascia_gold.py --list
     python3 tools/fascia_gold.py VARIANT OUT.kicad_pcb --preview OUT.png   # a quick flat picture
@@ -11,6 +11,9 @@
 VARIANT is one of ladder, divider, fans, guilloche. --base picks the board: A is PCB/TS06-FASCIA
 (176 x 40, controls on y 14), R is PCB/TS06-FASCIA-rhythm (191.4 x 40, controls on y 16). The
 output is a scratch board. Nothing under PCB/ is written.
+--base-pcb BOARD reads that board in place of the committed one (for R: the board of
+`tools/mkpcb_fascia_rhythm.py --out FILE [--open-holes]`, so the fascia with its control holes opened is built the same way;
+fab/HOLES-VARIANT.md). Every check below runs against it as against the committed board.
 
 THE WHITE SILK IS CONSTANT. It is the "Plates" silk of tools/fascia_art.py, taken from
 fascia_art.v_plates() item for item: the six names, the MODE / FIELD / SUB nameplates, the hairline
@@ -881,6 +884,7 @@ def main():
     ap.add_argument("variant", nargs="?")
     ap.add_argument("out", nargs="?")
     ap.add_argument("--base", default="A", choices=sorted(fa.BASES))
+    ap.add_argument("--base-pcb", default="", metavar="BOARD", help="read this board as the base (scratch copy of the same fascia) instead of the committed one")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--preview", default="", metavar="PNG", help="also write a quick flat picture")
     ap.add_argument("--drc", action="store_true", help="also run KiCad 10's DRC on each board and compare it with the base board's")
@@ -889,6 +893,10 @@ def main():
         for k, v in DOCS.items():
             print("%-10s %s" % (k, v))
         return
+    if a.base_pcb:
+        if not os.path.isfile(a.base_pcb):
+            sys.exit("--base-pcb %s: no such file" % a.base_pcb)
+        fa.BASES[a.base] = os.path.abspath(a.base_pcb)
     todo = list(VARIANTS) if a.variant == "all" else [a.variant]
     failed = False
     base_run = drc(fa.BASES[a.base], a.base) if a.drc else None

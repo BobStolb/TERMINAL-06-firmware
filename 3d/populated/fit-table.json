@@ -359,5 +359,35 @@
   "PASS": 23,
   "TIGHT": 8,
   "FAIL": 1
+ },
+ "holes_variant": {
+  "extra_mm": 0.4,
+  "about": "the three bushing rows on the board with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md); not in rows or tally",
+  "rows": [
+   {
+    "part": "SW1 rotary: bushing D8.62 in a D9.2 hole (per side)",
+    "height": 4.31,
+    "space": 4.6,
+    "margin": 0.29,
+    "status": "TIGHT",
+    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+   },
+   {
+    "part": "SW2 lever: bushing D7.82 in a D8.4 hole (per side)",
+    "height": 3.91,
+    "space": 4.2,
+    "margin": 0.29,
+    "status": "TIGHT",
+    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+   },
+   {
+    "part": "SW4 button: bushing D7.82 in a D8.4 hole (per side)",
+    "height": 3.91,
+    "space": 4.2,
+    "margin": 0.29,
+    "status": "TIGHT",
+    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+   }
+  ]
  }
 }

@@ -6,6 +6,9 @@
     python3 tools/dfm_check.py --gold ladder         # the fascia with another gold (default divider; none = bare)
     python3 tools/dfm_check.py --no-selftest         # skip the deliberately broken copy (G7)
     python3 tools/dfm_check.py --g11                 # the G11 conditions, measured on the fascia with its gold
+    python3 tools/dfm_check.py --open-holes          # the fascia R variant with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md):
+                                                     # its zip is fab/TS06-FASCIA-R-revA-<gold>-holes04-fab.zip (tools/mkfab.sh --open-holes);
+                                                     # with no board named it checks that one board; works with --g11 too
 
 THE LIMITS ARE INFERRED. They are what a typical low-cost 2-layer service quotes as its standard class; no fab
 was asked and no price or page was fetched. The owner checks them against the fab chosen:
@@ -109,8 +112,14 @@ def open_up(tmp):
             os.chmod(os.path.join(r, f), 0o666)
 
 
-def scratch(key, gold, mutate=None):
-    """A scratch project of one board: returns (tmp dir, project name). The fascia is the art board of its gold."""
+def fascia_zip(gold, open_holes=False):
+    """The fascia R's zip in fab/: named after the gold, and after the opened holes of the variant."""
+    return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s-fab.zip" % ("bare" if gold == "none" else gold, "-holes04" if open_holes else ""))
+
+
+def scratch(key, gold, mutate=None, open_holes=False):
+    """A scratch project of one board: returns (tmp dir, project name). The fascia is the art board of its gold.
+    open_holes (fascia only): the base board is the generator's with every control hole opened (tools/mkpcb_fascia_rhythm.py --open-holes)."""
     tmp = tempfile.mkdtemp(prefix="dfm.")
     shutil.copytree(os.path.join(ROOT, "PCB", "lib"), os.path.join(tmp, "PCB", "lib"))
     name = "board"
@@ -118,13 +127,24 @@ def scratch(key, gold, mutate=None):
     os.makedirs(proj)
     src = os.path.join(ROOT, "PCB", key)
     pcb = os.path.join(proj, name + ".kicad_pcb")
+    base, base_args = os.path.join(src, key + ".kicad_pcb"), []
+    if open_holes:
+        if key != "TS06-FASCIA-rhythm":
+            shutil.rmtree(tmp, ignore_errors=True)
+            sys.exit("--open-holes applies to TS06-FASCIA-rhythm only")
+        base = os.path.join(tmp, "base-open.kicad_pcb")
+        r = subprocess.run([sys.executable, os.path.join(HERE, "mkpcb_fascia_rhythm.py"), "--out", base, "--open-holes"], capture_output=True, text=True)
+        if r.returncode != 0:
+            shutil.rmtree(tmp, ignore_errors=True)
+            sys.exit("tools/mkpcb_fascia_rhythm.py --open-holes failed:\n%s%s" % (r.stdout, r.stderr))
+        base_args = ["--base-pcb", base]
     if key == "TS06-FASCIA-rhythm" and gold != "none":
-        r = subprocess.run([sys.executable, os.path.join(HERE, "fascia_gold.py"), gold, pcb, "--base", "R"], capture_output=True, text=True)
+        r = subprocess.run([sys.executable, os.path.join(HERE, "fascia_gold.py"), gold, pcb, "--base", "R"] + base_args, capture_output=True, text=True)
         if r.returncode != 0:
             shutil.rmtree(tmp, ignore_errors=True)
             sys.exit("tools/fascia_gold.py %s --base R failed its own checks:\n%s%s" % (gold, r.stdout, r.stderr))
     else:
-        shutil.copy(os.path.join(src, key + ".kicad_pcb"), pcb)
+        shutil.copy(base, pcb)
     if mutate:
         t = open(pcb, encoding="utf8").read()
         open(pcb, "w", encoding="utf8").write(mutate(t))
@@ -348,15 +368,16 @@ def selftest():
 
 
 # ================================================================================ G11
-def g11(gold):
+def g11(gold, open_holes=False):
     """The two G11 conditions that a board file can answer, measured on the fascia R with its gold: the legend height and
     the boss-to-R5 margin against typical fab tolerances. The dry fit of a real КМД1 and МТ1 needs parts (G14)."""
     import fascia_art as fa
     import fascia_gold as fg
     TOL_OUTLINE, TOL_HOLE, BOSS_R = 0.2, 0.1, 3.5       # mm: outline +-0.2 and hole position +-0.1 are INFERRED fab tolerances;
-    print("G11 conditions on the fascia R with the %s gold (measured from the art board that tools/fascia_gold.py builds, and its Gerbers)" % gold)
+    print("G11 conditions on the fascia R with the %s gold%s (measured from the art board that tools/fascia_gold.py builds, and its Gerbers)" % (
+        gold, ", control holes opened 0.4 mm (the holes04 variant)" if open_holes else ""))
     print()
-    tmp, name = scratch("TS06-FASCIA-rhythm", gold)
+    tmp, name = scratch("TS06-FASCIA-rhythm", gold, open_holes=open_holes)
     try:
         text = open(os.path.join(tmp, "PCB", name, name + ".kicad_pcb"), encoding="utf8").read()
     finally:
@@ -368,7 +389,7 @@ def g11(gold):
         sys.exit("no front legends found in the art board")
     src = open(fa.BASES["R"], encoding="utf8").read()
     A = fg.silk_base(fa.geometry(src))
-    z = GB.load(os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s-fab.zip" % ("bare" if gold == "none" else gold)))
+    z = GB.load(fascia_zip(gold, open_holes))
     sg = GB.Gerber(z["F_Silk"])
     drawn = []
     for it in A.items:
@@ -425,16 +446,16 @@ def g11(gold):
 
 
 # ================================================================================ main
-def run_board(key, gold):
+def run_board(key, gold, open_holes=False):
     spec = BOARDS[key]
     if key == "TS06-FASCIA-rhythm":
-        z = os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s-fab.zip" % ("bare" if gold == "none" else gold))
+        z = fascia_zip(gold, open_holes)
     else:
         z = os.path.join(ROOT, spec["zip"])
     if not os.path.exists(z):
         sys.exit("%s is missing: run tools/mkfab.sh first" % os.path.relpath(z, ROOT))
     files = GB.load(z)
-    tmp, name = scratch(key, gold)
+    tmp, name = scratch(key, gold, open_holes=open_holes)
     try:
         rows, other = measure(key, tmp, name, files)
         extra = []
@@ -450,7 +471,8 @@ def run_board(key, gold):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     rev = re.search(r"-rev([A-Z0-9]+)-", os.path.basename(z))
-    title = "%s rev %s%s, zip %s" % (key, rev.group(1) if rev else "?", "" if key != "TS06-FASCIA-rhythm" else ", gold %s" % gold, os.path.relpath(z, ROOT))
+    title = "%s rev %s%s%s, zip %s" % (key, rev.group(1) if rev else "?", "" if key != "TS06-FASCIA-rhythm" else ", gold %s" % gold,
+                                       ", control holes opened 0.4 mm (variant)" if open_holes else "", os.path.relpath(z, ROOT))
     table(title, rows, other, extra)
     return all(r[4] for r in rows)
 
@@ -461,8 +483,11 @@ def main():
     ap.add_argument("--gold", default="divider", choices=("ladder", "divider", "fans", "guilloche", "none"))
     ap.add_argument("--no-selftest", action="store_true")
     ap.add_argument("--g11", action="store_true")
+    ap.add_argument("--open-holes", action="store_true", help="the fascia R variant with its control holes opened 0.4 mm (zip ...-holes04-fab.zip)")
     a = ap.parse_args()
-    todo = a.boards or list(BOARDS)
+    todo = a.boards or (["TS06-FASCIA-rhythm"] if a.open_holes else list(BOARDS))
+    if a.open_holes and todo != ["TS06-FASCIA-rhythm"]:
+        ap.error("--open-holes applies to TS06-FASCIA-rhythm only")
     for k in todo:
         if k not in BOARDS:
             ap.error("unknown board %s (%s)" % (k, ", ".join(BOARDS)))
@@ -470,11 +495,11 @@ def main():
     print()
     good = True
     if a.g11:
-        return 0 if g11(a.gold) else 1
+        return 0 if g11(a.gold, a.open_holes) else 1
     if not a.no_selftest:
         good &= selftest()
     for k in todo:
-        good &= run_board(k, a.gold)
+        good &= run_board(k, a.gold, a.open_holes)
     print("DFM CHECK: %s" % ("PASS for %s" % ", ".join(todo) if good else "FAIL (see the rows above)"))
     return 0 if good else 1
 

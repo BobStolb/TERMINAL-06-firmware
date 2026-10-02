@@ -6,6 +6,11 @@
     python3 tools/mkpcb_fascia_rhythm.py --study DIR [A B C] [--front]
                   # the alignments, routed, into DIR (scratch: not committed), and every composite PNG
                   # into PCB/TS06-FASCIA-rhythm; --front skips the routing (the front does not need it)
+    python3 tools/mkpcb_fascia_rhythm.py --out FILE [--open-holes [MM]]
+                  # the board only, into FILE (scratch: nothing under PCB/ is written, no footprint, project or
+                  # composite). --open-holes opens every control bushing hole by MM in diameter (default 0.4:
+                  # SW1 8.8 -> 9.2, SW2..SW5 8.0 -> 8.4) and needs --out. Without it the board is the committed one,
+                  # byte for byte (the committed board never carries the opened holes: see fab/HOLES-VARIANT.md)
 
 THE IDEA. The plain centred fascia (the committed TS06-FASCIA moved 7.7 mm) sits under the tube
 row but ignores it: its controls fall between the tubes. Here every control is centred under a
@@ -103,6 +108,9 @@ STACKUP = """\t\t(stackup
 """
 CY = 16.0                              # the control row
 HOLES = [(4.5, 4.5), (W - 4.5, 4.5), (4.5, H - 4.5), (W - 4.5, H - 4.5)]   # M2.5, as before
+CONTROLS = ("SW1", "SW2", "SW3", "SW4", "SW5")   # the five panel-mount parts, each with one bare bushing hole
+HOLE_OPEN_MM = 0.4                     # the variant's opening, in diameter (fab/HOLES-VARIANT.md); the committed board has 0
+HOLE_EXTRA = 0.0                       # set by --open-holes: how much _place() opens a control's hole (0 = as committed)
 
 # Tube centres, world X (tools/mkpcb_disp.py IN12_X, COLON_X, IN17_X, IN15_X)
 T = {"H10": 13.21, "H1": 36.57, "colon": 50.535, "M10": 63.99, "M1": 87.37,
@@ -418,11 +426,26 @@ def _load(fpname):
     return open(os.path.join(PRETTY, fpname + ".kicad_mod"), encoding="utf8").read()
 
 
+def open_hole(t, extra, ref=""):
+    """A control footprint's text with its one bare bushing hole (np_thru_hole, size = drill) opened by extra mm
+    in diameter. Exactly one such pad is expected and its size must equal its drill, else the run stops."""
+    pat = re.compile(r'(\(pad "" np_thru_hole circle\s+\(at [^)]*\)\s+\(size )([\d.]+) ([\d.]+)(\)\s+\(drill )([\d.]+)(\))')
+    hits = pat.findall(t)
+    assert len(hits) == 1 and hits[0][1] == hits[0][2] == hits[0][4], "%s: expected one bare bushing hole, found %r" % (ref, hits)
+
+    def grow(m):
+        d = f3(float(m.group(2)) + extra)
+        return "%s%s %s%s%s%s" % (m.group(1), d, d, m.group(4), d, m.group(6))
+    return pat.sub(grow, t, count=1)
+
+
 def _place(ref, x, y):
     """A library footprint as a board footprint, the way tools/mkpcb.py writes them: back parts
     are authored on B.* layers, so they are moved to the back by layer name, never mirrored."""
     back = ref in BACK
     t = _load(FP[ref]).rstrip()
+    if HOLE_EXTRA and ref in CONTROLS:
+        t = open_hole(t, HOLE_EXTRA, ref)
     assert t.startswith("(footprint") and t.endswith(")")
     t = t[:-1].rstrip()
     if back:
@@ -748,8 +771,9 @@ def composite_baseline(png):
 
 
 # ============================================================================ main
-def build(key, path, reroute, verbose=True):
-    write_rotary_footprint()
+def build(key, path, reroute, verbose=True, write_lib=True):
+    if write_lib:
+        write_rotary_footprint()
     L = layout(key)
     G = artwork(L)
     if reroute:
@@ -780,6 +804,20 @@ if __name__ == "__main__":
                 print("alignment %s: %d routed tracks + %d laid, unrouted: %s" % (key, len(tracks), len(L["fixed"]), failed or "none"))
             composite_of(L, p, os.path.join(OUTDIR, "composite-%s.png" % key))
         composite_baseline(os.path.join(OUTDIR, "composite-0-centred.png"))
+        sys.exit(0)
+    if "--out" in sys.argv or "--open-holes" in sys.argv:
+        # scratch mode: the board file only, to --out; nothing under PCB/ is written (no footprint, project, schematic, routes, composite)
+        if "--out" not in sys.argv or sys.argv.index("--out") + 1 >= len(sys.argv):
+            sys.exit("--open-holes needs --out FILE: the committed board must not carry the opened holes")
+        out = os.path.abspath(sys.argv[sys.argv.index("--out") + 1])
+        if os.path.commonpath([out, os.path.join(ROOT, "PCB")]) == os.path.join(ROOT, "PCB"):
+            sys.exit("--out %s is under PCB/: scratch mode never writes there" % out)
+        if "--open-holes" in sys.argv:
+            i = sys.argv.index("--open-holes")
+            HOLE_EXTRA = float(sys.argv[i + 1]) if i + 1 < len(sys.argv) and re.match(r"^\d+(\.\d+)?$", sys.argv[i + 1]) else HOLE_OPEN_MM
+            assert 0 < HOLE_EXTRA <= 1.0, "--open-holes MM: 0 < MM <= 1"
+        L, tracks, failed = build(CHOSEN, out, False, write_lib=False)
+        print("wrote %s: alignment %s, %d tracks, control holes opened by %s mm" % (out, CHOSEN, len(tracks) + len(L["fixed"]), f3(HOLE_EXTRA)))
         sys.exit(0)
     path = os.path.join(OUTDIR, NAME + ".kicad_pcb")
     reroute = "--route" in sys.argv or not os.path.exists(ROUTES)
