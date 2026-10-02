@@ -13,7 +13,7 @@ beside it (and carried into params.scad as a comment):
     board     read out of the board generators / board files by --extract (boards.json)
     doc       a number stated in a document in this repository (named)
     measured  read on a part on the owner's bench (the instrument and the date are named)
-    reading   taken from a measurement by a stated step (a difference, say), not measured itself
+    estimate  the owner's estimate of a part, not a caliper reading (the source says who and when)
     design    a choice made here, with the reason
     assumed   a catalogue-typical value nobody has measured yet - check it on the part
 
@@ -207,10 +207,9 @@ def dims(B):
     d("IN17_FACE", 14.0, "doc", "ИН-17 outline drawing: face 14 (measurements-IN17 Rev 5)", g)
     d("IN17_H", 20.0, "doc", "ИН-17 outline drawing: 20 across the long face axis", g)
     d("IN17_D", 19.72, "measured", "the owner's bench caliper, 2026-10-02: ИН-17 glass 19.72 from the dome to the end of the glass "
-                                   "(the outline drawing's 22 is read to include the exhaust pip, IN17_PIP)", g)
-    d("IN17_PIP", 2.28, "reading", "the exhaust pip below the glass end, between the leads: the drawing's 22 minus the measured "
-                                   "19.72 = about 2.28 (a reading: the drawing was not shown to be taken to the pip's tip, and the "
-                                   "pip itself has not been measured)", g)
+                                   "(the outline drawing's 22 is not glass + pip: 19.72 + IN17_PIP is about 23.7)", g)
+    d("IN17_PIP", 4.0, "estimate", "the owner's estimate, 2026-10-02: the exhaust pip under the glass end, between the leads, about 4 mm "
+                                   "(not a caliper reading). The drawing's 22 is therefore no longer glass + pip; IN17_D stays the measured 19.72", g)
     d("IN17_STEM", 20.0, "doc", "ИН-17 outline drawing: round stem Ø20 at the base", g)
     d("IN17_DIGIT", 9.0, "doc", "render/rev_f.py DIGIT_17", g)
     d("IN17_STANDOFF_MIN", 6.4, "doc", "TS06_IN17_Socket descr: >= 6.4 mm glass to board (TU: no solder within 8 mm)", g)

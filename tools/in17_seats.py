@@ -4,7 +4,7 @@
     python3 tools/in17_seats.py OUT.png [--seats 10.28 6.4] [--tu 8.0 --bend 3.0 --glass-min 6.4]
 
 The ИН-17 glass is the owner's measured 19.72 mm from the dome to the end of the glass (bench caliper, 2026-10-02: `case_pair.py`
-IN17_D; the outline drawing's 22 is read to include the exhaust pip, about 2.28 mm, IN17_PIP). The model the renders use, `3d/IN17.step`
+IN17_D; the outline drawing's 22 is not glass + pip: the pip is about 4 mm, the owner's estimate, IN17_PIP). The model the renders use, `3d/IN17.step`
 (24.3 mm to the end of its stalk), is scaled along its axis to that (tools/models3d.json), and the case model seats the glass so that its
 face is level with the ИН-12 faces: 30.0 - 19.72 = 10.28 mm from the board's front face to the glass end (`case_pair.py` IN17_STANDOFF).
 This draws the S10 tube from the right end of the stack (an orthographic projection along X: the front of the clock is on the LEFT, up
@@ -24,7 +24,7 @@ part to the glass (bounding-box gap, so it can only understate the room). The hi
 The numbers come from the placed models (the DISP GLB, as in tools/fit_table.py) and from `tools/stack_frame.py`'s frame
 (Z towards the viewer, the ИН-12 front at Z 0); the leads' Y come from the board's own pads. Needs numpy and rsvg-convert.
 `python3 tools/fit_table.py ... --in17-seat 6.4` gives the fit table with the glass at another seat.
-The pip's 2.28 mm is a reading (the drawing's 22 less the measured 19.72), not a measurement.
+The pip's 4 mm is the owner's estimate (2026-10-02, "closer to 4 mm"), not a caliper reading.
 """
 import argparse, math, os, subprocess, sys, tempfile
 import numpy as np
@@ -147,7 +147,7 @@ def main():
 
     print("ИН-17 glass front at the case model's %.2f seat: Z %+.2f; ИН-12 front Z %+.2f; window face plane Z %+.2f; "
           "the face is level with the ИН-12 at a seat of %.2f mm, and reaches the window plane at %.2f mm; "
-          "glass %.2f mm (the owner's measurement), pip %.2f mm below it (a reading)" % (seat0, f17, f12, window, level, highest, v["IN17_D"], pip_len))
+          "glass %.2f mm (the owner's measurement), pip %.2f mm below it (the owner's estimate)" % (seat0, f17, f12, window, level, highest, v["IN17_D"], pip_len))
     hdr = "%-34s" + " %10s" * 2
     print(hdr % ("seat (glass end above board face)", "%.2f mm" % seats[0], "%.2f mm" % seats[1]))
     rows = [("glass front, Z", "front", "%+.2f"), ("in front of the ИН-12 front by", "proud", "%+.2f"),
@@ -272,7 +272,7 @@ def main():
     line("%.1f mm (the lowest: 8 mm of lead to the solder" % lowest_tu, size=20, dy=26)
     line("less the board) to %.2f mm (the face reaches" % highest, size=20, dy=26)
     line("the window plane); %.2f is level with the ИН-12" % level, size=20, dy=26)
-    line("glass %.2f mm (measured); the pip, %.2f mm, is a reading" % (v["IN17_D"], pip_len), "#4a5163", 18, dy=44)
+    line("glass %.2f mm (measured); the pip, %.1f mm, is an estimate" % (v["IN17_D"], pip_len), "#4a5163", 18, dy=44)
     for col, dash, txt in (("#c4262e", "14 7", "window face plane"), ("#2a8a4b", "14 7", "ИН-12 glass front (Z 0)"), ("#c4262e", "", "red wedge: 8 mm from the glass (ТУ)")):
         if dash:
             A('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="3" stroke-dasharray="%s"/>' % (px, yy - 7, px + 40, yy - 7, col, dash))

@@ -48,7 +48,7 @@
   "IN17_pip": {
    "file": "${TS06_POP}/in17_pip.wrl",
    "kind": "made",
-   "note": "the exhaust pip, D3.5 with a round tip, standing 2.28 mm out of the glass end between the leads (case_pair.py IN17_PIP: a reading, the drawing's 22 minus the measured 19.72; the diameter is inferred)"
+   "note": "the exhaust pip, D3.5 with a round tip, standing 4.0 mm out of the glass end between the leads (case_pair.py IN17_PIP: the owner's estimate of 2026-10-02, 'closer to 4 mm', not a caliper reading; the diameter is inferred)"
   },
   "INS1_lamp": {
    "file": "${TS06_3D}/INS1.step",

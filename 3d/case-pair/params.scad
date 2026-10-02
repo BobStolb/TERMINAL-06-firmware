@@ -29,8 +29,8 @@ IN12_DIGIT         = 18.63;  // [doc] render/rev_f.py DIGIT_12, caliper 27.08
 IN12_SEAT          = 4.5;  // [assumed] socket seat: review puts the socketed glass front ~30 in front of TS06-DISP; TS06-LIB-SOCKET is not captured
 IN17_FACE          = 14;  // [doc] ИН-17 outline drawing: face 14 (measurements-IN17 Rev 5)
 IN17_H             = 20;  // [doc] ИН-17 outline drawing: 20 across the long face axis
-IN17_D             = 19.72;  // [measured] the owner's bench caliper, 2026-10-02: ИН-17 glass 19.72 from the dome to the end of the glass (the outline drawing's 22 is read to include the exhaust pip, IN17_PIP)
-IN17_PIP           = 2.28;  // [reading] the exhaust pip below the glass end, between the leads: the drawing's 22 minus the measured 19.72 = about 2.28 (a reading: the drawing was not shown to be taken to the pip's tip, and the pip itself has not been measured)
+IN17_D             = 19.72;  // [measured] the owner's bench caliper, 2026-10-02: ИН-17 glass 19.72 from the dome to the end of the glass (the outline drawing's 22 is not glass + pip: 19.72 + IN17_PIP is about 23.7)
+IN17_PIP           = 4;  // [estimate] the owner's estimate, 2026-10-02: the exhaust pip under the glass end, between the leads, about 4 mm (not a caliper reading). The drawing's 22 is therefore no longer glass + pip; IN17_D stays the measured 19.72
 IN17_STEM          = 20;  // [doc] ИН-17 outline drawing: round stem Ø20 at the base
 IN17_DIGIT         = 9;  // [doc] render/rev_f.py DIGIT_17
 IN17_STANDOFF_MIN  = 6.4;  // [doc] TS06_IN17_Socket descr: >= 6.4 mm glass to board (TU: no solder within 8 mm)

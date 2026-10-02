@@ -22,12 +22,12 @@
 //                   (wire D0.4; the stubs in IN17.step measure 0.3 across).  See README.md, open item "IN-17 leads".
 //
 // in17_pip (V5, V6)      the exhaust pip of the IN-17, standing out of the glass end between the leads.
-//   length          2.28 mm     A READING (case_pair.py IN17_PIP): the outline drawing's 22 mm minus the measured 19.72 of glass.
-//                               The pip itself has not been measured; the drawing is read to include it.
+//   length          4.0 mm      THE OWNER'S ESTIMATE, 2026-10-02 (case_pair.py IN17_PIP, kind estimate): "closer to 4 mm". Not a caliper
+//                               reading. The outline drawing's 22 mm is therefore not the glass (19.72, measured) plus the pip.
 //   diameter 3.5, round tip     INFERRED (the lead pattern is 5.6 mm across, so a pip under 5 mm stands between the rows).
-//   place           centred on the lead pattern; the tip 2.28 mm below the glass end, 8.0 mm above the board face.
+//   place           centred on the lead pattern; the tip 4.0 mm below the glass end, 6.28 mm above the board face.
 STANDOFF = 10.28;     // the glass end above the board face: case_pair.py IN17_STANDOFF
-PIP = 2.28;           // case_pair.py IN17_PIP
+PIP = 4.0;            // case_pair.py IN17_PIP
 STUB_END = STANDOFF - 5.5 * 19.72 / 24.3;      // where the model's scaled stubs end above the board: 5.82
 MODE = 0;
 L = "sleeve";

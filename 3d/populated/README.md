@@ -72,16 +72,19 @@ table, not in its tally or in `fit-table.json`'s rows, because the committed boa
 ![The ИН-17 at two seats](IN17-two-seats.png)
 
 **The glass is 19.72 mm.** The owner measured one ИН-17 on the bench, dome to the end of the glass: 19.72 mm (caliper, 2026-10-02; `case_pair.py`
-IN17_D, kind `measured`). The outline drawing's 22.0 mm is read to include the exhaust pip, which stands out of the glass end between the
-leads (`knowledge/TERMINAL-06-measurements-IN17.txt`: "12 leads on a circle round a central pip"), so the pip is about **2.28 mm** (`case_pair.py`
-IN17_PIP, kind `reading`). **That 2.28 is a reading, not a measurement:** the pip has not been measured, and the drawing's 22 was not shown to be
-taken to the pip's tip.
+IN17_D, kind `measured`). The exhaust pip stands out of the glass end between the leads (`knowledge/TERMINAL-06-measurements-IN17.txt`: "12 leads on
+a circle round a central pip"); the owner's estimate is about **4 mm** ("closer to 4 mm", 2026-10-02; `case_pair.py` IN17_PIP, kind `estimate`): **an estimate,
+not a caliper reading.** The outline drawing's 22 mm is therefore no longer glass plus pip (19.72 + 4 is about 23.7); IN17_D stays the measured 19.72.
 
 **What changed in the model.** `3d/IN17.step` is 24.3 mm from the dome to the end of its stalk, and then 5.5 mm of lead stubs. `tools/models3d.json` now scales the whole
 model along the tube's axis by 19.72 / 24.3 = 0.8115 (a `scale` on the model line, the axis being the STEP's own x), so the glass is 19.72 mm
 and the stubs 4.46 mm; the section (12.25 x 17.67) is the STEP's own and is not touched. The pip is a made model (`models/tube_pins.scad`,
-variant `in17_pip`: D3.5 with a round tip, 2.28 mm out of the glass end, centred on the leads; the length is the reading above, the diameter is
+variant `in17_pip`: D3.5 with a round tip, 4.0 mm out of the glass end, centred on the leads; the length is the owner's estimate, the diameter is
 inferred), and the wire leads start where the scaled stubs end.
+
+**The owner's check of the model.** The owner, 2026-10-02: the 3D tube's measurements are "within 0.5 mm of the real measure". The model's length (scaled to 19.72)
+and its section (12.25 x 17.67) stay as they are. The real tube is nearer the model's 12.25 x 17.67 than the drawing's 14 x 20 that `case_pair.py` keeps, so the
+case window has the margin (those numbers are not changed).
 
 **The seat.** The case model seats the glass so that its face is level with the ИН-12 faces (`case_pair.py`: IN17_STANDOFF = Z_DISP_F - IN17_D =
 30.0 - 19.72 = **10.28 mm** from the board's front face to the glass end; it was 8.0 at 22.0). The model is placed there: the dome at 30.0 above the
@@ -102,7 +105,7 @@ Command (about 15 s): `python3 tools/in17_seats.py 3d/populated/IN17-two-seats.p
 | lead between a 3 mm bend and the board face | 7.3 | 3.4 |
 | lead from the glass end to the back face, of the tube's 35 mm free | 11.9 | 8.0 |
 | lead tail past the back face, lead trimmed to 15 / 20 mm | 3.1 / 8.1 | 7.0 / 12.0 |
-| pip tip above the board face | 8.0 | 4.1 |
+| pip tip above the board face (the pip 4 mm: the owner's estimate) | 6.3 | 2.4 |
 | nearest part to the glass (box gap): LED HL5 | 5.68 | 2.94 |
 
 **The leads reach their pads and meet the ТУ at the case seat.** The tube comes with 35 mm of lead (the kit manual trims it to 15-20 mm); 11.9 mm is
@@ -114,8 +117,8 @@ as low as 6.4, where the joint is exactly 8.0 mm from the glass, and as high as 
 one where the face is level with the ИН-12. (With the old 24.3 mm model a level face needed a 5.7 mm seat, which the ТУ forbade: that conflict
 was the model's length, and is gone.)
 
-**The pip needs no hole.** It hangs in the gap between the glass end and the board: its tip is 8.0 mm above the board face at 10.28 (4.1 at
-6.4), so it is clear of the board whatever its true length, as long as it is under 8 mm. The footprint has no hole for it, as before.
+**The pip needs no hole.** It hangs in the gap between the glass end and the board: its tip, 4 mm below the glass end, is 6.3 mm above the board face at 10.28 (2.4 at
+6.4), so it is clear of the board as long as it is shorter than the seat (6.4 mm at the lowest). The footprint has no hole for it, as before.
 
 **Does the glass clear every part under it? Yes.** Nothing stands under the glass in plan. The nearest part is the LED HL5, 2.73 mm below the glass
 outline in the board's plane (its top is 5.29 mm above the board, the glass end 10.28: 5.68 mm between the boxes at the case seat, 2.94 at 6.4; the
@@ -149,7 +152,7 @@ bounding-box gaps, so they can only understate the room.
 | `led3` | HL1-HL9 | D3.0, 5.3 tall, flange D3.8 x 0.6, leads D0.5 | D and height **measured** (footprint descr); flange, leads **inferred** |
 | `tube_pins` `in12_contacts` | V1-V4, V9, V10 | 12 contacts D1.7 x 4.5 on the pad ring | pads **measured**; contact size and height 4.5 **inferred** (`case_pair.py` IN12_SEAT, assumed) |
 | `tube_pins` `in17_wires` | V5, V6 | 11 wires D0.4 from the end of the scaled stubs (5.82 above the board) to 0.8 mm past the back face | pads **measured**; wires **inferred** |
-| `tube_pins` `in17_pip` | V5, V6 | the exhaust pip D3.5 with a round tip, 2.28 mm out of the glass end, between the leads | length a **reading** (22 - 19.72); diameter **inferred** |
+| `tube_pins` `in17_pip` | V5, V6 | the exhaust pip D3.5 with a round tip, 4.0 mm out of the glass end, between the leads | length the owner's **estimate** ("closer to 4 mm"); diameter **inferred** |
 | `smd_fascia` `r1206_back` | fascia R1-R8 | 3.2 x 1.6 x 0.55 | **inferred** (standard 1206) |
 | `smd_fascia` `jst_s6b_sm4_back` | fascia J1 | housing 13.9 x 7.6 x 4.8, tabs 1.5 x 3.4 | footprint B.Fab **measured**; height **inferred** (`case_pair.py` FJ_HDR_H, assumed) |
 
@@ -157,8 +160,8 @@ bounding-box gaps, so they can only understate the room.
 
 * ИН-12/15 glass 4.5 mm above the board face (`case_pair.py` IN12_SEAT, assumed there); contacts drawn to match.
 * ИН-17 glass end 10.28 mm above the board face (`case_pair.py` IN17_STANDOFF = Z_DISP_F - IN17_D, so the faces are coplanar with the
-  ИН-12s), the glass 19.72 mm (**measured**, the owner's bench caliper, 2026-10-02). The exhaust pip below the glass, 2.28 mm, is a
-  **reading** (the drawing's 22 less the measured 19.72), its diameter (3.5) inferred. `IN17.step` is scaled along its axis to match;
+  ИН-12s), the glass 19.72 mm (**measured**, the owner's bench caliper, 2026-10-02). The exhaust pip below the glass, 4 mm, is the
+  owner's **estimate** (not a caliper reading; the drawing's 22 is not glass + pip), its diameter (3.5) inferred. `IN17.step` is scaled along its axis to match;
   its section (12.25 x 17.67) is the STEP's own and is smaller than the drawing's 14 face and Ø20 stem that `case_pair.py` uses.
 * ИНС-1 colon lamps: tip flush with the ИН-12 faces; no source states their height.
 * Fascia controls: bushing on the panel's back face, body turned with its long side (the lug plate) up the panel, away
