@@ -1,6 +1,17 @@
 # TS06 orchestrator: resume note and launch log
 
-## RESUME HERE (30.09 10:10 UTC; mode LOUD since 10:05, the owner at the PC; QUOTA: PACE in force)
+## RESUME HERE (02.10 01:10 UTC; QUOTA: RESUME since 01.10 23:52; job: PCB order-ready)
+* **QUOTA: HOLD ALL (30.09 11:19) then RESUME (01.10 23:52), from xstream.store.** The owner's priority, verbatim:
+  "job prio: previouslu running or brand new>nixie completed pcb ordered>dashboard". So my first job is the PCB
+  order-ready; front panel page and fascia variants come after. Placing the order is the owner's own hand.
+  Split even again: 50/50 in the 5-hour window, 3.6 % of the weekly per day each, one run at a time on sonnet.
+  HOLD confirmed late and the plan posted (agent-commons 749084c). Direct cross-session replies fail from this
+  cloud session; the mailbox carries everything.
+* **Next run: order-ready** (brief: `scratchpad/order-ready/BRIEF.md`): the fascia fab zip on R with Plates +
+  Divider gold (`mkfab.sh --gold`), `tools/dfm_check.sh` on all three boards, `fab/ORDER.md`, renders and item
+  nixie-order-ready. Waits for a fresh quota.json (the 23:40 reading was over 60 min old at 00:57).
+
+### Before the pause (30.09 10:10 UTC; mode LOUD since 10:05)
 * **Owner answers 08:39 (relayed, standing):** DISP art **approve, direction 3 circuit** -> run
   disp-circuit-art: make `--art circuit` the default of mkpcb_disp.py, regenerate, verify_pair 27 PASS,
   rebuild the DISP fab zip, viewer rebuild + publish. Fascia art **changes**: SW1 fix accepted; new gold-trace
