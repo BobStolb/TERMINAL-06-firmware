@@ -24,6 +24,12 @@
   likely more; inferred). Asked "what are mask colours": explained; boards carry black mask + white silk (DISP, DRV;
   fascia gets the same via fascia-dfm). The owner: "all black, matte if cheap". ORDER.md gets qty 10 and the
   colour through fascia-dfm (messaged).
+* **fascia-dfm DONE 02:1x, merged 167d5bd/c8ae3b2:** DFM PASS on all three boards (self-test PASS), fascia R zip
+  rebuilt (silk 0.15, legend 1.0 mm, slivers gone, ENIG + black/white stack-up, 2.0 mm), ORDER.md carries qty 10
+  and "all black, matte if cheap", pictures show each board whole; DISP/DRV files and zips unchanged; verify 27 PASS
+  (my own run). Left open, not on the order: A/-wide/MAIN boards keep the old thin-silk footprint copies;
+  Guilloche on A has 0.05 mm webs at its medallions; the R mask web reads 0.100 mm exactly (raster +-0.03).
+  The agent split 4 Bash calls that the worktree guard called too complex, as the guard's message said.
 * **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
 
 ### Before the pause (30.09 10:10 UTC; mode LOUD since 10:05)
