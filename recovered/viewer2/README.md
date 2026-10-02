@@ -56,7 +56,7 @@ Under the camera deck of the Assembly and Display scenes (not the driver or the 
 **off at load**. Off, the tubes are the plain glass of the STEP files, as the populated boards are drawn. On, each tube's glass takes the page's
 warm glass (`MAT.glass`, the look the stand-in tubes had) and the numeral inside it glows: the digits the stand-in tubes carried (1 to 4 on the
 ИН-12, 5 and 6 on the ИН-17, A and M on the ИН-15), a plane across the tube's axis with the page's own glyph texture (`glyphTexture`:
-additive orange with a soft halo). One line beside the switch says the glow is an illustration (a picture of a lit tube, not a measured one).
+additive orange with a soft halo), and the two ИНС-1 colon lamps glow with a warm core standing in the lamp (the core the stand-in lamps had). One line beside the switch says the glow is an illustration (a picture of a lit tube, not a measured one).
 That glow is the one the page had before the boards were drawn populated (`buildDispProxies`, kept for the boards that are not
 populated); the populated tubes' glass is opaque, so the switch turns it warm and clear as well, or the numerals could not be seen.
 The setting is not kept between visits. `addGlow` and `setGlow` in `src/app.js`; the tests (`glow switch`) check it on the desktop and the
@@ -70,7 +70,7 @@ A tab under the viewer ("Order"; the address `#order`). It holds, from `data/ord
   quantity 10, the DFM result, and the zip;
 * the design-for-manufacture table, the worst value found on each board against the limit;
 * the fit table's TIGHT and FAIL rows, each in plain words (`tools/order.py` writes the sentences and carries each row's own
-  numbers; the table has no FAIL since the ИН-17's measured length, 19.72 mm, went in: the tube's open item is the pip, a reading);
+  numbers; the table has no FAIL since the ИН-17's measured length, 19.72 mm, went in: the tube's open item is the pip, the owner's estimate of about 4 mm);
 * the open items before ordering, and what only the prototype run can close;
 * where the fab zips are: links on GitHub under the branch `pcb/kicad-boards`, by their repository path
   (`fab/TS06-DISP-revB-fab.zip` ...). The zips are not embedded in the page;

@@ -146,8 +146,8 @@ def main(repo, out, branch="pcb/kicad-boards"):
                  "on the fascia ask for no fab order number on the face. No prices were looked up."},
         {"id": "tube", "title": "The ИН-17 pip", "blocking": False,
          "body": "The ИН-17 glass is 19.72 mm from the dome to the end of the glass (the owner's bench caliper, 2026-10-02), which puts its face level with the ИН-12 faces on a 10.28 mm seat. "
-                 "The drawing's 22 mm is read to include the exhaust pip, about 2.28 mm: that is a reading, not a measurement. The pip hangs in the gap under the glass and needs no hole while it is under 8 mm, "
-                 "so it does not hold up the boards; measure it on a real tube."},
+                 "The exhaust pip under the glass is about 4 mm: the owner's estimate, not a caliper reading (the drawing's 22 mm is not glass plus pip). The pip hangs in the gap under the glass and needs no hole "
+                 "while it is shorter than the seat (6.4 mm at the lowest), so it does not hold up the boards; measure it on a real tube."},
         {"id": "g8", "title": "Filling the pours in the committed board files", "blocking": False,
          "body": "Whether to commit the boards 'filled'. The zips are built with the pours filled either way, so this does not hold up the order."},
     ]

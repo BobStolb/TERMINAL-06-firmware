@@ -683,13 +683,14 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   const glowState = pg => pg.evaluate(() => {
     const V = window.TS06, deep = o => { for (let n = o; n; n = n.parent) if (!n.visible) return false; return true; };
     const root = V.roots[V.current].group;
-    let planes = 0, shown = 0, glass = 0, lit = 0;
+    let planes = 0, shown = 0, cores = 0, coresShown = 0, glass = 0, lit = 0;
     root.traverse(o => {
       if (o.userData.glowPlane) { planes++; if (deep(o)) shown++; }
+      if (o.userData.glowCore) { cores++; if (deep(o)) coresShown++; }
       if (o.userData.glassPlain) { glass++; if (o.material !== o.userData.glassPlain) lit++; }
     });
     const row = document.querySelector('#glowdeck'), sw = document.querySelector('#glowon');
-    return { planes, shown, glass, lit, checked: sw.checked, row: !row.hidden, glow: V.glow };
+    return { planes, shown, cores, coresShown, glass, lit, checked: sw.checked, row: !row.hidden, glow: V.glow };
   });
   const canvasPng = async pg => (await pg.locator('#gl canvas').screenshot()).toString('base64');
   const pngDiff = (pg, a, b) => pg.evaluate(async ([a, b]) => {
@@ -714,8 +715,8 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
     // at load: the switch is there, off, with its line of text, and nothing glows
     const s0 = await glowState(pg);
     const note = await pg.evaluate(() => { const n = document.querySelector('#glownote'), sw = document.querySelector('#glowon'); return { text: n.textContent.trim(), described: sw.getAttribute('aria-describedby'), type: sw.type, label: document.querySelector('label[for="glowon"]').textContent.trim() }; });
-    ok(`glow switch (${human}): there, off at load, one line says the glow is an illustration`, s0.row && !s0.checked && !s0.glow && s0.shown === 0 && s0.lit === 0 && note.type === 'checkbox' && note.described === 'glownote' && /illustration/i.test(note.text) && note.text.length < 140 && /glow/i.test(note.label),
-      `row ${s0.row}, checked ${s0.checked}, ${s0.shown} numerals shown, ${s0.lit} glass meshes lit; "${note.text}"`);
+    ok(`glow switch (${human}): there, off at load, one line says the glow is an illustration`, s0.row && !s0.checked && !s0.glow && s0.shown === 0 && s0.coresShown === 0 && s0.lit === 0 && note.type === 'checkbox' && note.described === 'glownote' && /illustration/i.test(note.text) && note.text.length < 140 && /glow/i.test(note.label),
+      `row ${s0.row}, checked ${s0.checked}, ${s0.shown} numerals and ${s0.coresShown} lamp cores shown, ${s0.lit} glass meshes lit; "${note.text}"`);
     await pg.click('#scenes [data-scene="DISP"]'); await settle(pg);
     await pg.click(`#deck [data-view="${phone ? 'front' : 'isoL'}"]`); await settle(pg);
     await shot(pg, `${tag}-glow-off-display`);
@@ -730,8 +731,8 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
     await shot(pg, `${tag}-glow-on-display`);
     const on = await canvasPng(pg);
     const dOn = await pngDiff(pg, off1, on);
-    ok(`glow switch (${human}): on, the eight numerals show in the display and its tubes' glass is warm; the picture changes`, s1.checked && s1.glow && s1.planes === 8 && s1.shown === 8 && s1.glass >= 8 && s1.lit === s1.glass && dOn.changed > dOn.total * 0.01 && dOn.warm > 300,
-      `${s1.shown} of ${s1.planes} numerals shown, ${s1.lit} of ${s1.glass} glass meshes lit; ${dOn.changed} px changed (${(100 * dOn.changed / dOn.total).toFixed(1)} %), ${dOn.warm} warm`);
+    ok(`glow switch (${human}): on, the eight numerals and the two colon lamps show in the display and their glass is warm; the picture changes`, s1.checked && s1.glow && s1.planes === 8 && s1.shown === 8 && s1.cores === 2 && s1.coresShown === 2 && s1.glass >= 10 && s1.lit === s1.glass && dOn.changed > dOn.total * 0.01 && dOn.warm > 300,
+      `${s1.shown} of ${s1.planes} numerals and ${s1.coresShown} of ${s1.cores} lamp cores shown, ${s1.lit} of ${s1.glass} glass meshes lit; ${dOn.changed} px changed (${(100 * dOn.changed / dOn.total).toFixed(1)} %), ${dOn.warm} warm`);
     if (phone) ok(`glow switch (${human}): the switch and its line fit the 390 px screen, no sideways scroll`, l1.sw <= 390 && l1.tog.l >= 0 && l1.tog.r <= 390 && l1.note.l >= 0 && l1.note.r <= 390 && l1.note.b > l1.note.t,
       `scrollWidth ${l1.sw}, switch ${l1.tog.l.toFixed(0)}-${l1.tog.r.toFixed(0)}, line ${l1.note.l.toFixed(0)}-${l1.note.r.toFixed(0)}`);
     // off again: the glow is gone and the picture is the plain one
@@ -739,8 +740,8 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
     const s2 = await glowState(pg);
     const off2 = await canvasPng(pg);
     const dBack = await pngDiff(pg, off1, off2);
-    ok(`glow switch (${human}): off again, the numerals are hidden and the glass is plain as before`, !s2.checked && !s2.glow && s2.shown === 0 && s2.lit === 0 && dBack.changed < dBack.total * 0.002,
-      `${s2.shown} numerals shown, ${s2.lit} lit; ${dBack.changed} px differ from the first off picture`);
+    ok(`glow switch (${human}): off again, the numerals and the lamp cores are hidden and the glass is plain as before`, !s2.checked && !s2.glow && s2.shown === 0 && s2.coresShown === 0 && s2.lit === 0 && dBack.changed < dBack.total * 0.002,
+      `${s2.shown} numerals and ${s2.coresShown} lamp cores shown, ${s2.lit} lit; ${dBack.changed} px differ from the first off picture`);
     // the assembly shows the same glow; the boards without tubes do not offer the switch
     if (!phone) {
       await pg.click('#scenes [data-scene="asm"]'); await settle(pg);
@@ -753,8 +754,8 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
       const rowFas = (await glowState(pg)).row;
       await pg.click('#scenes [data-scene="DISP"]'); await settle(pg);
       const d1 = await glowState(pg);
-      ok(`glow switch (${human}): offered with the tubes (assembly, display) and not on the driver or the fascia; one setting for all`, a0.row && a0.shown === 0 && a1.shown === 8 && a1.checked && !rowDrv && !rowFas && d1.row && d1.checked && d1.shown === 8,
-        `assembly ${a0.shown} -> ${a1.shown} numerals; driver row ${rowDrv}, fascia row ${rowFas}; display ${d1.shown} numerals, checked ${d1.checked}`);
+      ok(`glow switch (${human}): offered with the tubes (assembly, display) and not on the driver or the fascia; one setting for all`, a0.row && a0.shown === 0 && a0.coresShown === 0 && a1.shown === 8 && a1.coresShown === 2 && a1.checked && !rowDrv && !rowFas && d1.row && d1.checked && d1.shown === 8,
+        `assembly ${a0.shown} -> ${a1.shown} numerals, ${a1.coresShown} lamp cores; driver row ${rowDrv}, fascia row ${rowFas}; display ${d1.shown} numerals, checked ${d1.checked}`);
       await pg.click('#scenes [data-scene="asm"]'); await pg.click('#deck [data-view="front"]'); await settle(pg);
       await shot(pg, `${tag}-glow-on-assembly`);
     }

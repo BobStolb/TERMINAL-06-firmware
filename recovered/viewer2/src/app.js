@@ -211,11 +211,13 @@ function populatedItems(key, g, root, refs) {
 
 // The glow: an illustration, off by default. The tubes of a populated board are plain glass (the STEP files'). With the switch on, the
 // tubes' glass takes the page's warm glass and each numeral that the stand-in tubes had (before the boards were drawn populated) glows
-// inside it: a numeral drawn on a plane, additive. It is a picture of a lit tube and not a measurement of one.
+// inside it: a numeral drawn on a plane, additive. The two ИНС-1 colon lamps get the warm core the stand-in lamps had. It is a picture
+// of a lit tube and not a measurement of one.
 const GLOW_DIGITS = { V1: '1', V2: '2', V3: '3', V4: '4', V5: '5', V6: '6', V9: 'A', V10: 'M' };
 function addGlow(refs) {
   for (const t of MODEL.tubes) {
-    if (t.kind !== 'IN12' && t.kind !== 'IN15' && t.kind !== 'IN17') continue;
+    const lamp = t.kind === 'INS1';
+    if (!lamp && t.kind !== 'IN12' && t.kind !== 'IN15' && t.kind !== 'IN17') continue;
     const o = refs.get(t.ref);
     if (!o) continue;
     // the glass of the tube's node: the meshes that are large in two directions (stubs, leads, pip and socket contacts are not)
@@ -227,27 +229,40 @@ function addGlow(refs) {
     });
     if (!glass.length) continue;
     for (const m of glass) m.userData.glassPlain = m.material;
-    const in17 = t.kind === 'IN17';
-    const pl = new THREE.Mesh(new THREE.PlaneGeometry(in17 ? 6.5 : 12, in17 ? 9.5 : 18), glyphMat(GLOW_DIGITS[t.ref] || '8'));
-    // the plane lies across the tube's axis, a little behind the glass front, upright for the viewer: placed in the board's frame
-    // (x, height, z), then expressed in the tube node's own frame so that hiding the tube hides its numeral
-    const at = V3((box.min.x + box.max.x) / 2, box.max.y - (in17 ? 3 : 9.75), (box.min.z + box.max.z) / 2);
+    const cx = (box.min.x + box.max.x) / 2, cz = (box.min.z + box.max.z) / 2;
+    let deco, at;
+    const turn = new THREE.Quaternion();
+    if (lamp) {
+      // the warm core, standing along the lamp's axis, clear of its ends
+      const y0 = box.max.y - 21, y1 = box.max.y - 4;
+      deco = ycyl(0.9, 0, y1 - y0, new THREE.MeshBasicMaterial({ color: 0xff7a1a, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false }), 0, 0, 8);
+      deco.userData.glowCore = true;
+      at = V3(cx, (y0 + y1) / 2, cz);
+    } else {
+      const in17 = t.kind === 'IN17';
+      deco = new THREE.Mesh(new THREE.PlaneGeometry(in17 ? 6.5 : 12, in17 ? 9.5 : 18), glyphMat(GLOW_DIGITS[t.ref] || '8'));
+      deco.userData.glowPlane = true;
+      // the plane lies across the tube's axis, a little behind the glass front, upright for the viewer
+      at = V3(cx, box.max.y - (in17 ? 3 : 9.75), cz);
+      turn.setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+    }
+    // placed in the board's frame (x, height, z), then expressed in the tube node's own frame so that hiding the tube hides it
     o.updateWorldMatrix(true, false);
     const p = V3(), q = new THREE.Quaternion(), sc = V3();
     o.matrixWorld.decompose(p, q, sc);
-    pl.position.copy(at).applyMatrix4(o.matrixWorld.clone().invert());
-    pl.quaternion.copy(q).invert().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0)));
-    pl.scale.set(1 / sc.x, 1 / sc.y, 1 / sc.z);
-    pl.userData.noFit = true; pl.userData.glowPlane = true;
-    pl.visible = V.glow;
-    o.add(pl);
+    deco.position.copy(at).applyMatrix4(o.matrixWorld.clone().invert());
+    deco.quaternion.copy(q).invert().multiply(turn);
+    deco.scale.set(1 / sc.x, 1 / sc.y, 1 / sc.z);
+    deco.userData.noFit = true;
+    deco.visible = V.glow;
+    o.add(deco);
     if (V.glow) for (const m of glass) m.material = MAT.glass;
   }
 }
 function applyGlowLook() {
   invalidate();
   V.scene.traverse(o => {
-    if (o.userData.glowPlane) o.visible = V.glow;
+    if (o.userData.glowPlane || o.userData.glowCore) o.visible = V.glow;
     else if (o.userData.glassPlain && o.material !== MAT.hl) o.material = V.glow ? MAT.glass : o.userData.glassPlain;
   });
 }
@@ -1186,7 +1201,7 @@ function renderFacts() {
       ['KiCad DRC', pillDRC(b.drc, [2, 0, 0]) + '<br><span style="color:var(--muted);font-size:12.5px">0 unconnected; 2 errors, accepted (colon lamp courtyards overlap M10 by 0.135 mm; a test fit settles it)</span>'],
       ['185 V gaps', '<span class="pill ok">clean</span> at 0.6 mm'],
       isPop('TS06-DISP') ? popBodies('TS06-DISP') : ['3D bodies', `${n(b.bodies)} of ${n(b.parts)} (the strips). Tubes, lamps, LEDs and socket contacts are proxies from the case model’s envelopes`]];
-    note = (isPop('TS06-DISP') ? 'Drawn populated: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, two ИНС-1, nine LEDs. The glass is the repo’s STEP files; the ИН-17 glass is the 19.72 mm the owner measured on a bench tube (the STEP scaled to it), with a pip of about 2.28 mm under it (a reading, not measured), seated level with the ИН-12 faces. ' : '') + 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
+    note = (isPop('TS06-DISP') ? 'Drawn populated: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, two ИНС-1, nine LEDs. The glass is the repo’s STEP files; the ИН-17 glass is the 19.72 mm the owner measured on a bench tube (the STEP scaled to it), with a pip of about 4 mm under it (the owner’s estimate, not measured), seated level with the ИН-12 faces. ' : '') + 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
   } else if (s === 'FASCIA') {
     const b = B('FASCIA'), v = V.fv, d = fvData(v), row = VARIANT_ROWS[v] || {};
     const bad = (d.fascia_checks || []).filter(r => r.status !== 'OK' && r.status !== 'NOTE');
