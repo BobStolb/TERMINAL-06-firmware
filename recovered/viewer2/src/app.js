@@ -191,11 +191,15 @@ function populatedItems(key, g, root, refs) {
     const o = refs.get(ref);
     if (!o) return;
     root.addItem(item, o);
+    // KiCad writes a part's extra models (a tube's socket contacts or wire leads and pip, a chip's socket) as further top-level nodes
+    // of the same name: they show and hide with the part
+    if (o.parent) for (const c of o.parent.children) if (c !== o && c.name === o.name) root.addItem(item, c);
     if (alias) root.addRef(alias, o, g);
   };
   if (key === 'DISP') {
     for (const t of MODEL.tubes) reg(({ IN12: 'in12', IN15: 'in15', IN17: 'in17', INS1: 'ins1' })[t.kind] || 'in12', t.ref);
     for (const l of MODEL.leds) reg('leds', l.ref);
+    addGlow(refs);
   } else if (key === 'DRV') {
     for (const ref of CHIPS) reg('chip:' + ref, ref, 'DRV:' + ref + '#chip');
     reg('nano', 'U1', 'DRV:U1#sockets');
@@ -203,6 +207,54 @@ function populatedItems(key, g, root, refs) {
   } else {
     for (const ref of ['SW1', 'SW2', 'SW3', 'SW4', 'SW5', 'J1']) reg('fascia', ref);
   }
+}
+
+// The glow: an illustration, off by default. The tubes of a populated board are plain glass (the STEP files'). With the switch on, the
+// tubes' glass takes the page's warm glass and each numeral that the stand-in tubes had (before the boards were drawn populated) glows
+// inside it: a numeral drawn on a plane, additive. It is a picture of a lit tube and not a measurement of one.
+const GLOW_DIGITS = { V1: '1', V2: '2', V3: '3', V4: '4', V5: '5', V6: '6', V9: 'A', V10: 'M' };
+function addGlow(refs) {
+  for (const t of MODEL.tubes) {
+    if (t.kind !== 'IN12' && t.kind !== 'IN15' && t.kind !== 'IN17') continue;
+    const o = refs.get(t.ref);
+    if (!o) continue;
+    // the glass of the tube's node: the meshes that are large in two directions (stubs, leads, pip and socket contacts are not)
+    const box = new THREE.Box3(), glass = [];
+    o.traverse(m => {
+      if (!m.isMesh) return;
+      const b = new THREE.Box3().setFromObject(m), sz = b.getSize(V3()).toArray().sort((a, c) => c - a);
+      if (sz[1] > 6) { glass.push(m); box.union(b); }
+    });
+    if (!glass.length) continue;
+    for (const m of glass) m.userData.glassPlain = m.material;
+    const in17 = t.kind === 'IN17';
+    const pl = new THREE.Mesh(new THREE.PlaneGeometry(in17 ? 6.5 : 12, in17 ? 9.5 : 18), glyphMat(GLOW_DIGITS[t.ref] || '8'));
+    // the plane lies across the tube's axis, a little behind the glass front, upright for the viewer: placed in the board's frame
+    // (x, height, z), then expressed in the tube node's own frame so that hiding the tube hides its numeral
+    const at = V3((box.min.x + box.max.x) / 2, box.max.y - (in17 ? 3 : 9.75), (box.min.z + box.max.z) / 2);
+    o.updateWorldMatrix(true, false);
+    const p = V3(), q = new THREE.Quaternion(), sc = V3();
+    o.matrixWorld.decompose(p, q, sc);
+    pl.position.copy(at).applyMatrix4(o.matrixWorld.clone().invert());
+    pl.quaternion.copy(q).invert().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0)));
+    pl.scale.set(1 / sc.x, 1 / sc.y, 1 / sc.z);
+    pl.userData.noFit = true; pl.userData.glowPlane = true;
+    pl.visible = V.glow;
+    o.add(pl);
+    if (V.glow) for (const m of glass) m.material = MAT.glass;
+  }
+}
+function applyGlowLook() {
+  invalidate();
+  V.scene.traverse(o => {
+    if (o.userData.glowPlane) o.visible = V.glow;
+    else if (o.userData.glassPlain && o.material !== MAT.hl) o.material = V.glow ? MAT.glass : o.userData.glassPlain;
+  });
+}
+function setGlow(on) {
+  V.glow = !!on;
+  $('#glowon').checked = V.glow;
+  applyGlowLook();
 }
 
 function buildDispProxies(g, sub, root, P, ht) {
@@ -447,7 +499,7 @@ function exploder(root, dir) {
 const V = {
   scene: new THREE.Scene(),
   roots: {}, gltf: {}, current: 'asm', ready: false, explode: 0,
-  caseOn: true, caseGhost: true, showLabels: true, hlList: [], step: -1, dirty: 2, animScale: 1,
+  caseOn: true, caseGhost: true, showLabels: true, glow: false, hlList: [], step: -1, dirty: 2, animScale: 1,
 };
 const invalidate = (n = 2) => { V.dirty = Math.max(V.dirty, n); };   // render on demand: only when something changed
 function initViewer() {
@@ -773,7 +825,7 @@ function highlight(list) {          // list: [{ key: 'DRV:U11', note: 'out' | un
       if (m.isMesh && !m.userData.noFit && !m.userData.hlDeco && m.material !== MAT.hl) {
         const orig = m.material;
         m.material = MAT.hl;
-        root.hl.push({ restore: () => { m.material = orig; } });
+        root.hl.push({ restore: () => { m.material = m.userData.glassPlain ? (V.glow ? MAT.glass : m.userData.glassPlain) : orig; } });
       }
     });
     let b = new THREE.Box3();
@@ -856,6 +908,7 @@ function setScene(s, opts = {}) {
   for (const [k, r] of Object.entries(V.roots)) r.group.visible = k === s;
   invalidate();
   $('#asmdeck').hidden = s !== 'asm';
+  $('#glowdeck').hidden = !((s === 'asm' || s === 'DISP') && isPop('TS06-DISP'));
   $('#imgbtn').textContent = s === 'asm' ? 'Case pictures' : 'KiCad renders';
   setDims();
   $('#fvseg').hidden = !(s === 'asm' || s === 'FASCIA');
@@ -1785,6 +1838,7 @@ function wire() {
   $('#explode').addEventListener('input', e => setExplode(e.target.value / 100));
   $('#caseon').addEventListener('change', e => { V.caseOn = e.target.checked; applyVisibility(); });
   $('#caseghost').addEventListener('change', e => { V.caseGhost = e.target.checked; setCaseLook(); });
+  $('#glowon').addEventListener('change', e => { if (UI.mode !== '3d') setMode('3d'); setGlow(e.target.checked); });
   $('#labelson').addEventListener('change', e => { V.showLabels = e.target.checked; V.labelR.domElement.style.display = V.showLabels ? '' : 'none'; invalidate(); });
   $('#sidetabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setSide(b.dataset.side); });
   $('#steplist').addEventListener('click', e => {

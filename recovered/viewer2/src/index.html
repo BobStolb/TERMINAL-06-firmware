@@ -170,6 +170,9 @@ button { font-family: inherit; }
 .cam.z { font: 600 15px/1 var(--f-mono); padding: 4px 10px; }
 .asm { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
 .asm[hidden] { display: none; }
+.glowdeck { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
+.glowdeck[hidden] { display: none; }
+.glownote { font-size: 12.5px; color: var(--muted); flex: 1 1 240px; min-width: 0; }
 .slider { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
 .slider input[type=range] { width: 160px; accent-color: var(--accent); }
 .slider output { font: 12px var(--f-mono); color: var(--text); min-width: 3.5ch; }
@@ -464,6 +467,10 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
         <label class="toggle" for="caseon"><input type="checkbox" id="caseon" checked><span class="sw" aria-hidden="true"></span><span>Case</span></label>
         <label class="toggle" for="caseghost"><input type="checkbox" id="caseghost" checked><span class="sw" aria-hidden="true"></span><span>See-through</span></label>
         <label class="toggle" for="labelson"><input type="checkbox" id="labelson" checked><span class="sw" aria-hidden="true"></span><span>Labels</span></label>
+      </div>
+      <div class="glowdeck" id="glowdeck" hidden>
+        <label class="toggle" for="glowon"><input type="checkbox" id="glowon" aria-describedby="glownote"><span class="sw" aria-hidden="true"></span><span>Numerals glow</span></label>
+        <span class="glownote" id="glownote">The glow is an illustration: the tubes drawn lit, not a lit tube that was measured. Off, the glass is plain.</span>
       </div>
       <div class="hint"><span id="hint">Drag to turn · right-drag or two fingers to pan · scroll or pinch to zoom</span><span class="num" id="dims"></span></div>
     </div>

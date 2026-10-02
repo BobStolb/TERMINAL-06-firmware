@@ -50,6 +50,18 @@ fascia is **R as it is ordered**: the Plates white print and the Divider gold (`
   case model's control bodies), and the facts panel says so. `POPULATED=0` draws all boards that way.
 * The tracks are not in the DRV and DISP GLBs (they lie under the black mask; the files would pass 15 MB); pads, silk and mask are. The fascia R's GLB does carry its copper, because its gold is copper graphics that KiCad exports only then. The page gives the finish gold a diffuse lean, so it reads as gold and not as pale cream under its soft light.
 
+## The glow switch
+
+Under the camera deck of the Assembly and Display scenes (not the driver or the fascia, which have no tubes): **Numerals glow**, a switch,
+**off at load**. Off, the tubes are the plain glass of the STEP files, as the populated boards are drawn. On, each tube's glass takes the page's
+warm glass (`MAT.glass`, the look the stand-in tubes had) and the numeral inside it glows: the digits the stand-in tubes carried (1 to 4 on the
+ИН-12, 5 and 6 on the ИН-17, A and M on the ИН-15), a plane across the tube's axis with the page's own glyph texture (`glyphTexture`:
+additive orange with a soft halo). One line beside the switch says the glow is an illustration (a picture of a lit tube, not a measured one).
+That glow is the one the page had before the boards were drawn populated (`buildDispProxies`, kept for the boards that are not
+populated); the populated tubes' glass is opaque, so the switch turns it warm and clear as well, or the numerals could not be seen.
+The setting is not kept between visits. `addGlow` and `setGlow` in `src/app.js`; the tests (`glow switch`) check it on the desktop and the
+phone, light and dark.
+
 ## The Order view
 
 A tab under the viewer ("Order"; the address `#order`). It holds, from `data/order.json`:
@@ -69,11 +81,11 @@ build time. Rebuild after `fab/` or the fit table changes.
 
 ## The tests
 
-`test/run.mjs` drives the built page in Chromium (software GL: about 6 minutes in all, 138 checks; `ONLY_NEW=1` runs just the 26 checks of the
-populated boards and the Order view, about 3 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
+`test/run.mjs` drives the built page in Chromium (software GL: about 8 minutes in all, 158 checks; `ONLY_NEW=1` runs just the 46 checks of the
+populated boards, the glow switch and the Order view, about 5 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
 and fails on any console error or request that leaves the machine. The checks cover the camera deck, the stepper, the sections, the front
 panel view, light, dark and phone widths, and, for the populated boards: the files and their limits, the GLBs loaded with their
-parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D view, and every row of the Order view.
+parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D view, the glow switch (there, off at load, on shows the numerals, off hides them, on the desktop and the phone, light and dark) and every row of the Order view.
 `SITE=`, `THREE=` and `SHOTS=` point the test at a build and a screenshot folder elsewhere.
 
 ## Files

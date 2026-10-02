@@ -676,6 +676,92 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   }, png.toString('base64'));
   ok('the 3D view of the fascia R shows the gold', gp.gold > 2000, `${gp.gold} gold-coloured pixels of ${gp.n} in the canvas`);
 
+  // ---- the glow switch. The numerals glowed in the stand-in tubes before the boards were drawn populated; they come back behind a
+  // switch in the 3D view: off at load (the plain glass), on shows the glow, off hides it again. It is an illustration, and says so
+  // in one line beside the switch. Checked on the desktop and on the phone, light and dark: the scene graph (the numeral planes, the
+  // tubes' glass), the canvas (what changes on screen) and the layout.
+  const glowState = pg => pg.evaluate(() => {
+    const V = window.TS06, deep = o => { for (let n = o; n; n = n.parent) if (!n.visible) return false; return true; };
+    const root = V.roots[V.current].group;
+    let planes = 0, shown = 0, glass = 0, lit = 0;
+    root.traverse(o => {
+      if (o.userData.glowPlane) { planes++; if (deep(o)) shown++; }
+      if (o.userData.glassPlain) { glass++; if (o.material !== o.userData.glassPlain) lit++; }
+    });
+    const row = document.querySelector('#glowdeck'), sw = document.querySelector('#glowon');
+    return { planes, shown, glass, lit, checked: sw.checked, row: !row.hidden, glow: V.glow };
+  });
+  const canvasPng = async pg => (await pg.locator('#gl canvas').screenshot()).toString('base64');
+  const pngDiff = (pg, a, b) => pg.evaluate(async ([a, b]) => {
+    const px = async s => {
+      const bm = await createImageBitmap(new Blob([Uint8Array.from(atob(s), c => c.charCodeAt(0))], { type: 'image/png' }));
+      const c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height;
+      const x = c.getContext('2d'); x.drawImage(bm, 0, 0);
+      return x.getImageData(0, 0, c.width, c.height).data;
+    };
+    const A = await px(a), B = await px(b);
+    let changed = 0, warm = 0;
+    for (let i = 0; i < A.length; i += 4) {
+      const d = Math.abs(A[i] - B[i]) + Math.abs(A[i + 1] - B[i + 1]) + Math.abs(A[i + 2] - B[i + 2]);
+      if (d > 45) { changed++; if (B[i] > B[i + 2] + 25 && B[i] >= B[i + 1]) warm++; }
+    }
+    return { changed, warm, total: A.length / 4 };
+  }, [a, b]);
+  for (const [label, w, h, phone] of [['d1280', 1280, 900, false], ['p390', 390, 844, true]]) for (const scheme of ['light', 'dark']) {
+    const tag = `${label}-${scheme}`, human = `${phone ? 'phone 390' : 'desktop 1280'} ${scheme}`;
+    const { ctx: cg, page: pg, errs: eg } = await newPage({ w, h, scheme, touch: phone, mobile: phone });
+    await load(pg, '', true);
+    // at load: the switch is there, off, with its line of text, and nothing glows
+    const s0 = await glowState(pg);
+    const note = await pg.evaluate(() => { const n = document.querySelector('#glownote'), sw = document.querySelector('#glowon'); return { text: n.textContent.trim(), described: sw.getAttribute('aria-describedby'), type: sw.type, label: document.querySelector('label[for="glowon"]').textContent.trim() }; });
+    ok(`glow switch (${human}): there, off at load, one line says the glow is an illustration`, s0.row && !s0.checked && !s0.glow && s0.shown === 0 && s0.lit === 0 && note.type === 'checkbox' && note.described === 'glownote' && /illustration/i.test(note.text) && note.text.length < 140 && /glow/i.test(note.label),
+      `row ${s0.row}, checked ${s0.checked}, ${s0.shown} numerals shown, ${s0.lit} glass meshes lit; "${note.text}"`);
+    await pg.click('#scenes [data-scene="DISP"]'); await settle(pg);
+    await pg.click(`#deck [data-view="${phone ? 'front' : 'isoL'}"]`); await settle(pg);
+    await shot(pg, `${tag}-glow-off-display`);
+    const off1 = await canvasPng(pg);
+    const lay = async () => pg.evaluate(() => {
+      const r = e => { const b = document.querySelector(e).getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom }; };
+      return { sw: document.documentElement.scrollWidth, tog: r('label[for="glowon"]'), note: r('#glownote'), vw: innerWidth };
+    });
+    // on
+    await pg.click('label[for="glowon"]'); await settle(pg);
+    const s1 = await glowState(pg), l1 = await lay();
+    await shot(pg, `${tag}-glow-on-display`);
+    const on = await canvasPng(pg);
+    const dOn = await pngDiff(pg, off1, on);
+    ok(`glow switch (${human}): on, the eight numerals show in the display and its tubes' glass is warm; the picture changes`, s1.checked && s1.glow && s1.planes === 8 && s1.shown === 8 && s1.glass >= 8 && s1.lit === s1.glass && dOn.changed > dOn.total * 0.01 && dOn.warm > 300,
+      `${s1.shown} of ${s1.planes} numerals shown, ${s1.lit} of ${s1.glass} glass meshes lit; ${dOn.changed} px changed (${(100 * dOn.changed / dOn.total).toFixed(1)} %), ${dOn.warm} warm`);
+    if (phone) ok(`glow switch (${human}): the switch and its line fit the 390 px screen, no sideways scroll`, l1.sw <= 390 && l1.tog.l >= 0 && l1.tog.r <= 390 && l1.note.l >= 0 && l1.note.r <= 390 && l1.note.b > l1.note.t,
+      `scrollWidth ${l1.sw}, switch ${l1.tog.l.toFixed(0)}-${l1.tog.r.toFixed(0)}, line ${l1.note.l.toFixed(0)}-${l1.note.r.toFixed(0)}`);
+    // off again: the glow is gone and the picture is the plain one
+    await pg.click('label[for="glowon"]'); await settle(pg);
+    const s2 = await glowState(pg);
+    const off2 = await canvasPng(pg);
+    const dBack = await pngDiff(pg, off1, off2);
+    ok(`glow switch (${human}): off again, the numerals are hidden and the glass is plain as before`, !s2.checked && !s2.glow && s2.shown === 0 && s2.lit === 0 && dBack.changed < dBack.total * 0.002,
+      `${s2.shown} numerals shown, ${s2.lit} lit; ${dBack.changed} px differ from the first off picture`);
+    // the assembly shows the same glow; the boards without tubes do not offer the switch
+    if (!phone) {
+      await pg.click('#scenes [data-scene="asm"]'); await settle(pg);
+      const a0 = await glowState(pg);
+      await pg.click('label[for="glowon"]'); await settle(pg);
+      const a1 = await glowState(pg);
+      await pg.click('#scenes [data-scene="DRV"]'); await settle(pg);
+      const rowDrv = (await glowState(pg)).row;
+      await pg.click('#scenes [data-scene="FASCIA"]'); await settle(pg);
+      const rowFas = (await glowState(pg)).row;
+      await pg.click('#scenes [data-scene="DISP"]'); await settle(pg);
+      const d1 = await glowState(pg);
+      ok(`glow switch (${human}): offered with the tubes (assembly, display) and not on the driver or the fascia; one setting for all`, a0.row && a0.shown === 0 && a1.shown === 8 && a1.checked && !rowDrv && !rowFas && d1.row && d1.checked && d1.shown === 8,
+        `assembly ${a0.shown} -> ${a1.shown} numerals; driver row ${rowDrv}, fascia row ${rowFas}; display ${d1.shown} numerals, checked ${d1.checked}`);
+      await pg.click('#scenes [data-scene="asm"]'); await pg.click('#deck [data-view="front"]'); await settle(pg);
+      await shot(pg, `${tag}-glow-on-assembly`);
+    }
+    ok(`glow switch (${human}): no console errors, nothing leaves the machine`, eg.length === 0, eg.slice(0, 3).join(' | '));
+    await cg.close();
+  }
+
   // ---- the Order view
   await page.goto(`http://127.0.0.1:${PORT}/index.html#order`);
   await page.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 240000 });
