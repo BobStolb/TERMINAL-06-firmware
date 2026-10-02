@@ -148,6 +148,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 07:22 | migration 1: the Front panel view from TS06-FASCIA Reference and Panel Drawing, plus the Circuit ladders, in scratchpad/viewer2 (not published). quota.json 07:08, 5-hour 41 % (Nixie 10 %) | 1 (5 running) |
 | 30.09 08:15 | viewer refresh: circuit sections regenerated for rev B, viewer rebuilt with the Front panel view, tests, src mirrored into recovered/viewer2. quota.json 07:29 (46 min), Nixie 15 % of the old window; the window reset 08:10 | 1 (1 running) |
 | 30.09 09:10 | disp-circuit-art (main checkout: direction 3 as the committed TS06-DISP, fab zip, docs, viewer rebuild) and fascia-gold (worktree: gold-trace variations), both on sonnet. quota.json 08:47 (21 min), 5-hour 4 % (Nixie 1.9 %) | 2 (2 running) |
+| 02.10 01:15 | order-ready (worktree, sonnet; brief scratchpad/order-ready/BRIEF.md): fascia fab zip on R + Divider, DFM check, fab/ORDER.md, item nixie-order-ready. quota.json 00:54 (6 min), 5-hour 5 %, weekly 46 % | 1 (1 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
