@@ -30,6 +30,10 @@
   (my own run). Left open, not on the order: A/-wide/MAIN boards keep the old thin-silk footprint copies;
   Guilloche on A has 0.05 mm webs at its medallions; the R mask web reads 0.100 mm exactly (raster +-0.03).
   The agent split 4 Bash calls that the worktree guard called too complex, as the guard's message said.
+* **The Run Budget Act** (laws/2026-10-02-the-run-budget-act.md): co-signed for nixie 02:25 (ce61f77), waits for the
+  owner's ratification in both chats. Applied now: each launch gets an estimate and a cap (subagent tokens and
+  minutes) in the launch log; at each 20-min heartbeat project from elapsed time; over the cap -> spread (stop at
+  the last checkpoint, relaunch), trim, or ask. Never pass a cap without the owner's word. After: actual vs estimate.
 * **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
 
 ### Before the pause (30.09 10:10 UTC; mode LOUD since 10:05)
@@ -170,7 +174,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 08:15 | viewer refresh: circuit sections regenerated for rev B, viewer rebuilt with the Front panel view, tests, src mirrored into recovered/viewer2. quota.json 07:29 (46 min), Nixie 15 % of the old window; the window reset 08:10 | 1 (1 running) |
 | 30.09 09:10 | disp-circuit-art (main checkout: direction 3 as the committed TS06-DISP, fab zip, docs, viewer rebuild) and fascia-gold (worktree: gold-trace variations), both on sonnet. quota.json 08:47 (21 min), 5-hour 4 % (Nixie 1.9 %) | 2 (2 running) |
 | 02.10 01:00 | order-ready (worktree, sonnet; brief scratchpad/order-ready/BRIEF.md): fascia fab zip on R + Divider, DFM check, fab/ORDER.md, item nixie-order-ready. quota.json 00:54 (6 min), 5-hour 5 %, weekly 46 % | 1 (1 running) |
-| 02.10 01:28 | populated-renders (worktree, sonnet; brief scratchpad/populated-renders/BRIEF.md), IN PARALLEL with order-ready on the owner's word: "run renders in parallel, dont wait, coordinate usage wwith xstream" and "save all your work for the product page website artifact later" (renders, GLBs, scripts committed under 3d/populated/; nothing published). quota.json 00:54 (33 min), 5-hour 5 %, weekly 46 % | 2 (2 running) |
+| 02.10 01:28 | populated-renders (worktree, sonnet; Run Budget Act, set 02:25: estimate 0.6-0.8 M subagent tokens in 60-100 min, cap 1.2 M or 120 min = 03:28; brief scratchpad/populated-renders/BRIEF.md), IN PARALLEL with order-ready on the owner's word: "run renders in parallel, dont wait, coordinate usage wwith xstream" and "save all your work for the product page website artifact later" (renders, GLBs, scripts committed under 3d/populated/; nothing published). quota.json 00:54 (33 min), 5-hour 5 %, weekly 46 % | 2 (2 running) |
 | 02.10 01:36 | fascia-dfm (worktree, sonnet; brief scratchpad/fascia-dfm/BRIEF.md): clear the fascia DFM FAILs found by order-ready (silk 0.10-0.12 mm, 0.8 mm text, 0.05 mm mask slivers at the dial, finish None), rebuild the fascia zip. order-ready DONE 01:34, merged 2da26fe/ef27460, verify 27 PASS. quota.json 01:29 (7 min), 5-hour 9 %, weekly 47 %; xstream: no hold, one-at-a-time was never a law | 2 (2 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
