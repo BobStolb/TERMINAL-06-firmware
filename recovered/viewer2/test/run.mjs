@@ -21,6 +21,14 @@ fs.mkdirSync(SHOTS, { recursive: true });
 const PORT = 8766;
 const server = spawn('python3', [path.join(HERE, 'serve.py'), String(PORT)], { cwd: SITE, stdio: 'ignore' });
 await new Promise(r => setTimeout(r, 800));
+process.on('exit', () => { try { server.kill(); } catch (e) { /* already gone */ } });
+{   // a server left over from an earlier run on this port would answer with another build: check it serves SITE
+  const served = await fetch(`http://127.0.0.1:${PORT}/index.html`).then(r => r.text()).catch(() => null);
+  if (served !== fs.readFileSync(path.join(SITE, 'index.html'), 'utf8')) {
+    console.error(`port ${PORT} does not serve ${SITE}: a server from an earlier run is probably still up (pkill -f "serve.py ${PORT}")`);
+    server.kill(); process.exit(2);
+  }
+}
 
 const results = [];
 const ok = (name, pass, detail = '') => { results.push({ name, pass, detail }); console.log((pass ? 'PASS ' : 'FAIL ') + name + (detail ? '  ' + detail : '')); };
