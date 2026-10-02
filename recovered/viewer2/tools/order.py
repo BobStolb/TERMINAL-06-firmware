@@ -19,6 +19,7 @@ Placing the order is the owner's own hand: nothing here, and nothing on the page
 import json, os, re, sys
 
 REPO_URL = "https://github.com/BobStolb/TERMINAL-06-firmware/blob/%s/"
+HOLES_ZIP = "fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip"   # the extra fascia zip (fab/HOLES-VARIANT.md): not in ORDER.md
 
 
 def clean(s):
@@ -125,11 +126,21 @@ def main(repo, out, branch="pcb/kicad-boards"):
     frows.sort(key=lambda r: (r["status"] != "FAIL", r["margin"]))
 
     # ---- open items, then what the prototype closes
+    if not os.path.isfile(os.path.join(repo, HOLES_ZIP)):
+        sys.exit("order.py: %s is named by the Order view's holes item but is not in the repository" % HOLES_ZIP)
+    hv = fit.get("holes_variant")
+    if not hv or {r["margin"] for r in hv["rows"]} != {0.29} or {r["margin"] for r in fit["rows"] if r["what"] == "hole"} != {0.09}:
+        sys.exit("order.py: fit-table.json no longer shows the bushing margin as 0.09 mm (ordered) and 0.29 mm (holes04 variant)")
     open_items = [
         {"id": "g11", "title": "Which fascia", "blocking": True,
          "body": "R is recommended (3 to 0 in the referendum) and is what the zip holds. If you choose another fascia, its zip has to be rebuilt first."},
         {"id": "gold", "title": "Which gold", "blocking": True,
          "body": "The Divider is the leader's pick and is what the zip holds. Ladder, fans and guilloche are laid out for the narrower fascia A: on R only the Divider is ready."},
+        {"id": "holes", "title": "Fascia holes: as drawn, or opened by 0.4 mm (the extra zip)", "blocking": True,
+         "body": "As drawn, the five control holes leave 0.09 mm a side round the bushings (the dial 8.62 in 8.8, the levers and buttons 7.82 in 8.0): "
+                 "A fab's drill tolerance can take 0.09 mm whole. The extra zip, " + HOLES_ZIP + ", opens every one by 0.4 mm (9.2 and 8.4): "
+                 "0.09 mm against 0.29 mm a side. To pick the extra zip, send it to the fab in place of the fascia zip above; nothing else changes "
+                 "(fab/HOLES-VARIANT.md). The sheet above, and the zip in it, are the fascia as drawn."},
         {"id": "quote", "title": "Check the fab quote against the sheet", "blocking": True,
          "body": "Quantity 10 of each; the fascia 2.0 mm, not 1.6 mm; ENIG on all three (with HASL the gold would be silver-grey); mask black, matte if it costs little; silk white; "
                  "on the fascia ask for no fab order number on the face. No prices were looked up."},

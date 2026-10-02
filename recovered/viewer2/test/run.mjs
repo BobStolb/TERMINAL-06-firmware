@@ -713,7 +713,19 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
     `${tightN} TIGHT, ${failN} FAIL; ` + o.pills.join(', '));
   const failRow = o.fit.find(r => r.st === 'FAIL');
   ok('Order: the FAIL row (ИН-17 length) says what to do about it', !!failRow && /ИН-17/.test(failRow.plain) && /real tube/.test(failRow.plain) && failRow.margin.startsWith('-1.29'), failRow ? failRow.plain.slice(0, 120) : 'no FAIL row');
-  ok('Order: the open items before ordering, and what the prototype closes', o.open.length === order.open.length && o.open.length === 5 && /Which fascia/.test(o.open[0]) && /Which gold/.test(o.open[1]) && o.proto === order.prototype.length && o.proto >= 5, `${o.open.length} items, ${o.proto} for the prototype`);
+  ok('Order: the open items before ordering, and what the prototype closes', o.open.length === order.open.length && o.open.length === 6 && /Which fascia/.test(o.open[0]) && /Which gold/.test(o.open[1]) && o.proto === order.prototype.length && o.proto >= 5, `${o.open.length} items, ${o.proto} for the prototype`);
+  // the extra fascia zip (fab/HOLES-VARIANT.md): one row in the open list, naming the zip and the margin, backed by the fit table and the file
+  const hv = await page.evaluate(() => [...document.querySelectorAll('#order-open li[data-open="holes"]')].map(l => ({ text: l.textContent.replace(/\s+/g, ' ').trim(), pill: l.querySelector('.pill').textContent.trim(), idx: [...l.parentNode.children].indexOf(l) })));
+  const fitJ = JSON.parse(fs.readFileSync(path.join(REPO, '3d', 'populated', 'fit-table.json'), 'utf8'));
+  const hzip = 'fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip';
+  ok('Order: the open list has the fascia-holes row, with the extra zip and 0.09 against 0.29 mm a side',
+    hv.length === 1 && hv[0].idx === 2 && hv[0].pill === 'before you order' && hv[0].text.includes('Fascia holes: as drawn, or opened by 0.4 mm (the extra zip).')
+    && hv[0].text.includes(hzip) && hv[0].text.includes('0.09 mm against 0.29 mm a side') && order.open[2].id === 'holes'
+    && fs.existsSync(path.join(REPO, hzip)) && fs.statSync(path.join(REPO, hzip)).size > 10000
+    && fitJ.rows.filter(r => r.what === 'hole').length === 3 && fitJ.rows.filter(r => r.what === 'hole').every(r => r.margin === 0.09)
+    && fitJ.holes_variant.rows.length === 3 && fitJ.holes_variant.rows.every(r => r.margin === 0.29)
+    && !order.boards.some(b => b.zip === hzip),
+    hv.length ? hv[0].text.slice(0, 150) : 'no row');
   const repoFab = f => fs.statSync(path.join(REPO, f)).size;
   ok('Order: the three fab zips are linked on GitHub under pcb/kicad-boards, by repo path, not embedded',
     o.zips.length === 3 && o.zips.every(z => z.href === 'https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/' + z.text && /^fab\/.*-fab\.zip$/.test(z.text) && fs.existsSync(path.join(REPO, z.text)))

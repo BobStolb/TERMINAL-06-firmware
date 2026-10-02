@@ -10,6 +10,8 @@ OUT=/some/dir bash recovered/viewer2/build.sh      # builds into /some/dir/site 
 node recovered/viewer2/test/run.mjs                # the Playwright checks (SITE=... if you built elsewhere)
 ```
 
+A fresh clone needs the npm registry once, for gltfpack (`npm install` writes `tools/node_modules` on the first run), unless `GLTFPACK=path` points to a local copy.
+
 **Nothing here publishes.** `build.sh` writes a folder and a list of its files (`publish-files.json`, beside `site/`:
 every path mapped to itself); putting the folder on a host is a separate step, and the owner's.
 
@@ -67,7 +69,7 @@ build time. Rebuild after `fab/` or the fit table changes.
 
 ## The tests
 
-`test/run.mjs` drives the built page in Chromium (software GL: about 6 minutes in all, 137 checks; `ONLY_NEW=1` runs just the 25 checks of the
+`test/run.mjs` drives the built page in Chromium (software GL: about 6 minutes in all, 138 checks; `ONLY_NEW=1` runs just the 26 checks of the
 populated boards and the Order view, about 3 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
 and fails on any console error or request that leaves the machine. The checks cover the camera deck, the stepper, the sections, the front
 panel view, light, dark and phone widths, and, for the populated boards: the files and their limits, the GLBs loaded with their
