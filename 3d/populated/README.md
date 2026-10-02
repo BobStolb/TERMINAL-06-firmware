@@ -160,5 +160,10 @@ the room.
 * `python3 tools/model_coverage.py` : every footprint resolves to a model file that exists or is on the short
   allowlist (bare holes, and the DNP footprints), else FAIL and exit 1. Today: TS06-DISP 30 footprints, 26 resolved,
   4 allowlisted, 0 missing; TS06-DRV 116, 96, 20, 0; fascia R 18, 14, 4, 0. `--bare` shows the boards as they were (97 of
-  164 resolved) and `--prove` shows it can fail.
+  164 resolved) and `--prove` shows it can fail. The 28 allowlisted footprints, one row each with its reason, are in
+  `allowlist.md`.
+* `python3 tools/model_pad_coverage.py [BOARD]` : the other half, that the model sits on the pads and not only that its file
+  exists: each footprint's drilled pads against the plan outline of its own part in the populated GLB. Only the allowlisted
+  footprints may have a pad outside their model, else FAIL and exit 1 (TS06-DRV 435 pads: only the 20 allowlisted; DISP 189: its 4;
+  fascia 9: its 4).
 * `bash tools/verify_pair.sh` : 27 PASS, 0 FAIL, 0 SKIP, with these files in the tree.
