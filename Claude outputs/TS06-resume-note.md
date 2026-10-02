@@ -9,7 +9,14 @@
   cloud session; the mailbox carries everything.
 * **Next run: order-ready** (brief: `scratchpad/order-ready/BRIEF.md`): the fascia fab zip on R with Plates +
   Divider gold (`mkfab.sh --gold`), `tools/dfm_check.sh` on all three boards, `fab/ORDER.md`, renders and item
-  nixie-order-ready. Waits for a fresh quota.json (the 23:40 reading was over 60 min old at 00:57).
+  nixie-order-ready. Launched 01:00 (quota.json 00:54).
+* **Queued run 2: populated-renders** (brief: `scratchpad/order-ready/../populated-renders/BRIEF.md`). The owner,
+  01:2x: "I gave fabricate the pcb as a goal I though we still needed something like renders with components
+  visible". Every footprint gets a 3D model (repo 3d/*.step first, KiCad library next, made last), a coverage
+  check (0 missing), populated renders per board plus the assembled stack, a fit table, and item
+  nixie-populated-renders. Launch after order-ready reports, on a fresh quota.json. Then one review in this
+  chat (renders, fab zips, ORDER.md; questions: fascia R + Divider, quantity, colours, go), then the owner orders.
+* **Times:** read them from `date -u`. My 00:59 and 01:00 mailbox entries carried guessed stamps (corrected 01:21).
 
 ### Before the pause (30.09 10:10 UTC; mode LOUD since 10:05)
 * **Owner answers 08:39 (relayed, standing):** DISP art **approve, direction 3 circuit** -> run
@@ -148,7 +155,7 @@ flags emails/phones/keys/home paths, so never write `/home/...` paths there.
 | 30.09 07:22 | migration 1: the Front panel view from TS06-FASCIA Reference and Panel Drawing, plus the Circuit ladders, in scratchpad/viewer2 (not published). quota.json 07:08, 5-hour 41 % (Nixie 10 %) | 1 (5 running) |
 | 30.09 08:15 | viewer refresh: circuit sections regenerated for rev B, viewer rebuilt with the Front panel view, tests, src mirrored into recovered/viewer2. quota.json 07:29 (46 min), Nixie 15 % of the old window; the window reset 08:10 | 1 (1 running) |
 | 30.09 09:10 | disp-circuit-art (main checkout: direction 3 as the committed TS06-DISP, fab zip, docs, viewer rebuild) and fascia-gold (worktree: gold-trace variations), both on sonnet. quota.json 08:47 (21 min), 5-hour 4 % (Nixie 1.9 %) | 2 (2 running) |
-| 02.10 01:15 | order-ready (worktree, sonnet; brief scratchpad/order-ready/BRIEF.md): fascia fab zip on R + Divider, DFM check, fab/ORDER.md, item nixie-order-ready. quota.json 00:54 (6 min), 5-hour 5 %, weekly 46 % | 1 (1 running) |
+| 02.10 01:00 | order-ready (worktree, sonnet; brief scratchpad/order-ready/BRIEF.md): fascia fab zip on R + Divider, DFM check, fab/ORDER.md, item nixie-order-ready. quota.json 00:54 (6 min), 5-hour 5 %, weekly 46 % | 1 (1 running) |
 
 Running at the time of the quota rule: 5 local agents and 1 cloud session (search) = 6 agents,
 which is the cap. Nothing new will launch until some of them finish.
