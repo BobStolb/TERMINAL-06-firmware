@@ -1,6 +1,16 @@
 # TS06 orchestrator: resume note and launch log
 
-## RESUME HERE (02.10 01:10 UTC; QUOTA: RESUME since 01.10 23:52; job: PCB order-ready)
+## RESUME HERE (02.10 04:00 UTC; QUIET since 02:42, owner asleep; job: PCB order-ready, then the morning item)
+* **State 04:00:** all three boards order-ready (fab zips; DFM PASS; ORDER.md: 10 each, all black, matte if cheap).
+  Populated renders + stack (fascia with gold) in 3d/populated/. Product page source whole in recovered/viewer2
+  (Order tab, 137 tests), NOT published (owner's hand). Running: morning-pack (03:59, cap 0.6 M / 04:59).
+  REVIEW-REQUEST 1 -> PROCEED-WITH; REVIEW-REQUEST 2 (viewer-prep) sent 03:59 (ea7732e), verdict pending.
+* **When morning-pack reports:** verify + merge (opt-in hole variant zip, IN17-two-seats.png, allowlist.md);
+  REVIEW-REQUEST 3; then the MORNING ITEM nixie-order-ready in this chat (SendUserFile + numbered questions):
+  pictures (stack-front with gold, DRV/DISP iso, Order tab), the zips, the verdicts + undo points, the allowlist,
+  and the questions: 1 fascia holes +0.4 mm variant yes/no (juror agrees); 2 measure one ИН-17 (seat ~5.7 mm);
+  3 publish the product page now? 4 tube look on the page (plain glass vs lit digits); 5 go order (own hand).
+  File it in embassy/review/ too. Then tick "next paused" if nothing runs.
 * **QUOTA: HOLD ALL (30.09 11:19) then RESUME (01.10 23:52), from xstream.store.** The owner's priority, verbatim:
   "job prio: previouslu running or brand new>nixie completed pcb ordered>dashboard". So my first job is the PCB
   order-ready; front panel page and fascia variants come after. Placing the order is the owner's own hand.
