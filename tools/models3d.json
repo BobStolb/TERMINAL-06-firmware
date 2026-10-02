@@ -6,64 +6,276 @@
  },
  "parts": {
   "IN12_tube": {
-   "file": "${TS06_3D}/IN12.step", "offset": [0, 0, 4.5], "kind": "taken",
+   "file": "${TS06_3D}/IN12.step",
+   "offset": [
+    0,
+    0,
+    4.5
+   ],
+   "kind": "taken",
    "note": "3d/IN12.step (the repo's glass envelope, 19.47 x 28.86 x 25.5 plus pins). Its pins hang 4.66 mm below its seating plane, so with the plane 4.5 mm above the board face (case_pair.py IN12_SEAT, assumed there) the tips end 0.16 mm past the back face"
   },
   "IN12_contacts": {
-   "file": "${TS06_POP}/in12_contacts.wrl", "kind": "made",
+   "file": "${TS06_POP}/in12_contacts.wrl",
+   "kind": "made",
    "note": "12 tube-socket contacts, 4.5 mm tall, on the footprint's pad ring (3d/populated/models/tube_pins.scad)"
   },
   "IN17_tube": {
-   "file": "${TS06_3D}/IN17.step", "rotate": [0, -90, 90], "offset": [-6.165, 8.995, 32.3], "kind": "taken",
+   "file": "${TS06_3D}/IN17.step",
+   "rotate": [
+    0,
+    -90,
+    90
+   ],
+   "offset": [
+    -6.165,
+    8.995,
+    32.3
+   ],
+   "kind": "taken",
    "note": "3d/IN17.step lies along x in its own frame, lead stubs (5.5 mm) at one end. Turned to stand on its stubs, the glass base 8.0 mm above the board face (case_pair.py IN17_STANDOFF: faces coplanar with the IN-12s), centred on the 11-pad pattern"
   },
   "IN17_wires": {
-   "file": "${TS06_POP}/in17_wires.wrl", "kind": "made",
+   "file": "${TS06_POP}/in17_wires.wrl",
+   "kind": "made",
    "note": "wire leads D0.4 from the end of the model's 5.5 mm stubs to 0.8 mm past the back face (the stubs alone end 2.5 mm above the board)"
   },
   "INS1_lamp": {
-   "file": "${TS06_3D}/INS1.step", "rotate": [0, -90, 0], "offset": [-1.15, -3.5, 11.77], "kind": "taken",
+   "file": "${TS06_3D}/INS1.step",
+   "rotate": [
+    0,
+    -90,
+    0
+   ],
+   "offset": [
+    -1.15,
+    -3.5,
+    11.77
+   ],
+   "kind": "taken",
    "note": "3d/INS1.step lies along x. Turned to stand on its 10 mm leads, centred on the lead pair, the tip 30.0 mm above the board face (the tube faces' plane, an inferred choice; no source states the colon lamps' height)"
   },
   "LED_3mm": {
-   "file": "${TS06_POP}/led3.wrl", "kind": "made",
+   "file": "${TS06_POP}/led3.wrl",
+   "kind": "made",
    "note": "3 mm amber LED, 5.3 mm tall (footprint descr), flat on the cathode (pad 1) side"
   },
-  "DIP4": {"file": "${TS06_POP}/dip_chip_4.wrl", "kind": "made", "note": "TLP627 DIP-4 in its socket"},
-  "DIP8": {"file": "${TS06_POP}/dip_chip_8.wrl", "kind": "made", "note": "DIP-8 chip in its socket"},
-  "DIP16": {"file": "${TS06_POP}/dip_chip_16.wrl", "kind": "made", "note": "DIP-16 chip in its socket"},
-  "DIP28": {"file": "${TS06_POP}/dip_chip_28.wrl", "kind": "made", "note": "SPDIP-28 in its socket"},
-  "MLT05": {"file": "${TS06_POP}/mlt05_lying.wrl", "kind": "made", "note": "МЛТ-0,5, D4.2 x 10.8, lying, pitch 15.24"},
-  "L1_choke": {"file": "${TS06_POP}/l1_axial.wrl", "kind": "made", "note": "Bourns 5900-221-RC, D11.5 x 22.9, lying, pitch 27.94"},
+  "DIP4": {
+   "file": "${TS06_POP}/dip_chip_4.wrl",
+   "kind": "made",
+   "note": "TLP627 DIP-4 in its socket"
+  },
+  "DIP8": {
+   "file": "${TS06_POP}/dip_chip_8.wrl",
+   "kind": "made",
+   "note": "DIP-8 chip in its socket"
+  },
+  "DIP16": {
+   "file": "${TS06_POP}/dip_chip_16.wrl",
+   "kind": "made",
+   "note": "DIP-16 chip in its socket"
+  },
+  "DIP28": {
+   "file": "${TS06_POP}/dip_chip_28.wrl",
+   "kind": "made",
+   "note": "SPDIP-28 in its socket"
+  },
+  "MLT05": {
+   "file": "${TS06_POP}/mlt05_lying.wrl",
+   "kind": "made",
+   "note": "МЛТ-0,5, D4.2 x 10.8, lying, pitch 15.24"
+  },
+  "L1_choke": {
+   "file": "${TS06_POP}/l1_axial.wrl",
+   "kind": "made",
+   "note": "Bourns 5900-221-RC, D11.5 x 22.9, lying, pitch 27.94"
+  },
   "PLS5_header": {
-   "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x05_P2.54mm_Vertical.step", "kind": "taken",
+   "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x05_P2.54mm_Vertical.step",
+   "kind": "taken",
    "note": "KiCad's 1x05 male header: the PLS-5 the RTC module's own socket plugs onto"
   },
-  "RTC_module": {"file": "${TS06_POP}/ds3231_module.wrl", "kind": "made", "note": "DS3231 mini module lying on its socket over the header"},
-  "NANO_on_PBS15": {"file": "${TS06_POP}/nano_on_pbs.wrl", "kind": "made", "note": "Arduino Nano on two PBS-15 strips"},
-  "PTC_fuse": {"file": "${TS06_POP}/fuse_ptc.wrl", "kind": "made", "note": "radial PTC, the MF-RG1100 outline"},
-  "R1206": {"file": "${TS06_POP}/r1206_back.wrl", "kind": "made", "note": "1206 chip resistor"},
-  "JST_PH_SM": {"file": "${TS06_POP}/jst_s6b_sm4_back.wrl", "kind": "made", "note": "JST PH side-entry SMD header S6B-PH-SM4-TB"},
+  "RTC_module": {
+   "file": "${TS06_POP}/ds3231_module.wrl",
+   "kind": "made",
+   "note": "DS3231 mini module lying on its socket over the header"
+  },
+  "NANO_on_PBS15": {
+   "file": "${TS06_POP}/nano_on_pbs.wrl",
+   "kind": "made",
+   "note": "Arduino Nano on two PBS-15 strips"
+  },
+  "PTC_fuse": {
+   "file": "${TS06_POP}/fuse_ptc.wrl",
+   "kind": "made",
+   "note": "radial PTC, the MF-RG1100 outline"
+  },
+  "R1206": {
+   "file": "${TS06_POP}/r1206_back.wrl",
+   "kind": "made",
+   "note": "1206 chip resistor"
+  },
+  "JST_PH_SM": {
+   "file": "${TS06_POP}/jst_s6b_sm4_back.wrl",
+   "kind": "made",
+   "note": "JST PH side-entry SMD header S6B-PH-SM4-TB"
+  },
   "KMD1_button": {
-   "file": "${TS06_3D}/KMD1.step", "rotate": [0, -90, 90], "offset": [-5.25, 7.3, -2.0], "kind": "taken",
-   "note": "3d/KMD1.step (bushing 7.82, plunger 6.0, body 16.66 deep + 3.0 lugs), axis along x in its own frame. Turned to point out of the fascia's front, its shoulder on the fascia's back face, the lug end towards the landing pads (+y)"
+   "file": "${TS06_3D}/KMD1.step",
+   "rotate": [
+    0,
+    -90,
+    90
+   ],
+   "offset": [
+    -5.25,
+    12.41,
+    -2.0
+   ],
+   "kind": "taken",
+   "note": "3d/KMD1.step (bushing 7.82, plunger 6.0, body 16.66 deep + 3.0 lugs), axis along x in its own frame. Turned to point out of the fascia's front, its shoulder on the fascia's back face, the body's long side (the lug plate) pointing up the fascia (-y), away from the landing pads"
   },
   "MT1_lever": {
-   "file": "${TS06_3D}/MT1.step", "rotate": [0, -90, 90], "offset": [-5.25, 5.95, -2.0], "kind": "taken",
-   "note": "3d/MT1.step (bushing 7.82, body 16.66 deep + 3.0 lugs), axis along x in its own frame. Turned to point out of the fascia's front, its shoulder on the fascia's back face, the lug end towards the landing pads (+y)"
+   "file": "${TS06_3D}/MT1.step",
+   "rotate": [
+    0,
+    -90,
+    90
+   ],
+   "offset": [
+    -5.25,
+    13.75,
+    -2.0
+   ],
+   "kind": "taken",
+   "note": "3d/MT1.step (bushing 7.82, body 16.66 deep + 3.0 lugs), axis along x in its own frame. Turned to point out of the fascia's front, its shoulder on the fascia's back face, the body's long side (the lug plate) pointing up the fascia (-y), away from the landing pads"
   },
   "SR25_rotary": {
-   "file": "${TS06_3D}/SR25.step", "offset": [0, 0, -13.3], "kind": "taken",
+   "file": "${TS06_3D}/SR25.step",
+   "offset": [
+    0,
+    0,
+    -13.3
+   ],
+   "kind": "taken",
    "note": "3d/SR25.step (body D25 x 11.3, bushing D8.62 x 7.0, shaft D6 x 13.0), axis already along z: its shoulder (z 13.3) put on the fascia's back face (offset z -13.3)"
   }
  },
  "boards": {
   "TS06-DISP": {
    "footprints": {
-    "TS06_IN12_Socket": {"models": ["IN12_tube", "IN12_contacts"]},
-    "TS06_IN17_Socket": {"models": ["IN17_tube", "IN17_wires"]},
-    "TS06_INS1_Lamp": {"models": ["INS1_lamp"]},
-    "TS06_LED_D3.0mm": {"models": ["LED_3mm"]}
+    "TS06_IN12_Socket": {
+     "models": [
+      "IN12_tube",
+      "IN12_contacts"
+     ]
+    },
+    "TS06_IN17_Socket": {
+     "models": [
+      "IN17_tube",
+      "IN17_wires"
+     ]
+    },
+    "TS06_INS1_Lamp": {
+     "models": [
+      "INS1_lamp"
+     ]
+    },
+    "TS06_LED_D3.0mm": {
+     "models": [
+      "LED_3mm"
+     ]
+    },
+    "TS06_PinHeader_1x10_R180": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x10_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        180
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinHeader_1x31_R90": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x31_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        270
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinHeader_1x03_R90": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x03_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        270
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinHeader_1x04_R90": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x04_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        270
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinHeader_1x05_R90": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x05_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        270
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinHeader_1x06_R90": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x06_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        270
+       ],
+       "kind": "taken",
+       "note": "KiCad's male header, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    }
    },
    "refs": {},
    "none": {
@@ -75,16 +287,164 @@
   },
   "TS06-DRV": {
    "footprints": {
-    "TS06_DIP-16_W7.62mm_Socket_Oval": {"models": ["DIP16"]},
-    "TS06_DIP-16_W7.62mm_Socket": {"models": ["DIP16"]},
-    "TS06_DIP-28_W7.62mm_Socket": {"models": ["DIP28"]},
-    "TS06_DIP-8_W7.62mm_Socket": {"models": ["DIP8"]},
-    "TS06_DIP-4_W7.62mm_Socket": {"models": ["DIP4"]},
-    "TS06_R_Axial_MLT-0.5_P15.24mm": {"models": ["MLT05"]},
-    "TS06_L_Axial_D11.5mm_L22.9mm_P27.94mm": {"models": ["L1_choke"]},
-    "TS06_PinHeader_1x05_DS3231": {"models": ["PLS5_header", "RTC_module"]},
-    "TS06_Arduino_Nano": {"replace": true, "models": ["NANO_on_PBS15"]},
-    "TS06_Fuse_PTC_MF-RG1100": {"replace": true, "models": ["PTC_fuse"]}
+    "TS06_DIP-16_W7.62mm_Socket_Oval": {
+     "models": [
+      "DIP16"
+     ]
+    },
+    "TS06_DIP-16_W7.62mm_Socket": {
+     "models": [
+      "DIP16"
+     ]
+    },
+    "TS06_DIP-28_W7.62mm_Socket": {
+     "models": [
+      "DIP28"
+     ]
+    },
+    "TS06_DIP-8_W7.62mm_Socket": {
+     "models": [
+      "DIP8"
+     ]
+    },
+    "TS06_DIP-4_W7.62mm_Socket": {
+     "models": [
+      "DIP4"
+     ]
+    },
+    "TS06_R_Axial_MLT-0.5_P15.24mm": {
+     "models": [
+      "MLT05"
+     ]
+    },
+    "TS06_L_Axial_D11.5mm_L22.9mm_P27.94mm": {
+     "models": [
+      "L1_choke"
+     ]
+    },
+    "TS06_PinHeader_1x05_DS3231": {
+     "models": [
+      "PLS5_header",
+      "RTC_module"
+     ]
+    },
+    "TS06_Arduino_Nano": {
+     "replace": true,
+     "models": [
+      "NANO_on_PBS15"
+     ]
+    },
+    "TS06_Fuse_PTC_MF-RG1100": {
+     "replace": true,
+     "models": [
+      "PTC_fuse"
+     ]
+    },
+    "TS06_PinSocket_1x10_R180": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x10_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        180
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinSocket_1x31_R270": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x31_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        90
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinSocket_1x03_R270": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x03_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        90
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinSocket_1x04_R270": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x04_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        90
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinSocket_1x05_R270": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x05_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        90
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_PinSocket_1x06_R270": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_PinSocket_2.54mm.3dshapes/PinSocket_1x06_P2.54mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        90
+       ],
+       "kind": "taken",
+       "note": "KiCad's socket strip, turned for a footprint on B.Cu: KiCad mirrors a back-side footprint about its x axis, so the model rotation the generator wrote (tools/pcbkit.py turns models as for a front-side part) puts the body one body-length away from its pads. This entry replaces it"
+      }
+     ]
+    },
+    "TS06_JST_PH_B6B-PH-K_Vertical": {
+     "replace": true,
+     "models": [
+      {
+       "file": "${KICAD10_3DMODEL_DIR}/Connector_JST.3dshapes/JST_PH_B6B-PH-K_1x06_P2.00mm_Vertical.step",
+       "rotate": [
+        0,
+        0,
+        0
+       ],
+       "kind": "taken",
+       "note": "KiCad's JST PH B6B-PH-K, turned for a footprint on B.Cu (the pads run along +x; the generator's 180 deg puts the body on the other side of its pads)"
+      }
+     ]
+    }
    },
    "refs": {},
    "none": {
@@ -97,11 +457,31 @@
   },
   "TS06-FASCIA-rhythm": {
    "footprints": {
-    "TS06_KMD1_Button_PanelMount": {"models": ["KMD1_button"]},
-    "TS06_MT1_Lever_PanelMount": {"models": ["MT1_lever"]},
-    "TS06_Rotary_SR25_PanelMount_Rhythm": {"models": ["SR25_rotary"]},
-    "TS06_R_1206_HandSolder": {"models": ["R1206"]},
-    "TS06_JST_PH_S6B-PH-SM4-TB_Back": {"models": ["JST_PH_SM"]}
+    "TS06_KMD1_Button_PanelMount": {
+     "models": [
+      "KMD1_button"
+     ]
+    },
+    "TS06_MT1_Lever_PanelMount": {
+     "models": [
+      "MT1_lever"
+     ]
+    },
+    "TS06_Rotary_SR25_PanelMount_Rhythm": {
+     "models": [
+      "SR25_rotary"
+     ]
+    },
+    "TS06_R_1206_HandSolder": {
+     "models": [
+      "R1206"
+     ]
+    },
+    "TS06_JST_PH_S6B-PH-SM4-TB_Back": {
+     "models": [
+      "JST_PH_SM"
+     ]
+    }
    },
    "refs": {},
    "none": {

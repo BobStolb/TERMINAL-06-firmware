@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TS06 stack</title>
+<style>
+  html, body { margin: 0; background: transparent; }
+  canvas { display: block; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<script type="module">
+// The assembled TS06 stack: TS06-DISP in front of TS06-DRV, the fascia in front of both, each board a populated GLB
+// from tools/render_populated.py placed by the matrices of tools/stack_frame.py (case_pair.py's geometry).
+// Driven by render_stack.mjs, which sets window.SCENE = {w, h, view, files, stack} before this script runs.
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const S = window.SCENE;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(S.w, S.h);
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.35;
+const key = new THREE.DirectionalLight(0xffffff, 1.7);
+key.position.set(-120, 180, 260);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xdfe8ff, 0.6);
+fill.position.set(220, 60, 160);
+scene.add(fill);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x303038, 0.35));
+
+const loader = new GLTFLoader();
+const root = new THREE.Group();
+scene.add(root);
+const place = (obj, m) => {                       // KiCad GLB (metres) -> stack frame (mm)
+  const g = new THREE.Group();
+  obj.scale.setScalar(1000);
+  g.add(obj);
+  const M = new THREE.Matrix4().set(...m);
+  g.matrixAutoUpdate = false;
+  g.matrix.copy(M);
+  g.updateMatrixWorld(true);
+  root.add(g);
+  return g;
+};
+const names = {};
+for (const [name, url] of Object.entries(S.files)) {
+  const gltf = await loader.loadAsync(url);
+  gltf.scene.traverse(o => {
+    if (!o.isMesh) return;
+    for (const m of [].concat(o.material)) {
+      // KiCad writes no metallic/roughness for its component bodies, which glTF reads as fully metallic and fully rough: grey metal.
+      if (m.metalness === 1 && m.roughness === 1) { m.metalness = 0.05; m.roughness = 0.55; }
+      // the solder mask is exported 83 % opaque over the FR4: draw it as the black it is
+      if (m.transparent && m.opacity < 0.9 && m.color.r < 0.06 && m.color.g < 0.06) {
+        m.transparent = false; m.opacity = 1; m.depthWrite = true; m.color.setScalar(0.012); m.roughness = 0.55;
+      }
+    }
+  });
+  names[name] = place(gltf.scene, S.stack.matrix[name]);
+}
+root.updateMatrixWorld(true);
+
+// camera: fitted to the content, direction from the view name
+const box = new THREE.Box3().setFromObject(root);
+const centre = box.getCenter(new THREE.Vector3());
+const dirs = { front: [0, 0, 1], iso: [0.62, 0.42, 0.66], isoleft: [-0.62, 0.42, 0.66], side: [1, 0.05, 0.12] };
+const dir = new THREE.Vector3(...(dirs[S.view] || dirs.iso)).normalize();
+const cam = new THREE.PerspectiveCamera(S.fov || 16, S.w / S.h, 10, 5000);
+const corners = [];
+for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z])
+  corners.push(new THREE.Vector3(x, y, z));
+function fit() {
+  let target = centre.clone(), dist = 900;
+  for (let it = 0; it < 6; it++) {
+    cam.position.copy(target).addScaledVector(dir, dist);
+    cam.up.set(0, 1, 0);
+    cam.lookAt(target);
+    cam.updateMatrixWorld(true);
+    cam.updateProjectionMatrix();
+    let mnx = 9, mxx = -9, mny = 9, mxy = -9;
+    for (const c of corners) {
+      const p = c.clone().project(cam);
+      mnx = Math.min(mnx, p.x); mxx = Math.max(mxx, p.x); mny = Math.min(mny, p.y); mxy = Math.max(mxy, p.y);
+    }
+    const ext = Math.max((mxx - mnx) / 2, (mxy - mny) / 2);
+    dist *= ext / 0.94;
+    const cx = (mxx + mnx) / 2, cy = (mxy + mny) / 2;
+    const right = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(cam.matrixWorld, 1);
+    const halfH = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * dist;
+    target.addScaledVector(right, cx * halfH * cam.aspect).addScaledVector(up, cy * halfH);
+  }
+  cam.position.copy(target).addScaledVector(dir, dist);
+  cam.lookAt(target);
+  cam.updateMatrixWorld(true);
+}
+fit();
+renderer.render(scene, cam);
+window.__info = { box: [box.min.toArray(), box.max.toArray()], names: Object.keys(names) };
+window.__done = true;
+</script>
+</body>
+</html>

@@ -13,7 +13,8 @@ tools/models3d.py attaches the models of tools/models3d.json (footprints the boa
 socketed chip on its socket, a part whose own model file does not exist), and the black-mask / white-silk
 stackup of render_kicad.py goes in if the board has none. KiCad (kicad-cli in Docker, the image of
 tools/render_kicad.py) then renders the copy; the library models are mounted read-only and named by -D, so
-the boards' ${KICAD10_3DMODEL_DIR} paths resolve. Pictures are trimmed to their content, kept to 2400 px
+the boards' ${KICAD10_3DMODEL_DIR} paths resolve. The GLB is exported with --fuse-shapes, which takes the
+TS06-DRV one from 19.6 MB to 15.0 MB (the limit for a committed model file is 15 MB). Pictures are trimmed to their content, kept to 2400 px
 wide and checked to be under 3 MB; the GLB is checked to be at most 15 MB.
 
 Options: --views top,iso,bottom   --no-glb   --width 2400   --kicad3d DIR (KiCad's 3D library; default the
@@ -40,7 +41,7 @@ VIEWS = {
     "bottom": ["--side", "bottom"],
     "iso": ["--perspective", "--rotate", "-45,0,-25"],
 }
-ISO_ZOOM = {"TS06-DISP": 1.25, "TS06-DRV": 1.35, "TS06-FASCIA-rhythm": 1.3}
+ISO_ZOOM = {"TS06-DISP": 1.05, "TS06-DRV": 0.85, "TS06-FASCIA-rhythm": 1.05}
 
 
 def board_path(arg):
@@ -52,11 +53,14 @@ def board_path(arg):
     return p
 
 
-def scratch_board(path, tmp, kicad3d=None):
-    """Write the populated copy of the board into tmp; returns (name, plan rows, {VAR: dir})."""
+def scratch_board(path, tmp, kicad3d=None, bare=False):
+    """Write the populated copy of the board into tmp; returns (name, plan rows, {VAR: dir}).
+    bare: attach nothing (only the models the board carries itself): the render as it was before the map."""
     mp = M.load_map()
     dmap = M.dirs(mp, kicad3d)
     key = M.board_key(path)
+    if bare:
+        mp = {"vars": mp.get("vars", {}), "parts": {}, "boards": {key: {"footprints": {}, "refs": {}, "none": {}}}}
     src = open(path, encoding="utf8").read()
     tree = S.parse(src)
     rows = M.apply(tree, key, mp, dmap)
@@ -87,7 +91,12 @@ def kicad(tmp, dmap, sub, args):
 def trim_png(path, width_cap):
     from PIL import Image
     im = Image.open(path).convert("RGBA")
+    # KiCad casts the board's shadow onto the transparent background (alpha up to ~210 in the iso views); the board itself is >= 240
+    # except at its anti-aliased edge, and 255 inside. Keep the board, drop the shadow.
+    im.putalpha(im.getchannel("A").point(lambda v: 0 if v < 230 else v))
     box = im.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
+    if box and (box[0] <= 1 or box[1] <= 1 or box[2] >= im.size[0] - 1 or box[3] >= im.size[1] - 1):
+        print("WARNING: %s runs into the frame: part of the board is cut off" % os.path.basename(path))
     if box:
         pad = 12
         im = im.crop((max(0, box[0] - pad), max(0, box[1] - pad), min(im.size[0], box[2] + pad), min(im.size[1], box[3] + pad)))
@@ -106,6 +115,9 @@ def main():
     ap.add_argument("--width", type=int, default=MAX_W)
     ap.add_argument("--quality", default="high")
     ap.add_argument("--kicad3d")
+    ap.add_argument("--glb-no-zones", action="store_true", help="leave the copper pours out of the GLB (smaller)")
+    ap.add_argument("--glb-flags", default="", help="extra kicad-cli export glb flags, e.g. '--fuse-shapes --min-distance 0.01mm'")
+    ap.add_argument("--bare", action="store_true", help="no map: the board with only the models it carries itself (the 'before' picture)")
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()
     path = board_path(a.board)
@@ -113,7 +125,7 @@ def main():
     tmp = tempfile.mkdtemp(prefix="render_populated.")
     os.chmod(tmp, 0o777)
     try:
-        key, rows, dmap = scratch_board(path, tmp, a.kicad3d)
+        key, rows, dmap = scratch_board(path, tmp, a.kicad3d, a.bare)
         miss = [r for r in rows if r["status"] == "missing"]
         if miss:
             print("WARNING: %d footprints without a model: %s" % (len(miss), ", ".join(r["ref"] for r in miss)))
@@ -123,8 +135,9 @@ def main():
         diag = (bw ** 2 + bh ** 2) ** 0.5
         board = "/w/%s.kicad_pcb" % key
         if not a.no_glb:
-            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads", "--include-tracks", "--include-zones",
-                                                           "--include-silkscreen", "--include-soldermask", "-o", "/w/out.glb", board])
+            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads", "--include-tracks"] + ([] if a.glb_no_zones else ["--include-zones"]) +
+                                                          ["--include-silkscreen", "--include-soldermask", "--fuse-shapes"] + a.glb_flags.split() +
+                                                          ["-o", "/w/out.glb", board])
             if not os.path.exists(os.path.join(tmp, "out.glb")):
                 sys.exit("glb export failed:\n" + r.stdout + r.stderr)
             size = os.path.getsize(os.path.join(tmp, "out.glb"))
@@ -132,13 +145,16 @@ def main():
             shutil.copy(os.path.join(tmp, "out.glb"), dst)
             print("wrote %s (%.2f MB)%s" % (dst, size / 1048576.0, "" if size <= MAX_GLB else "  OVER 15 MB: do not commit"))
         for v in [x for x in a.views.split(",") if x]:
+            # the frame is made roomy and the picture trimmed afterwards: KiCad's zoom 1 is the whole scene (tall parts, parts
+            # that overhang the board), not the board outline, so a tight frame cuts the board off
             if v in ("top", "bottom"):
-                ppm = a.width / (bw + 6.0)
-                fw, fh = int(a.width), int(round(ppm * (bh + 6.0)))
+                fw = int(a.width * 1.3)
+                ppm = fw / (bw + 30.0)
+                fh = int(round(ppm * (bh + 30.0)))
                 zoom = ppm * diag / fh
             else:
-                fw, fh = int(a.width), int(round(a.width * 0.56))
-                zoom = ISO_ZOOM.get(key, 1.3)
+                fw, fh = int(a.width * 1.2), int(round(a.width * 1.2 * 0.62))
+                zoom = ISO_ZOOM.get(key, 1.0)
             args = ["--use-board-stackup-colors", "--quality", a.quality, "--background", "transparent",
                                              "--width", str(fw), "--height", str(fh), "--zoom", "%.4f" % zoom] + VIEWS[v] + \
                    ["-o", "/w/%s.png" % v, board]

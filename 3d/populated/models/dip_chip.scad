@@ -32,8 +32,8 @@ cx = 3.81;
 module body() {
     translate([cx, cy, SEAT])
     hull() {
-        translate([-LEN / 2, -W / 2, 0]) cube([LEN, W, H * 0.55]);
-        translate([-LEN / 2 + 0.35, -W / 2 + 0.35, 0]) cube([LEN - 0.7, W - 0.7, H]);
+        translate([-W / 2, -LEN / 2, 0]) cube([W, LEN, H * 0.55]);
+        translate([-W / 2 + 0.35, -LEN / 2 + 0.35, 0]) cube([W - 0.7, LEN - 0.7, H]);
     }
 }
 
