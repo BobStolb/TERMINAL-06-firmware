@@ -7,7 +7,8 @@ One zip per board of the through-hole pair, built from the committed boards by `
 the circuit-as-ornament silkscreen art; TS06-DRV unchanged), with KiCad 10.0.6's `kicad-cli` in Docker.
 First built at b8d3f25 (the rev B merge).
 
-The fascia R (rev A, with the Divider gold) was added on 02.10.26: `TS06-FASCIA-R-revA-divider-fab.zip`, below.
+The fascia R (rev A, with the Divider gold) was added on 02.10.26: `TS06-FASCIA-R-revA-divider-holes04-fab.zip` (the ordered one: control holes
+opened 0.4 mm and level leaders, picked by the owner the same day; the first fascia zip, holes as drawn, is kept as `TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`: NOT ordered), below.
 It was rebuilt the same day, after the design-for-manufacture check (`tools/dfm_check.py`, the table below) had found
 four things on it: thin silk, a small back legend, slivers of mask at four dial rings, and "None" as the finish in its job file.
 All four are fixed in the generators; TS06-DISP's and TS06-DRV's zips did not change.
@@ -48,7 +49,7 @@ finish and the mask colour are chosen when the boards are ordered.
 
 ## The fascia R zip
 
-`TS06-FASCIA-R-revA-divider-fab.zip` is the fascia `PCB/TS06-FASCIA-rhythm` (rev A) with the Plates white
+`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the fascia `PCB/TS06-FASCIA-rhythm` (rev A) with the Plates white
 print and a gold: the **Divider** by default. The committed board has no gold of its own, so `tools/mkfab.sh`
 builds the art board in its scratch directory with `tools/fascia_gold.py divider OUT --base R` (that
 script's own checks must be clean) and plots that. Nothing under `PCB/` is written.
@@ -122,13 +123,13 @@ bash tools/mkfab.sh                                   # all three boards; prints
 bash tools/mkfab.sh TS06-FASCIA-rhythm --gold fans    # the fascia with another gold (see above)
 bash tools/mkfab.sh --keep                            # the same, and keeps the scratch directory (both exports, logs)
 python3 tools/dfm_check.py                            # design-for-manufacture tables (inferred generic limits), see ORDER.md
-bash tools/mkfab.sh TS06-FASCIA-rhythm --open-holes   # an EXTRA fascia zip, control holes opened 0.4 mm: HOLES-VARIANT.md
-python3 tools/dfm_check.py --open-holes               # the same DFM check on that extra zip
+bash tools/mkfab.sh TS06-FASCIA-rhythm --committed-holes   # the fascia as committed (holes 8.8 / 8.0), NOT ordered: ...-notordered-fab.zip
+python3 tools/dfm_check.py --committed-holes          # the same DFM check on that zip (the default checks the ordered one)
 ```
 
-`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is that extra zip (the dial hole 8.8 to 9.2, the lever and button holes 8.0 to 8.4).
-It is held back by being an extra file: the zip above and `ORDER.md` still describe the fascia as ordered. `HOLES-VARIANT.md` says what differs,
-the margins, and how to pick it.
+`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the ordered fascia zip (the dial hole 8.8 opened to 9.2, the lever and button holes 8.0 to 8.4:
+the owner's pick, 2026-10-02) with the level leaders (his second pick, the same day). The zip with the holes as drawn is kept as
+`TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`, not ordered. `HOLES-VARIANT.md` says what differs and the margins; `ORDER.md` names the zip.
 
 It needs `zip`, `python3` and KiCad 10's `kicad-cli`: a local one, or Docker with
 `mirror.gcr.io/kicad/kicad:10.0`, found the same way as in `tools/verify_pair.sh`. The committed

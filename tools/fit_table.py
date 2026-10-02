@@ -19,10 +19,11 @@ owner's measured 19.72 mm, `3d/IN17.step` scaled to it, and that seat puts its f
 draws two seats). The tubes stand on wire leads, so the seat is a choice: the glass moves, the leads and the board do not.
 Whatever the seat, the table has the ИН-17's lead rows: the glass end to the solder joint on the back against the ТУ's 8 mm, the
 lead from the glass end to the back face against the tube's 35 mm free lead, and the glass to the nearest part.
-The control holes are read from the fascia board (the footprints' drills), not typed here. After the tally comes the
-holes04 variant (fab/HOLES-VARIANT.md): the same three bushing rows with every control hole opened 0.4 mm, read from the
-board `tools/mkpcb_fascia_rhythm.py --open-holes` writes. Those rows are shown beside the table, not in it: the tally, the
-rows of fit-table.json and everything else stay what the committed board gives (tools/stack_frame.py has the helpers).
+The control holes are read from the fascia board (the footprints' drills), not typed here: from the board
+`tools/mkpcb_fascia_rhythm.py --open-holes` writes, the ordered fascia (every control hole opened 0.4 mm, +0.29 a side;
+fab/HOLES-VARIANT.md, the owner's pick of 2026-10-02). After the tally come the same three bushing rows for the committed
+holes (8.8 / 8.0, +0.09 a side), the zip that was not ordered: shown beside the table, not in the tally or in
+fit-table.json's rows, under the key holes_committed (tools/stack_frame.py has the helpers).
 Needs numpy.
 """
 import json, math, os, struct, sys, tempfile
@@ -247,21 +248,27 @@ def main(argv):
     add("TS06-DISP", "back face", lamps[0] + " INS1_Lamp leads (trimmed length is the model's 10 mm leads)", bottom(disp, lamps[0]), v["STACK_GAP"],
         "the longest tail on the board that is not a header pin")
     # ---------------------------------------------------------------- the fascia
-    hole = SF.control_holes(os.path.join(SF.ROOT, "PCB", fascia, fascia + ".kicad_pcb"))     # the footprints' drills, from the board
+    committed = SF.control_holes(os.path.join(SF.ROOT, "PCB", fascia, fascia + ".kicad_pcb"))     # the footprints' drills, from the committed board
     bush = {"SW1": 8.62, "SW2": 7.82, "SW3": 7.82, "SW4": 7.82, "SW5": 7.82}
-    for r, what in (("SW1", "rotary"), ("SW2", "lever"), ("SW4", "button")):
-        add("fascia R", "front face", "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], hole[r]), bush[r] / 2, hole[r] / 2,
-            "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill", what="hole")
-    # the holes04 variant: the same rows on the board with every control hole opened (fab/HOLES-VARIANT.md); not part of rows / the tally
-    vrows = []
+    # THE ORDERED FASCIA has every control hole opened 0.4 mm (the owner's pick, 2026-10-02, fab/HOLES-VARIANT.md): the table's bushing
+    # rows are read from the board tools/mkpcb_fascia_rhythm.py --open-holes writes. The committed board's holes (the not-ordered zip)
+    # are shown beside the table, not in the tally or in the rows of fit-table.json.
+    hole, note_hole = committed, "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill"
     if fascia == "TS06-FASCIA-rhythm":
         with tempfile.TemporaryDirectory(prefix="fit_table.") as vtmp:
-            vhole = SF.control_holes(SF.open_holes_board(vtmp))
+            hole = SF.control_holes(SF.open_holes_board(vtmp))
+        note_hole = ("bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, "
+                     "0.4 mm wider than the committed footprint's (+%.2f a side there)" % (committed["SW1"] / 2 - bush["SW1"] / 2))
+    for r, what in (("SW1", "rotary"), ("SW2", "lever"), ("SW4", "button")):
+        add("fascia R", "front face", "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], hole[r]), bush[r] / 2, hole[r] / 2,
+            note_hole, what="hole")
+    vrows = []                      # the committed (8.8 / 8.0) holes: what was not ordered
+    if fascia == "TS06-FASCIA-rhythm":
         for r, what in (("SW1", "rotary"), ("SW2", "lever"), ("SW4", "button")):
-            m = vhole[r] / 2 - bush[r] / 2
-            vrows.append({"part": "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], vhole[r]), "height": round(bush[r] / 2, 2),
-                          "space": round(vhole[r] / 2, 2), "margin": round(m, 2), "status": status(m),
-                          "note": "the hole is %.1f mm wider than the committed one (+%.2f a side before)" % (vhole[r] - hole[r], hole[r] / 2 - bush[r] / 2)})
+            m = committed[r] / 2 - bush[r] / 2
+            vrows.append({"part": "%s %s: bushing D%.2f in a D%.1f hole (per side)" % (r, what, bush[r], committed[r]), "height": round(bush[r] / 2, 2),
+                          "space": round(committed[r] / 2, 2), "margin": round(m, 2), "status": status(m),
+                          "note": "the hole is %.1f mm narrower than the ordered one (+%.2f a side there)" % (hole[r] - committed[r], hole[r] / 2 - bush[r] / 2)})
     for r, what in (("SW1", "rotary shaft"), ("SW2", "lever"), ("SW4", "button")):
         add("fascia R", "front face", "%s %s, reach beyond the front face" % (r, what), top(fas, r, TF), top(fas, r, TF) + 100.0,
             "", what="reach")
@@ -302,10 +309,11 @@ def main(argv):
         t[x["status"]] = t.get(x["status"], 0) + 1
     md += ["", "Rows: " + ", ".join("%d %s" % (n, s) for s, n in sorted(t.items())), ""]
     if vrows:
-        md += ["## fascia R, front face: the holes04 variant", "",
-               "The same three bushing rows with every control hole opened 0.4 mm in diameter (`tools/mkpcb_fascia_rhythm.py --open-holes`; the extra zip "
-               "`fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`, `fab/HOLES-VARIANT.md`). The committed board, the zip in `fab/ORDER.md` and the rows above keep the "
-               "0.09 mm; these rows are not in the tally. The 1 mm line of PASS is for heights: for a clearance fit, +0.29 a side is three times the committed +0.09.", "",
+        md += ["## fascia R, front face: the committed holes (NOT ordered)", "",
+               "The same three bushing rows with the control holes as committed, 8.8 and 8.0 mm (`tools/mkpcb_fascia_rhythm.py` without `--open-holes`; the zip kept as "
+               "`fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`, `fab/HOLES-VARIANT.md`). The ordered fascia opens every hole 0.4 mm "
+               "(`fab/ORDER.md`): the rows above show +0.29 a side, these +0.09; these rows are not in the tally. The 1 mm line of PASS is for heights: "
+               "for a clearance fit, +0.29 a side is three times the committed +0.09.", "",
                "| Part | Height / position | Space / limit | Margin | |", "|---|---:|---:|---:|---|"]
         for x in vrows:
             md.append("| %s | %.2f | %.2f | %+.2f | **%s**<br>%s |" % (x["part"], x["height"], x["space"], x["margin"], x["status"], x["note"]))
@@ -316,7 +324,7 @@ def main(argv):
         if in17_seat is not None:
             out["in17_seat"] = in17_seat
         if vrows:
-            out["holes_variant"] = {"extra_mm": 0.4, "about": "the three bushing rows on the board with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md); not in rows or tally", "rows": vrows}
+            out["holes_committed"] = {"extra_mm": -0.4, "about": "the three bushing rows on the committed board, holes 8.8 / 8.0 (the zip that was not ordered, fab/HOLES-VARIANT.md); not in rows or tally", "rows": vrows}
         json.dump(out, open(outjson, "w", encoding="utf8"), indent=1, ensure_ascii=False)
     print("wrote %s: %s" % (outmd, t))
     for x in rows:

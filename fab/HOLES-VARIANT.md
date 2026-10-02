@@ -1,7 +1,12 @@
-# Fascia R with opened bushing holes: an extra zip
+# Fascia R with opened bushing holes: the ordered zip
 
-A variant, not a replacement. `fab/ORDER.md`, the committed board and `fab/TS06-FASCIA-R-revA-divider-fab.zip`
-are as they were. Nothing was sent to a board house.
+**PICKED.** The owner chose it (2026-10-02, 10:37 UTC: "1-  yes"), so `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the
+fascia zip that `fab/ORDER.md` names. The zip with the holes as drawn (8.8 and 8.0 mm) is kept, renamed, as the one that was
+NOT ordered: `fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip` (it also has the sloped leaders the owner replaced with
+the level ones at 11:31 UTC: "a"). The committed board `PCB/TS06-FASCIA-rhythm` keeps its 8.8 / 8.0 holes: the opened board is
+written by `tools/mkpcb_fascia_rhythm.py --open-holes` (scratch), never into `PCB/`. Nothing was sent to a board house.
+(The text below was written before the pick; its numbers are unchanged. "The variant" is the ordered board; "as ordered" in its
+tables is the committed board, the one not ordered.)
 
 ## What differs
 
@@ -43,9 +48,10 @@ The repo has no model of the nuts, so this is not checked; a dry fit with real p
 
 ## The zip
 
-`fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` (48 kB, 11 files, the same names as the current zip with `-holes04`).
-Built by `bash tools/mkfab.sh TS06-FASCIA-rhythm --open-holes`; nothing under `PCB/` is written. Against the current zip
-five files differ: the non-plated drill file and its map (the five hole sizes), the back copper (the ground pour keeps
+`fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` (49 kB, 11 files, the same names as the zip not ordered with `-holes04`).
+Built by `bash tools/mkfab.sh TS06-FASCIA-rhythm` (the default since the pick; `--open-holes` says the same); nothing under `PCB/` is
+written. As first built (same leaders as the zip not ordered; the level leaders of 11:31 UTC then changed its silk and gold files too)
+against that zip five files differ: the non-plated drill file and its map (the five hole sizes), the back copper (the ground pour keeps
 its clearance from the larger holes), and both solder masks (the openings round the holes). The front copper (the gold),
 both silk files, the outline, the paste layer and the job file are identical.
 
@@ -55,13 +61,14 @@ both silk files, the outline, the paste layer and the job file are identical.
 * `python3 tools/dfm_check.py --open-holes --g11`: passes, the same numbers as the current zip (boss to R5 still 1.39 mm).
 * `python3 tools/dfm_check.py` (the three current zips) and `--g11`: unchanged, pass.
 * `bash tools/verify_pair.sh`: 27 PASS, 0 FAIL, 0 SKIP.
-* The fit table (`3d/populated/fit-table.md`) keeps its rows for the board as ordered and shows the variant's bushing
-  rows below them, +0.29 a side. The renders and GLBs show the board as ordered; a 0.2 mm change of hole radius is not
-  visible in them.
+* The fit table (`3d/populated/fit-table.md`) now has the ordered board's bushing rows, +0.29 a side, in its table, and shows
+  the committed holes (+0.09, the zip not ordered) below it. The renders and GLBs of the fascia in `3d/populated/` and the
+  pictures in `fab/preview/` are drawn on the opened board.
 
-## How to pick it
+## What was done when it was picked
 
-Use `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` in place of `fab/TS06-FASCIA-R-revA-divider-fab.zip` for the fascia
-at the fab. Nothing else changes: the other two zips, the quantity, 2.0 mm, ENIG, black mask, white silk and the
-"no fab number on the face" request all stay. If you pick it, `fab/ORDER.md`'s table still names the other zip; say the
-word and it is edited then, not before.
+`fab/ORDER.md`'s table names `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` and says the other one was not ordered; the page's
+Order view reads it from there. Nothing else changes: the other two zips, the quantity, 2.0 mm, ENIG, black mask, white silk and
+the "no fab number on the face" request all stay. `bash tools/mkfab.sh` builds the opened zip by default (`--committed-holes`
+builds the not-ordered one, named `...-notordered-fab.zip`); `python3 tools/dfm_check.py` checks it by default
+(`--committed-holes` checks the other).

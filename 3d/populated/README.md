@@ -62,9 +62,9 @@ FAILs as before: the two rejected jack openings and the fascia boss on R5 (varia
 stale source hash in `3d/case-pair/boards.json` (`tools/mkpcb_disp.py` was committed after the last extract); the
 geometry is identical, and that file was left as committed.
 
-The control holes in the table are read from the fascia board, not typed. Under the table is the same three bushing rows for the
-`holes04` variant (every control hole opened 0.4 mm, +0.29 a side instead of +0.09; `fab/HOLES-VARIANT.md`): shown beside the
-table, not in its tally or in `fit-table.json`'s rows, because the committed board and the zip in `fab/ORDER.md` keep the 0.09.
+The control holes in the table are read from the fascia board, not typed: from the board that is ordered, every control hole opened 0.4 mm
+(+0.29 a side; the owner's pick, `fab/HOLES-VARIANT.md`). Under the table is the same three bushing rows for the committed holes (8.8 / 8.0,
++0.09 a side, the zip that was not ordered): shown beside the table, not in its tally, and in `fit-table.json` under `holes_committed`, not in its rows.
 `--in17-seat MM` seats the ИН-17 glass at another height than the case model's 10.28 (next section); without it the table is the case model's seat. The ИН-17's three rows (the glass front against the window plane, the lead against the ТУ's 8 mm and the tube's 35 mm, the nearest part) are in the table at whatever seat.
 
 ## ИН-17: the measured tube at its seat

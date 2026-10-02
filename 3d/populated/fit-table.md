@@ -63,9 +63,9 @@ PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < -0.25 mm (an interfer
 
 | Part | Height / position | Space / limit | Margin | |
 |---|---:|---:|---:|---|
-| SW1 rotary: bushing D8.62 in a D8.8 hole (per side) | 4.31 | 4.40 | +0.09 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill |
-| SW2 lever: bushing D7.82 in a D8.0 hole (per side) | 3.91 | 4.00 | +0.09 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill |
-| SW4 button: bushing D7.82 in a D8.0 hole (per side) | 3.91 | 4.00 | +0.09 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill |
+| SW1 rotary: bushing D8.62 in a D9.2 hole (per side) | 4.31 | 4.60 | +0.29 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there) |
+| SW2 lever: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there) |
+| SW4 button: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there) |
 
 ## fascia R, back face
 
@@ -77,12 +77,12 @@ PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < -0.25 mm (an interfer
 
 Rows: 27 PASS, 8 TIGHT
 
-## fascia R, front face: the holes04 variant
+## fascia R, front face: the committed holes (NOT ordered)
 
-The same three bushing rows with every control hole opened 0.4 mm in diameter (`tools/mkpcb_fascia_rhythm.py --open-holes`; the extra zip `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`, `fab/HOLES-VARIANT.md`). The committed board, the zip in `fab/ORDER.md` and the rows above keep the 0.09 mm; these rows are not in the tally. The 1 mm line of PASS is for heights: for a clearance fit, +0.29 a side is three times the committed +0.09.
+The same three bushing rows with the control holes as committed, 8.8 and 8.0 mm (`tools/mkpcb_fascia_rhythm.py` without `--open-holes`; the zip kept as `fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`, `fab/HOLES-VARIANT.md`). The ordered fascia opens every hole 0.4 mm (`fab/ORDER.md`): the rows above show +0.29 a side, these +0.09; these rows are not in the tally. The 1 mm line of PASS is for heights: for a clearance fit, +0.29 a side is three times the committed +0.09.
 
 | Part | Height / position | Space / limit | Margin | |
 |---|---:|---:|---:|---|
-| SW1 rotary: bushing D8.62 in a D9.2 hole (per side) | 4.31 | 4.60 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |
-| SW2 lever: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |
-| SW4 button: bushing D7.82 in a D8.4 hole (per side) | 3.91 | 4.20 | +0.29 | **TIGHT**<br>the hole is 0.4 mm wider than the committed one (+0.09 a side before) |
+| SW1 rotary: bushing D8.62 in a D8.8 hole (per side) | 4.31 | 4.40 | +0.09 | **TIGHT**<br>the hole is 0.4 mm narrower than the ordered one (+0.29 a side there) |
+| SW2 lever: bushing D7.82 in a D8.0 hole (per side) | 3.91 | 4.00 | +0.09 | **TIGHT**<br>the hole is 0.4 mm narrower than the ordered one (+0.29 a side there) |
+| SW4 button: bushing D7.82 in a D8.0 hole (per side) | 3.91 | 4.00 | +0.09 | **TIGHT**<br>the hole is 0.4 mm narrower than the ordered one (+0.29 a side there) |

@@ -9,8 +9,9 @@
 #                                             # owner's pick; slope, dogleg, centred: tools/fascia_art.py); a zip's name carries it
 #                                             # unless the style is level
 #     tools/mkfab.sh --keep                   # keep the scratch directory and say where
-#     tools/mkfab.sh TS06-FASCIA-rhythm --open-holes      # the fascia with every control bushing hole opened by 0.4 mm
-#                                             # (8.8 -> 9.2, 8.0 -> 8.4): an EXTRA zip, fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip
+#     tools/mkfab.sh TS06-FASCIA-rhythm --committed-holes # the fascia as committed (8.8 / 8.0 holes): NOT the ordered one, a zip named ...-notordered-fab.zip
+#                                             # (the ordered fascia has every control bushing hole opened by 0.4 mm, 8.8 -> 9.2, 8.0 -> 8.4:
+#                                             # fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip, what the default builds)
 #
 # For each board it:
 #   1. copies the board, its project (net classes), its .kicad_dru (the 0.8 mm HV pad rule, which the
@@ -35,12 +36,14 @@
 #      (<gold> is the variant, or "bare" for --gold none). If a rebuilt zip differs from the one already
 #      there only in the creation dates the Gerbers carry, the old zip is kept and the run says so.
 #
-# --open-holes (fascia only; with no board named it builds the fascia alone) is a variant held by being an extra file,
-# not by a branch: step 1 builds the scratch base board with `tools/mkpcb_fascia_rhythm.py --out FILE --open-holes` (the
-# committed board and PCB/lib are not touched; without the flag that script writes the committed board byte for byte),
-# the gold is drawn on it with `tools/fascia_gold.py --base-pcb`, and the zip's name carries `-holes04`. After the
-# Gerbers are read back, the non-plated drill file must hold exactly the opened sizes (one 9.2, four 8.4, four 2.7).
-# Nothing else changes: the three default zips and fab/ORDER.md are not rebuilt or edited by it. See fab/HOLES-VARIANT.md.
+# THE FASCIA'S HOLES. The owner picked the opened control holes (2026-10-02, "1-  yes", fab/HOLES-VARIANT.md), so the fascia's
+# zip is built on the opened board by default (--open-holes says the same): step 1 builds the scratch base board with
+# `tools/mkpcb_fascia_rhythm.py --out FILE --open-holes` (the committed board and PCB/lib are not touched; without the flag that
+# script writes the committed board byte for byte), the gold is drawn on it with `tools/fascia_gold.py --base-pcb`, and the
+# zip's name carries `-holes04`: fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip is the ORDERED fascia zip. After the Gerbers are
+# read back, the non-plated drill file must hold exactly the opened sizes (one 9.2, four 8.4, four 2.7).
+# --committed-holes builds the board as committed (8.8 / 8.0 holes) instead, in a zip whose name carries `-notordered`: a
+# record of what was not picked (fab/ORDER.md); the DISP and DRV zips are the same either way.
 #
 # It prints a Markdown table of the region counts (the one in fab/README.md) and exits 1 if any
 # board FAILed. Nothing but fab/*.zip is written in the working tree.
@@ -58,30 +61,25 @@ GOLD=divider
 GOLD_SET=0
 LEADERS=level
 LEADERS_SET=0
-OPEN=0
+OPEN=1                       # the fascia's control holes opened 0.4 mm: the owner's pick (2026-10-02), so the ordered zip; --committed-holes is the old board
 while [ $# -gt 0 ]; do
   a=$1; shift
   case $a in
     --keep) KEEP=1 ;;
-    --open-holes) OPEN=1 ;;
+    --open-holes) OPEN=1 ;;      # the default now; kept so the old command line still works
+    --committed-holes) OPEN=0 ;;
     --gold) [ $# -gt 0 ] || { echo "--gold needs a variant (ladder, divider, fans, guilloche or none)"; exit 2; }
             GOLD=$1; GOLD_SET=1; shift ;;
     --gold=*) GOLD=${a#--gold=}; GOLD_SET=1 ;;
     --leaders) [ $# -gt 0 ] || { echo "--leaders needs a style (slope, level, dogleg or centred)"; exit 2; }
             LEADERS=$1; LEADERS_SET=1; shift ;;
     --leaders=*) LEADERS=${a#--leaders=}; LEADERS_SET=1 ;;
-    -h|--help) sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,53p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     TS06-DISP|TS06-DRV|TS06-FASCIA-rhythm) BOARDS="$BOARDS $a" ;;
     TS06-*) echo "unknown board: $a (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm)"; exit 2 ;;
     *) echo "unknown argument: $a (try --help)"; exit 2 ;;
   esac
 done
-if [ "$OPEN" = 1 ]; then
-  BOARDS=${BOARDS:-TS06-FASCIA-rhythm}
-  case " $BOARDS " in
-    *" TS06-DISP "*|*" TS06-DRV "*) echo "--open-holes applies to the fascia only: tools/mkfab.sh TS06-FASCIA-rhythm --open-holes"; exit 2 ;;
-  esac
-fi
 BOARDS=${BOARDS:-TS06-DISP TS06-DRV TS06-FASCIA-rhythm}
 case $GOLD in
   ladder|divider|fans|guilloche|none) ;;
@@ -154,7 +152,7 @@ for B in $BOARDS; do
   if [ "$B" = TS06-FASCIA-rhythm ]; then
     TAG=$GOLD; [ "$GOLD" = none ] && TAG=bare
     [ "$LEADERS" != level ] && TAG="$TAG-$LEADERS"
-    [ "$OPEN" = 1 ] && TAG="$TAG-holes04"
+    if [ "$OPEN" = 1 ]; then TAG="$TAG-holes04"; else TAG="$TAG-notordered"; fi
     N="TS06-FASCIA-R-$TAG"; Z="fab/TS06-FASCIA-R-rev$REV-$TAG-fab.zip"; PL=$LAYERS_FASCIA
   fi
   mkdir -p "$TMP/PCB/$N" "$TMP/out/$N/filled" "$TMP/out/$N/unfilled"
@@ -162,7 +160,8 @@ for B in $BOARDS; do
   cp "PCB/$B/fp-lib-table" "$TMP/PCB/$N/"
   [ -f "PCB/$B/$B.kicad_dru" ] && cp "PCB/$B/$B.kicad_dru" "$TMP/PCB/$N/$N.kicad_dru"
   BASE_PCB="PCB/$B/$B.kicad_pcb"; BASE_ARGS=""
-  if [ "$OPEN" = 1 ]; then
+  OPEN_B=0; [ "$B" = TS06-FASCIA-rhythm ] && OPEN_B=$OPEN       # the opened holes are the fascia's only
+  if [ "$OPEN_B" = 1 ]; then
     # the variant's base board: the generator's own board with every control hole opened by 0.4 mm, in the scratch directory
     BASE_PCB="$TMP/$N.base.kicad_pcb"
     if ! python3 tools/mkpcb_fascia_rhythm.py --out "$BASE_PCB" --open-holes > "$TMP/$N.open.log" 2>&1; then
@@ -262,7 +261,7 @@ EOF
       echo "FAIL $B: the gold is not exposed in the Gerbers; not zipped"; FAILED=1; continue
     fi
   fi
-  if [ "$OPEN" = 1 ]; then
+  if [ "$OPEN_B" = 1 ]; then
     # the opened holes must be in the drill file the fab drills from: one 9.2 (the dial), four 8.4, the four 2.7 screw holes
     if ! python3 - "$TMP/out/$N/filled" <<'PYEOF'
 import collections, glob, re, sys

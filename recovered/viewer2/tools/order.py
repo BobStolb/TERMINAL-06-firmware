@@ -19,7 +19,7 @@ Placing the order is the owner's own hand: nothing here, and nothing on the page
 import json, os, re, sys
 
 REPO_URL = "https://github.com/BobStolb/TERMINAL-06-firmware/blob/%s/"
-HOLES_ZIP = "fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip"   # the extra fascia zip (fab/HOLES-VARIANT.md): not in ORDER.md
+HOLES_ZIP = "fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip"   # the ordered fascia zip (control holes opened, fab/HOLES-VARIANT.md): in ORDER.md
 
 
 def clean(s):
@@ -74,8 +74,8 @@ def plain(r):
     if r["what"] == "window, X":
         return "The glass edge is %.2f mm from the case's trench wall. It fits with room to spare for a part's tolerance, but not a lot." % m
     if r["what"] == "hole":
-        return ("The control's threaded bushing is %.2f mm narrower than its hole on each side. It goes in, but only just: ordinary hole tolerance at a board house is of the same size, "
-                "so test-fit one real part before relying on it." % m)
+        return ("The control's threaded bushing is %.2f mm narrower than its hole on each side (the holes are opened 0.4 mm: as drawn it was 0.09). It goes in with room for a drill's tolerance, "
+                "and until its nut is tightened the part can sit up to that far off centre; test-fit one real part before relying on it." % m)
     return "%s: margin %.2f mm." % (st, m)
 
 
@@ -126,21 +126,21 @@ def main(repo, out, branch="pcb/kicad-boards"):
     frows.sort(key=lambda r: (r["status"] != "FAIL", r["margin"]))
 
     # ---- open items, then what the prototype closes
-    if not os.path.isfile(os.path.join(repo, HOLES_ZIP)):
-        sys.exit("order.py: %s is named by the Order view's holes item but is not in the repository" % HOLES_ZIP)
-    hv = fit.get("holes_variant")
-    if not hv or {r["margin"] for r in hv["rows"]} != {0.29} or {r["margin"] for r in fit["rows"] if r["what"] == "hole"} != {0.09}:
-        sys.exit("order.py: fit-table.json no longer shows the bushing margin as 0.09 mm (ordered) and 0.29 mm (holes04 variant)")
+    if HOLES_ZIP not in {b["zip"] for b in boards}:
+        sys.exit("order.py: %s (the fascia with its control holes opened) is not the fascia zip fab/ORDER.md names" % HOLES_ZIP)
+    hc = fit.get("holes_committed")
+    if not hc or {r["margin"] for r in hc["rows"]} != {0.09} or {r["margin"] for r in fit["rows"] if r["what"] == "hole"} != {0.29}:
+        sys.exit("order.py: fit-table.json no longer shows the bushing margin as 0.29 mm (ordered, holes opened) and 0.09 mm (committed holes, not ordered)")
     open_items = [
         {"id": "g11", "title": "Which fascia", "blocking": True,
          "body": "R is recommended (3 to 0 in the referendum) and is what the zip holds. If you choose another fascia, its zip has to be rebuilt first."},
         {"id": "gold", "title": "Which gold", "blocking": True,
          "body": "The Divider is the leader's pick and is what the zip holds. Ladder, fans and guilloche are laid out for the narrower fascia A: on R only the Divider is ready."},
-        {"id": "holes", "title": "Fascia holes: as drawn, or opened by 0.4 mm (the extra zip)", "blocking": True,
-         "body": "As drawn, the five control holes leave 0.09 mm a side round the bushings (the dial 8.62 in 8.8, the levers and buttons 7.82 in 8.0): "
-                 "A fab's drill tolerance can take 0.09 mm whole. The extra zip, " + HOLES_ZIP + ", opens every one by 0.4 mm (9.2 and 8.4): "
-                 "0.09 mm against 0.29 mm a side. To pick the extra zip, send it to the fab in place of the fascia zip above; nothing else changes "
-                 "(fab/HOLES-VARIANT.md). The sheet above, and the zip in it, are the fascia as drawn."},
+        {"id": "holes", "title": "Fascia holes: opened by 0.4 mm (picked)", "blocking": False,
+         "body": "Picked by the owner (2026-10-02): the fascia zip above, " + HOLES_ZIP + ", has every control hole opened by 0.4 mm (the dial 9.2, the levers and buttons 8.4): "
+                 "0.29 mm a side round the bushings, where the holes as drawn (8.8 and 8.0) left 0.09 mm, less than a fab's drill tolerance. The price is play: "
+                 "until its nut is tightened a part can sit up to 0.29 mm off centre. A dry fit with real parts closes it. "
+                 "The holes as drawn are the zip that was not ordered (fab/HOLES-VARIANT.md)."},
         {"id": "quote", "title": "Check the fab quote against the sheet", "blocking": True,
          "body": "Quantity 10 of each; the fascia 2.0 mm, not 1.6 mm; ENIG on all three (with HASL the gold would be silver-grey); mask black, matte if it costs little; silk white; "
                  "on the fascia ask for no fab order number on the face. No prices were looked up."},

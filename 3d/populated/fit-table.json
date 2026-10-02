@@ -324,34 +324,34 @@
   {
    "board": "fascia R",
    "side": "front face",
-   "part": "SW1 rotary: bushing D8.62 in a D8.8 hole (per side)",
+   "part": "SW1 rotary: bushing D8.62 in a D9.2 hole (per side)",
    "height": 4.31,
-   "space": 4.4,
-   "margin": 0.09,
+   "space": 4.6,
+   "margin": 0.29,
    "status": "TIGHT",
-   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill",
+   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there)",
    "what": "hole"
   },
   {
    "board": "fascia R",
    "side": "front face",
-   "part": "SW2 lever: bushing D7.82 in a D8.0 hole (per side)",
+   "part": "SW2 lever: bushing D7.82 in a D8.4 hole (per side)",
    "height": 3.91,
-   "space": 4.0,
-   "margin": 0.09,
+   "space": 4.2,
+   "margin": 0.29,
    "status": "TIGHT",
-   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill",
+   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there)",
    "what": "hole"
   },
   {
    "board": "fascia R",
    "side": "front face",
-   "part": "SW4 button: bushing D7.82 in a D8.0 hole (per side)",
+   "part": "SW4 button: bushing D7.82 in a D8.4 hole (per side)",
    "height": 3.91,
-   "space": 4.0,
-   "margin": 0.09,
+   "space": 4.2,
+   "margin": 0.29,
    "status": "TIGHT",
-   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the footprint's drill",
+   "note": "bushing diameters are the calipered values of the repo's STEP files; the hole is the ordered board's drill, 0.4 mm wider than the committed footprint's (+0.09 a side there)",
    "what": "hole"
   },
   {
@@ -392,33 +392,33 @@
   "PASS": 27,
   "TIGHT": 8
  },
- "holes_variant": {
-  "extra_mm": 0.4,
-  "about": "the three bushing rows on the board with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md); not in rows or tally",
+ "holes_committed": {
+  "extra_mm": -0.4,
+  "about": "the three bushing rows on the committed board, holes 8.8 / 8.0 (the zip that was not ordered, fab/HOLES-VARIANT.md); not in rows or tally",
   "rows": [
    {
-    "part": "SW1 rotary: bushing D8.62 in a D9.2 hole (per side)",
+    "part": "SW1 rotary: bushing D8.62 in a D8.8 hole (per side)",
     "height": 4.31,
-    "space": 4.6,
-    "margin": 0.29,
+    "space": 4.4,
+    "margin": 0.09,
     "status": "TIGHT",
-    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+    "note": "the hole is 0.4 mm narrower than the ordered one (+0.29 a side there)"
    },
    {
-    "part": "SW2 lever: bushing D7.82 in a D8.4 hole (per side)",
+    "part": "SW2 lever: bushing D7.82 in a D8.0 hole (per side)",
     "height": 3.91,
-    "space": 4.2,
-    "margin": 0.29,
+    "space": 4.0,
+    "margin": 0.09,
     "status": "TIGHT",
-    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+    "note": "the hole is 0.4 mm narrower than the ordered one (+0.29 a side there)"
    },
    {
-    "part": "SW4 button: bushing D7.82 in a D8.4 hole (per side)",
+    "part": "SW4 button: bushing D7.82 in a D8.0 hole (per side)",
     "height": 3.91,
-    "space": 4.2,
-    "margin": 0.29,
+    "space": 4.0,
+    "margin": 0.09,
     "status": "TIGHT",
-    "note": "the hole is 0.4 mm wider than the committed one (+0.09 a side before)"
+    "note": "the hole is 0.4 mm narrower than the ordered one (+0.29 a side there)"
    }
   ]
  }

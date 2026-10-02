@@ -36,11 +36,13 @@ GOLDS = ("none", "ladder", "divider", "fans", "guilloche")
 BASE_OF = {"TS06-FASCIA-rhythm": "R", "TS06-FASCIA": "A"}      # the board fascia_gold.py builds on
 
 
-def art_board(fascia, gold, outdir, leaders=None):
+def art_board(fascia, gold, outdir, leaders=None, open_holes=False):
     """The fascia as ordered: PCB/<fascia> with the Plates print and the <gold> gold, built into outdir by
     tools/fascia_gold.py (its own checks must be clean, as in tools/mkfab.sh). Returns the path of the scratch board.
     gold none: the committed board itself (nothing is built). Nothing under PCB/ is written.
-    leaders: the white print's leader style (fascia_art.LEADER_STYLES; None: the default, TS06_LEADERS or the face's own: level on R, slope on A)."""
+    leaders: the white print's leader style (fascia_art.LEADER_STYLES; None: the default, TS06_LEADERS or the face's own: level on R, slope on A).
+    open_holes (R only): build on the board with every control hole opened 0.4 mm (open_holes_board), the board that is ordered
+    (fab/HOLES-VARIANT.md); the default is the committed board, whose holes are the same to the case checks."""
     if gold in (None, "", "none"):
         return os.path.join(ROOT, "PCB", fascia, fascia + ".kicad_pcb")
     if gold not in GOLDS:
@@ -48,8 +50,9 @@ def art_board(fascia, gold, outdir, leaders=None):
     if fascia not in BASE_OF:
         sys.exit("--gold applies to the fascia boards (%s), not %s" % (", ".join(BASE_OF), fascia))
     out = os.path.join(outdir, fascia + "-" + gold + ".kicad_pcb")
+    base = ["--base-pcb", open_holes_board(outdir)] if open_holes and fascia == "TS06-FASCIA-rhythm" else []
     r = subprocess.run([sys.executable, os.path.join(HERE, "fascia_gold.py"), gold, out, "--base", BASE_OF[fascia]]
-                       + (["--leaders", leaders] if leaders else []), capture_output=True, text=True)
+                       + (["--leaders", leaders] if leaders else []) + base, capture_output=True, text=True)
     if r.returncode != 0 or not os.path.exists(out):
         sys.exit("tools/fascia_gold.py %s --base %s failed its own checks:\n%s%s" % (gold, BASE_OF[fascia], r.stdout, r.stderr))
     print(r.stdout.splitlines()[0] if r.stdout else "gold board built")

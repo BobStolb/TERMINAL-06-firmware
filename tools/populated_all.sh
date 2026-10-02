@@ -45,7 +45,8 @@ say "1 models";   python3 tools/build_models3d.py
 say "2 coverage"; python3 tools/model_coverage.py
 for B in TS06-DISP TS06-DRV "$FASCIA"; do
   if [ "$B" = "$FASCIA" ]; then
-    say "3 render $B (gold: $GOLD)"; python3 tools/render_populated.py "$B" "$OUT" --gold "$GOLD"
+    HOLES=""; [ "$B" = TS06-FASCIA-rhythm ] && [ "$GOLD" != none ] && HOLES="--open-holes"      # the ordered fascia has its control holes opened
+    say "3 render $B (gold: $GOLD)"; python3 tools/render_populated.py "$B" "$OUT" --gold "$GOLD" $HOLES
   else
     say "3 render $B"; python3 tools/render_populated.py "$B" "$OUT"
   fi

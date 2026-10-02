@@ -6,8 +6,10 @@
     python3 tools/dfm_check.py --gold ladder         # the fascia with another gold (default divider; none = bare)
     python3 tools/dfm_check.py --no-selftest         # skip the deliberately broken copy (G7)
     python3 tools/dfm_check.py --g11                 # the G11 conditions, measured on the fascia with its gold
-    python3 tools/dfm_check.py --open-holes          # the fascia R variant with every control hole opened 0.4 mm (fab/HOLES-VARIANT.md):
-                                                     # its zip is fab/TS06-FASCIA-R-revA-<gold>-holes04-fab.zip (tools/mkfab.sh --open-holes);
+    python3 tools/dfm_check.py --committed-holes     # the fascia R as committed (8.8 / 8.0 holes), NOT the ordered one: its zip is
+                                                     # fab/TS06-FASCIA-R-revA-<gold>-notordered-fab.zip (tools/mkfab.sh --committed-holes);
+                                                     # the ordered fascia has every control hole opened 0.4 mm (fab/HOLES-VARIANT.md): its zip
+                                                     # fab/TS06-FASCIA-R-revA-<gold>-holes04-fab.zip is the default here (--open-holes says so);
                                                      # with no board named it checks that one board; works with --g11 too
     python3 tools/dfm_check.py --open-holes --leaders level   # the same for another leader style (slope, level, dogleg, centred;
                                                      # tools/fascia_art.py): its zip is the one tools/mkfab.sh --leaders level wrote
@@ -121,7 +123,7 @@ def fascia_zip(gold, open_holes=False):
     """The fascia R's zip in fab/: named after the gold, after the leader style when it is not level, and after the opened
     holes of the variant (tools/mkfab.sh names it the same way)."""
     return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s%s-fab.zip" % (
-        "bare" if gold == "none" else gold, "" if LEADERS == "level" else "-" + LEADERS, "-holes04" if open_holes else ""))
+        "bare" if gold == "none" else gold, "" if LEADERS == "level" else "-" + LEADERS, "-holes04" if open_holes else "-notordered"))
 
 
 def scratch(key, gold, mutate=None, open_holes=False):
@@ -383,7 +385,7 @@ def g11(gold, open_holes=False):
     fa.LEADERS = LEADERS
     TOL_OUTLINE, TOL_HOLE, BOSS_R = 0.2, 0.1, 3.5       # mm: outline +-0.2 and hole position +-0.1 are INFERRED fab tolerances;
     print("G11 conditions on the fascia R with the %s gold%s (measured from the art board that tools/fascia_gold.py builds, and its Gerbers)" % (
-        gold, ", control holes opened 0.4 mm (the holes04 variant)" if open_holes else ""))
+        gold, ", control holes opened 0.4 mm (as ordered)" if open_holes else ", control holes as committed (NOT ordered)"))
     print()
     tmp, name = scratch("TS06-FASCIA-rhythm", gold, open_holes=open_holes)
     try:
@@ -480,7 +482,8 @@ def run_board(key, gold, open_holes=False):
         shutil.rmtree(tmp, ignore_errors=True)
     rev = re.search(r"-rev([A-Z0-9]+)-", os.path.basename(z))
     title = "%s rev %s%s%s, zip %s" % (key, rev.group(1) if rev else "?", "" if key != "TS06-FASCIA-rhythm" else ", gold %s" % gold,
-                                       ", control holes opened 0.4 mm (variant)" if open_holes else "", os.path.relpath(z, ROOT))
+                                       ("" if key != "TS06-FASCIA-rhythm" else ", control holes opened 0.4 mm (as ordered)" if open_holes else ", control holes as committed (NOT ordered)"),
+                                       os.path.relpath(z, ROOT))
     table(title, rows, other, extra)
     return all(r[4] for r in rows)
 
@@ -491,16 +494,22 @@ def main():
     ap.add_argument("--gold", default="divider", choices=("ladder", "divider", "fans", "guilloche", "none"))
     ap.add_argument("--no-selftest", action="store_true")
     ap.add_argument("--g11", action="store_true")
-    ap.add_argument("--open-holes", action="store_true", help="the fascia R variant with its control holes opened 0.4 mm (zip ...-holes04-fab.zip)")
+    ap.add_argument("--open-holes", action="store_true", help="the fascia R with its control holes opened 0.4 mm, the ordered one (zip ...-holes04-fab.zip): "
+                    "the default now; given alone it checks the fascia alone")
+    ap.add_argument("--committed-holes", action="store_true", help="the fascia R as committed (8.8 / 8.0 holes), NOT the ordered one (zip ...-notordered-fab.zip, "
+                    "which mkfab.sh --committed-holes writes); given alone it checks the fascia alone")
     ap.add_argument("--leaders", default=LEADERS, choices=("slope", "level", "dogleg", "centred"),
                     help="the fascia R's leader style (tools/fascia_art.py; default level, the owner's pick): its zip is the one "
                          "tools/mkfab.sh --leaders STYLE wrote, ...-<gold>-<style>[-holes04]-fab.zip")
     a = ap.parse_args()
     globals()["LEADERS"] = a.leaders
     os.environ["TS06_LEADERS"] = a.leaders             # the art boards built here (tools/fascia_gold.py, a subprocess) take it from the environment
-    todo = a.boards or (["TS06-FASCIA-rhythm"] if a.open_holes else list(BOARDS))
-    if a.open_holes and todo != ["TS06-FASCIA-rhythm"]:
-        ap.error("--open-holes applies to TS06-FASCIA-rhythm only")
+    if a.open_holes and a.committed_holes:
+        ap.error("--open-holes and --committed-holes do not go together")
+    holes = not a.committed_holes                       # the ordered fascia has its control holes opened (fab/HOLES-VARIANT.md)
+    todo = a.boards or (["TS06-FASCIA-rhythm"] if (a.open_holes or a.committed_holes) else list(BOARDS))
+    if (a.open_holes or a.committed_holes) and todo != ["TS06-FASCIA-rhythm"]:
+        ap.error("--open-holes / --committed-holes apply to TS06-FASCIA-rhythm only")
     for k in todo:
         if k not in BOARDS:
             ap.error("unknown board %s (%s)" % (k, ", ".join(BOARDS)))
@@ -508,11 +517,11 @@ def main():
     print()
     good = True
     if a.g11:
-        return 0 if g11(a.gold, a.open_holes) else 1
+        return 0 if g11(a.gold, holes) else 1
     if not a.no_selftest:
         good &= selftest()
     for k in todo:
-        good &= run_board(k, a.gold, a.open_holes)
+        good &= run_board(k, a.gold, holes and k == "TS06-FASCIA-rhythm")
     print("DFM CHECK: %s" % ("PASS for %s" % ", ".join(todo) if good else "FAIL (see the rows above)"))
     return 0 if good else 1
 

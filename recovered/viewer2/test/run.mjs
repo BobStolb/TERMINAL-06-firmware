@@ -803,17 +803,17 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   const front17 = fitAll.find(r => /^ИН-17 glass front/.test(r.part));
   ok('Order: no FAIL row left; the ИН-17 front row is a PASS since its length was measured (19.72 mm)', (order.fit.tally.FAIL || 0) === 0 && failN === 0 && !!front17 && front17.status === 'PASS' && /19\.72/.test(front17.note), front17 ? `${front17.status} ${front17.margin}` : 'no ИН-17 front row');
   ok('Order: the open items before ordering, and what the prototype closes', o.open.length === order.open.length && o.open.length === 6 && /Which fascia/.test(o.open[0]) && /Which gold/.test(o.open[1]) && o.proto === order.prototype.length && o.proto >= 5, `${o.open.length} items, ${o.proto} for the prototype`);
-  // the extra fascia zip (fab/HOLES-VARIANT.md): one row in the open list, naming the zip and the margin, backed by the fit table and the file
+  // the fascia zip is the one with the control holes opened (fab/HOLES-VARIANT.md, picked 2026-10-02): one row in the open list, naming the zip and the margin, backed by the fit table and the file
   const hv = await page.evaluate(() => [...document.querySelectorAll('#order-open li[data-open="holes"]')].map(l => ({ text: l.textContent.replace(/\s+/g, ' ').trim(), pill: l.querySelector('.pill').textContent.trim(), idx: [...l.parentNode.children].indexOf(l) })));
   const fitJ = JSON.parse(fs.readFileSync(path.join(REPO, '3d', 'populated', 'fit-table.json'), 'utf8'));
   const hzip = 'fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip';
-  ok('Order: the open list has the fascia-holes row, with the extra zip and 0.09 against 0.29 mm a side',
-    hv.length === 1 && hv[0].idx === 2 && hv[0].pill === 'before you order' && hv[0].text.includes('Fascia holes: as drawn, or opened by 0.4 mm (the extra zip).')
-    && hv[0].text.includes(hzip) && hv[0].text.includes('0.09 mm against 0.29 mm a side') && order.open[2].id === 'holes'
+  ok('Order: the open list has the fascia-holes row (picked), with the ordered zip and 0.29 mm a side',
+    hv.length === 1 && hv[0].idx === 2 && hv[0].pill === 'does not hold the order' && hv[0].text.includes('Fascia holes: opened by 0.4 mm (picked).')
+    && hv[0].text.includes(hzip) && hv[0].text.includes('0.29 mm a side') && order.open[2].id === 'holes'
     && fs.existsSync(path.join(REPO, hzip)) && fs.statSync(path.join(REPO, hzip)).size > 10000
-    && fitJ.rows.filter(r => r.what === 'hole').length === 3 && fitJ.rows.filter(r => r.what === 'hole').every(r => r.margin === 0.09)
-    && fitJ.holes_variant.rows.length === 3 && fitJ.holes_variant.rows.every(r => r.margin === 0.29)
-    && !order.boards.some(b => b.zip === hzip),
+    && fitJ.rows.filter(r => r.what === 'hole').length === 3 && fitJ.rows.filter(r => r.what === 'hole').every(r => r.margin === 0.29)
+    && fitJ.holes_committed.rows.length === 3 && fitJ.holes_committed.rows.every(r => r.margin === 0.09)
+    && order.boards.some(b => b.zip === hzip) && !order.boards.some(b => /notordered/.test(b.zip)),
     hv.length ? hv[0].text.slice(0, 150) : 'no row');
   const repoFab = f => fs.statSync(path.join(REPO, f)).size;
   ok('Order: the three fab zips are linked on GitHub under pcb/kicad-boards, by repo path, not embedded',
