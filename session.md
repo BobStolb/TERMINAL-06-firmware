@@ -1,7 +1,32 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-Read this file first, then the RESUME HERE block of `Claude outputs/TS06-resume-note.md` (the full log, the launch
-log with every run's estimate, cap and actual spend, and the rules).
+## RESUME HERE (updated 02.10.26 09:34 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+* **Mode:** LOUD (the owner is back, 09:2x). In LOUD the Quiet Loop stops: no timed ticks.
+* **Runs:** none. Check after any compact:
+  * `git worktree list`;
+  * the newest commit in each `.claude/worktrees/agent-*`;
+  * a run with no notification and no commit for 30 min is lost. Relaunch it from its brief and its last checkpoint
+    commit.
+* **Job:** the PCB, ready to order. That is done. The order is the owner's own hand.
+* **Waiting for the owner:** the 5 answers to the morning item `nixie-order-ready`:
+  1. the holes variant;
+  2. measure one ИН-17;
+  3. publish the page;
+  4. the tube look;
+  5. the order.
+
+  The details and the steps for each answer are below.
+* **Done after the morning item:** xstream's compacting advice (ANSWER 9b73d01) is adopted:
+  * the keep-line template;
+  * CLAUDE.md "Compact instructions";
+  * this block kept short;
+  * pasted pictures copied into the repo at once.
+* **The keep line to give the owner:** `/compact keep: resume from session.md RESUME HERE; mode <LOUD|QUIET>; runs
+  <none | name, cap, on-report step>; open owner asks <...>; plain short replies; times from date -u`.
+* **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
+* **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
+
+---
 
 ## State (02.10.26 09:15 UTC)
 * **Job:** the PCB, ready to order. The owner's priority: "job prio: previouslu running or brand new>nixie completed
