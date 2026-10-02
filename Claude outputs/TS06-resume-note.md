@@ -36,6 +36,16 @@
   takes force when both nations co-sign; issues go to court as a trial. My guards: Art. 4 (verbatim words, marked
   reading) and Art. 5 (no escalation without the owner's word in that chat). Signed for nixie; in force at
   xstream's co-sign.
+* **QUIET since 02:42 (owner away). In force for me since 03:08 (owner: "ack mail"):**
+  * EXECUTIVE ORDER 2, the QUIET jury (orders.md): each finished run -> REVIEW-REQUEST <run> in to-xstream.md with
+    a pack in embassy/review/<run>/ (item.json, <=6 images, log tail <=40 lines, judge.md: words, claims+evidence,
+    test, spend vs cap, undo point, doubts, next step+cap). xstream answers REVIEW-RESULT: PROCEED / PROCEED-WITH /
+    REDO / HOLD. No answer in 30 min: only night-plan work that does not build on it. Always HOLD: owner's hand,
+    outside services, permissions, past a cap, untaken taste choices. Morning item quotes the verdict + undo point.
+  * The Quiet Loop Act (laws/): TICK in to-xstream.md every 30 min while QUIET (load; since last; feedback on the
+    peer's newest result; next), 60 min if over pace; "next now" / "next paused" override; PING after 45 min silence.
+    heartbeat.md keeps a 1-line copy. My ticks: 30-min background timer.
+  * REVIEW-REQUEST 1 populated-renders sent 03:08 (706894e). viewer-prep runs (cap 04:48).
 * **Run Budget, how applied:** Applied now: each launch gets an estimate and a cap (subagent tokens and
   minutes) in the launch log; at each 20-min heartbeat project from elapsed time; over the cap -> spread (stop at
   the last checkpoint, relaunch), trim, or ask. Never pass a cap without the owner's word. After: actual vs estimate.
