@@ -7,11 +7,13 @@
     python3 3d/case-pair/case_pair.py IN12_SEAT=0  # a what-if: print the envelope, write nothing
 
 WHAT THIS IS. A case drawn around the through-hole pair as it stands in this repository, not
-around remembered numbers. Every dimension below is one of four kinds, and the kind is written
+around remembered numbers. Every dimension below is one of six kinds, and the kind is written
 beside it (and carried into params.scad as a comment):
 
     board     read out of the board generators / board files by --extract (boards.json)
     doc       a number stated in a document in this repository (named)
+    measured  read on a part on the owner's bench (the instrument and the date are named)
+    reading   taken from a measurement by a stated step (a difference, say), not measured itself
     design    a choice made here, with the reason
     assumed   a catalogue-typical value nobody has measured yet - check it on the part
 
@@ -204,7 +206,11 @@ def dims(B):
                                    "TS06-LIB-SOCKET is not captured", g)
     d("IN17_FACE", 14.0, "doc", "ИН-17 outline drawing: face 14 (measurements-IN17 Rev 5)", g)
     d("IN17_H", 20.0, "doc", "ИН-17 outline drawing: 20 across the long face axis", g)
-    d("IN17_D", 22.0, "doc", "ИН-17 outline drawing: glass 22 long", g)
+    d("IN17_D", 19.72, "measured", "the owner's bench caliper, 2026-10-02: ИН-17 glass 19.72 from the dome to the end of the glass "
+                                   "(the outline drawing's 22 is read to include the exhaust pip, IN17_PIP)", g)
+    d("IN17_PIP", 2.28, "reading", "the exhaust pip below the glass end, between the leads: the drawing's 22 minus the measured "
+                                   "19.72 = about 2.28 (a reading: the drawing was not shown to be taken to the pip's tip, and the "
+                                   "pip itself has not been measured)", g)
     d("IN17_STEM", 20.0, "doc", "ИН-17 outline drawing: round stem Ø20 at the base", g)
     d("IN17_DIGIT", 9.0, "doc", "render/rev_f.py DIGIT_17", g)
     d("IN17_STANDOFF_MIN", 6.4, "doc", "TS06_IN17_Socket descr: >= 6.4 mm glass to board (TU: no solder within 8 mm)", g)
@@ -869,7 +875,7 @@ def checks(G, G_lay, G_ff=None):
         "OK" if lim_rear >= v["VIEW_DEG"] else "FAIL", "the digit clears the brow at %g° wherever the cathode "
                                                           "sits (depth to the digit plane is not captured)" % v["VIEW_DEG"])
     d17 = v["IN17_Y"] + v["IN17_DIGIT"] / 2
-    row("4", "ИН-17 digit top (%.2f) at the glass rear (Z %.0f)" % (d17, v["IN17_D"]),
+    row("4", "ИН-17 digit top (%.2f) at the glass rear (Z %g)" % (d17, v["IN17_D"]),
         _fmt_runs(view_range(G, disp["IN17_X"][0], (v["IN17_D"], d17))), "OK")
 
     # 5. what the brow, valance, sill and trench walls must hide

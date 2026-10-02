@@ -69,7 +69,7 @@
 <polygon points="101.94,131.70 111.44,131.70 111.44,126.20 101.94,126.20" fill="none" stroke="#1F2328" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="0.8 0.5"/>
 <text x="101.14" y="124.60" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.90" fill="#1F2328" text-anchor="end" font-weight="400">DRV J1 + plug (X 44-54)</text>
 <polygon points="100.44,66.55 111.44,66.55 111.44,61.05 100.44,61.05" fill="none" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="0.8 0.5"/>
-<polygon points="68.84,93.71 90.84,93.71 90.84,73.71 68.84,73.71" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1.2 0.6"/>
+<polygon points="68.84,93.71 88.56,93.71 88.56,73.71 68.84,73.71" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1.2 0.6"/>
 <text x="79.84" y="92.21" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.80" fill="#8250DF" text-anchor="middle" font-weight="400">ИН-17 (phantom)</text>
 <polyline points="101.94,129.50 98.94,129.50 98.94,142.15 95.94,145.15 66.45,145.15 63.52,141.01" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
 <text x="85.84" y="137.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="1.90" fill="#8250DF" text-anchor="start" font-weight="400">fascia lead 139 mm (phantom)</text>

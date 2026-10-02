@@ -14,10 +14,11 @@ Columns: part, height, space, margin, PASS | TIGHT | FAIL.
     TIGHT  margin < 1 mm
     FAIL   margin < -0.25 mm: an interference bigger than the rounding in the sources (PLS body 2.5 against the model's 2.54, ...)
 Where the model and case_pair.py disagree about a part's size the row says so ("case_pair assumes ...").
---in17-seat MM seats the ИН-17 glass MM above the board's front face instead of the case model's 8.0 (the tubes stand on
-wire leads, so the seat is a choice; `tools/in17_seats.py` draws two of them): the glass moves, the leads and the board do
-not, and two rows are added, the glass to the solder joint on the back against the ТУ's 8 mm, and the glass to the nearest
-part. Without the option the table is what it was.
+--in17-seat MM seats the ИН-17 glass MM above the board's front face instead of the case model's (10.28: the glass is the
+owner's measured 19.72 mm, `3d/IN17.step` scaled to it, and that seat puts its face level with the ИН-12; tools/in17_seats.py
+draws two seats). The tubes stand on wire leads, so the seat is a choice: the glass moves, the leads and the board do not.
+Whatever the seat, the table has the ИН-17's lead rows: the glass end to the solder joint on the back against the ТУ's 8 mm, the
+lead from the glass end to the back face against the tube's 35 mm free lead, and the glass to the nearest part.
 The control holes are read from the fascia board (the footprints' drills), not typed here. After the tally comes the
 holes04 variant (fab/HOLES-VARIANT.md): the same three bushing rows with every control hole opened 0.4 mm, read from the
 board `tools/mkpcb_fascia_rhythm.py --open-holes` writes. Those rows are shown beside the table, not in it: the tally, the
@@ -186,32 +187,37 @@ def main(argv):
     add("TS06-DISP", "front face", "ИН-12/15 glass front (Z %+.2f) vs the window face plane (Z %+.2f)" % (f12, face_plane), f12, face_plane,
         "", what="window, Z")
     f17 = max(world_box(tube_verts(r), Md)[1][2] for r in glass17)
+    seat17 = v["IN17_STANDOFF"] if in17_seat is None else in17_seat
+    f12_front = world_box(tube_verts(glass12[0]), Md)[1][2]
     add("TS06-DISP", "front face", "ИН-17 glass front (Z %+.2f) vs the window face plane (Z %+.2f)" % (f17, face_plane), f17, face_plane,
-        "3d/IN17.step is 24.3 mm from dome to the end of the glass stalk; case_pair.py IN17_D says 22.0 (outline drawing). With the glass %.1f off the board, "
-        "the model's front stands %.1f mm proud of the ИН-12 plane. Measure a bench tube before ordering." % (v["IN17_STANDOFF"] if in17_seat is None else in17_seat, f17 - world_box(tube_verts(glass12[0]), Md)[1][2]),
+        "the model, 3d/IN17.step (24.3 mm from the dome to the end of the glass), is scaled along its axis to the glass the owner measured, %.2f mm "
+        "(bench caliper, 2026-10-02; case_pair.py IN17_D). Seated %.2f mm above the board face, its front stands %+.2f mm from the ИН-12 plane%s"
+        % (v["IN17_D"], seat17, f17 - f12_front, " (the case model's own seat: the faces are level)" if in17_seat is None else ""),
         what="window, Z")
     top17 = max(world_box(tube_verts(r), Md)[1][1] for r in glass17)
     add("TS06-DISP", "front face", "ИН-17 glass top (Y %.2f) vs brow soffit (Y %.2f)" % (top17, soffit), top17, soffit, "", what="window, Y")
-    if in17_seat is not None:
-        # the ТУ (knowledge/TERMINAL-06-measurements-IN17.txt): no solder closer than 8 mm to the glass, no bend closer than 3 mm
-        add("TS06-DISP", "front face", "ИН-17 glass to the solder joint on the back face (seat %.2f + board %.1f) vs the ТУ's 8 mm" % (in17_seat, T), 8.0, in17_seat + T,
-            "the lead runs straight from the glass base through the board; the ТУ allows no solder within 8 mm of the glass (and no bend within 3 mm: "
-            "%.1f mm of lead between that bend and the board face)" % (in17_seat - 3.0), what="in17 lead")
-        gl = np.vstack([tube_verts(r) for r in glass17])
-        near = []
-        for r in disp:
-            if r in glass17 or r.startswith("XP"):
-                continue
-            q = disp[r][disp[r][:, 1] > T]
-            if r in glass12:
-                q = tube_verts(r)
-            lo1, hi1 = world_box(gl, Md)
-            lo2, hi2 = world_box(q, Md)
-            gap = np.maximum(np.maximum(lo1 - hi2, lo2 - hi1), 0.0)
-            near.append((float(np.linalg.norm(gap)), r))
-        g, r = min(near)
-        add("TS06-DISP", "front face", "ИН-17 glass vs the nearest part on the front face (%s, %s)" % (r, fp_of.get(r, "").replace("TS06_", "")), 0.0, g,
-            "clearance row: margin = the gap between the part's and the glass's bounding boxes, so it can only understate the room", what="window, X")
+    # the leads (knowledge/TERMINAL-06-measurements-IN17.txt): no solder closer than 8 mm to the glass, no bend closer than 3 mm, 35 mm of free lead
+    add("TS06-DISP", "front face", "ИН-17 glass to the solder joint on the back face (seat %.2f + board %.1f) vs the ТУ's 8 mm" % (seat17, T), 8.0, seat17 + T,
+        "the lead runs straight from the glass end through the board; the ТУ allows no solder within 8 mm of the glass (and no bend within 3 mm: "
+        "%.1f mm of lead between that bend and the board face)" % (seat17 - 3.0), what="in17 lead")
+    add("TS06-DISP", "front face", "ИН-17 lead from the glass end to the back face (%.2f) vs the tube's 35 mm free lead" % (seat17 + T), seat17 + T, 35.0,
+        "the tube comes with 35 mm of lead (the factory drawing dimensions it); the kit manual trims it to 15-20 mm, which leaves %.1f / %.1f mm past the back face"
+        % (15.0 - (seat17 + T), 20.0 - (seat17 + T)), what="in17 lead")
+    gl = np.vstack([tube_verts(r) for r in glass17])
+    near = []
+    for r in disp:
+        if r in glass17 or r.startswith("XP"):
+            continue
+        q = disp[r][disp[r][:, 1] > T]
+        if r in glass12:
+            q = tube_verts(r)
+        lo1, hi1 = world_box(gl, Md)
+        lo2, hi2 = world_box(q, Md)
+        gap = np.maximum(np.maximum(lo1 - hi2, lo2 - hi1), 0.0)
+        near.append((float(np.linalg.norm(gap)), r))
+    g, r = min(near)
+    add("TS06-DISP", "front face", "ИН-17 glass vs the nearest part on the front face (%s, %s)" % (r, fp_of.get(r, "").replace("TS06_", "")), 0.0, g,
+        "clearance row: margin = the gap between the part's and the glass's bounding boxes (the glass's includes its stubs and pip), so it can only understate the room", what="window, X")
     fl = max(world_box(disp[r], Md)[1][2] for r in lamps)
     add("TS06-DISP", "front face", "colon lamp tip (Z %+.2f) vs the window face plane (Z %+.2f)" % (fl, face_plane), fl, face_plane,
         "the lamps' height is inferred (tip flush with the ИН-12 faces)", what="window, Z")
@@ -282,7 +288,7 @@ def main(argv):
           "PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < %.2f mm (an interference larger than the rounding in the sources). "
           "A *clearance row* has height 0 and the margin is the gap itself." % FAIL_BELOW, ""]
     if in17_seat is not None:
-        md += ["**ИН-17 seated %.2f mm above the board's front face** (the case model's is %.1f); the glass moves, the leads and the board do not." % (in17_seat, v["IN17_STANDOFF"]), ""]
+        md += ["**ИН-17 seated %.2f mm above the board's front face** (the case model's is %.2f); the glass moves, the leads and the board do not." % (in17_seat, v["IN17_STANDOFF"]), ""]
     cur = None
     for x in rows:
         k = (x["board"], x["side"])

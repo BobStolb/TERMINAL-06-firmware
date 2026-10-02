@@ -39,8 +39,11 @@ PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < -0.25 mm (an interfer
 |---|---:|---:|---:|---|
 | ИН-12/15 glass top (Y 74.60) vs brow soffit (Y 75.40) | 74.60 | 75.40 | +0.80 | **TIGHT**<br>case_pair: soffit 0.8 above the glass |
 | ИН-12/15 glass front (Z -0.01) vs the window face plane (Z +1.00) | -0.01 | 1.00 | +1.01 | **PASS** |
-| ИН-17 glass front (Z +2.29) vs the window face plane (Z +1.00) | 2.29 | 1.00 | -1.29 | **FAIL**<br>3d/IN17.step is 24.3 mm from dome to the end of the glass stalk; case_pair.py IN17_D says 22.0 (outline drawing). With the glass 8.0 off the board, the model's front stands 2.3 mm proud of the ИН-12 plane. Measure a bench tube before ordering. |
+| ИН-17 glass front (Z -0.01) vs the window face plane (Z +1.00) | -0.01 | 1.00 | +1.01 | **PASS**<br>the model, 3d/IN17.step (24.3 mm from the dome to the end of the glass), is scaled along its axis to the glass the owner measured, 19.72 mm (bench caliper, 2026-10-02; case_pair.py IN17_D). Seated 10.28 mm above the board face, its front stands +0.00 mm from the ИН-12 plane (the case model's own seat: the faces are level) |
 | ИН-17 glass top (Y 63.79) vs brow soffit (Y 75.40) | 63.79 | 75.40 | +11.61 | **PASS** |
+| ИН-17 glass to the solder joint on the back face (seat 10.28 + board 1.6) vs the ТУ's 8 mm | 8.00 | 11.88 | +3.88 | **PASS**<br>the lead runs straight from the glass end through the board; the ТУ allows no solder within 8 mm of the glass (and no bend within 3 mm: 7.3 mm of lead between that bend and the board face) |
+| ИН-17 lead from the glass end to the back face (11.88) vs the tube's 35 mm free lead | 11.88 | 35.00 | +23.12 | **PASS**<br>the tube comes with 35 mm of lead (the factory drawing dimensions it); the kit manual trims it to 15-20 mm, which leaves 3.1 / 8.1 mm past the back face |
+| ИН-17 glass vs the nearest part on the front face (HL5, LED_D3.0mm) | 0.00 | 2.77 | +2.77 | **PASS**<br>clearance row: margin = the gap between the part's and the glass's bounding boxes (the glass's includes its stubs and pip), so it can only understate the room |
 | colon lamp tip (Z +0.00) vs the window face plane (Z +1.00) | 0.00 | 1.00 | +1.00 | **PASS**<br>the lamps' height is inferred (tip flush with the ИН-12 faces) |
 | H10 glass left edge (X 3.47) vs trench wall (X 3.00) | 0.00 | 0.47 | +0.47 | **TIGHT**<br>clearance row: margin = gap; case_pair allows +0.4 for glass tolerance |
 | ИН-15А glass right edge (X 181.14) vs trench wall (X 182.03) | 0.00 | 0.90 | +0.90 | **TIGHT**<br>clearance row: margin = gap |
@@ -72,7 +75,7 @@ PASS: margin >= 1 mm. TIGHT: margin < 1 mm. FAIL: margin < -0.25 mm (an interfer
 | SW2 body behind the fascia (19.7 deep); nearest TS06-DRV display-side part XS23 | 0.00 | 14.34 | +14.34 | **PASS**<br>clearance row: margin = the gap between the part's world bounding boxes (the fascia is raked 12 deg: conservative) |
 | SW4 body behind the fascia (19.7 deep); nearest TS06-DRV display-side part XS25 | 0.00 | 14.69 | +14.69 | **PASS**<br>clearance row: margin = the gap between the part's world bounding boxes (the fascia is raked 12 deg: conservative) |
 
-Rows: 1 FAIL, 23 PASS, 8 TIGHT
+Rows: 27 PASS, 8 TIGHT
 
 ## fascia R, front face: the holes04 variant
 

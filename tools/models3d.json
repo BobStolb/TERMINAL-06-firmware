@@ -27,18 +27,28 @@
     -90,
     90
    ],
+   "scale": [
+    0.811523,
+    1,
+    1
+   ],
    "offset": [
     -6.165,
     8.995,
-    32.3
+    30.0
    ],
    "kind": "taken",
-   "note": "3d/IN17.step lies along x in its own frame, lead stubs (5.5 mm) at one end. Turned to stand on its stubs, the glass base 8.0 mm above the board face (case_pair.py IN17_STANDOFF: faces coplanar with the IN-12s), centred on the 11-pad pattern"
+   "note": "3d/IN17.step lies along x in its own frame: 24.3 mm of glass from the dome to the end of the stalk, then lead stubs (5.5 mm). Scaled along x (the tube's axis) by 0.811523 = 19.72 / 24.3, so the glass is the owner's measured 19.72 mm from the dome to the end of the glass (bench caliper, 2026-10-02; case_pair.py IN17_D) and the stubs 4.46 mm; the section (12.25 x 17.67) is the model's own and is not changed. Turned to stand on its stubs, the glass end 10.28 mm above the board face and the dome 30.0 (case_pair.py IN17_STANDOFF = Z_DISP_F - IN17_D: the face level with the IN-12s), centred on the 11-pad pattern"
   },
   "IN17_wires": {
    "file": "${TS06_POP}/in17_wires.wrl",
    "kind": "made",
-   "note": "wire leads D0.4 from the end of the model's 5.5 mm stubs to 0.8 mm past the back face (the stubs alone end 2.5 mm above the board)"
+   "note": "wire leads D0.4 from the end of the model's scaled stubs (4.46 mm long, ending 5.82 mm above the board) to 0.8 mm past the back face"
+  },
+  "IN17_pip": {
+   "file": "${TS06_POP}/in17_pip.wrl",
+   "kind": "made",
+   "note": "the exhaust pip, D3.5 with a round tip, standing 2.28 mm out of the glass end between the leads (case_pair.py IN17_PIP: a reading, the drawing's 22 minus the measured 19.72; the diameter is inferred)"
   },
   "INS1_lamp": {
    "file": "${TS06_3D}/INS1.step",
@@ -173,7 +183,8 @@
     "TS06_IN17_Socket": {
      "models": [
       "IN17_tube",
-      "IN17_wires"
+      "IN17_wires",
+      "IN17_pip"
      ]
     },
     "TS06_INS1_Lamp": {

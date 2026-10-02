@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
 """ИН-17: one side view at two seats, and the numbers behind it.
 
-    python3 tools/in17_seats.py OUT.png [--seats 8.0 5.7] [--tu 8.0 --bend 3.0 --glass-min 6.4]
+    python3 tools/in17_seats.py OUT.png [--seats 10.28 6.4] [--tu 8.0 --bend 3.0 --glass-min 6.4]
 
-The fit table FAILs the ИН-17 glass front at 1.29 mm past the window plane, at an inferred 8.0 mm seat (the glass base
-8.0 mm above the board's front face, `case_pair.py` IN17_STANDOFF). The model's glass is 24.3 mm from dome to the end of its
-stalk; the outline drawing says 22.0. This draws the S10 tube from the right end of the stack (an orthographic projection
-along X: the front of the clock is on the LEFT, up is up) at two seats:
+The ИН-17 glass is the owner's measured 19.72 mm from the dome to the end of the glass (bench caliper, 2026-10-02: `case_pair.py`
+IN17_D; the outline drawing's 22 is read to include the exhaust pip, about 2.28 mm, IN17_PIP). The model the renders use, `3d/IN17.step`
+(24.3 mm to the end of its stalk), is scaled along its axis to that (tools/models3d.json), and the case model seats the glass so that its
+face is level with the ИН-12 faces: 30.0 - 19.72 = 10.28 mm from the board's front face to the glass end (`case_pair.py` IN17_STANDOFF).
+This draws the S10 tube from the right end of the stack (an orthographic projection along X: the front of the clock is on the LEFT, up
+is up) at two seats:
 
-  * the one the case model assumes, 8.0 mm;
-  * the one that brings the model's glass face level with the ИН-12 face (8.0 minus the model's overshoot: about 5.7 mm),
+  * the case model's, 10.28 mm: the face level with the ИН-12;
+  * the lowest the footprint and the ТУ allow, 6.4 mm (the footprint's own glass-to-board minimum; it is also the ТУ's 8 mm of
+    lead to the solder less the board's 1.6): the face stands 3.88 mm behind the ИН-12 faces,
 
-with the window face plane and the ИН-12 front as lines, the board in section, the ИН-12 next to it, the LED below it and
-the leads. It prints, for each seat, in plain numbers: where the glass front stands, how far the solder joint on the back
-of the board is from the glass (the ТУ allows no solder closer than 8 mm and no bend closer than 3 mm to the glass,
-`knowledge/TERMINAL-06-measurements-IN17.txt`), the lead length needed against the 35 mm the tube comes with (15-20 mm
-after the kit manual's trim), and the nearest part to the glass (bounding-box gap, so it can only understate the room).
+with the window face plane and the ИН-12 front as lines, the board in section, the ИН-12 next to it, the LED below it, the leads and
+the pip. It prints, for each seat, in plain numbers: where the glass front stands, how far the solder joint on the back of the board
+is from the glass (the ТУ allows no solder closer than 8 mm and no bend closer than 3 mm to the glass,
+`knowledge/TERMINAL-06-measurements-IN17.txt`), the lead length needed against the 35 mm the tube comes with (15-20 mm after the kit
+manual's trim), where the pip's tip stands above the board (the footprint has no hole for it: it hangs in the gap), and the nearest
+part to the glass (bounding-box gap, so it can only understate the room). The highest seat is where the face reaches the window plane.
 
 The numbers come from the placed models (the DISP GLB, as in tools/fit_table.py) and from `tools/stack_frame.py`'s frame
 (Z towards the viewer, the ИН-12 front at Z 0); the leads' Y come from the board's own pads. Needs numpy and rsvg-convert.
-`python3 tools/fit_table.py ... --in17-seat 5.7` gives the same front and window rows for the fit table.
+`python3 tools/fit_table.py ... --in17-seat 6.4` gives the fit table with the glass at another seat.
+The pip's 2.28 mm is a reading (the drawing's 22 less the measured 19.72), not a measurement.
 """
 import argparse, math, os, subprocess, sys, tempfile
 import numpy as np
@@ -101,12 +106,20 @@ def main():
     f17 = tube("V5")[:, 2].max()
     f12 = max(tube(r)[:, 2].max() for r in ("V1", "V2", "V3", "V4", "V9", "V10"))
     level = seat0 - (f17 - f12)
-    seats = a.seats or [seat0, round(level, 2)]
-    base_u = disp["V5"][disp["V5"][:, 1] > 8.5][:, 1].min()
-    assert abs(base_u - (T + seat0)) < 0.05, "the model's glass base is not at the 8.0 seat: %.3f" % base_u
+    seats = a.seats or [seat0, a.glass_min]
+    base_u = T + seat0                  # the glass end, in the board frame (u = 0 on the back face)
+    pip_len = v["IN17_PIP"]
+    assert abs(disp["V5"][:, 1].max() - (base_u + v["IN17_D"])) < 0.05, \
+        "the model's glass is not the measured %.2f mm long at the %.2f seat: dome at u %.3f" % (v["IN17_D"], seat0, disp["V5"][:, 1].max())
     window = -v["Z_FACE"]
     sill, soffit = v["SILL_TOP_Y"], v["SOFFIT_Y"]
-    glass = world(disp["V5"][disp["V5"][:, 1] > base_u - 0.5])
+    glass = world(disp["V5"][disp["V5"][:, 1] > base_u - 0.05])
+    body = disp["V5"][disp["V5"][:, 1] > base_u + 1.0]
+    cx, cz = (body[:, 0].min() + body[:, 0].max()) / 2, (body[:, 2].min() + body[:, 2].max()) / 2
+    pv = disp["V5"][(disp["V5"][:, 1] > base_u - pip_len - 0.05) & (disp["V5"][:, 1] < base_u + 0.2)
+                    & (np.hypot(disp["V5"][:, 0] - cx, disp["V5"][:, 2] - cz) < 2.0)]
+    assert abs(pv[:, 1].min() - (base_u - pip_len)) < 0.05, "the model's pip does not reach %.2f mm below the glass end" % pip_len
+    pip = world(pv)
     glass_y = (glass[:, 1].min(), glass[:, 1].max())
 
     # ------------------------------------------------------------------ the numbers, per seat
@@ -124,30 +137,32 @@ def main():
         for gp, r in gaps:
             cls = "LED" if r.startswith("HL") else "colon lamp" if r in ("V7", "V8") else "IN-12/15 glass" if r != "V6" else "IN-17 (S1)"
             by.setdefault(cls, (gp, r))
-        return dict(seat=s, front=f17 + (s - seat0), proud=f17 + (s - seat0) - f12, win=window - (f17 + (s - seat0)),
+        return dict(seat=s, front=f17 + (s - seat0), proud=f17 + (s - seat0) - f12, win=window - (f17 + (s - seat0)), pip_tip=s - pip_len,
                     joint=s + T, joint_m=s + T - a.tu, glass_board_m=s - a.glass_min, bend_room=s - a.bend,
                     need=s + T, tails=[L - (s + T) for L in TRIM], nearest=by, near=min(gaps))
 
     N = [seat_numbers(s) for s in seats]
-    lowest_tu = a.tu - T
-    N_tu = seat_numbers(lowest_tu)
+    lowest_tu = a.tu - T                # the ТУ's lowest seat: 8 mm of lead to the solder, less the board
+    highest = seat0 + (window - f17)    # where the face reaches the window plane
 
-    print("ИН-17 glass front at the model's 8.0 seat: Z %+.2f; ИН-12 front Z %+.2f; window face plane Z %+.2f; "
-          "the face is level with the ИН-12 at a seat of %.2f mm" % (f17, f12, window, level))
-    hdr = "%-34s" + " %10s" * 3
-    print(hdr % ("seat (glass base above board face)", "%.2f mm" % seats[0], "%.2f mm" % seats[1], "%.2f mm" % lowest_tu))
+    print("ИН-17 glass front at the case model's %.2f seat: Z %+.2f; ИН-12 front Z %+.2f; window face plane Z %+.2f; "
+          "the face is level with the ИН-12 at a seat of %.2f mm, and reaches the window plane at %.2f mm; "
+          "glass %.2f mm (the owner's measurement), pip %.2f mm below it (a reading)" % (seat0, f17, f12, window, level, highest, v["IN17_D"], pip_len))
+    hdr = "%-34s" + " %10s" * 2
+    print(hdr % ("seat (glass end above board face)", "%.2f mm" % seats[0], "%.2f mm" % seats[1]))
     rows = [("glass front, Z", "front", "%+.2f"), ("in front of the ИН-12 front by", "proud", "%+.2f"),
             ("window plane minus glass front", "win", "%+.2f"),
             ("glass to the joint on the back, mm", "joint", "%.2f"), ("  minus the ТУ %.1f mm" % a.tu, "joint_m", "%+.2f"),
             ("glass to board minus %.1f (footprint)" % a.glass_min, "glass_board_m", "%+.2f"),
-            ("room between a %.1f mm bend and the board" % a.bend, "bend_room", "%.2f")]
+            ("room between a %.1f mm bend and the board" % a.bend, "bend_room", "%.2f"),
+            ("pip tip above the board face, mm", "pip_tip", "%.2f")]
     for lab, k, f in rows:
-        print(hdr % ((lab,) + tuple(f % n[k] for n in N + [N_tu])))
+        print(hdr % ((lab,) + tuple(f % n[k] for n in N)))
     for i, L in enumerate(TRIM):
-        print(hdr % (("lead tail past the back face, trimmed to %.0f mm" % L,) + tuple("%.1f" % n["tails"][i] for n in N + [N_tu])))
+        print(hdr % (("lead tail past the back face, trimmed to %.0f mm" % L,) + tuple("%.1f" % n["tails"][i] for n in N)))
     print("lead needed from glass to the back face: %s mm; the tube's free lead is %.0f mm" % (
-        " / ".join("%.1f" % n["need"] for n in N + [N_tu]), FREE_LEAD))
-    for n in N + [N_tu]:
+        " / ".join("%.1f" % n["need"] for n in N), FREE_LEAD))
+    for n in N:
         print("seat %.2f nearest parts (bbox gap, mm): %s" % (n["seat"], ", ".join("%s %s %.2f" % (cls, r, gp) for cls, (gp, r) in sorted(n["nearest"].items()))))
 
     # ------------------------------------------------------------------ the picture (SVG -> PNG)
@@ -198,6 +213,8 @@ def main():
     for (s, n), (st, fl) in zip(zip(seats, N), cols):
         g = glass + np.array([0.0, 0.0, s - seat0])
         poly(hull(g[:, [1, 2]]), fl, st, 3, "", 0.30)
+        gp_ = pip + np.array([0.0, 0.0, s - seat0])
+        poly(hull(gp_[:, [1, 2]]), "#e3e7ea", st, 2.5, "", 0.85)
         A('<line x1="%.1f" y1="%d" x2="%.1f" y2="%d" stroke="%s" stroke-width="2.5" stroke-dasharray="3 5"/>' % (X(n["front"]), MT, X(n["front"]), MT + (Yhi - Ylo) * K, st))
     # the planes
     A('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#c4262e" stroke-width="3" stroke-dasharray="14 7"/>' % (X(window), Y(soffit), X(window), Y(sill)))
@@ -213,7 +230,7 @@ def main():
             A('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="3"/>' % (X(z), Y(y) - 9, X(z), Y(y) + 9, st))
         ztu = zbase - a.tu
         A('<polygon points="%.1f,%.1f %.1f,%.1f %.1f,%.1f" fill="#c4262e"/>' % (X(ztu), Y(y) + 3, X(ztu) - 9, Y(y) + 21, X(ztu) + 9, Y(y) + 21))
-        A('<text x="%.1f" y="%.1f" font-size="19" fill="%s" font-weight="bold" text-anchor="end">seat %.1f: glass to joint %.1f mm%s</text>' % (
+        A('<text x="%.1f" y="%.1f" font-size="19" fill="%s" font-weight="bold" text-anchor="end">seat %g: glass to joint %.1f mm%s</text>' % (
             X(zjoint) + 4, Y(y) - 14, st, s, n["joint"], "" if n["joint_m"] >= -1e-9 else ", %.1f short of the %.0f" % (-n["joint_m"], a.tu)))
     A('</g>')
     # axes
@@ -227,8 +244,8 @@ def main():
     A('<text transform="translate(34 %.1f) rotate(-90)" font-size="20" fill="#4a5163" text-anchor="middle">Y, up (mm)</text>' % (MT + (Yhi - Ylo) * K / 2))
     # labels on the lines (outside the clip)
     A('<text x="%.1f" y="%d" font-size="20" fill="#c4262e" font-weight="bold" text-anchor="end">window plane, Z %+.2f</text>' % (X(window) + 4, MT - 14, window))
-    A('<text transform="translate(%.1f %.1f) rotate(-90)" font-size="18" fill="#1f6fd1">%.1f seat: glass front Z %+.2f</text>' % (X(N[0]["front"]) - 6, Y(37.2), seats[0], N[0]["front"]))
-    A('<text transform="translate(%.1f %.1f) rotate(-90)" font-size="18" fill="#d9730d">%.1f seat: front Z %+.2f (level)</text>' % (X(N[1]["front"]) + 24, Y(37.0), seats[1], N[1]["front"]))
+    A('<text transform="translate(%.1f %.1f) rotate(-90)" font-size="18" fill="#1f6fd1">%g seat: glass front Z %+.2f%s</text>' % (X(N[0]["front"]) - 6, Y(37.2), seats[0], N[0]["front"], " (level)" if abs(N[0]["proud"]) < 0.05 else ""))
+    A('<text transform="translate(%.1f %.1f) rotate(-90)" font-size="18" fill="#d9730d">%g seat: front Z %+.2f%s</text>' % (X(N[1]["front"]) + 24, Y(37.0), seats[1], N[1]["front"], " (level)" if abs(N[1]["proud"]) < 0.05 else ""))
     A('<text x="%.1f" y="%d" font-size="20" fill="#2a8a4b" font-weight="bold" text-anchor="start">ИН-12 front, Z %+.2f</text>' % (X(f12) + 8, MT - 14, f12))
     # legend / numbers panel
     px = ML + (Zhi - Zlo) * K + 30
@@ -240,19 +257,22 @@ def main():
         yy += dy
     for (s, n), (st, fl) in zip(zip(seats, N), cols):
         A('<rect x="%.1f" y="%.1f" width="26" height="22" fill="%s" fill-opacity="0.3" stroke="%s" stroke-width="3"/>' % (px, yy - 18, fl, st))
-        A('<text x="%.1f" y="%.1f" font-size="25" font-weight="bold" fill="%s">seat %.1f mm</text>' % (px + 38, yy, st, s))
+        A('<text x="%.1f" y="%.1f" font-size="25" font-weight="bold" fill="%s">seat %g mm</text>' % (px + 38, yy, st, s))
         yy += 36
-        line("glass front Z %+.2f: %.2f mm in front of the ИН-12" % (n["front"], n["proud"]), size=20, dy=26)
+        line("glass front Z %+.2f: %.2f mm %s the ИН-12 front" % (n["front"], abs(n["proud"]), "behind" if n["proud"] < -0.005 else "in front of"), size=20, dy=26)
         line("%.2f mm %s the window plane" % (abs(n["win"]), "behind" if n["win"] >= 0 else "past"), "#c4262e" if n["win"] < 0 else "#1d2330", 20, dy=26)
         line("glass to the joint on the back: %.1f mm" % n["joint"], "#c4262e" if n["joint_m"] < 0 else "#1d2330", 20, dy=26)
         line("(ТУ: no solder within %.0f mm: %+.1f)" % (a.tu, n["joint_m"]), "#c4262e" if n["joint_m"] < 0 else "#1d2330", 20, dy=26)
         line("bend room (3 mm rule): %.1f mm" % n["bend_room"], size=20, dy=26)
+        line("pip tip %.1f mm above the board (no hole needed)" % n["pip_tip"], size=20, dy=26)
         led_gp, led_r = n["nearest"]["LED"]
         line("nearest LED: %.1f mm away" % led_gp, size=20, dy=26)
         line("lead needed %.1f mm of %.0f free" % (n["need"], FREE_LEAD), size=20, dy=44)
-    line("the ТУ limit puts the lowest seat at", size=20, dy=26)
-    line("%.1f mm: glass front Z %+.2f, %.2f mm behind" % (lowest_tu, N_tu["front"], N_tu["win"]), size=20, dy=26)
-    line("the window plane, %.2f in front of the ИН-12" % N_tu["proud"], size=20, dy=44)
+    line("the seats the footprint and the ТУ allow:", size=20, dy=26)
+    line("%.1f mm (the lowest: 8 mm of lead to the solder" % lowest_tu, size=20, dy=26)
+    line("less the board) to %.2f mm (the face reaches" % highest, size=20, dy=26)
+    line("the window plane); %.2f is level with the ИН-12" % level, size=20, dy=26)
+    line("glass %.2f mm (measured); the pip, %.2f mm, is a reading" % (v["IN17_D"], pip_len), "#4a5163", 18, dy=44)
     for col, dash, txt in (("#c4262e", "14 7", "window face plane"), ("#2a8a4b", "14 7", "ИН-12 glass front (Z 0)"), ("#c4262e", "", "red wedge: 8 mm from the glass (ТУ)")):
         if dash:
             A('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="3" stroke-dasharray="%s"/>' % (px, yy - 7, px + 40, yy - 7, col, dash))

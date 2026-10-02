@@ -170,12 +170,12 @@
   {
    "board": "TS06-DISP",
    "side": "front face",
-   "part": "ИН-17 glass front (Z +2.29) vs the window face plane (Z +1.00)",
-   "height": 2.29,
+   "part": "ИН-17 glass front (Z -0.01) vs the window face plane (Z +1.00)",
+   "height": -0.01,
    "space": 1.0,
-   "margin": -1.29,
-   "status": "FAIL",
-   "note": "3d/IN17.step is 24.3 mm from dome to the end of the glass stalk; case_pair.py IN17_D says 22.0 (outline drawing). With the glass 8.0 off the board, the model's front stands 2.3 mm proud of the ИН-12 plane. Measure a bench tube before ordering.",
+   "margin": 1.01,
+   "status": "PASS",
+   "note": "the model, 3d/IN17.step (24.3 mm from the dome to the end of the glass), is scaled along its axis to the glass the owner measured, 19.72 mm (bench caliper, 2026-10-02; case_pair.py IN17_D). Seated 10.28 mm above the board face, its front stands +0.00 mm from the ИН-12 plane (the case model's own seat: the faces are level)",
    "what": "window, Z"
   },
   {
@@ -188,6 +188,39 @@
    "status": "PASS",
    "note": "",
    "what": "window, Y"
+  },
+  {
+   "board": "TS06-DISP",
+   "side": "front face",
+   "part": "ИН-17 glass to the solder joint on the back face (seat 10.28 + board 1.6) vs the ТУ's 8 mm",
+   "height": 8.0,
+   "space": 11.88,
+   "margin": 3.88,
+   "status": "PASS",
+   "note": "the lead runs straight from the glass end through the board; the ТУ allows no solder within 8 mm of the glass (and no bend within 3 mm: 7.3 mm of lead between that bend and the board face)",
+   "what": "in17 lead"
+  },
+  {
+   "board": "TS06-DISP",
+   "side": "front face",
+   "part": "ИН-17 lead from the glass end to the back face (11.88) vs the tube's 35 mm free lead",
+   "height": 11.88,
+   "space": 35.0,
+   "margin": 23.12,
+   "status": "PASS",
+   "note": "the tube comes with 35 mm of lead (the factory drawing dimensions it); the kit manual trims it to 15-20 mm, which leaves 3.1 / 8.1 mm past the back face",
+   "what": "in17 lead"
+  },
+  {
+   "board": "TS06-DISP",
+   "side": "front face",
+   "part": "ИН-17 glass vs the nearest part on the front face (HL5, LED_D3.0mm)",
+   "height": 0.0,
+   "space": 2.77,
+   "margin": 2.77,
+   "status": "PASS",
+   "note": "clearance row: margin = the gap between the part's and the glass's bounding boxes (the glass's includes its stubs and pip), so it can only understate the room",
+   "what": "window, X"
   },
   {
    "board": "TS06-DISP",
@@ -356,9 +389,8 @@
   }
  ],
  "tally": {
-  "PASS": 23,
-  "TIGHT": 8,
-  "FAIL": 1
+  "PASS": 27,
+  "TIGHT": 8
  },
  "holes_variant": {
   "extra_mm": 0.4,

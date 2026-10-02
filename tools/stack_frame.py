@@ -126,7 +126,7 @@ def main(argv):
     v = G["v"]
     keep = ["BOARD_W", "DISP_H", "DISP_TOP_Y", "DRV_H", "DRV_TOP_Y", "DRV_BOT_Y", "DISP_BOT_Y", "PCB_T", "FASCIA_W", "FASCIA_H",
             "FASCIA_X0", "FASCIA_T", "FASCIA_RAKE", "SILL_TOP_Y", "Z_FACE", "Z_DISP_F", "Z_DISP_B", "Z_DRV_F", "Z_DRV_B",
-            "STACK_GAP", "PBS_H", "PLS_BODY", "IN12_D", "IN12_SEAT", "IN17_D", "IN17_STANDOFF", "IN12_H", "IN12_W",
+            "STACK_GAP", "PBS_H", "PLS_BODY", "IN12_D", "IN12_SEAT", "IN17_D", "IN17_PIP", "IN17_STANDOFF", "IN12_H", "IN12_W",
             "GLASS_ALLOW", "GLASS_RECESS", "SOFFIT_Y", "BROW_CLR", "Z_REAR_IN", "Y_TOP_IN", "Y_FLOOR", "Z_BACK", "BACK_GAP",
             "IN12_Y", "IN17_Y", "IN12_TOP", "IN17_TOP", "IN12_BOT", "REAR_AIR", "LED_H", "PIN_TAIL", "FJ_HDR_H", "SILL_T"]
     json.dump({"about": "tools/stack_frame.py from 3d/case-pair/case_pair.py; fascia board %s. Frame: X right, Y up, Z towards "
