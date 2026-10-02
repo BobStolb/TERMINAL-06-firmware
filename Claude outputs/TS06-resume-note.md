@@ -299,5 +299,9 @@ nixie-fascia-leaders (blocking the order) and nixie-page-final (3 bench question
 * nixie-fascia-leaders: "a" (Level).
 | Run | What | Estimate | Cap | Actual |
 |---|---|---|---|---|
-| fascia-leaders phase 2 | style a default, slash-exact checker, names ~2.3 mm, the holes zip ordered | 0.2-0.3 M | 0.4 M / 45 min | |
-| page-final follow-up | pip 4 mm, colon lamps glow | 0.1-0.15 M | 0.25 M / 30 min | |
+| fascia-leaders phase 2 | style a default, slash-exact checker, names ~2.3 mm, the holes zip ordered | 0.2-0.3 M | 0.4 M / 45 min | 0.17 M, 20 min; merged cde5290..c4bb849 |
+| page-final follow-up | pip 4 mm, colon lamps glow | 0.1-0.15 M | 0.25 M / 30 min | 0.06 M, 20 min; merged 73484e5, a5308d4 |
+
+## 12:10 UTC: the page published (version 6, build of 1b9e61f, 158 PASS); stack pictures by me (1b9e61f)
+The publish needed: Read of the live index.html in full (the 30.09 build, no hand edits; the new build keeps every id
+and adds the Order tab and the glow switch), then the file listing (79 files), then the publish went through.

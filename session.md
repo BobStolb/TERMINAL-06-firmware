@@ -1,18 +1,14 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 02.10.26 11:34 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 02.10.26 12:10 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
-* **Runs (sonnet, worktrees; continue them with SendMessage; briefs in scratchpad `fascia-leaders/`, `page-final/`):**
-  * **fascia-leaders phase 2** (11:33, cap 0.4 M / 45 min): owner picked **a, Level** (11:31 via xstream). Slash-exact
-    checker, names ~2.3 mm, level default for R, holes zip = the ordered one, ORDER.md, fascia renders. NOT the stack.
-    On report: look at the pictures, cherry-pick, DFM + verify 27 PASS, push.
-  * **page-final follow-up** (11:33, cap 0.25 M / 30 min): pip 4 mm (owner 11:31), colon lamps glow, tests. On report:
-    cherry-pick, verify, push.
-  * After both: render the stack pictures myself (`tools/stack_frame.py`), commit, push.
-  * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
-    no commit and no notice = lost; relaunch from the brief.
-* **Then:** rebuild the page with both runs in, full suite, and PUBLISH (owner 10:37 "3 - yes") to
-  `https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS` with `publish-files.json`. The stack pictures are re-rendered last.
+* **Runs:** none (both done, merged, pushed by 12:10). Lost-run check after a compact: `git worktree list`, the newest
+  commit per `.claude/worktrees/agent-*`; 30 min with no commit and no notice = lost; relaunch from the brief.
+* **Done 12:10:** the page is PUBLISHED, version 6, `https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS` (build of
+  1b9e61f, 158 PASS). Fascia: level leaders, names 2.37 mm, holes opened; the ordered zip is
+  `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`. DFM PASS, verify 27 PASS. G11 legend row FAILs (names under 3 mm),
+  accepted with the owner's pick of a. ИН-17 glass 19.72, seat 10.28, pip 4 mm (estimate). Glow switch incl. colon.
+* **Waiting for the owner:** the order (own hand): the three zips in `fab/` named in ORDER.md, all in one cart.
 * **Owner's answers 10:37** (answer.json in commons): 1 holes yes + uniform leaders; 2 ИН-17 19.72 mm (22 incl. the
   pip); 3 publish yes; 4 glow as a switch; 5 order walk-through given 10:41. The order stays the owner's hand: all
   three in one cart after the fascia zip is final.
@@ -21,8 +17,8 @@
 * **Every ask for the owner goes to xstream too, in LOUD as in QUIET** (owner 11:25: "the point is to have all things
   that need input in one place"): an item in commons `embassy/review/<id>/` plus a mailbox line, and ask in chat.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-leaders phase 2,
-  page-final follow-up; open owner asks: none, publish after the runs; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none; open owner asks: the order
+  (own hand); plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
