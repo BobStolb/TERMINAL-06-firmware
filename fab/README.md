@@ -1,9 +1,13 @@
-# Fab packages: TS06-DISP and TS06-DRV, rev B
+# Fab packages: TS06-DISP, TS06-DRV and the fascia R
+
+**To order, read `ORDER.md` (the order sheet for the owner).** Pictures of the boards are in `preview/`.
 
 One zip per board of the through-hole pair, built from the committed boards by `tools/mkfab.sh`
 (grill.md G8, second half). Rebuilt 30.09.26 from `pcb/kicad-boards` at 77e3b11 (TS06-DISP with
 the circuit-as-ornament silkscreen art; TS06-DRV unchanged), with KiCad 10.0.6's `kicad-cli` in Docker.
 First built at b8d3f25 (the rev B merge).
+
+The fascia R (rev A, with the Divider gold) was added on 02.10.26: `TS06-FASCIA-R-revA-divider-fab.zip`, below.
 
 Not ordered: the prototype run is the owner's decision (grill G14). Filling the committed board files (G8, first half) is also the owner's decision.
 
@@ -28,6 +32,7 @@ layers: every part is through-hole (no SMD pads on either board), and neither bo
 |---|---|---|---|
 | TS06-DISP rev B | 191.5 × 44.1 mm | 179 | 10 |
 | TS06-DRV rev B | 191.5 × 100.1 mm | 427 | 8 |
+| Fascia R rev A, Divider gold | 191.45 × 40.05 mm, 2.0 mm thick | 0 | 9 |
 
 TS06-DISP's silkscreen files carry the art: front 29 kB to 121 kB, back 104 kB to 173 kB. Its
 copper, mask, outline and drill files are the same as before the art, apart from the creation
@@ -37,6 +42,27 @@ TS06-DRV's files are the same as before, apart from the creation date.
 The hole counts are the drill files' hits; they equal the boards' through-hole and
 non-plated pads. Both job files say 2 layers, 1.6 mm and ENIG, from the boards' own setup; the
 finish and the mask colour are chosen when the boards are ordered.
+
+## The fascia R zip
+
+`TS06-FASCIA-R-revA-divider-fab.zip` is the fascia `PCB/TS06-FASCIA-rhythm` (rev A) with the Plates white
+print and a gold: the **Divider** by default. The committed board has no gold of its own, so `tools/mkfab.sh`
+builds the art board in its scratch directory with `tools/fascia_gold.py divider OUT --base R` (that
+script's own checks must be clean) and plots that. Nothing under `PCB/` is written.
+
+* The zip has 11 files: the same names as above with the prefix `TS06-FASCIA-R-divider`, and one more,
+  `B_Paste.gbp` (the eight 1206 resistors are surface-mount on the back). There is no plated drill file or
+  plated drill map: the board has no plated hole. The board is 2.0 mm thick (the job file says so), and its job
+  file says finish "None" (the board file has no stack-up): ask for ENIG, see `ORDER.md`.
+* The gold is in F.Cu as copper, 0.05 mm wider each side than the opening in F.Mask over it, so a mask
+  misregistration shows gold and never bare board. `tools/mkfab.sh` reads the plotted Gerbers back with
+  `tools/gerbers.py gold` (no KiCad): F.Cu must carry the gold; F.Mask must be open over all of it (about
+  85% of the copper's area, the rest is the 0.05 mm rim); no opening may lie past the copper. The same check is
+  run on a mask with the gold's openings removed, and must FAIL. Found: the openings are present; the only
+  mask left over gold is a few 0.1 mm slivers inside four dial rings.
+* The name carries the gold. `--gold VARIANT` picks another (`ladder`, `fans`, `guilloche`; `none` is the bare
+  board, `TS06-FASCIA-R-revA-bare-fab.zip`). Only the divider is laid out for R; the other three stop on their own
+  checks (`tools/fascia_gold.py` says why).
 
 ## Region check
 
@@ -64,11 +90,17 @@ region per piece.
 From the repository root:
 
 ```
-bash tools/mkfab.sh            # both boards; prints the table above
-bash tools/mkfab.sh --keep     # the same, and keeps the scratch directory (both exports, logs)
+bash tools/mkfab.sh                                   # all three boards; prints the table above
+bash tools/mkfab.sh TS06-FASCIA-rhythm --gold fans    # the fascia with another gold (see above)
+bash tools/mkfab.sh --keep                            # the same, and keeps the scratch directory (both exports, logs)
+python3 tools/dfm_check.py                            # design-for-manufacture tables (inferred generic limits), see ORDER.md
 ```
 
 It needs `zip`, `python3` and KiCad 10's `kicad-cli`: a local one, or Docker with
 `mirror.gcr.io/kicad/kicad:10.0`, found the same way as in `tools/verify_pair.sh`. The committed
 board files are only read. The Gerbers and drills carry their creation date, so a rebuild is not
-byte-identical to these zips; the region counts and the file list are.
+byte-identical to these zips; the region counts and the file list are. So that a rebuild does not leave a
+changed file behind for nothing, `tools/mkfab.sh` keeps the zip already in this folder when the rebuilt one
+differs from it only in those dates (it says so).
+
+The fascia's gold check needs numpy, scipy and Pillow as well; `tools/dfm_check.py` needs the same.
