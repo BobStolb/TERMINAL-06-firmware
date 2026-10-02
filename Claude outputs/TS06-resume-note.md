@@ -285,3 +285,10 @@ Not started; the owner asked to keep the idea.
 |---|---|---|---|---|
 | fascia-leaders | 3 leader styles as pictures (stops for the owner's pick), then the holes zip as the ordered one | 0.3-0.4 M | 0.6 M / 60 min | phase 1: 0.26 M, 34 min; phase 2 waits for the pick |
 | page-final | ИН-17 at the measured 19.72 mm glass, re-render DISP + stack; glow switch on the page; build + tests | 0.4-0.5 M | 0.8 M / 90 min | 0.38 M, 39 min; merged c21ef4e..a3019fc, verify 27 PASS, suite 158 PASS |
+
+## The owner's word, 2026-10-02 11:25 UTC, verbatim
+"you should have relayed the info to xstream even in loud mode, the point is to have all things that need input in one
+place". From now on every ask for the owner, in LOUD as in QUIET, goes to xstream as an item in commons
+`embassy/review/<id>/` (item.json, at most 6 pictures) plus a mailbox line, and I also ask in this chat. An answer in
+either chat counts: answer.json plus a LINEAGE line. Done for the two open asks at 11:26 (commons 56941ad):
+nixie-fascia-leaders (blocking the order) and nixie-page-final (3 bench questions).

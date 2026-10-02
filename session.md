@@ -18,9 +18,11 @@
   three in one cart after the fascia zip is final.
 * **Standing word (owner, 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays by my
   own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
+* **Every ask for the owner goes to xstream too, in LOUD as in QUIET** (owner 11:25: "the point is to have all things
+  that need input in one place"): an item in commons `embassy/review/<id>/` plus a mailbox line, and ask in chat.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-leaders (pick pending),
-  page-final; open owner asks: leader pick a/b/c, then publish; plain short replies; times from date -u`.
+  page-final; open owner asks: leader pick a/b/c (item nixie-fascia-leaders), then publish; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
