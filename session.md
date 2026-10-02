@@ -1,14 +1,14 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 02.10.26 10:45 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 02.10.26 11:34 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
-* **Runs (launched 10:44, sonnet, worktrees; briefs in scratchpad `fascia-leaders/` and `page-final/BRIEF.md`):**
-  * **fascia-leaders:** 3 dial-leader styles (a level, b dogleg, c centred) as pictures, then STOPS. Cap 0.6 M / 60 min.
-    On report: show the owner the a/b/c picture, get the pick, then continue the same agent (SendMessage) with phase 2:
-    the pick as default, the holes zip as the ordered one, re-render, DFM + verify.
-  * **page-final:** ИН-17 at 19.72 mm glass (case_pair, model, seat ≈10.3 level with ИН-12, fit table, DISP + stack
-    re-render), then the glow switch on the page (off by default), build + tests. Cap 0.8 M / 90 min.
-    On report: review, cherry-pick, verify_pair 27 PASS, push.
+* **Runs (sonnet, worktrees; continue them with SendMessage; briefs in scratchpad `fascia-leaders/`, `page-final/`):**
+  * **fascia-leaders phase 2** (11:33, cap 0.4 M / 45 min): owner picked **a, Level** (11:31 via xstream). Slash-exact
+    checker, names ~2.3 mm, level default for R, holes zip = the ordered one, ORDER.md, fascia renders. NOT the stack.
+    On report: look at the pictures, cherry-pick, DFM + verify 27 PASS, push.
+  * **page-final follow-up** (11:33, cap 0.25 M / 30 min): pip 4 mm (owner 11:31), colon lamps glow, tests. On report:
+    cherry-pick, verify, push.
+  * After both: render the stack pictures myself (`tools/stack_frame.py`), commit, push.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
     no commit and no notice = lost; relaunch from the brief.
 * **Then:** rebuild the page with both runs in, full suite, and PUBLISH (owner 10:37 "3 - yes") to
@@ -21,8 +21,8 @@
 * **Every ask for the owner goes to xstream too, in LOUD as in QUIET** (owner 11:25: "the point is to have all things
   that need input in one place"): an item in commons `embassy/review/<id>/` plus a mailbox line, and ask in chat.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-leaders (pick pending),
-  page-final; open owner asks: leader pick a/b/c (item nixie-fascia-leaders), then publish; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-leaders phase 2,
+  page-final follow-up; open owner asks: none, publish after the runs; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 

@@ -292,3 +292,12 @@ place". From now on every ask for the owner, in LOUD as in QUIET, goes to xstrea
 `embassy/review/<id>/` (item.json, at most 6 pictures) plus a mailbox line, and I also ask in this chat. An answer in
 either chat counts: answer.json plus a LINEAGE line. Done for the two open asks at 11:26 (commons 56941ad):
 nixie-fascia-leaders (blocking the order) and nixie-page-final (3 bench questions).
+
+## 11:31-11:34 UTC: the owner's answers via xstream's review queue (commons e847086, e170c16)
+* nixie-page-final: "1 - closer to 4mm actually / 2 - 3d tube measurements are within0.5mm of the real measure rn / 3 - yes"
+  (pip about 4 mm; the 3D tube section stays; the colon lamps glow too).
+* nixie-fascia-leaders: "a" (Level).
+| Run | What | Estimate | Cap | Actual |
+|---|---|---|---|---|
+| fascia-leaders phase 2 | style a default, slash-exact checker, names ~2.3 mm, the holes zip ordered | 0.2-0.3 M | 0.4 M / 45 min | |
+| page-final follow-up | pip 4 mm, colon lamps glow | 0.1-0.15 M | 0.25 M / 30 min | |
