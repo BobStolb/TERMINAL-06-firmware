@@ -114,14 +114,14 @@ def open_up(tmp):
             os.chmod(os.path.join(r, f), 0o666)
 
 
-LEADERS = os.environ.get("TS06_LEADERS", "slope")      # the fascia's leader style (--leaders); slope is the committed face
+LEADERS = os.environ.get("TS06_LEADERS", "level")      # the fascia R's leader style (--leaders); level is the owner's pick (2026-10-02)
 
 
 def fascia_zip(gold, open_holes=False):
-    """The fascia R's zip in fab/: named after the gold, after the leader style when it is not slope, and after the opened
+    """The fascia R's zip in fab/: named after the gold, after the leader style when it is not level, and after the opened
     holes of the variant (tools/mkfab.sh names it the same way)."""
     return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s%s-fab.zip" % (
-        "bare" if gold == "none" else gold, "" if LEADERS == "slope" else "-" + LEADERS, "-holes04" if open_holes else ""))
+        "bare" if gold == "none" else gold, "" if LEADERS == "level" else "-" + LEADERS, "-holes04" if open_holes else ""))
 
 
 def scratch(key, gold, mutate=None, open_holes=False):
@@ -493,7 +493,7 @@ def main():
     ap.add_argument("--g11", action="store_true")
     ap.add_argument("--open-holes", action="store_true", help="the fascia R variant with its control holes opened 0.4 mm (zip ...-holes04-fab.zip)")
     ap.add_argument("--leaders", default=LEADERS, choices=("slope", "level", "dogleg", "centred"),
-                    help="the fascia R's leader style (tools/fascia_art.py; default slope, the committed face): its zip is the one "
+                    help="the fascia R's leader style (tools/fascia_art.py; default level, the owner's pick): its zip is the one "
                          "tools/mkfab.sh --leaders STYLE wrote, ...-<gold>-<style>[-holes04]-fab.zip")
     a = ap.parse_args()
     globals()["LEADERS"] = a.leaders

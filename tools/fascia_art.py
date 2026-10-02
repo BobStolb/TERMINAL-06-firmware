@@ -52,12 +52,15 @@ are narrowed to 2.0 mm (still 3.2 mm tall), the legend rows open to 5.4 mm, the 
 enters the SUB box from the side. The other three are laid out for A; on R their checks fail.
 
 LEADER STYLES (plates on R only; --leaders STYLE, or TS06_LEADERS in the environment for the tools that build the fascia
-in a subprocess). The default, slope, is the committed face. The three others answer "the leaders have no uniformity":
-  slope    the committed one: each leader leaves level with its mark and runs straight to its row; rows 5.4 mm apart,
-           the first 10.7 mm above the dial, so the six slopes differ (+1.2 to +4.4 mm of drop).
-  level    every leader is one level line from its mark to its name; each name sits at its mark's height. The names
-           are shrunk (same width ratio) to the largest size at which every check passes; that is below the owner's
-           3 mm legend rule (the check allows the six names down to the fab's 1.0 mm, NAME_MIN; the nameplates stay 3.2).
+in a subprocess). The owner picked level for R (2026-10-02 11:31 UTC), so level is the default on R; on A it is slope, the
+face's own (the other styles are laid out for R only). The leaders had no uniformity ("the new version doesnt have any
+uniformity at all"): slope, the face as it was first drawn for R, is kept as an option. The four:
+  slope    each leader leaves level with its mark and runs straight to its row; rows 5.4 mm apart, the first 10.7 mm above
+           the dial, so the six slopes differ (+1.2 to +4.4 mm of drop). The face of A, and of R before the pick.
+  level    (R's default) every leader is one level line from its mark to its name; each name sits at its mark's height.
+           The names are shrunk (same width ratio) to the largest size at which every check passes (2.37 mm, set by
+           NORMAL against SET TIME and FORMAT/DATE against INFO, 2.93 mm apart); that is below the owner's 3 mm legend
+           rule (the check allows the six names down to the fab's 1.0 mm, NAME_MIN; the nameplates stay 3.2).
   dogleg   names 3.2 mm in an even column; every leader: level out of its mark, one 45 degree bend, level into its name,
            the bends on one vertical line.
   centred  names 3.2 mm in an even column centred on the dial's height; straight leaders whose slopes are mirrored
@@ -96,20 +99,21 @@ CAP_UP, CAP_DN, SLASH_DN = 0.543, 0.457, 0.696
 ITALIC_SLANT = 0.125                                # KiCad's italic shear, measured on "E"
 
 LEADER_STYLES = ("slope", "level", "dogleg", "centred")
-LEADERS = os.environ.get("TS06_LEADERS", "slope")   # the style v_plates draws when it is not told (slope: the committed face)
+LEADERS = os.environ.get("TS06_LEADERS", "")        # the style v_plates draws when it is not told; "" = the face's own: level on R, slope on A
 MARK_R = 11.3                                       # the marks' height: sin(angle) * this (tap lugs; middle of the index bars)
 LEAD_R = 13.4                                       # a new-style leader starts where its level line crosses this radius
 LEAD_GAP = 0.35                                     # a new-style leader ends this far before its name's anchor
 NAME_MIN = 1.0                                      # the fab's silk text limit: the least a name may be in 'level'
 # per style, found by a search with both art checks (open-holes board, the Divider's gold), all in mm:
-#   level    h = the names' height: the largest at which every check passes (1.91; the box of FORMAT/DATE's slash, which
-#            reaches 0.74 h below its middle, is what meets INFO's box, 2.93 mm below)
+#   level    h = the names' height: the largest at which every check passes, with the slash of FORMAT/DATE modelled as
+#            the stroke it is (SLASH_X): 2.37, where NORMAL meets SET TIME and FORMAT/DATE meets INFO, the marks
+#            2.93 mm apart (0.25 between the inks). With the slash taken as a box across the whole name it was 1.91.
 #   dogleg   pitch = the names' row spacing, offset = the column's centre below the dial's height, xb = the bends' x from
 #            the shaft, xn = the names' column x (0.4 right of the committed one, so the longest 45 degree run, 2.5 mm,
 #            still leaves 0.5 mm level into its name): every leader drops at least 0.6 mm
 #   centred  pitch = the rows' spacing, the column centred on the dial: the pitch at which the steepest leader is
 #            least steep (9.5 degrees; the committed face's go from 7 to 47)
-LEADER_TUNE = {"level": dict(h=1.9),
+LEADER_TUNE = {"level": dict(h=2.37),
                "dogleg": dict(pitch=4.7, offset=1.54, xb=13.25, xn=16.6),
                "centred": dict(pitch=4.91, offset=0.0)}
 
@@ -278,10 +282,41 @@ def text_box(it):
 
 KO_MARGIN = 0.15          # knockout plate margin per mm of text height: KiCad 10 draws ~0.11 (0.35 mm at 3.2)
 
+# THE SLASH. In "FORMAT/DATE" the "/" is the one stroke that leaves the capitals' box: it runs from a point 0.047 h above the
+# caps' top to 0.238 h below their foot, and slants (its foot 0.86 w left of its top). It is a line, not a box across the name,
+# so the checks (text_parts, segments, area) treat it as a capsule of the text's stroke width and the capitals as a box that
+# stops at their foot. Measured with pcbnew on KiCad 10.0.6 (GetEffectiveTextShape, left-justified, at sizes 10x10, 6x10,
+# 10x5 stroke 1 and 2x3.2, 1.19x1.9 stroke 0.3; they agree to 0.001): the stroke's end points, from the string's left origin,
+#   x = SLASH_X[s] * (text width) + SLASH_T * (stroke width)         top, foot
+#   y = (SLASH_Y) * (text height) about KiCad's anchor (see anchor_y) top, foot
+# (KiCad moves every glyph right by 0.658 of the stroke width: that is the SLASH_T term; text_box's FONT table was measured
+# at stroke 1, size 10 and has 0.0658 w of it built in.)
+SLASH_X = {"FORMAT/DATE": (6.6190, 5.7619)}
+SLASH_T = 0.6579
+SLASH_Y = (-0.5902, 0.6955)
+
 
 def anchor_y(it):
     """KiCad's anchor for a text whose capitals should be centred on it["y"]."""
     return it["y"] + (CAP_UP - CAP_DN) / 2.0 * it["h"]
+
+
+def text_parts(it):
+    """What a text's ink is, for the checks: (box, slash). box is [x0, y0, x1, y1], the capitals' ink with the stroke; slash is
+    ((xa, ya), (xb, yb)) the stroke of a "/" that leaves that box (the top end first), or None. For a string with a slash that is
+    in SLASH_X the box stops at the capitals' foot; for every other text it is text_box(it) whole (a "/" not in SLASH_X is still
+    taken as a box across the whole name down to its foot: the cautious reading)."""
+    box = text_box(it)
+    if "/" not in it["s"] or it["s"] not in SLASH_X or it.get("knockout") or it["italic"]:
+        return box, None
+    h, s, t = it["h"], it["wd"], it["t"]
+    adv = FONT[it["s"]][0]
+    left = {"left": it["x"], "right": it["x"] - adv * s, "center": it["x"] - adv * s / 2}[it["just"]]
+    ya = anchor_y(it)
+    xt, xf = SLASH_X[it["s"]]
+    top = (left + xt * s + SLASH_T * t, ya + SLASH_Y[0] * h)
+    foot = (left + xf * s + SLASH_T * t, ya + SLASH_Y[1] * h)
+    return [box[0], box[1], box[2], it["y"] + h / 2.0 + t / 2.0], (top, foot)
 
 
 # ============================================================================ the variants
@@ -394,16 +429,16 @@ def v_ledger(G):
 
 
 def v_plates(G, leaders=None, tune=None):
-    """Engraved nameplates. leaders: the leader style (LEADER_STYLES; default LEADERS = slope, the committed face)."""
-    style = leaders or LEADERS
-    if style not in LEADER_STYLES:
-        raise ValueError("unknown leader style %r (%s)" % (style, ", ".join(LEADER_STYLES)))
+    """Engraved nameplates. leaders: the leader style (LEADER_STYLES; default LEADERS, and that empty: level on R, slope on A)."""
     A = Art()
     D = G["ctrl"]["SW1"]
     fx, sx = G["ctrl"]["SW2"][0], G["ctrl"]["SW3"][0]
     TX, TW, TT = 3.2, 2.4, 0.3             # condensed position names
     R, ny, side5 = rows(D[1]), D[1] + 15.3, False
     room = fx - D[0]                        # dial to FIELD: 65 mm on A, 39.1 mm on R
+    style = leaders or LEADERS or ("level" if room < 50 else "slope")
+    if style not in LEADER_STYLES:
+        raise ValueError("unknown leader style %r (%s)" % (style, ", ".join(LEADER_STYLES)))
     if room < 50:
         # R: FORMAT/DATE would reach FIELD's down-throw. Narrower capitals (still 3.2 mm tall),
         # rows 5.4 mm apart so FORMAT/DATE passes 3.5 mm below FIELD's end, the plates 2.7 mm lower,
@@ -633,15 +668,18 @@ def segments(it, step=2.0):
     if k == "poly":
         p = it["pts"]
         return [(a, b, 0.0) for a, b in zip(p, p[1:] + p[:1])]
-    x0, y0, x1, y1 = text_box(it)
+    (x0, y0, x1, y1), slash = text_parts(it)
     c = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-    return [(a, b, 0.0) for a, b in zip(c, c[1:] + c[:1])]
+    out = [(a, b, 0.0) for a, b in zip(c, c[1:] + c[:1])]
+    if slash:                       # the slash leaves the box: a capsule of the stroke's width
+        out.append((slash[0], slash[1], it["t"] / 2.0))
+    return out
 
 
 def area(it):
-    """A filled region to test containment against: a text's box or a polygon, else None."""
+    """A filled region to test containment against: a text's box (the capitals', where a slash is modelled) or a polygon, else None."""
     if it["kind"] == "text":
-        x0, y0, x1, y1 = text_box(it)
+        x0, y0, x1, y1 = text_parts(it)[0]
         return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
     if it["kind"] == "poly":
         return it["pts"]
@@ -760,6 +798,44 @@ def check(A, G):
     return bad
 
 
+# ============================================================================ self-test of the slash model
+def selftest_slash(h=2.3):
+    """Planted cases for the slash model (python3 tools/fascia_art.py --selftest). A name "FORMAT/DATE" is set at size h (the
+    width ratio of the names on R, stroke 0.3) in a clear place of R, and a silk probe is planted next to it; check() must say:
+      A  a line 0.30 mm under the capitals' foot, beneath the first letters, where only a box across the whole name down to
+         the slash's foot would reach: PASS now, and FAIL under that old whole-width box (shown by taking the slash out of
+         SLASH_X for the run);
+      B  a line across the slash's foot: FAIL;
+      C  a dot 0.30 mm below the slash's foot end: PASS;   D  the same 0.20 mm below: FAIL (0.25 is the silk to silk rule).
+    Returns True when every case reads as stated."""
+    G = geometry(open(BASES["R"], encoding="utf8").read())
+    w, t = 2.0 * h / 3.2, 0.3
+    x, y = 100.0, 20.0
+    name = dict(kind="text", ink="silk", s="FORMAT/DATE", x=x, y=y, h=h, wd=w, t=t, grp="name", just="left", italic=False, knockout=False)
+    (bx0, by0, bx1, by1), (top, foot) = text_parts(name)
+    probe = lambda pts, wd=0.2: dict(kind="line", ink="silk", pts=pts, w=wd, grp="probe")
+    cases = [("A  line 0.30 under the capitals' foot, under the first letters", probe([(bx0 + 0.5, by1 + 0.30 + 0.10), (bx0 + 4.5, by1 + 0.30 + 0.10)]), True),
+             ("B  line across the slash's foot", probe([(foot[0] - 1.0, foot[1] - 0.3), (foot[0] + 1.0, foot[1] - 0.3)]), False),
+             ("C  dot 0.30 mm below the slash's foot end", probe([(foot[0], foot[1] + 0.30 + 0.25), (foot[0], foot[1] + 0.30 + 0.25)]), True),
+             ("D  dot 0.20 mm below the slash's foot end", probe([(foot[0], foot[1] + 0.20 + 0.25), (foot[0], foot[1] + 0.20 + 0.25)]), False)]
+    ok = True
+    for label, pr, want in cases:
+        A = Art()
+        A.items = [dict(name), pr]
+        new = [p for p in check(A, G) if "probe" in p]
+        saved = dict(SLASH_X)
+        SLASH_X.clear()
+        try:
+            old = [p for p in check(A, G) if "probe" in p]
+        finally:
+            SLASH_X.update(saved)
+        good = (not new) == want and (label[0] != "A" or bool(old))
+        ok &= good
+        print("  %-62s slash model: %s | whole-width box: %s | %s" % (
+            label, "PASS" if not new else "FAIL", "PASS" if not old else "FAIL", "as it must" if good else "WRONG"))
+    return ok
+
+
 # ============================================================================ main
 def main():
     ap = argparse.ArgumentParser(description="Variations on TS06-FASCIA's front artwork.")
@@ -767,9 +843,13 @@ def main():
     ap.add_argument("out", nargs="?")
     ap.add_argument("--base", default="A", choices=sorted(BASES))
     ap.add_argument("--leaders", default=None, choices=LEADER_STYLES,
-                    help="plates on R: the leader style (default slope, the committed face; TS06_LEADERS sets the default)")
+                    help="plates on R: the leader style (default level on R, slope on A; TS06_LEADERS sets the default)")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--selftest", action="store_true", help="the planted cases of the slash model (see selftest_slash); exit 1 if any reads wrong")
     a = ap.parse_args()
+    if a.selftest:
+        print("slash model, planted cases:")
+        sys.exit(0 if selftest_slash() else 1)
     if a.leaders:
         globals()["LEADERS"] = a.leaders
     if a.list or not a.variant:

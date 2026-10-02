@@ -5,8 +5,9 @@
 #     tools/mkfab.sh TS06-DRV                 # one board
 #     tools/mkfab.sh TS06-FASCIA-rhythm       # the fascia R (rev A) with the default gold, divider
 #     tools/mkfab.sh TS06-FASCIA-rhythm --gold ladder     # another gold; --gold none is the bare board
-#     tools/mkfab.sh TS06-FASCIA-rhythm --leaders level   # another leader style for the white names (slope: the default, the
-#                                             # committed face; level, dogleg, centred: tools/fascia_art.py); the zip's name carries it
+#     tools/mkfab.sh TS06-FASCIA-rhythm --leaders slope   # another leader style for the white names (level is the default, the
+#                                             # owner's pick; slope, dogleg, centred: tools/fascia_art.py); a zip's name carries it
+#                                             # unless the style is level
 #     tools/mkfab.sh --keep                   # keep the scratch directory and say where
 #     tools/mkfab.sh TS06-FASCIA-rhythm --open-holes      # the fascia with every control bushing hole opened by 0.4 mm
 #                                             # (8.8 -> 9.2, 8.0 -> 8.4): an EXTRA zip, fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip
@@ -55,7 +56,7 @@ KEEP=0
 BOARDS=""
 GOLD=divider
 GOLD_SET=0
-LEADERS=slope
+LEADERS=level
 LEADERS_SET=0
 OPEN=0
 while [ $# -gt 0 ]; do
@@ -69,7 +70,7 @@ while [ $# -gt 0 ]; do
     --leaders) [ $# -gt 0 ] || { echo "--leaders needs a style (slope, level, dogleg or centred)"; exit 2; }
             LEADERS=$1; LEADERS_SET=1; shift ;;
     --leaders=*) LEADERS=${a#--leaders=}; LEADERS_SET=1 ;;
-    -h|--help) sed -n '2,46p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     TS06-DISP|TS06-DRV|TS06-FASCIA-rhythm) BOARDS="$BOARDS $a" ;;
     TS06-*) echo "unknown board: $a (TS06-DISP, TS06-DRV, TS06-FASCIA-rhythm)"; exit 2 ;;
     *) echo "unknown argument: $a (try --help)"; exit 2 ;;
@@ -152,7 +153,7 @@ for B in $BOARDS; do
   N=$B; Z="fab/$B-rev$REV-fab.zip"; PL=$LAYERS; ARTNOTE=""
   if [ "$B" = TS06-FASCIA-rhythm ]; then
     TAG=$GOLD; [ "$GOLD" = none ] && TAG=bare
-    [ "$LEADERS" != slope ] && TAG="$TAG-$LEADERS"
+    [ "$LEADERS" != level ] && TAG="$TAG-$LEADERS"
     [ "$OPEN" = 1 ] && TAG="$TAG-holes04"
     N="TS06-FASCIA-R-$TAG"; Z="fab/TS06-FASCIA-R-rev$REV-$TAG-fab.zip"; PL=$LAYERS_FASCIA
   fi

@@ -124,7 +124,7 @@ def main():
     ap.add_argument("--gold", default="divider", choices=("ladder", "divider", "fans", "guilloche"))
     ap.add_argument("--px-per-mm", type=float, default=12.0)
     ap.add_argument("--leaders", default=None, choices=("slope", "level", "dogleg", "centred"),
-                    help="the fascia's leader style (tools/fascia_art.py; default slope, the committed face); the picture's name carries it")
+                    help="the fascia's leader style (tools/fascia_art.py; default level, the owner's pick); the picture's name carries it unless it is level")
     a = ap.parse_args()
     os.makedirs(a.outdir, exist_ok=True)
     tmp = tempfile.mkdtemp(prefix="fab_preview.")
@@ -133,7 +133,7 @@ def main():
                        + (["--leaders", a.leaders] if a.leaders else []), capture_output=True, text=True)
     if r.returncode != 0:
         sys.exit("fascia_gold.py failed:\n%s%s" % (r.stdout, r.stderr))
-    fascia = os.path.join(a.outdir, "fascia-R-%s%s-top.png" % (a.gold, "-" + a.leaders if a.leaders and a.leaders != "slope" else ""))
+    fascia = os.path.join(a.outdir, "fascia-R-%s%s-top.png" % (a.gold, "-" + a.leaders if a.leaders and a.leaders != "level" else ""))
     render(art, fascia, a.px_per_mm)
     print("wrote", fascia)
     # the three boards, labelled, at a scale that keeps the width under 2400 px

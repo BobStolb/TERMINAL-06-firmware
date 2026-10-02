@@ -40,7 +40,7 @@ def art_board(fascia, gold, outdir, leaders=None):
     """The fascia as ordered: PCB/<fascia> with the Plates print and the <gold> gold, built into outdir by
     tools/fascia_gold.py (its own checks must be clean, as in tools/mkfab.sh). Returns the path of the scratch board.
     gold none: the committed board itself (nothing is built). Nothing under PCB/ is written.
-    leaders: the white print's leader style (fascia_art.LEADER_STYLES; None: the default, TS06_LEADERS or slope)."""
+    leaders: the white print's leader style (fascia_art.LEADER_STYLES; None: the default, TS06_LEADERS or the face's own: level on R, slope on A)."""
     if gold in (None, "", "none"):
         return os.path.join(ROOT, "PCB", fascia, fascia + ".kicad_pcb")
     if gold not in GOLDS:

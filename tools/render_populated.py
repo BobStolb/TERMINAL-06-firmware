@@ -137,7 +137,7 @@ def main():
     ap.add_argument("--gold", default="none", metavar="VARIANT",
                     help="the fascia boards only: render the board as ordered, with the Plates print and this gold (none, divider, ...)")
     ap.add_argument("--leaders", default=None, metavar="STYLE",
-                    help="with --gold, the fascia R's leader style of the white print (slope, level, dogleg, centred; default slope, the committed face)")
+                    help="with --gold, the fascia R's leader style of the white print (slope, level, dogleg, centred; default level on R, the owner's pick)")
     ap.add_argument("--bare", action="store_true", help="no map: the board with only the models it carries itself (the 'before' picture)")
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()

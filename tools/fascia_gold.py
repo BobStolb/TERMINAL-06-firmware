@@ -47,10 +47,10 @@ R puts FIELD 39 mm from the dial, so there position 5's trace drops 45 degrees i
 in Plates, and takes no pad (it would touch FORMAT/DATE). The other three are laid out for A; on R
 they fail their checks (ladder refuses).
 --leaders STYLE (R only) picks the style of the white leaders from the dial's positions to their names, drawn by
-fascia_art.v_plates (slope: the committed face, the default; level, dogleg, centred: see tools/fascia_art.py). The
-silk is still Plates' item for item, whatever the style; the gold's own layout follows the names' rows. The level
-style sets the six names below the owner's 3 mm legend rule (down to the fab's 1.0 mm): check() allows that for those
-six only.
+fascia_art.v_plates (level, the owner's pick of 2026-10-02, is the default on R; slope is A's and R's first face;
+dogleg, centred: see tools/fascia_art.py). The silk is still Plates' item for item, whatever the style; the gold's own
+layout follows the names' rows. The level style sets the six names (2.37 mm) below the owner's 3 mm legend rule (down to
+the fab's 1.0 mm): check() allows that for those six only.
 
 THE VARIANTS (one line each; the owner's review has pictures):
   ladder    the SUB rule as a Soviet relay-logic ladder (GOST-style contacts, an OR join, FIELD's
@@ -212,7 +212,7 @@ class GArt(fa.Art):
 # ============================================================================ the constant silk and the layout
 def silk_base(G, leaders=None):
     """Plates' silk, item for item (tools/fascia_art.py v_plates), and nothing else. leaders: its leader style
-    (fascia_art.LEADER_STYLES; default fascia_art.LEADERS, slope: the committed face)."""
+    (fascia_art.LEADER_STYLES; default fascia_art.LEADERS, and that empty: level on R, slope on A)."""
     A = GArt()
     P0 = fa.v_plates(G, leaders)
     A.name_min = P0.name_min
@@ -902,7 +902,7 @@ def main():
     ap.add_argument("--base", default="A", choices=sorted(fa.BASES))
     ap.add_argument("--base-pcb", default="", metavar="BOARD", help="read this board as the base (scratch copy of the same fascia) instead of the committed one")
     ap.add_argument("--leaders", default=None, choices=fa.LEADER_STYLES,
-                    help="R: the leader style of the white print (fascia_art.py; default slope, the committed face; TS06_LEADERS sets the default)")
+                    help="R: the leader style of the white print (fascia_art.py; default level on R, slope on A; TS06_LEADERS sets the default)")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--preview", default="", metavar="PNG", help="also write a quick flat picture")
     ap.add_argument("--drc", action="store_true", help="also run KiCad 10's DRC on each board and compare it with the base board's")
