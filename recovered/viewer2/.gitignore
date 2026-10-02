@@ -1,0 +1,7 @@
+# build output and test scratch (build.sh writes site/ and work/ here unless OUT=... is given)
+site/
+work/
+shots/
+tools/node_modules/
+tools/__pycache__/
+publish-files.json

@@ -226,6 +226,24 @@ button { font-family: inherit; }
 .doctab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 .docpanel { padding-block: 20px 8px; }
 .docpanel[hidden] { display: none; }
+/* ---------- Order view */
+.osec { font: 600 19px var(--f-body); margin: 30px 0 8px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .grid3 { grid-template-columns: minmax(0, 1fr); } }
+.ob h3 { font: 600 15px var(--f-body); margin: 0 0 10px; }
+.ob img { display: block; width: 100%; height: 110px; object-fit: contain; background: #1b1d20; border-radius: 8px; padding: 8px; margin-bottom: 12px; }
+.obrows { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 5px 12px; margin: 0; font-size: 13.5px; }
+.obrows dt { color: var(--muted); }
+.obrows dd { margin: 0; overflow-wrap: anywhere; }
+.ownhand { border-left: 3px solid var(--accent); margin: 8px 0 0; }
+.ownhand p { margin: 0; max-width: 78ch; }
+.openlist { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 8px; }
+.openlist li { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px; max-width: 90ch; }
+#order-fit-table td:nth-child(3) { min-width: 280px; }
+.sm { font-size: 12.5px; color: var(--muted); }
+.olede { color: var(--muted); max-width: 74ch; margin: 0 0 10px; }
+#order-proto summary { cursor: pointer; font-weight: 600; }
+#order-proto ul { margin: 10px 0 0; padding-left: 20px; }
 .lead { color: var(--muted); margin-bottom: 14px; max-width: 78ch; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .card { padding: 16px; }
@@ -469,6 +487,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
     <button class="doctab" role="tab" id="dt-sections" data-doc="sections" aria-selected="true">Circuit sections</button>
     <button class="doctab" role="tab" id="dt-panel" data-doc="panel" aria-selected="false">Front panel</button>
     <button class="doctab" role="tab" id="dt-fascia" data-doc="fascia" aria-selected="false">Fascia variants</button>
+    <button class="doctab" role="tab" id="dt-order" data-doc="order" aria-selected="false">Order</button>
     <button class="doctab" role="tab" id="dt-test" data-doc="test" aria-selected="false">Test everything</button>
     <button class="doctab" role="tab" id="dt-kicad" data-doc="kicad" aria-selected="false">Open in KiCad 10</button>
     <button class="doctab" role="tab" id="dt-notes" data-doc="notes" aria-selected="false">What the 3D shows</button>
@@ -736,6 +755,10 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
       </div>
     </div>
     <p style="font-size:13px;color:var(--muted);margin-top:10px">The fascia buttons above the 3D view swap the board in place: X0 4.305 for A, 0 for W and R; F shows the printed frame with the 176 board standing in for its 179 panel. The cheeks drawn are the committed case model's default ones, made for A, so their fascia bosses and the sill notch stay where A needs them, and are still there with F.</p>
+  </section>
+
+  <section class="docpanel" id="doc-order" role="tabpanel" aria-labelledby="dt-order" hidden>
+    <div id="orderbody"><p class="lead">Loading the order sheet…</p></div>
   </section>
 
   <section class="docpanel" id="doc-test" role="tabpanel" aria-labelledby="dt-test" hidden>

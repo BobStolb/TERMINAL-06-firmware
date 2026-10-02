@@ -1,5 +1,10 @@
 // Playwright checks for the TS06 board viewer v2.
-//   node test/run.mjs            (from viewer2/; serves site/ on :8766, CDN routed to the npm-packed three)
+//   node test/run.mjs            (from viewer2/; serves site/ on :8766, CDN routed to the vendored three)
+//   SITE=DIR THREE=DIR SHOTS=DIR node test/run.mjs     the built site, three.js and the screenshots elsewhere
+//                                (build.sh OUT=DIR puts the site in DIR/site, outside the checkout)
+//   ONLY_NEW=1 node test/run.mjs       only the checks of the populated boards and the Order view (about 5 minutes)
+// three.js: the CDN requests are answered from THREE, by default 3d/populated/stack/vendor/three of this repository
+// (r186, MIT: the same files the page loads from the CDN). The repository root is REPO (two folders up).
 import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -7,9 +12,11 @@ import path from 'node:path';
 
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const ROOT = path.resolve(HERE, '..');
-const SITE = path.join(ROOT, 'site');
-const THREE = path.join(ROOT, 'work', 'three');
-const SHOTS = path.join(ROOT, 'shots');
+const REPO = path.resolve(ROOT, '..', '..');
+const SITE = process.env.SITE ? path.resolve(process.env.SITE) : path.join(ROOT, 'site');
+const THREE = process.env.THREE ? path.resolve(process.env.THREE) : path.join(REPO, '3d', 'populated', 'stack', 'vendor', 'three');
+const SHOTS = process.env.SHOTS ? path.resolve(process.env.SHOTS) : path.join(ROOT, 'shots');
+const ONLY_NEW = process.env.ONLY_NEW === '1';
 fs.mkdirSync(SHOTS, { recursive: true });
 const PORT = 8766;
 const server = spawn('python3', [path.join(HERE, 'serve.py'), String(PORT)], { cwd: SITE, stdio: 'ignore' });
@@ -66,7 +73,7 @@ const shot = async (page, name, full = false) => {
 };
 
 // ================================================================ desktop, light
-{
+if (!ONLY_NEW) {
   const { ctx, page, errs } = await newPage({ w: 1280, h: 900 });
   const t0 = Date.now();
   await load(page, '', false);
@@ -288,7 +295,7 @@ const shot = async (page, name, full = false) => {
 }
 
 // ================================================================ desktop, dark
-{
+if (!ONLY_NEW) {
   const { ctx, page, errs } = await newPage({ w: 1280, h: 900, scheme: 'dark' });
   await load(page);
   await shot(page, 'd1280-dark-overview');
@@ -303,7 +310,7 @@ const shot = async (page, name, full = false) => {
 }
 
 // ================================================================ phone, light and dark, with a real touch drag
-for (const scheme of ['light', 'dark']) {
+for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   const { ctx, page, errs } = await newPage({ w: 390, h: 844, scheme, touch: true, mobile: true });
   await load(page);
   await shot(page, `p390-${scheme}-top`);
@@ -374,7 +381,7 @@ async function openPanel(page, hash = '#panel') {
   await page.waitForFunction(() => document.querySelectorAll('#fp-difflist li').length > 0 && document.querySelector('#lad-a6fig svg'), null, { timeout: 120000 });
 }
 const txt = (page, s) => page.evaluate(s => { const e = document.querySelector(s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; }, s);
-{
+if (!ONLY_NEW) {
   const { ctx, page, errs } = await newPage({ w: 1280, h: 900 });
   await openPanel(page);
   const facts = JSON.parse(fs.readFileSync(path.join(SITE, 'data', 'facts.json'), 'utf8')).boards;
@@ -509,13 +516,13 @@ const txt = (page, s) => page.evaluate(s => { const e = document.querySelector(s
   await ctx.close();
 }
 // the site's SVGs: the host refuses XML with a DOCTYPE
-{
+if (!ONLY_NEW) {
   const bad = [];
   const walk = d => { for (const f of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); if (f.isDirectory()) walk(p); else if (/\.svg$/i.test(f.name) && /<!DOCTYPE/i.test(fs.readFileSync(p, 'utf8'))) bad.push(path.relative(SITE, p)); } };
   walk(SITE);
   ok('site SVGs carry no <!DOCTYPE', bad.length === 0, bad.join(', '));
 }
-for (const scheme of ['light', 'dark']) {
+for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   const { ctx, page, errs } = await newPage({ w: 390, h: 844, scheme, touch: true, mobile: true });
   await openPanel(page);
   await page.tap('#fp-poslist button[data-pos="4"]');
@@ -530,6 +537,194 @@ for (const scheme of ['light', 'dark']) {
   const sw2 = await page.evaluate(() => document.documentElement.scrollWidth);
   ok(`phone ${scheme}: front panel and ladders fit 390, the dial taps`, r.sw <= 390 && sw2 <= 390 && r.st <= 390 && r.n === 'Format / Date' && errs.length === 0, `scrollWidth ${r.sw}/${sw2}, status column right edge ${r.st.toFixed(0)}, ${r.n}` + (errs.length ? ' ' + errs.slice(0, 3).join(' || ') : ''));
   await ctx.close();
+}
+
+// ================================================================ populated boards and the Order view
+// The boards are the GLBs and pictures of 3d/populated/ (the fascia R as ordered, with its Plates print and Divider gold),
+// and the Order view reads fab/ORDER.md and the fit table. Each piece has its own check below.
+{
+  const rd = f => JSON.parse(fs.readFileSync(path.join(SITE, 'data', f), 'utf8'));
+  const pop = rd('populated.json'), order = rd('order.json');
+  const BOARDS3 = ['TS06-DRV', 'TS06-DISP', 'TS06-FASCIA-rhythm'];
+
+  // ---- the files the site would publish: the host's limits (15 MB a file, 256 MB a version), and the list
+  {
+    const files = [];
+    const walk = (d, rel = '') => { for (const f of fs.readdirSync(d, { withFileTypes: true })) { if (f.isDirectory()) walk(path.join(d, f.name), rel + f.name + '/'); else files.push({ p: rel + f.name, n: fs.statSync(path.join(d, f.name)).size }); } };
+    walk(SITE);
+    const total = files.reduce((a, f) => a + f.n, 0), big = files.slice().sort((a, b) => b.n - a.n)[0];
+    ok('publish limits: every file 15 MB or less, the version under 256 MB', files.every(f => f.n <= 15 * 1048576) && total < 256 * 1048576 && files.length < 511,
+      `${files.length} files, ${(total / 1048576).toFixed(1)} MB, largest ${big.p} ${(big.n / 1048576).toFixed(2)} MB`);
+    const pf = path.join(path.dirname(SITE), 'publish-files.json');
+    const list = fs.existsSync(pf) ? JSON.parse(fs.readFileSync(pf, 'utf8')) : {};
+    const same = Object.keys(list).length === files.length && files.every(f => list[f.p] === f.p);
+    ok('publish-files.json maps each of the site’s files to itself', same, `${Object.keys(list).length} entries`);
+  }
+
+  // ---- data written by the build
+  ok('populated data: three boards, no footprint without a model, the Divider gold', BOARDS3.every(b => pop.boards[b] && pop.boards[b].footprints.missing === 0 && pop.boards[b].footprints.with_model > 10) && pop.gold === 'divider',
+    BOARDS3.map(b => `${b.replace('TS06-', '')} ${pop.boards[b].footprints.with_model}+${pop.boards[b].footprints.allowlisted}`).join(', ') + ', gold ' + pop.gold);
+  ok('populated GLBs published as glTF JSON, each under 15 MB', BOARDS3.every(b => { const f = path.join(SITE, pop.boards[b].published); return fs.existsSync(f) && fs.statSync(f).size === pop.boards[b].published_bytes && pop.boards[b].published_bytes <= 15 * 1048576; }),
+    BOARDS3.map(b => `${b.replace('TS06-', '')} ${(pop.boards[b].glb_bytes / 1048576).toFixed(1)} MB GLB -> ${(pop.boards[b].published_bytes / 1048576).toFixed(2)} MB`).join(', '));
+
+  const reqs = [];
+  const { ctx, page, errs } = await newPage({ w: 1280, h: 900 });
+  page.on('request', r => reqs.push(r.url()));
+  await load(page, '', true);
+
+  // ---- the GLBs loaded, with the parts in them, and no stand-in bodies on top
+  const g = await page.evaluate(() => {
+    const V = window.TS06, out = { fv: V.fv, boards: {} };
+    for (const [k, refs] of [['DRV', ['U1', 'U2', 'U13', 'L1', 'F1', 'XS11']], ['DISP', ['V1', 'V5', 'V7', 'HL1', 'XP11']], ['FR', ['SW1', 'SW2', 'SW4', 'J1', 'R1']]]) {
+      const gl = V.gltf[k], js = gl.parser.json, names = new Set();
+      let meshes = 0;
+      gl.scene.traverse(o => { if (o.name) names.add(o.name); if (o.isMesh) meshes++; });
+      const gold = (js.materials || []).filter(m => { const p = m.pbrMetallicRoughness || {}, c = p.baseColorFactor || [0, 0, 0]; return (p.metallicFactor === undefined || p.metallicFactor === 1) && (p.roughnessFactor || 1) <= 0.5 && c[0] > 0.6 && c[1] > 0.5 && c[2] < 0.2; }).length;
+      out.boards[k] = { nodes: js.nodes.length, meshes, have: refs.filter(r => names.has(r)), want: refs, gold };
+    }
+    const A = V.roots.asm, items = id => (A.items.get(id) || []);
+    const named = (id, re) => items(id).filter(o => re.test(o.name) && o.userData.item === undefined).length;
+    out.items = { chipU2: items('chip:U2').map(o => o.name + ':' + (o.userData.item || '')), nano: items('nano').map(o => o.name), rtc: items('rtc').map(o => o.name),
+      in12: named('in12', /^V\d+$/), in15: named('in15', /^V\d+$/), in17: named('in17', /^V\d+$/), ins1: named('ins1', /^V\d+$/), leds: named('leds', /^HL\d+$/),
+      fascia: named('fascia', /^(SW\d|J1)$/), chipsReal: ['U2', 'U3', 'U5', 'U6', 'U7', 'U8', 'U9', 'U10', 'U11', 'U12', 'U15', 'U16', 'U17'].filter(r => items('chip:' + r).length === 1 && items('chip:' + r)[0].name === r).length };
+    return out;
+  });
+  ok('GLBs loaded: DRV, DISP and the fascia R carry their parts (nodes by reference)', Object.values(g.boards).every(b => b.have.length === b.want.length && b.meshes > 30),
+    Object.entries(g.boards).map(([k, b]) => `${k} ${b.nodes} nodes, ${b.meshes} meshes, ${b.have.length}/${b.want.length} refs`).join('; '));
+  ok('GLBs: the fascia R carries its gold as a metallic gold material', g.boards.FR.gold >= 1, `${g.boards.FR.gold} gold material(s) in the R GLB`);
+  ok('populated boards draw no stand-in bodies: the stepper uses the parts’ own nodes', g.items.chipsReal === 13 && g.items.nano.join() === 'U1' && g.items.rtc.join() === 'U13' && g.items.in12 === 4 && g.items.in15 === 2 && g.items.in17 === 2 && g.items.ins1 === 2 && g.items.leds === 9 && g.items.fascia === 6,
+    JSON.stringify(g.items).slice(0, 220));
+  ok('the fascia shown first is R, the board that is ordered', g.fv === 'R', 'variant ' + g.fv);
+
+  // ---- the pictures of the populated boards (the page's own picture mode, and every file)
+  const pics = await page.evaluate(async list => {
+    const res = [];
+    for (const p of list) {
+      const im = new Image();
+      await new Promise(r => { im.onload = im.onerror = r; im.src = p; });
+      res.push({ p, w: im.naturalWidth, h: im.naturalHeight });
+    }
+    return res;
+  }, pop.pictures);
+  const sizes = pop.pictures.map(p => fs.statSync(path.join(SITE, p)).size);
+  ok('populated pictures: all ' + pop.pictures.length + ' load, at most 2400 px wide and under 3 MB', pics.length === 11 && pics.every(x => x.w >= 700 && x.w <= 2400) && sizes.every(n => n < 3 * 1048576),
+    pics.map(x => `${x.p.replace('img/', '').replace('.png', '')} ${x.w}x${x.h}`).join(', ').slice(0, 300));
+  const px = await page.evaluate(async src => {
+    const im = new Image();
+    await new Promise(r => { im.onload = im.onerror = r; im.src = src; });
+    const c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height).data;
+    let gold = 0, white = 0, opaque = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 200) continue;
+      opaque++;
+      if (d[i] > 180 && d[i + 1] > 140 && d[i + 2] < 90 && d[i] - d[i + 2] > 100) gold++;
+      else if (d[i] > 235 && d[i + 1] > 235 && d[i + 2] > 235) white++;
+    }
+    return { gold, white, opaque };
+  }, 'img/TS06-FASCIA-rhythm-top.png');
+  ok('the fascia picture shows the Divider gold and the Plates print', px.gold > 8000 && px.white > 6000, `${px.gold} gold pixels, ${px.white} white pixels of ${px.opaque}`);
+  const mode = {};
+  for (const [scene, key] of [['DRV', 'TS06-DRV'], ['DISP', 'TS06-DISP'], ['FASCIA', 'TS06-FASCIA-rhythm']]) {
+    await page.click(`#scenes [data-scene="${scene}"]`);
+    await page.click('#modeseg [data-mode="img"]');
+    await page.waitForFunction(() => document.querySelector('#shotimg').complete && document.querySelector('#shotimg').naturalWidth > 0);
+    mode[scene] = await page.evaluate(() => { const i = document.querySelector('#shotimg'); return { src: i.getAttribute('src'), alt: i.alt, w: i.naturalWidth, n: document.querySelectorAll('#shotnav button').length }; });
+  }
+  ok('picture mode shows the populated renders of each board', mode.DRV.src === 'img/TS06-DRV-iso.png' && mode.DISP.src === 'img/TS06-DISP-iso.png' && mode.FASCIA.src === 'img/TS06-FASCIA-rhythm-iso.png' && Object.values(mode).every(m => /populated/.test(m.alt) && m.w > 700 && m.n === 3),
+    Object.entries(mode).map(([k, m]) => `${k}: ${m.src} (${m.w} px)`).join('; '));
+  await page.click('#scenes [data-scene="asm"]');
+  await page.click('#modeseg [data-mode="img"]');
+  const asmShots = await page.evaluate(() => [...document.querySelectorAll('#shotnav button')].map(b => b.textContent));
+  await page.click('#shotnav button:last-child');
+  await page.waitForFunction(() => document.querySelector('#shotimg').complete && document.querySelector('#shotimg').naturalWidth > 0);
+  const stk = await page.evaluate(() => ({ src: document.querySelector('#shotimg').getAttribute('src'), w: document.querySelector('#shotimg').naturalWidth }));
+  ok('the case pictures include the populated stack, front and angled', asmShots.includes('Populated, front') && asmShots.includes('Populated, angled') && stk.src === 'img/stack-iso.png' && stk.w > 700, asmShots.join(' | ') + '; ' + stk.src);
+  await page.click('#modeseg [data-mode="3d"]');
+
+  // ---- the 3D view with the populated boards (screenshots; the gold in the fascia)
+  await page.click('#scenes [data-scene="asm"]');
+  await page.click('#deck [data-view="isoL"]'); await settle(page);
+  await shot(page, 'd1280-light-populated-assembly');
+  await page.click('#scenes [data-scene="DRV"]'); await page.click('#sidetabs [data-side="facts"]').catch(() => {});
+  await page.click('#deck [data-view="isoL"]').catch(() => {}); await settle(page);
+  await shot(page, 'd1280-light-populated-driver');
+  await page.click('#scenes [data-scene="DISP"]'); await settle(page);
+  await shot(page, 'd1280-light-populated-display');
+  await page.click('#scenes [data-scene="FASCIA"]'); await settle(page);
+  await page.click('#deck [data-view="front"]').catch(() => {}); await settle(page);
+  await shot(page, 'd1280-light-populated-fascia-gold');
+  const png = await page.locator('#gl canvas').screenshot();
+  const gp = await page.evaluate(async b64 => {
+    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const bm = await createImageBitmap(new Blob([bin], { type: 'image/png' }));
+    const c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height;
+    const x = c.getContext('2d'); x.drawImage(bm, 0, 0);
+    const d = x.getImageData(0, 0, c.width, c.height).data;
+    let gold = 0, n = 0;
+    for (let i = 0; i < d.length; i += 4) { n++; if (d[i] > 120 && d[i] - d[i + 2] > 60 && d[i + 1] > 90) gold++; }
+    return { gold, n };
+  }, png.toString('base64'));
+  ok('the 3D view of the fascia R shows the gold', gp.gold > 2000, `${gp.gold} gold-coloured pixels of ${gp.n} in the canvas`);
+
+  // ---- the Order view
+  await page.goto(`http://127.0.0.1:${PORT}/index.html#order`);
+  await page.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 240000 });
+  await page.waitForTimeout(800);
+  const o = await page.evaluate(() => {
+    const t = s => [...document.querySelectorAll(s)];
+    const cells = r => [...r.children].map(c => c.textContent.replace(/\s+/g, ' ').trim());
+    return {
+      open: !document.querySelector('#doc-order').hidden && document.querySelector('#dt-order').getAttribute('aria-selected') === 'true',
+      boards: t('#order-boards .ob').map(b => { const m = {}; b.querySelectorAll('dt').forEach(dt => { m[dt.textContent] = dt.nextElementSibling.textContent.replace(/\s+/g, ' ').trim(); }); m.name = b.querySelector('h3').textContent; m.img = b.querySelector('img').getAttribute('src'); m.link = b.querySelector('dd a') && b.querySelector('dd a').getAttribute('href'); return m; }),
+      dfmHead: cells(document.querySelector('#order-dfm-table thead tr')), dfm: t('#order-dfm-table tbody tr').map(cells),
+      fit: t('#order-fit-table tbody tr').map(r => ({ st: r.children[0].textContent.trim(), where: r.children[1].textContent.replace(/\s+/g, ' ').trim(), plain: r.children[2].textContent.trim(), margin: r.children[3].textContent.trim() })),
+      pills: t('#doc-order .olede .pill').map(p => p.textContent.trim()),
+      open: t('#order-open li').map(l => l.textContent.replace(/\s+/g, ' ').trim()),
+      proto: t('#order-proto li').length,
+      zips: t('#order-zips tbody tr').map(r => ({ cells: cells(r), href: r.querySelector('a').getAttribute('href'), text: r.querySelector('a').textContent.trim() })),
+      own: document.querySelector('#order-ownhand').textContent.replace(/\s+/g, ' '),
+      embed: document.querySelectorAll('#doc-order iframe, #doc-order embed, #doc-order object, #doc-order a[download]').length,
+      sw: document.documentElement.scrollWidth,
+    };
+  });
+  await page.locator('#doc-order').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await shot(page, 'd1280-light-order', true);
+  ok('Order: the tab opens from #order', o.open);
+  ok('Order: per board, size, layers, thickness, finish, colour and quantity 10', o.boards.length === 3 && o.boards.every(b => b.Quantity === '10' && b.Layers === '2' && b.Finish === 'ENIG' && /^\d+\.\d x \d+\.\d mm$/.test(b.Size) && /^mask black/.test(b.Colour) && /silk white/.test(b.Colour) && /all PASS/.test(b['DFM check']))
+    && o.boards.map(b => b.Thickness.slice(0, 6)).join('|') === '1.6 mm|1.6 mm|2.0 mm' && o.boards.map(b => b.Size).join('|') === '191.4 x 44.0 mm|191.4 x 100.0 mm|191.4 x 40.0 mm',
+    o.boards.map(b => `${b.name.split(' ')[0]} ${b.Size}, ${b.Thickness.slice(0, 6)}, qty ${b.Quantity}`).join('; '));
+  ok('Order: each board shows its populated picture', o.boards.map(b => b.img).join() === 'img/TS06-DISP-top.png,img/TS06-DRV-top.png,img/TS06-FASCIA-rhythm-top.png', o.boards.map(b => b.img).join(', '));
+  ok('Order: the DFM table, 9 rules by 3 boards, every cell filled', o.dfmHead.length === 4 && o.dfmHead.slice(1).join() === 'TS06-DISP,TS06-DRV,Fascia R' && o.dfm.length === 9 && o.dfm.every(r => r.length === 4 && r.every(Boolean)),
+    o.dfm.map(r => r[0].replace(/ \(.*/, '')).join(', ').slice(0, 200));
+  const failN = o.fit.filter(r => r.st === 'FAIL').length, tightN = o.fit.filter(r => r.st === 'TIGHT').length;
+  ok('Order: the fit table lists every TIGHT and FAIL row, each in plain words', o.fit.length === order.fit.rows.length && failN === order.fit.tally.FAIL && tightN === order.fit.tally.TIGHT && o.fit.every(r => r.plain.length > 60 && /\d/.test(r.margin) && r.where.length > 10)
+    && o.pills.join(' ') === `${order.fit.tally.PASS} PASS ${order.fit.tally.TIGHT} TIGHT ${order.fit.tally.FAIL} FAIL`,
+    `${tightN} TIGHT, ${failN} FAIL; ` + o.pills.join(', '));
+  const failRow = o.fit.find(r => r.st === 'FAIL');
+  ok('Order: the FAIL row (ИН-17 length) says what to do about it', !!failRow && /ИН-17/.test(failRow.plain) && /real tube/.test(failRow.plain) && failRow.margin.startsWith('-1.29'), failRow ? failRow.plain.slice(0, 120) : 'no FAIL row');
+  ok('Order: the open items before ordering, and what the prototype closes', o.open.length === order.open.length && o.open.length === 5 && /Which fascia/.test(o.open[0]) && /Which gold/.test(o.open[1]) && o.proto === order.prototype.length && o.proto >= 5, `${o.open.length} items, ${o.proto} for the prototype`);
+  const repoFab = f => fs.statSync(path.join(REPO, f)).size;
+  ok('Order: the three fab zips are linked on GitHub under pcb/kicad-boards, by repo path, not embedded',
+    o.zips.length === 3 && o.zips.every(z => z.href === 'https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/' + z.text && /^fab\/.*-fab\.zip$/.test(z.text) && fs.existsSync(path.join(REPO, z.text)))
+    && o.zips.every(z => { const kb = Math.round(repoFab(z.text) / 1024); return z.cells[2] === kb + ' kB'; }) && o.embed === 0 && !reqs.some(u => /\.zip(\?|$)/.test(u)),
+    o.zips.map(z => z.text + ' ' + z.cells[2]).join('; '));
+  ok('Order: the line that placing the order is the owner’s own hand', /Placing the order is the owner’s own hand|Placing the order is the owner's own hand/.test(o.own), o.own.slice(0, 120));
+  ok('Order desktop: no horizontal scroll, no console errors', o.sw <= 1280 && errs.length === 0, 'scrollWidth ' + o.sw + ' ' + errs.slice(0, 3).join(' || '));
+  await ctx.close();
+
+  for (const scheme of ['light', 'dark']) {
+    const { ctx: c2, page: p2, errs: e2 } = await newPage({ w: 390, h: 844, scheme, touch: true, mobile: true });
+    await load(p2, '#order', true);
+    const r = await p2.evaluate(() => ({ sw: document.documentElement.scrollWidth, rows: document.querySelectorAll('#order-fit-table tbody tr').length, boards: document.querySelectorAll('#order-boards .ob').length,
+      right: Math.max(...[...document.querySelectorAll('#order-boards .ob')].map(b => b.getBoundingClientRect().right)) }));
+    await p2.locator('#order-boards').scrollIntoViewIfNeeded();
+    await p2.waitForTimeout(300); await shot(p2, `p390-${scheme}-order`);
+    ok(`Order phone ${scheme}: fits 390, three boards stacked, no console errors`, r.sw <= 390 && r.right <= 390 && r.boards === 3 && r.rows === order.fit.rows.length && e2.length === 0, `scrollWidth ${r.sw}, card right edge ${r.right.toFixed(0)} ` + e2.slice(0, 3).join(' || '));
+    await c2.close();
+  }
 }
 
 await browser.close();

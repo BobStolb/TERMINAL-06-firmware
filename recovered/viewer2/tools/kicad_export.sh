@@ -4,6 +4,7 @@
 # prep_board.py), /m = the 3D model library (KICAD10_3DMODEL_DIR).
 #   kicad_export.sh BOARD...        writes /w/out/<BOARD>.glb, <BOARD>-drc.json, img/<BOARD>-{top,bottom,iso}.png
 # RENDER=0 skips the PNG renders; RQ sets their quality (default high).
+# SKIP_GLB="BOARD ...": for those boards only the DRC runs (build.sh takes their GLB and pictures from 3d/populated/).
 set -u
 RQ=${RQ:-high}
 mkdir -p /w/out/img
@@ -13,6 +14,7 @@ for B in "$@"; do
   # refill every zone first (the stored fill may be stale), and keep KiCad's own DRC result
   kicad-cli pcb drc --refill-zones --save-board --severity-all --format json --units mm \
     -o /w/out/$B-drc.json $B.kicad_pcb >/w/out/$B-drc.log 2>&1
+  case " ${SKIP_GLB:-} " in *" $B "*) echo "$B: DRC only (populated GLB and pictures come from the repository): $(( $(date +%s) - t0 )) s"; continue ;; esac
   kicad-cli pcb export glb -D KICAD10_3DMODEL_DIR=/m -f \
     --include-pads --include-tracks --include-zones --include-silkscreen --include-soldermask \
     -o /w/out/$B.glb $B.kicad_pcb >/w/out/$B-glb.log 2>&1 || { echo "GLB FAILED $B"; cat /w/out/$B-glb.log; }

@@ -28,6 +28,10 @@ async function getJSON(u) {
   return r.json();
 }
 let MODEL, PARTS, FACTS, SECTIONS;
+let ORDER = null;                       // data/order.json: what is ready to order (tools/order.py)
+let POP = { boards: {}, pictures: [] };   // data/populated.json: the boards drawn populated (tools/populated.py)
+const isPop = b => !!(POP.boards || {})[b];
+const hasStack = () => (POP.pictures || []).includes('img/stack-front.png');
 const F = () => MODEL.frame;
 const thick = k => PARTS[BOARD[k]].thickness;
 const HTB = b => HB + PARTS[b].thickness;
@@ -156,16 +160,49 @@ function nativeGroupFor(key, gltf, root, bname = BOARD[key], fv) {
     }
     o.material = fixed.get(m);
   });
+  // the finish gold (ENIG pads, and the fascia's gold lines) is a fully metallic material in the GLB: under this scene's soft
+  // light it mirrors a dim room and reads pale cream. Keep its colour, lean on the diffuse part so it reads as gold.
+  const golds = new Map();
+  scene.traverse(o => {
+    const m = o.isMesh && o.material;
+    if (!m || !m.color || m.transparent || m.metalness < 0.9 || !(m.color.r > 0.5 && m.color.g > 0.4 && m.color.b < 0.25)) return;
+    if (!golds.has(m)) { const c = m.clone(); c.color.setRGB(0.9, 0.66, 0.08); c.metalness = 0.3; c.roughness = 0.38; c.emissive = new THREE.Color(0x2e1d00); golds.set(m, c); }
+    o.material = golds.get(m);
+  });
   g.updateMatrixWorld(true);
   const P = PARTS[bname].parts;
   const ht = HTB(bname);
   g.userData.bname = bname;
-  if (key === 'DISP') buildDispProxies(g, sub, root, P, ht);
-  if (key === 'DRV') buildDrvProxies(g, sub, root, P, ht, refs);
-  if (key === 'FASCIA') buildFasciaProxies(g, sub, root, P, ht, fv);
+  if (isPop(bname)) populatedItems(key, g, root, refs);        // the GLB is 3d/populated's: every part is in it already
+  else if (key === 'DISP') buildDispProxies(g, sub, root, P, ht);
+  else if (key === 'DRV') buildDrvProxies(g, sub, root, P, ht, refs);
+  else if (key === 'FASCIA') buildFasciaProxies(g, sub, root, P, ht, fv);
   for (const [id, grp] of Object.entries(items)) root.addItem(id, grp);
   g.userData.items = items;
   return g;
+}
+
+// A populated board's GLB (3d/populated) holds every part under a node named by its reference. The build and
+// bring-up steps show and hide parts by item name (in12, leds, chip:U2, nano, rtc, fascia ...), as they did with the
+// stand-in bodies; here the item is the part's own node, so the stepper works on the real bodies. A tube's socket
+// contacts are part of its node, a chip's socket part of the chip's: they appear with it.
+function populatedItems(key, g, root, refs) {
+  const reg = (item, ref, alias) => {
+    const o = refs.get(ref);
+    if (!o) return;
+    root.addItem(item, o);
+    if (alias) root.addRef(alias, o, g);
+  };
+  if (key === 'DISP') {
+    for (const t of MODEL.tubes) reg(({ IN12: 'in12', IN15: 'in15', IN17: 'in17', INS1: 'ins1' })[t.kind] || 'in12', t.ref);
+    for (const l of MODEL.leds) reg('leds', l.ref);
+  } else if (key === 'DRV') {
+    for (const ref of CHIPS) reg('chip:' + ref, ref, 'DRV:' + ref + '#chip');
+    reg('nano', 'U1', 'DRV:U1#sockets');
+    reg('rtc', 'U13', 'DRV:U13#module');
+  } else {
+    for (const ref of ['SW1', 'SW2', 'SW3', 'SW4', 'SW5', 'J1']) reg('fascia', ref);
+  }
 }
 
 function buildDispProxies(g, sub, root, P, ht) {
@@ -368,12 +405,12 @@ class Root {
     this.group = new THREE.Group();
     this.group.name = name;
     this.items = new Map();       // item id -> [Object3D]
-    this.refs = new Map();        // 'DRV:U11' -> { objs: [], frame }
+    this.refs = new Map();        // 'DRV:U11' -> { objs: [], frames: [one per object], frame: the first }
     this.natives = {};            // board key -> native group
     this.hl = [];                 // highlight decorations to remove
   }
   addItem(id, o) { if (!this.items.has(id)) this.items.set(id, []); this.items.get(id).push(o); }
-  addRef(k, o, frame) { if (!this.refs.has(k)) this.refs.set(k, { objs: [], frame }); this.refs.get(k).objs.push(o); }
+  addRef(k, o, frame) { if (!this.refs.has(k)) this.refs.set(k, { objs: [], frames: [], frame }); const e = this.refs.get(k); e.objs.push(o); e.frames.push(frame); }
   setItem(id, on) { for (const o of this.items.get(id) || []) o.visible = on; }
 }
 
@@ -516,7 +553,21 @@ function frameBox(b, dirName, pad = 1, ms = 700) {
   if (b.isEmpty()) return;
   const c = b.getCenter(V3()), r = b.getBoundingSphere(new THREE.Sphere()).radius * pad;
   const d = V3(...(DIRS[dirName] || DIRS.isoL)).normalize();
-  tweenTo(c, c.clone().add(d.multiplyScalar(fitDistance(r))), ms);
+  let dist = fitDistance(r);
+  // A long thin board (the fascia, the display) fills little of the frame when a sphere is fitted round it: when its box, seen from
+  // this side, is more than 2.5 times wider than tall, fit the projected box instead (the sphere stays for every other shape).
+  const right = V3(0, 1, 0).cross(d); if (right.lengthSq() < 1e-6) right.set(1, 0, 0); right.normalize();
+  const up = d.clone().cross(right).normalize();
+  let hw = 0, hh = 0, hd = 0;
+  for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) {
+    const q = V3(x, y, z).sub(c);
+    hw = Math.max(hw, Math.abs(q.dot(right))); hh = Math.max(hh, Math.abs(q.dot(up))); hd = Math.max(hd, Math.abs(q.dot(d)));
+  }
+  if (hw > 2.5 * hh && hh > 0) {
+    const t = Math.tan(V.camera.fov * Math.PI / 360);
+    dist = Math.min(dist, (Math.max(hh / t, hw / (t * V.camera.aspect)) * 1.08 + hd) * pad);
+  }
+  tweenTo(c, c.clone().add(d.multiplyScalar(dist)), ms);
 }
 function currentDir() {
   const d = V.camera.position.clone().sub(V.controls.target).normalize();
@@ -758,8 +809,10 @@ function refName(key) {
 function resolveRef(root, key) {
   let e = root.refs.get(key);
   if (e) {
-    const objs = e.objs.filter(o => isShown(o));
-    return objs.length ? { objs, frame: e.frame } : (key.startsWith('@') ? null : courtyardRef(root, key));
+    // a ref the three fascia variants share (FASCIA:J1, @lead) holds one object per variant, each in its own frame: the highlight
+    // and its label go in the frame of the one that is shown (the first variant's frame is hidden while R or W is on)
+    const keep = e.objs.map((o, i) => i).filter(i => isShown(e.objs[i]));
+    return keep.length ? { objs: keep.map(i => e.objs[i]), frame: e.frames[keep[0]] } : (key.startsWith('@') ? null : courtyardRef(root, key));
   }
   return courtyardRef(root, key);
 }
@@ -786,7 +839,8 @@ function hlBox() {
 
 // ------------------------------------------------------------------------------------------ scenes, modes
 const IMGS = {
-  asm: [['case-iso', 'Case, angled'], ['case-front', 'Front'], ['case-exploded', 'Exploded'], ['case-iso_rear', 'Rear'], ['case-module', 'Module']],
+  asm: () => [['case-iso', 'Case, angled'], ['case-front', 'Front'], ['case-exploded', 'Exploded'], ['case-iso_rear', 'Rear'], ['case-module', 'Module'],
+    ...(hasStack() ? [['stack-front', 'Populated, front'], ['stack-iso', 'Populated, angled']] : [])],
   DRV: [['TS06-DRV-iso', 'Angled'], ['TS06-DRV-top', 'Top (parts)'], ['TS06-DRV-bottom', 'Bottom (strips)']],
   DISP: [['TS06-DISP-iso', 'Angled'], ['TS06-DISP-top', 'Top (tubes)'], ['TS06-DISP-bottom', 'Bottom (strips)']],
   FASCIA: () => [[BOARD.FASCIA + '-iso', 'Angled'], [BOARD.FASCIA + '-top', 'Face'], [BOARD.FASCIA + '-bottom', 'Back']],
@@ -828,7 +882,8 @@ function renderShots() {
   $('#shotnav').innerHTML = list.map((s, i) => `<button type="button" data-i="${i}" aria-pressed="${i === UI.shot}">${esc(s[1])}</button>`).join('');
   const img = $('#shotimg');
   img.src = 'img/' + list[UI.shot][0] + '.png';
-  img.alt = (UI.scene === 'asm' ? 'Case model, ' : BOARD[UI.scene] + ', KiCad render, ') + list[UI.shot][1];
+  img.alt = (UI.scene === 'asm' ? (/^stack/.test(list[UI.shot][0]) ? 'The three boards in their case positions, ' : 'Case model, ')
+    : BOARD[UI.scene] + (isPop(BOARD[UI.scene]) ? ', populated, KiCad render, ' : ', KiCad render, ')) + list[UI.shot][1];
   $('#shotview').classList.remove('zoom');
 }
 
@@ -1046,6 +1101,11 @@ function pillDRC(d, expect) {
   const cls = d.unconnected ? 'bad' : same ? 'ok' : 'warn';
   return `<span class="pill ${d.errors ? (same ? 'warn' : 'bad') : 'ok'}">${d.errors} errors</span> <span class="pill ${d.warnings ? 'warn' : 'ok'}">${d.warnings} warnings</span> <span class="pill ${cls}">${d.unconnected} unconnected</span>${same ? '' : ' <span class="pill bad">changed since this page was written</span>'}`;
 }
+function popBodies(bname) {         // the facts row for a populated board
+  const f = (POP.boards[bname] || {}).footprints || {};
+  const tot = (f.with_model || 0) + (f.allowlisted || 0) + (f.missing || 0);
+  return ['3D bodies', `<span class="num">${f.with_model}</span> of <span class="num">${tot}</span> footprints carry a model; the other ${f.allowlisted} are ${bname === 'TS06-DRV' ? 'mounting holes and the DNP bleed resistors the bench leaves empty' : 'bare mounting holes'}. <span class="pill ${f.missing ? 'bad' : 'ok'}">${f.missing} missing</span>`];
+}
 function renderFacts() {
   const s = UI.scene, el = $('#panel-facts'), f = F();
   const B = k => FACTS.boards[BOARD[k]];
@@ -1060,11 +1120,12 @@ function renderFacts() {
       ['Tracks', `${n(b.tracks)}: 369 laid by hand, the rest by negotiated routing (0 unrouted)`],
       ['Vias', `<span class="pill ${b.vias ? 'bad' : 'ok'}">${b.vias}</span>`],
       ['Copper', `${n('6663 mm')}, ${n('1.32×')} its floor`],
-      ['KiCad DRC', pillDRC(b.drc, [0, 4, 0]) + '<br><span style="color:var(--muted);font-size:12.5px">4 accepted: the Nano’s silk past the edge with its USB (2); VT21 and XS1 library mismatches (2)</span>'],
+      ['KiCad DRC', pillDRC(b.drc, [0, 2, 0]) + '<br><span style="color:var(--muted);font-size:12.5px">2 accepted: the Nano’s silk past the edge with its USB. (The VT21 and XS1 library mismatches this note once listed are no longer reported.)</span>'],
       ['Mate check', '<span class="pill ok">[]</span> 63 strip pins (59 carry a net) land on their pins with the same net; all 4 standoffs have holes'],
       ['185 V gaps', '<span class="pill ok">clean</span> at 0.6 mm (HV net class)'],
-      ['3D bodies', `${n(b.bodies)} of ${n(b.parts + b.dnp)} from KiCad's library; ${b.no_body.map(esc).join(', ') || 'none'} drawn as proxies`]];
-    note = 'Grey DIP sockets are empty in KiCad’s export: the chips drawn on them here are proxies, and the bring-up steps fit them stage by stage.';
+      isPop('TS06-DRV') ? popBodies('TS06-DRV') : ['3D bodies', `${n(b.bodies)} of ${n(b.parts + b.dnp)} from KiCad's library; ${b.no_body.map(esc).join(', ') || 'none'} drawn as proxies`]];
+    note = isPop('TS06-DRV') ? 'Drawn populated, as the bench builds it: the DIP chips in their sockets, the Nano on its strips, the RTC module on its header, L1, the МЛТ resistors and the fuse. The bring-up steps fit each part stage by stage. Sizes marked inferred in 3d/populated/README.md are not measured.'
+      : 'Grey DIP sockets are empty in KiCad’s export: the chips drawn on them here are proxies, and the bring-up steps fit them stage by stage.';
   } else if (s === 'DISP') {
     const b = B('DISP');
     name = 'TS06-DISP · display board'; sub = 'Four ИН-12, two ИН-17 for the seconds, two ИН-15, two ИНС-1 colon lamps and nine addressable LEDs. Nothing but the tubes and their wiring; seven pin strips on the back.';
@@ -1074,15 +1135,15 @@ function renderFacts() {
       ['Tube pitch', `the Gyver pitch; the seconds pair ${n('20.5 mm')} apart for their Ø20 stems`],
       ['KiCad DRC', pillDRC(b.drc, [2, 0, 0]) + '<br><span style="color:var(--muted);font-size:12.5px">0 unconnected; 2 errors, accepted (colon lamp courtyards overlap M10 by 0.135 mm; a test fit settles it)</span>'],
       ['185 V gaps', '<span class="pill ok">clean</span> at 0.6 mm'],
-      ['3D bodies', `${n(b.bodies)} of ${n(b.parts)} (the strips). Tubes, lamps, LEDs and socket contacts are proxies from the case model’s envelopes`]];
-    note = 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
+      isPop('TS06-DISP') ? popBodies('TS06-DISP') : ['3D bodies', `${n(b.bodies)} of ${n(b.parts)} (the strips). Tubes, lamps, LEDs and socket contacts are proxies from the case model’s envelopes`]];
+    note = (isPop('TS06-DISP') ? 'Drawn populated: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, two ИНС-1, nine LEDs. The glass is the repo’s STEP files; the ИН-17 stands 2.3 mm proud of the ИН-12 plane in the fit table: measure a bench tube. ' : '') + 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
   } else if (s === 'FASCIA') {
     const b = B('FASCIA'), v = V.fv, d = fvData(v), row = VARIANT_ROWS[v] || {};
     const bad = (d.fascia_checks || []).filter(r => r.status !== 'OK' && r.status !== 'NOTE');
     name = `${BOARD.FASCIA} · fascia ${FV_NAME[v]}`;
     sub = 'The printed product face under the tubes: the MODE rotary, two levers and two buttons. Surface-mount on the back, so no solder shows from the front. It joins TS06-DRV J1 on a 6-way JST PH lead.';
     rows = [['Variant', `${esc(FV_NAME[v])}${v === 'R' ? ' <span class="pill acc">recommended</span>' : ''} · the owner chooses (see <b>Fascia variants</b> below)`],
-      ['Size', size('FASCIA')], ['Finish', 'black soldermask, white silkscreen, ENIG (PCB/README.md). The board file has no stackup of its own; this build adds one for the renders'],
+      ['Size', size('FASCIA')], ['Finish', v === 'R' && isPop(BOARD.FASCIA) ? 'black soldermask, white silkscreen, ENIG, 2.0 mm (the board’s own stack-up). The gold is copper under openings in the mask' : 'black soldermask, white silkscreen, ENIG (PCB/README.md). The board file has no stackup of its own; this build adds one for the renders'],
       ['Tracks', `${n(b.tracks)}`], ['Vias', `<span class="pill ${b.vias ? 'bad' : 'ok'}">${b.vias}</span>`],
       ['Position', `${n('FASCIA_X0 = ' + d.X0)}, raked ${n(f.FASCIA_RAKE + '°')}`],
       ['Controls vs tubes', esc(row.controls || '')],
@@ -1090,7 +1151,10 @@ function renderFacts() {
       ['Case checks', bad.length ? bad.map(r => `<span class="pill ${r.status === 'FAIL' ? 'bad' : 'warn'}">${esc(r.status)}</span> ${esc(r.what)}`).join('<br>') : '<span class="pill ok">no fascia row TIGHT or FAIL</span>'],
       ['Lead path', n(d.lead_path + ' mm')], ['Area, cost', esc(row.cost || '')], ['Reach', esc(row.reach || '')]];
     const dep = r => ((d.bodies || []).find(b => b[0] === r) || [])[5];
-    note = `Control bodies behind the panel are proxies with the case model’s depths: rotary Ø${((d.bodies || [])[0] || [])[3]} × ${dep('SW1')} mm, МТ1 ${dep('SW2')} mm, КМД1 ${dep('SW4')} mm.` + (v === 'F' ? ' F: the 176 board stands in for the 179 panel the frame needs; that board is not drawn yet.' : '');
+    if (isPop(BOARD.FASCIA)) rows.splice(2, 0, ['As ordered', `drawn with the Plates print (white names and nameplates) and the <b>${esc((POP.gold || 'divider').replace(/^./, c => c.toUpperCase()))} gold</b>, the board <code>fab/TS06-FASCIA-R-revA-divider-fab.zip</code> is made from; ${popBodies(BOARD.FASCIA)[1]}`]);
+    note = isPop(BOARD.FASCIA) ? 'The dial, the two МТ1 levers and the two КМД1 buttons are drawn with their bodies behind the panel and their bushings in the holes; the eight 1206 resistors and the JST header are on the back. The gold shows as yellow in KiCad’s pictures and in the 3D view as a metallic gold.' :
+      `Control bodies behind the panel are proxies with the case model’s depths: rotary Ø${((d.bodies || [])[0] || [])[3]} × ${dep('SW1')} mm, МТ1 ${dep('SW2')} mm, КМД1 ${dep('SW4')} mm.` + (v === 'F' ? ' F: the 176 board stands in for the 179 panel the frame needs; that board is not drawn yet.' : '');
+    if (!isPop(BOARD.FASCIA) && Object.keys(POP.boards || {}).length) note += ' Only the fascia R is drawn populated, with its gold; A and W are the bare boards.';
   } else {
     const c = MODEL.checks || {};
     name = 'Assembly · 3d/case-pair'; sub = 'Both boards, the fascia and the case, placed where the case model puts them. Z runs from the ИН-12 glass front backwards.';
@@ -1100,7 +1164,8 @@ function renderFacts() {
       ['Fascia', `${esc(FV_NAME[V.fv])} (${esc(BOARD.FASCIA)}) at ${n('FASCIA_X0 ' + fvData(V.fv).X0)}, raked ${n(f.FASCIA_RAKE + '°')}, top edge on the sill at ${n('Y ' + f.SILL_TOP_Y)}`],
       ['Fascia lead', `path ${n(fvData(V.fv).lead_path + ' mm')} for a ${n(f.LEAD_LEN + ' mm')} lead (BOM 180–200 mm)`],
       ['Case checks', Object.entries(fvData(V.fv).checks || c).map(([k, v]) => `<span class="pill ${k === 'OK' ? 'ok' : k === 'FAIL' ? 'bad' : k === 'TIGHT' ? 'warn' : 'acc'}">${v} ${esc(k)}</span>`).join(' ') + '<br><span style="color:var(--muted);font-size:12.5px">Two FAILs are the rejected jack openings, kept on record' + (V.fv === 'A' ? '; one is open: the fascia boss on R5' : '') + '.</span>']];
-    note = 'The tubes are drawn from the case model’s envelopes (ИН-12/ИН-15 19.47 × 28.86 × 25.5, ИН-17 face 14 × 20 on a Ø20 stem, ИНС-1 Ø6.97), in warm glass.';
+    note = isPop('TS06-DRV') ? 'The boards are drawn populated (3d/populated): every part has its body, and the fascia R carries its gold. The tubes are the repo’s STEP files; the case parts are the case model’s.'
+      : 'The tubes are drawn from the case model’s envelopes (ИН-12/ИН-15 19.47 × 28.86 × 25.5, ИН-17 face 14 × 20 on a Ø20 stem, ИНС-1 Ø6.97), in warm glass.';
   }
   el.innerHTML = `<h2>${esc(name)}</h2><div class="sub">${esc(sub)}</div><dl>${rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><div class="note">${esc(note)}</div>`;
 }
@@ -1248,19 +1313,76 @@ function renderTestStages() {
 }
 function renderNotes() {
   const d = FACTS.boards;
+  const pop = Object.keys(POP.boards || {}).length > 0;
+  const mb = b => ((POP.boards[b] || {}).published_bytes / 1048576).toFixed(1);
   const rows = [
+    ...(pop ? [['The boards drawn populated', `TS06-DRV, TS06-DISP and the fascia R are the GLBs of <code>3d/populated/</code>, with every component: the DIP chips in their sockets, the Nano on its strips, the six ИН-12/15, the two ИН-17, the colon lamps and LEDs, the dial, levers and buttons. They are quantised (gltfpack, 16-bit positions) and embedded in glTF JSON because the host serves no .glb: ${['TS06-DRV', 'TS06-DISP', 'TS06-FASCIA-rhythm'].filter(isPop).map(b => `${b.replace('TS06-', '')} ${mb(b)} MB`).join(', ')} as published. No copper tracks are in them (they lie under the black mask). The fascia R is drawn <b>as ordered</b>: the Plates print and the Divider gold.`]] : []),
     ['Black boards with white silkscreen', 'Each board’s own stackup: the GLB export and <code>kicad-cli pcb render --use-board-stackup-colors</code>. TS06-DRV and TS06-DISP carry black mask and white silk; TS06-FASCIA’s file has no stackup, so the build adds the one PCB/README.md orders (2.0 mm, black, white, ENIG) to a scratch copy.'],
     ['Tracks faintly under the mask, gold pads', 'KiCad’s copper, pads and zones, exported after the pours were refilled (the committed files store no fill).'],
     ['Parts with KiCad bodies', `TS06-DRV ${d['TS06-DRV'].bodies}, TS06-DISP ${d['TS06-DISP'].bodies}, TS06-FASCIA ${d['TS06-FASCIA'].bodies}. Their glTF nodes are named by reference (U11, XS21, …), which is how a step or a section finds them.`],
+    ...(pop ? [['Stand-in bodies', 'Only on the boards that are not populated, the fascia variants A and W: control bodies from the case model’s depths. The populated boards need none, so the build and bring-up steps show and hide the parts’ own bodies.']] : []),
     ['Every other part', 'Found by its footprint in the <code>.kicad_pcb</code>: position, pads and courtyard, read by the build (<code>data/parts.json</code>). A part with no body gets a proxy (below) or, when highlighted, a thin box on its courtyard.'],
-    ['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem 8 mm above the board, ИНС-1 Ø6.97. The glowing numerals are decoration.'],
-    ['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
-    ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.'],
+    ...(pop ? [] : [['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem 8 mm above the board, ИНС-1 Ø6.97. The glowing numerals are decoration.']]),
+    ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
+    ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.']]),
     ['Standoffs, screws, the fascia lead', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8, the lead along its centre line.'],
     ['The case', 'The printable parts from <code>3d/case-pair/out/*.stl</code> (cheeks, brow, top plate, trench, base, rear panel, and the fascia frame for F), where the case model places them. The cheeks are the default build, with the fascia bosses A, W and R use.'],
     ['Fascia A, W, R and F', 'A, W and R are their own boards, exported like the others and placed at the case model’s X0 for each (4.305, 0, 0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs.'],
   ];
   $('#notesbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+}
+
+// ------------------------------------------------------------------------------------------ order
+// What is ready to order, from data/order.json (tools/order.py: fab/ORDER.md, the zips on disk, the fit table).
+// Placing the order is the owner's own hand: nothing here contacts a fab; the zips are links, not embedded.
+const kB = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' kB';
+function renderOrder() {
+  const el = $('#orderbody');
+  if (!el) return;
+  if (!ORDER) { el.innerHTML = '<div class="card"><p>The order data was not built (<code>data/order.json</code>).</p></div>'; return; }
+  const O = ORDER, t = O.fit.tally;
+  const gold = (O.fit.gold || 'none').replace(/^./, c => c.toUpperCase());
+  const boards = O.boards.map(b => `<article class="card ob" data-board="${esc(b.short)}">
+      <div class="tag">${esc(b.short)}</div>
+      <h3>${esc(b.name)}</h3>
+      <img src="img/${esc(b.picture)}.png" alt="${esc(b.short)}, populated, seen from the front" loading="lazy">
+      <dl class="obrows">
+        <dt>Size</dt><dd>${esc(b.size)}</dd>
+        <dt>Layers</dt><dd>${b.layers}</dd>
+        <dt>Thickness</dt><dd>${esc(b.thickness)}${/2\.0/.test(b.thickness) ? ' <span class="pill acc">not 1.6: say so on the quote</span>' : ''}</dd>
+        <dt>Finish</dt><dd>${esc(b.finish)}</dd>
+        <dt>Colour</dt><dd>mask ${esc(b.mask)}; silk ${esc(b.silk)}</dd>
+        <dt>Holes</dt><dd>${esc(b.holes.plated)} plated, ${esc(b.holes.non_plated)} non-plated</dd>
+        <dt>Quantity</dt><dd><b>${b.qty}</b></dd>
+        <dt>DFM check</dt><dd><span class="pill ok">${esc(b.dfm)}</span></dd>
+        <dt>Zip</dt><dd><a href="${esc(b.url)}" target="_blank" rel="noopener"><code>${esc(b.zip)}</code></a> · ${kB(b.zip_bytes)}</dd>
+      </dl></article>`).join('');
+  const dfm = `<table id="order-dfm-table"><thead><tr>${O.dfm.cols.map((c, i) => `<th${i ? ' class="n"' : ''}>${esc(c || 'Rule (limit)')}</th>`).join('')}</tr></thead><tbody>${
+    O.dfm.rows.map(r => `<tr>${r.map((c, i) => `<td${i ? ' class="n"' : ''}>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const fit = `<table id="order-fit-table"><thead><tr><th>Reading</th><th>Where</th><th>What it says, in plain words</th><th class="n">Margin</th></tr></thead><tbody>${
+    O.fit.rows.map(r => `<tr class="fit-${r.status.toLowerCase()}"><td><span class="pill ${r.status === 'FAIL' ? 'bad' : 'warn'}">${esc(r.status)}</span></td>
+      <td>${esc(r.board)}, ${esc(r.side)}<br><span class="sm">${esc(r.part)}</span></td><td>${esc(r.plain)}</td><td class="n">${r.margin > 0 ? '+' : ''}${r.margin.toFixed(2)} mm</td></tr>`).join('')}</tbody></table>`;
+  const open = O.open.map(o => `<li data-open="${esc(o.id)}"><span class="pill ${o.blocking ? 'warn' : 'acc'}">${o.blocking ? 'before you order' : 'does not hold the order'}</span> <b>${esc(o.title)}.</b> ${esc(o.body)}</li>`).join('');
+  const zips = O.boards.map(b => `<tr><td>${esc(b.short)}</td><td><a href="${esc(b.url)}" target="_blank" rel="noopener"><code>${esc(b.zip)}</code></a></td><td class="n">${kB(b.zip_bytes)}</td><td>${esc(b.layers)} layers, ${esc(b.thickness)}, ${esc(b.finish)}</td></tr>`).join('');
+  el.innerHTML = `
+    <p class="lead">${esc(O.status)} Quantity <b>${O.quantity} of each board</b>, a prototype run. The fascia is shown as ordered: the Plates print and the <b>${esc(gold)} gold</b>.</p>
+    <div class="card ownhand" id="order-ownhand"><div class="tag">Whose hand</div><p><b>${esc(O.own_hand)}</b></p></div>
+    <h2 class="osec">What is ready, board by board</h2>
+    <div class="grid3" id="order-boards">${boards}</div>
+    <h2 class="osec">Design-for-manufacture check</h2>
+    <p class="olede">The worst value the check found on each board, against the limit in brackets. ${esc(O.dfm_note)}</p>
+    <div class="tablewrap card" style="padding:0 4px" id="order-dfm">${dfm}</div>
+    <h2 class="osec">Fit table</h2>
+    <p class="olede">How tall each part is, as drawn, against the room the case gives it (<code>3d/populated/fit-table.md</code>). <span class="pill ok">${t.PASS || 0} PASS</span> has a millimetre or more to spare.
+      <span class="pill warn">${t.TIGHT || 0} TIGHT</span> fits as drawn with less than a millimetre. <span class="pill bad">${t.FAIL || 0} FAIL</span> is more than 0.25 mm over: the drawing says it would not fit. Only the rows that are not PASS are listed.</p>
+    <div class="tablewrap card" style="padding:0 4px" id="order-fit">${fit}</div>
+    <h2 class="osec">Open before ordering</h2>
+    <ul class="openlist" id="order-open">${open}</ul>
+    <details class="card" id="order-proto"><summary>What only the prototype run can close (${O.prototype.length})</summary><ul>${O.prototype.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>
+    <h2 class="osec">Where the fab zips are</h2>
+    <p class="olede">One zip per board, on GitHub, branch <code>${esc(O.branch)}</code>. They are links, not part of this page: download them there and upload one zip to the board house for each board.</p>
+    <div class="tablewrap card" style="padding:0 4px" id="order-zips"><table><thead><tr><th>Board</th><th>File in the repository</th><th class="n">Size</th><th>Holds</th></tr></thead><tbody>${zips}</tbody></table></div>
+    <p class="sm" style="margin-top:10px">Source: <code>${esc(O.source)}</code>, read when this page was built.</p>`;
 }
 
 // ------------------------------------------------------------------------------------------ front panel
@@ -1724,7 +1846,7 @@ function wire() {
     $('#fp-a1back').hidden = b.dataset.side !== 'back';
   });
 }
-const DOCS = ['sections', 'panel', 'fascia', 'test', 'kicad', 'notes'];
+const DOCS = ['sections', 'panel', 'fascia', 'order', 'test', 'kicad', 'notes'];
 function setSide(s) {
   UI.side = s;
   $$('#sidetabs button').forEach(b => { const on = b.dataset.side === s; b.setAttribute('aria-selected', on); b.setAttribute('aria-pressed', on); });
@@ -1801,11 +1923,13 @@ async function main() {
   try {
     [MODEL, PARTS, FACTS, SECTIONS] = await Promise.all(['model', 'parts', 'facts', 'sections'].map(n => getJSON('data/' + n + '.json')));
     VARIANTS = await getJSON('data/variants.json').catch(() => VARIANTS);
+    ORDER = await getJSON('data/order.json').catch(() => null);
+    POP = await getJSON('data/populated.json').catch(() => POP);
   } catch (e) {
     $('#loading').innerHTML = `<div class="row">The page data did not load: ${esc(e.message)}</div>`;
     throw e;
   }
-  V.fv = store.get('fascia', 'A');
+  V.fv = store.get('fascia', isPop('TS06-FASCIA-rhythm') ? 'R' : 'A');       // R is the board that is ordered
   BOARD.FASCIA = FV[V.fv] && PARTS[FV[V.fv]] ? FV[V.fv] : (V.fv = 'A', FV.A);
   STEPS = steps();
   wire();
@@ -1816,6 +1940,7 @@ async function main() {
   renderNotes();
   renderPanel();
   renderLadders();
+  renderOrder();
   const h = location.hash.slice(1);
   setDoc(DOCS.includes(h) ? h : 'sections', false);
   setMode('img');                       // the pictures show while the models load
