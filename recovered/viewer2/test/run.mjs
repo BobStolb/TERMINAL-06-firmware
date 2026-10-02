@@ -708,11 +708,13 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
   ok('Order: the DFM table, 9 rules by 3 boards, every cell filled', o.dfmHead.length === 4 && o.dfmHead.slice(1).join() === 'TS06-DISP,TS06-DRV,Fascia R' && o.dfm.length === 9 && o.dfm.every(r => r.length === 4 && r.every(Boolean)),
     o.dfm.map(r => r[0].replace(/ \(.*/, '')).join(', ').slice(0, 200));
   const failN = o.fit.filter(r => r.st === 'FAIL').length, tightN = o.fit.filter(r => r.st === 'TIGHT').length;
-  ok('Order: the fit table lists every TIGHT and FAIL row, each in plain words', o.fit.length === order.fit.rows.length && failN === order.fit.tally.FAIL && tightN === order.fit.tally.TIGHT && o.fit.every(r => r.plain.length > 60 && /\d/.test(r.margin) && r.where.length > 10)
-    && o.pills.join(' ') === `${order.fit.tally.PASS} PASS ${order.fit.tally.TIGHT} TIGHT ${order.fit.tally.FAIL} FAIL`,
+  ok('Order: the fit table lists every TIGHT and FAIL row, each in plain words', o.fit.length === order.fit.rows.length && failN === (order.fit.tally.FAIL || 0) && tightN === order.fit.tally.TIGHT && o.fit.every(r => r.plain.length > 60 && /\d/.test(r.margin) && r.where.length > 10)
+    && o.pills.join(' ') === `${order.fit.tally.PASS} PASS ${order.fit.tally.TIGHT} TIGHT ${order.fit.tally.FAIL || 0} FAIL`,
     `${tightN} TIGHT, ${failN} FAIL; ` + o.pills.join(', '));
-  const failRow = o.fit.find(r => r.st === 'FAIL');
-  ok('Order: the FAIL row (ИН-17 length) says what to do about it', !!failRow && /ИН-17/.test(failRow.plain) && /real tube/.test(failRow.plain) && failRow.margin.startsWith('-1.29'), failRow ? failRow.plain.slice(0, 120) : 'no FAIL row');
+  // the ИН-17's measured length (19.72 mm, the owner's bench caliper, 2026-10-02) took the one FAIL out of the fit table: its front row is a PASS and the tube's open item is the pip
+  const fitAll = JSON.parse(fs.readFileSync(path.join(REPO, '3d', 'populated', 'fit-table.json'), 'utf8')).rows;
+  const front17 = fitAll.find(r => /^ИН-17 glass front/.test(r.part));
+  ok('Order: no FAIL row left; the ИН-17 front row is a PASS since its length was measured (19.72 mm)', (order.fit.tally.FAIL || 0) === 0 && failN === 0 && !!front17 && front17.status === 'PASS' && /19\.72/.test(front17.note), front17 ? `${front17.status} ${front17.margin}` : 'no ИН-17 front row');
   ok('Order: the open items before ordering, and what the prototype closes', o.open.length === order.open.length && o.open.length === 6 && /Which fascia/.test(o.open[0]) && /Which gold/.test(o.open[1]) && o.proto === order.prototype.length && o.proto >= 5, `${o.open.length} items, ${o.proto} for the prototype`);
   // the extra fascia zip (fab/HOLES-VARIANT.md): one row in the open list, naming the zip and the margin, backed by the fit table and the file
   const hv = await page.evaluate(() => [...document.querySelectorAll('#order-open li[data-open="holes"]')].map(l => ({ text: l.textContent.replace(/\s+/g, ' ').trim(), pill: l.querySelector('.pill').textContent.trim(), idx: [...l.parentNode.children].indexOf(l) })));

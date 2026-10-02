@@ -1133,7 +1133,7 @@ function renderFacts() {
       ['KiCad DRC', pillDRC(b.drc, [2, 0, 0]) + '<br><span style="color:var(--muted);font-size:12.5px">0 unconnected; 2 errors, accepted (colon lamp courtyards overlap M10 by 0.135 mm; a test fit settles it)</span>'],
       ['185 V gaps', '<span class="pill ok">clean</span> at 0.6 mm'],
       isPop('TS06-DISP') ? popBodies('TS06-DISP') : ['3D bodies', `${n(b.bodies)} of ${n(b.parts)} (the strips). Tubes, lamps, LEDs and socket contacts are proxies from the case model’s envelopes`]];
-    note = (isPop('TS06-DISP') ? 'Drawn populated: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, two ИНС-1, nine LEDs. The glass is the repo’s STEP files; the ИН-17 stands 2.3 mm proud of the ИН-12 plane in the fit table: measure a bench tube. ' : '') + 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
+    note = (isPop('TS06-DISP') ? 'Drawn populated: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, two ИНС-1, nine LEDs. The glass is the repo’s STEP files; the ИН-17 glass is the 19.72 mm the owner measured on a bench tube (the STEP scaled to it), with a pip of about 2.28 mm under it (a reading, not measured), seated level with the ИН-12 faces. ' : '') + 'The LED return BL_K exists only as a ground pour: refill the zones (B) before judging or plotting the board.';
   } else if (s === 'FASCIA') {
     const b = B('FASCIA'), v = V.fv, d = fvData(v), row = VARIANT_ROWS[v] || {};
     const bad = (d.fascia_checks || []).filter(r => r.status !== 'OK' && r.status !== 'NOTE');
@@ -1319,7 +1319,7 @@ function renderNotes() {
     ['Parts with KiCad bodies', `TS06-DRV ${d['TS06-DRV'].bodies}, TS06-DISP ${d['TS06-DISP'].bodies}, TS06-FASCIA ${d['TS06-FASCIA'].bodies}. Their glTF nodes are named by reference (U11, XS21, …), which is how a step or a section finds them.`],
     ...(pop ? [['Stand-in bodies', 'Only on the boards that are not populated, the fascia variants A and W: control bodies from the case model’s depths. The populated boards need none, so the build and bring-up steps show and hide the parts’ own bodies.']] : []),
     ['Every other part', 'Found by its footprint in the <code>.kicad_pcb</code>: position, pads and courtyard, read by the build (<code>data/parts.json</code>). A part with no body gets a proxy (below) or, when highlighted, a thin box on its courtyard.'],
-    ...(pop ? [] : [['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem 8 mm above the board, ИНС-1 Ø6.97. The glowing numerals are decoration.']]),
+    ...(pop ? [] : [['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem, 19.72 mm of glass (measured) on a 10.28 mm seat, ИНС-1 Ø6.97. The glowing numerals are decoration.']]),
     ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
     ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.']]),
     ['Standoffs, screws, the fascia lead', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8, the lead along its centre line.'],

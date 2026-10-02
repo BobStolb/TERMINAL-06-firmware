@@ -69,8 +69,8 @@ def plain(r):
     if r["what"] == "window, Y":
         return "The top of the tube glass is %.1f mm below the underside of the case's brow. It fits; a tube a little taller than drawn would leave less than a millimetre." % m
     if r["what"] == "window, Z" and st == "FAIL":
-        return ("The ИН-17 seconds tubes are drawn %.2f mm in front of the ИН-12 faces and %.2f mm in front of the case window; the sources disagree about their length "
-                "(the 3D model says 24.3 mm, the case drawing 22.0 mm). The tubes stand on wire leads, so this is for a real tube to settle before the display is closed up; it does not change the boards." % (r["height"], -m))
+        return ("A tube's glass front is %.2f mm in front of the case window plane (by %.2f mm: the front of the glass stands past the window). "
+                "The tubes stand on wire leads, so the seat can be changed without touching the boards." % (r["height"], -m))
     if r["what"] == "window, X":
         return "The glass edge is %.2f mm from the case's trench wall. It fits with room to spare for a part's tolerance, but not a lot." % m
     if r["what"] == "hole":
@@ -144,8 +144,10 @@ def main(repo, out, branch="pcb/kicad-boards"):
         {"id": "quote", "title": "Check the fab quote against the sheet", "blocking": True,
          "body": "Quantity 10 of each; the fascia 2.0 mm, not 1.6 mm; ENIG on all three (with HASL the gold would be silver-grey); mask black, matte if it costs little; silk white; "
                  "on the fascia ask for no fab order number on the face. No prices were looked up."},
-        {"id": "tube", "title": "The ИН-17 length", "blocking": False,
-         "body": "The one FAIL in the fit table. Measure a bench tube: the sources disagree by 2.3 mm. The tubes stand on wire leads, so it does not hold up the boards."},
+        {"id": "tube", "title": "The ИН-17 pip", "blocking": False,
+         "body": "The ИН-17 glass is 19.72 mm from the dome to the end of the glass (the owner's bench caliper, 2026-10-02), which puts its face level with the ИН-12 faces on a 10.28 mm seat. "
+                 "The drawing's 22 mm is read to include the exhaust pip, about 2.28 mm: that is a reading, not a measurement. The pip hangs in the gap under the glass and needs no hole while it is under 8 mm, "
+                 "so it does not hold up the boards; measure it on a real tube."},
         {"id": "g8", "title": "Filling the pours in the committed board files", "blocking": False,
          "body": "Whether to commit the boards 'filled'. The zips are built with the pours filled either way, so this does not hold up the order."},
     ]

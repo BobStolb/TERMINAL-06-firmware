@@ -58,7 +58,7 @@ A tab under the viewer ("Order"; the address `#order`). It holds, from `data/ord
   quantity 10, the DFM result, and the zip;
 * the design-for-manufacture table, the worst value found on each board against the limit;
 * the fit table's TIGHT and FAIL rows, each in plain words (`tools/order.py` writes the sentences and carries each row's own
-  numbers; the one FAIL is the ИН-17 length, which a real tube settles);
+  numbers; the table has no FAIL since the ИН-17's measured length, 19.72 mm, went in: the tube's open item is the pip, a reading);
 * the open items before ordering, and what only the prototype run can close;
 * where the fab zips are: links on GitHub under the branch `pcb/kicad-boards`, by their repository path
   (`fab/TS06-DISP-revB-fab.zip` ...). The zips are not embedded in the page;
