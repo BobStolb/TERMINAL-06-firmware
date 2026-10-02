@@ -24,6 +24,10 @@ board that is ordered instead, the fascia with the Plates white print and that g
 directory by tools/fascia_gold.py (its own checks must be clean), exactly as tools/mkfab.sh builds the board it plots; the
 model map still applies (it is keyed by the committed board's name), so the controls keep their bodies. Nothing under
 PCB/ is written. The pictures and the GLB keep the names <board>-top.png ... <board>-populated.glb.
+THE GOLD IS IN THE GLB ONLY WITH THE COPPER: the Divider is graphic lines on F.Cu, and KiCad's GLB export writes copper
+graphics and tracks only under --include-tracks (without it the mask is open over bare FR4 and the gold is simply not
+there: the first version of this file's fascia GLB lacked it). So with --gold the GLB is exported with the copper
+(the fascia R: 1.2 MB instead of 0.64 MB).
 
 Options: --views top,iso,bottom   --no-glb   --width 2400   --kicad3d DIR (KiCad's 3D library; default the
 files this project uses, vendored in 3d/populated/kicad3d)   --keep (leave the scratch copy and say where).
@@ -154,7 +158,7 @@ def main():
         diag = (bw ** 2 + bh ** 2) ** 0.5
         board = "/w/%s.kicad_pcb" % key
         if not a.no_glb:
-            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads"] + (["--include-tracks"] if a.glb_tracks else []) + ([] if a.glb_no_zones else ["--include-zones"]) +
+            r = kicad(tmp, dmap, ["pcb", "export", "glb"], ["-f", "--include-pads"] + (["--include-tracks"] if (a.glb_tracks or art) else []) + ([] if a.glb_no_zones else ["--include-zones"]) +
                                                           ["--include-silkscreen", "--include-soldermask", "--fuse-shapes"] + a.glb_flags.split() +
                                                           ["-o", "/w/out.glb", board])
             if not os.path.exists(os.path.join(tmp, "out.glb")):

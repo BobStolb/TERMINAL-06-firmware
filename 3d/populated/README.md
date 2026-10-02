@@ -21,7 +21,7 @@ All PNGs are transparent, trimmed to the board, at most 2400 px wide and under 3
 
 | File | Shows | Command |
 |---|---|---|
-| `TS06-stack-front.png` | The assembled stack seen from the front: TS06-DISP (tubes, lamps, LEDs) in front of TS06-DRV, the fascia R (with its Plates print and Divider gold) in front of both, placed from `3d/case-pair/case_pair.py`'s geometry. The gold is the GLB's metallic gold material; in this three.js scene it catches the key light and reads pale cream, not the yellow of KiCad's own render | `node 3d/populated/stack/render_stack.mjs 3d/populated/stack.json 3d/populated 3d/populated front` |
+| `TS06-stack-front.png` | The assembled stack seen from the front: TS06-DISP (tubes, lamps, LEDs) in front of TS06-DRV, the fascia R (with its Plates print and Divider gold) in front of both, placed from `3d/case-pair/case_pair.py`'s geometry. The gold lines are real geometry in the fascia's GLB (see below); this scene gives the metallic gold a diffuse lean so it reads as gold and not as the pale cream a mirror-metal gives in a dim room | `node 3d/populated/stack/render_stack.mjs 3d/populated/stack.json 3d/populated 3d/populated front` |
 | `TS06-stack-iso.png` | The same, from the front right and above | `... render_stack.mjs ... iso` |
 | `TS06-DISP-top.png` `-iso.png` `-bottom.png` | The display board: six ИН-12/15 on their socket contacts, two ИН-17 on wire leads, the two ИНС-1 colon lamps, nine LEDs; bottom = the face that meets TS06-DRV, with the XP headers on their pads | `python3 tools/render_populated.py TS06-DISP 3d/populated` |
 | `TS06-DRV-top.png` `-iso.png` `-bottom.png` | The driver board: 14 DIP chips in their sockets, the Nano on its PBS strips, the RTC module on its header, the choke L1, the МЛТ resistors, the fuse; bottom = the display-facing face, the PBS strips on their pads | `python3 tools/render_populated.py TS06-DRV 3d/populated` |
@@ -34,12 +34,13 @@ All PNGs are transparent, trimmed to the board, at most 2400 px wide and under 3
 |---|---|---|
 | `TS06-DISP-populated.glb` | the populated display board | 6.0 MB (5.7 MiB) |
 | `TS06-DRV-populated.glb` | the populated driver board | 14.0 MB (13.4 MiB) |
-| `TS06-FASCIA-rhythm-populated.glb` | the populated fascia R, with its Plates print and the Divider gold (the gold is F.Cu copper with openings in the mask; the GLB carries it as a gold material) | 0.67 MB (0.64 MiB) |
+| `TS06-FASCIA-rhythm-populated.glb` | the populated fascia R, with its Plates print and the Divider gold. The gold is graphic lines on F.Cu under openings in the mask; KiCad writes copper graphics only with `--include-tracks`, so `--gold` exports this GLB with the copper (without it the mask is open over bare FR4 and the gold is not in the file) | 1.24 MB (1.19 MiB) |
 | `stack.json` | where each board stands in the case: a 4x4 matrix per board, the case numbers the fit table uses; `fascia_gold` names the gold of the fascia it was made for | small |
 
-The GLBs are exported with `--fuse-shapes` and **without the copper tracks** (they lie under the black mask; pads, silk,
+The GLBs of TS06-DISP and TS06-DRV are exported with `--fuse-shapes` and **without the copper tracks** (they lie under the black mask; pads, silk,
 mask and every part are in). TS06-DRV with tracks and fused shapes is 15.7 MB (15.0 MiB), and 19.6 MB without
 `--fuse-shapes`, so the tracks stay out to keep each file under 15 MB; `--glb-tracks` puts them back.
+The fascia R's GLB is the exception: it is exported **with** the copper, because its gold is copper graphics that KiCad writes only then (the file grows from 0.64 to 1.19 MiB; 953 copper pieces under the mask openings).
 
 Frame of a board's GLB: KiCad's: metres, x right, y up out of the board, z = the board's y (down the page); the
 board's back face at y = 0, its component face at y = thickness (1.6 mm; fascia 2.0 mm). To stack them in three.js:
