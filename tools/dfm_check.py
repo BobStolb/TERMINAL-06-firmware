@@ -7,9 +7,9 @@
     python3 tools/dfm_check.py --no-selftest         # skip the deliberately broken copy (G7)
     python3 tools/dfm_check.py --g11                 # the G11 conditions, measured on the fascia with its gold
     python3 tools/dfm_check.py --committed-holes     # the fascia R as committed (8.8 / 8.0 holes), NOT the ordered one: its zip is
-                                                     # fab/TS06-FASCIA-R-revA-<gold>-notordered-fab.zip (tools/mkfab.sh --committed-holes);
+                                                     # fab/TS06-FASCIA-R-rev<REV>-<gold>-notordered-fab.zip (tools/mkfab.sh --committed-holes);
                                                      # the ordered fascia has every control hole opened 0.4 mm (fab/HOLES-VARIANT.md): its zip
-                                                     # fab/TS06-FASCIA-R-revA-<gold>-holes04-fab.zip is the default here (--open-holes says so);
+                                                     # fab/TS06-FASCIA-R-rev<REV>-<gold>-holes04-fab.zip is the default here (--open-holes says so; REV is the board's title block: B since the upright J1);
                                                      # with no board named it checks that one board; works with --g11 too
     python3 tools/dfm_check.py --open-holes --leaders level   # the same for another leader style (slope, level, dogleg, centred;
                                                      # tools/fascia_art.py): its zip is the one tools/mkfab.sh --leaders level wrote
@@ -122,8 +122,16 @@ LEADERS = os.environ.get("TS06_LEADERS", "level")      # the fascia R's leader s
 def fascia_zip(gold, open_holes=False):
     """The fascia R's zip in fab/: named after the gold, after the leader style when it is not level, and after the opened
     holes of the variant (tools/mkfab.sh names it the same way)."""
-    return os.path.join(ROOT, "fab", "TS06-FASCIA-R-revA-%s%s%s-fab.zip" % (
-        "bare" if gold == "none" else gold, "" if LEADERS == "level" else "-" + LEADERS, "-holes04" if open_holes else "-notordered"))
+    return os.path.join(ROOT, "fab", "TS06-FASCIA-R-rev%s-%s%s%s-fab.zip" % (
+        fascia_rev(), "bare" if gold == "none" else gold, "" if LEADERS == "level" else "-" + LEADERS,
+        "-holes04" if open_holes else "-notordered"))
+
+
+def fascia_rev():
+    """The fascia R's revision, from its title block, as tools/mkfab.sh reads it (so the zip's name agrees with it)."""
+    m = re.search(r'^\s*\(rev "([^"]*)"\)', open(os.path.join(ROOT, "PCB", "TS06-FASCIA-rhythm", "TS06-FASCIA-rhythm.kicad_pcb"),
+                                                  encoding="utf8").read(), re.M)
+    return m.group(1) if m else "X"
 
 
 def scratch(key, gold, mutate=None, open_holes=False):

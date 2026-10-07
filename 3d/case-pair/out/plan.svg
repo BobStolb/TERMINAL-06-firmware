@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.4 157.6" width="1226" height="631">
-<rect x="0" y="0" width="306.4" height="157.6" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 306.4 157.0" width="1226" height="628">
+<rect x="0" y="0" width="306.4" height="157.0" fill="#FFFFFF"/>
 <text x="8" y="10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="5" font-weight="700" fill="#1F2328">PLAN SECTION B-B AT Y = 91.5 (DC JACK AXIS), FRONT DOWN  1:1</text>
 <text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">the two openings, TS06-DRV's top band from above, and the fascia lead on the floor (phantom)</text>
 <polygon points="34.00,104.38 40.00,104.38 40.00,52.50 34.00,52.50" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
@@ -43,8 +43,8 @@
 <polygon points="224.40,58.85 233.90,58.85 233.90,53.35 224.40,53.35" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.6"/>
 <polygon points="233.90,61.10 255.90,61.10 255.90,51.10 233.90,51.10" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.6"/>
 <text x="256.90" y="55.10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="start" font-weight="400">5.5/2.1 plug</text>
-<polyline points="89.50,73.70 89.50,76.70 89.50,76.70 89.50,79.70 196.81,109.19 196.81,112.12" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
-<text x="140.50" y="90.95" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="middle" font-weight="400">fascia lead on the floor, 139 mm</text>
+<polyline points="89.50,73.70 89.50,76.70 89.50,76.70 89.50,79.70 195.90,90.34 195.90,91.12 195.90,91.84 195.90,92.46 195.90,101.40 195.90,101.84 195.90,102.34 195.90,102.89" fill="none" stroke="#8250DF" stroke-width="0.45" stroke-linejoin="round" stroke-dasharray="2 0.8 0.4 0.8"/>
+<text x="140.50" y="81.52" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#8250DF" text-anchor="middle" font-weight="400">fascia lead on the floor, 143 mm</text>
 <polygon points="44.80,107.80 220.81,107.80 220.81,115.80 44.80,115.80" fill="none" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
 <text x="132.81" y="112.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#6E7781" text-anchor="middle" font-weight="400">TS06-FASCIA below (raked)</text>
 <line x1="238.40" y1="49.10" x2="246.40" y2="49.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
@@ -89,6 +89,6 @@
 <circle cx="47.40" cy="33.00" r="0.45" fill="#2F6DB5"/>
 <circle cx="76.40" cy="33.00" r="0.45" fill="#2F6DB5"/>
 <text x="61.90" y="32.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.00" fill="#2F6DB5" text-anchor="middle" font-weight="400">7 vents x 2.0 wide</text>
-<text x="8" y="150.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Right cheek: Ø14 counterbore from the OUTSIDE, 1.5 mm web, Ø9 hole - the review's pocket 'from inside' would leave the outer face where it is and the plug at 2.7 mm engagement.</text>
-<text x="8" y="153.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Left cheek: the 12 x 9 USB slot runs open to the rear edge so the module can be drawn out backwards past the receptacle; the rear panel closes it.</text>
+<text x="8" y="149.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Right cheek: Ø14 counterbore from the OUTSIDE, 1.5 mm web, Ø9 hole - the review's pocket 'from inside' would leave the outer face where it is and the plug at 2.7 mm engagement.</text>
+<text x="8" y="153.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Left cheek: the 12 x 9 USB slot runs open to the rear edge so the module can be drawn out backwards past the receptacle; the rear panel closes it.</text>
 </svg>

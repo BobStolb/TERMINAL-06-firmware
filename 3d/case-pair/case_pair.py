@@ -28,6 +28,13 @@ written - both only write under `if __name__ == "__main__"`). The same generator
 committed PCB/TS06-DISP and PCB/TS06-DRV boards (191.4 x 44 and 191.4 x 100); reading the
 generators rather than the .kicad_pcb files keeps this in step with a board that is being
 changed. TS06-FASCIA is read from its .kicad_pcb (FASCIA_PCB=<board> puts another in its place).
+
+THE FASCIA'S J1 COMES FROM FASCIA R. The 176 board (TS06-FASCIA, "F") stands in for the fascia everywhere else here (its outline, holes and
+controls), but its J1 is the old side-entry part. The ordered fascia is R (PCB/TS06-FASCIA-rhythm, rev B: the J1 is an UPRIGHT JST
+B6B-PH-SM4-TB, the plug stands straight off the back and the wires leave straight back into the case), so --extract also reads R's J1
+into boards.json ("fascia_j1", in world X: R starts at X 0) and main() puts it into the stand-in's parts in the stand-in's own frame
+(use_fascia_j1). The lead, the floor and every row about J1 are therefore R's. F's board file is not read for J1 and is not changed.
+
 Parts are keyed by reference and footprint; a footprint FP_H does not list falls back to the
 height its own descr states, so a new footprint (a larger L1, say) is picked up, not refused.
 """
@@ -39,6 +46,7 @@ TOOLS = os.path.join(ROOT, "tools")
 OUTDIR = os.path.join(HERE, "out")
 BOARDS = os.path.join(HERE, "boards.json")
 FASCIA_PCB = os.environ.get("FASCIA_PCB") or os.path.join(ROOT, "PCB", "TS06-FASCIA", "TS06-FASCIA.kicad_pcb")   # a variant can be tried in its place
+FASCIA_R_PCB = os.path.join(ROOT, "PCB", "TS06-FASCIA-rhythm", "TS06-FASCIA-rhythm.kicad_pcb")                   # the ordered fascia: only its J1 is read
 
 
 # ============================================================================ extraction
@@ -72,7 +80,7 @@ def extract():
                      "Written by 3d/case-pair/case_pair.py --extract; do not edit by hand.",
            "sources": {p: _sha(os.path.join(ROOT, p)) for p in
                        ("tools/mkpcb_disp.py", "tools/mkpcb_drv.py", "tools/ts06pair.py",
-                        "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb")}}
+                        "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb", "PCB/TS06-FASCIA-rhythm/TS06-FASCIA-rhythm.kicad_pcb")}}
     disp = {"W": S.W, "H": S.H, "TOP": top, "frame": "X = x, Y = TOP - y",
             "holes": [disp_w(x, y) + (d,) for x, y, d in S.B.holes],
             "IN12_X": S.IN12_X, "IN15_X": S.IN15_X, "IN17_X": S.IN17_X,
@@ -104,7 +112,7 @@ def extract():
         drv["parts"][ref]["pads"] = [[p.name] + list(drv_w(p.x, p.y)) for p in D.B.pads if p.ref == ref]
     # the jack's body and the Nano's outline, from their footprints' fabrication layer
     fas = _fascia(sexp)
-    out.update({"disp": disp, "drv": drv, "fascia": fas})
+    out.update({"disp": disp, "drv": drv, "fascia": fas, "fascia_j1": _fascia_j1(sexp)})
     with open(BOARDS, "w") as fh:
         json.dump(out, fh, indent=1, ensure_ascii=False)
     print("wrote", os.path.relpath(BOARDS, ROOT))
@@ -160,6 +168,71 @@ def _fascia(sexp):
     return fas
 
 
+def _fascia_j1(sexp):
+    """J1 of the ordered fascia R, read from its board: the footprint, where it stands (R's own frame: x across, y down from the top
+    edge; R starts at world X 0, so x IS the world X), its courtyard, its body (the B.Fab outline) and the row of its pin contacts (the
+    B.Fab squares). The upright part's courtyard, body and pin row are what the lead's exit and the rows about J1 are computed from."""
+    t = sexp.parse(open(FASCIA_R_PCB, encoding="utf8").read())
+    root = t[0] if isinstance(t[0], list) else t
+    find = lambda n, k: [c for c in n if isinstance(c, list) and c and c[0] == k]
+    unq = lambda s: s.strip('"') if isinstance(s, str) else s
+    rev = unq(find(find(root, "title_block")[0], "rev")[0][1])
+    buttons, holes, pad_t = {}, [], 0.0
+    for fp in find(root, "footprint"):
+        r_ = next((unq(p[2]) for p in find(fp, "property") if unq(p[1]) == "Reference"), "")
+        a_ = find(fp, "at")[0]
+        if r_ in ("SW4", "SW5"):
+            buttons[r_] = [float(a_[1]), float(a_[2])]
+            for pd in find(fp, "pad"):                           # the lowest edge of a button's landing pads: the hand wires come down to them
+                if unq(pd[1]) and unq(pd[2]) == "smd":
+                    pad_t = max(pad_t, float(a_[2]) + float(find(pd, "at")[0][2]) + float(find(pd, "size")[0][2]) / 2)
+        elif "MountingHole" in unq(fp[1]):
+            holes.append([float(a_[1]), float(a_[2])])
+    for fp in find(root, "footprint"):
+        ref = next((unq(p[2]) for p in find(fp, "property") if unq(p[1]) == "Reference"), "")
+        if ref != "J1":
+            continue
+        at = find(fp, "at")[0]
+        x, y = float(at[1]), float(at[2])
+        crt, fab, pins = [], [], []
+        for g in fp:
+            if not (isinstance(g, list) and g and g[0] in ("fp_line", "fp_rect")):
+                continue
+            lay = unq(find(g, "layer")[0][1])
+            pts = [(x + float(find(g, k)[0][1]), y + float(find(g, k)[0][2])) for k in ("start", "end")]
+            if "CrtYd" in lay:
+                crt += pts
+            elif lay == "B.Fab" and g[0] == "fp_line":
+                fab += pts
+            elif lay == "B.Fab":
+                pins.append(sum(q[1] for q in pts) / 2)
+        box = lambda q: [min(c[0] for c in q), max(c[0] for c in q), min(c[1] for c in q), max(c[1] for c in q)]
+        pads = [p for p in find(fp, "pad") if unq(p[1]) != "MP"]
+        pad_y = [y + float(find(p, "at")[0][2]) + s * float(find(p, "size")[0][2]) / 2 for p in pads for s in (-1, 1)]
+        return {"fp": unq(fp[1]), "at": [x, y], "side": unq(find(fp, "layer")[0][1]), "rev": rev,
+                "box": box(crt), "body": box(fab), "pin_row_y": round(sum(pins) / len(pins), 4), "pads_y": [min(pad_y), max(pad_y)],
+                "buttons": buttons, "holes": sorted(holes), "button_pad_t": pad_t}
+    raise SystemExit("no J1 on " + FASCIA_R_PCB)
+
+
+def fascia_x0(B):
+    """Where the 176 stand-in's left edge is in world X: centred under the tube row, kept within the board width (FASCIA_X0=<mm> overrides)."""
+    disp, fas = B["disp"], B["fascia"]
+    row_c = (disp["IN12_X"][0] + disp["IN15_X"][1]) / 2
+    return float(os.environ.get("FASCIA_X0", round(min(max(row_c - fas["W"] / 2, 0.0), disp["W"] - fas["W"]), 3)))
+
+
+def use_fascia_j1(B):
+    """Put fascia R's J1 into the stand-in's parts, in the stand-in's frame (R's world X less FASCIA_X0), so that everything that reads
+    fascia["parts"]["J1"] (the lead, the plan, variant D) sees the ordered fascia's upright connector, not F's side-entry one."""
+    j, x0 = B["fascia_j1"], fascia_x0(B)
+    sh = lambda b: [round(b[0] - x0, 4), round(b[1] - x0, 4), b[2], b[3]]
+    B["fascia"]["parts"]["J1"] = {"fp": j["fp"], "at": [round(j["at"][0] - x0, 4), j["at"][1]], "side": j["side"], "box": sh(j["box"]),
+                                  "panel_hole": None, "body": sh(j["body"]), "pin_row_y": j["pin_row_y"], "from": "fascia R rev " + j["rev"],
+                                  "r_buttons": j["buttons"], "r_holes": j["holes"], "r_button_pad_t": j["button_pad_t"]}      # R's own SW4, SW5 and screw holes: world X, y down
+    return B
+
+
 # ============================================================================ the numbers
 class Dims:
     """name -> value, with the kind and the source kept beside it (written into params.scad)."""
@@ -189,7 +262,7 @@ def dims(B):
     # the tube row's centre is the middle of H10 and ИН-15А, not of the board: TS06-DISP's margins are
     # 3.475 left and 10.265 right of the glass. A fascia too wide to centre there stops at the board edge.
     row_c = (disp["IN12_X"][0] + disp["IN15_X"][1]) / 2
-    d("FASCIA_X0", float(os.environ.get("FASCIA_X0", round(min(max(row_c - fas["W"] / 2, 0.0), disp["W"] - fas["W"]), 3))),
+    d("FASCIA_X0", fascia_x0(B),
       "design", "the owner, 29.09.26: the fascia centred under the tube row, on the middle of H10 and "
       "ИН-15А (X %.3f), kept within the board width" % row_c, g)
     d("FASCIA_T", 2.0, "doc", "PCB/README.md: TS06-FASCIA 2.0 mm FR4", g)
@@ -252,6 +325,8 @@ def dims(B):
     d("KICK_T", 2.0, "design", "the raked strip under the fascia; thin enough to clear the fascia plug", g)
     d("FASCIA_RAKE", 12.0, "doc", "spec §6 and cad-component-library: front raked 12°", g)
     d("FLOOR_CLR", 0.5, "design", "between the fascia lead's lowest point and the floor", g)
+    d("FLOOR_REV_A", -7.3, "doc", "this model's floor with fascia R rev A's side-entry J1 (checks.md row 8 of 3d/case-pair at 15f1d4d): "
+                                  "kept to say how much the upright J1 saves", g)
     d("VENT_W", 2.0, "doc", "pair review 4: slots no wider than 2.5 mm (2.0 used)", g)
     # case review m4: not over the 185 V switch node (X 100-130 put them over VT21, C7 and VD1); over the
     # logic side instead, centred on the Nano's courtyard as the generator places it
@@ -289,8 +364,14 @@ def dims(B):
     d("USB_L", 9.2, "assumed", "mini-B receptacle length", g)
     d("USB_PLUG_W", 11.0, "assumed", "mini-B plug overmould across Y", g)
     d("USB_PLUG_H", 8.0, "assumed", "mini-B plug overmould across Z", g)
-    d("FJ_HDR_H", 4.8, "assumed", "JST S6B-PH-SM4-TB housing height off the fascia's back", g)
-    d("FJ_PLUG_OUT", 3.0, "assumed", "mated PHR-6 beyond the header mouth, to where the wires leave it", g)
+    d("FJ_HDR_H", 6.0, "assumed", "JST B6B-PH-SM4-TB header height off the fascia's back (fascia R rev B, upright J1): the 6.0 of the "
+                                  "through-hole B6B-PH-K (KiCad's STEP of it, 3d/populated/kicad3d) as JST lists the PH top-entry headers; "
+                                  "the SM4-TB datasheet itself was not readable", g)
+    d("FJ_MATED_H", 9.5, "assumed", "the PHR-6 housing mated on the fascia's J1, off the fascia's back, to where the wires leave it: the same "
+                                    "9.5 as DRV J1's J1_MATED_H (same PH header height, same housing)", g)
+    d("FJ_SLOPE", 45.0, "design", "the fascia lead goes from its exit (along the fascia's normal, 12 deg below horizontal) to the floor "
+                                  "on a straight run at this angle between two CABLE_R bends: a gentle S, no tight turn", g)
+    d("PINCH_CLR", 3.0, "assumed", "room a fingertip pinch needs beside a plug housing's long face to pull it", g)
     d("CABLE_R", 3.0, "assumed", "bend radius of the 6-wire PH lead (to the ribbon's centre line)", g)
     d("CABLE_HALF", 0.65, "assumed", "half the lead's thickness (6 x AWG28 side by side)", g)
     d("J1_MATED_H", 9.5, "assumed", "B6B-PH-K 6.0 header + PHR-6 housing, off TS06-DRV's display-facing face", g)
@@ -451,16 +532,21 @@ def derive(B, d, lay_down=False):
     G["fpt"] = fpt
     v["FAS_BOT_Y"], v["FAS_BOT_Z"] = fpt(v["FASCIA_H"])
     v["Z_SILL_F"] = round(v["Z_FACE"] + v["FASCIA_T"] / math.cos(r) + 0.2, 3)
-    # --- the fascia's own connector: side entry, the lead leaves towards the fascia's bottom edge
+    # --- the fascia's own connector (fascia R rev B): UPRIGHT. The plug stands off the back along the fascia's normal (back and 12
+    # degrees down) and the wires leave its top straight back into the case, over the row of the pin contacts. It used to be a
+    # side-entry part whose lead lay along the board and bent 90 + 12 degrees onto the floor, 7.3 mm below the frame's 0.
     fj = fas["parts"]["J1"]
     v["FJ_X"] = fj["at"][0] + v["FASCIA_X0"]                   # world X: the fascia is centred
-    v["FJ_MOUTH_T"] = fj["box"][3]                              # courtyard edge nearest the bottom
-    ex_y, ex_z = fpt(v["FJ_MOUTH_T"] + v["FJ_PLUG_OUT"], v["FASCIA_T"] + v["FJ_HDR_H"] / 2)
-    cy, cz = ex_y - v["CABLE_R"] * math.sin(r), ex_z + v["CABLE_R"] * math.cos(r)   # bend centre, + normal
+    v["FJ_PIN_T"] = fj["pin_row_y"]                             # t (down the face) of the pin contacts: the plug's axis
+    ex_y, ex_z = fpt(v["FJ_PIN_T"], v["FASCIA_T"] + v["FJ_MATED_H"])
     v["FJ_EXIT_Y"], v["FJ_EXIT_Z"] = ex_y, ex_z
-    v["FJ_BEND_Y"], v["FJ_BEND_Z"] = cy, cz
-    v["FJ_LOW_Y"] = cy - v["CABLE_R"] - v["CABLE_HALF"]
-    v["Y_FLOOR"] = min(0.0, math.floor((v["FJ_LOW_Y"] - v["FLOOR_CLR"]) * 10) / 10)
+    v["FJ_LOW_Y"] = ex_y - v["CABLE_HALF"]                      # the lead's lowest point at the plug: from here it only goes down
+    # the floor, by the model's own rule (the lowest lead point less FLOOR_CLR, never above the frame's 0) ...
+    v["Y_FLOOR_LEAD"] = min(0.0, math.floor((v["FJ_LOW_Y"] - v["FLOOR_CLR"]) * 10) / 10)
+    # ... and by the limit the rule did not carry, because the side-entry bend had put the floor far below it: the base's end blocks
+    # stand END_BLOCK tall on the floor, and as the module slides out TS06-DRV's bottom edge has to clear them by MOD_CLR (check 7)
+    v["Y_FLOOR_SWEEP"] = math.floor((v["DRV_BOT_Y"] - v["END_BLOCK"] - v["MOD_CLR"]) * 10) / 10
+    v["Y_FLOOR"] = min(v["Y_FLOOR_LEAD"], v["Y_FLOOR_SWEEP"])
     v["Y_BOT"] = v["Y_FLOOR"] - v["BASE_T"]
     v["Z_TOE"] = v["Z_FACE"] - (v["SILL_TOP_Y"] - v["Y_FLOOR"]) * math.tan(r)
     v["Z_BROW_TOP"] = v["Z_FACE"] + (v["Y_TOP"] - v["SOFFIT_Y"]) * math.tan(rb)
@@ -489,6 +575,31 @@ def derive(B, d, lay_down=False):
     return G
 
 
+
+
+def lead_descent(v):
+    """The fascia end of the lead, as the ribbon's centre line in (Z, Y): from the plug's exit, which is along the fascia's normal (FASCIA_RAKE
+    below horizontal), a CABLE_R bend to FJ_SLOPE, a straight run, and a CABLE_R bend to horizontal on the floor. Returns the points from the
+    exit to where the lead lies on the floor, the length, and the straight run."""
+    rc = v["CABLE_R"]
+    th0, al = math.radians(v["FASCIA_RAKE"]), math.radians(v["FJ_SLOPE"])
+    yf = v["Y_FLOOR"] + v["CABLE_HALF"]
+    drop = v["FJ_EXIT_Y"] - yf
+    ell = (drop - rc * (math.cos(th0) - math.cos(al)) - rc * (1 - math.cos(al))) / math.sin(al)
+    assert ell >= 0, "the floor is too near the plug's exit for two bends"
+    z, y = v["FJ_EXIT_Z"], v["FJ_EXIT_Y"]
+    pts = [(z, y)]
+    for k in range(1, 4):                                       # the first bend, from FASCIA_RAKE to FJ_SLOPE
+        th = th0 + (al - th0) * k / 3
+        pts.append((z + rc * (math.sin(th) - math.sin(th0)), y + rc * (math.cos(th) - math.cos(th0))))
+    z, y = pts[-1]
+    z, y = z + ell * math.cos(al), y - ell * math.sin(al)
+    pts.append((z, y))
+    for k in range(1, 4):                                       # the second, back to horizontal
+        ph = al * k / 3
+        pts.append((z + rc * (math.sin(al) - math.sin(al - ph)), y - rc * (math.cos(al - ph) - math.cos(al))))
+    assert abs(pts[-1][1] - yf) < 1e-6
+    return pts, rc * (al - th0) + ell + rc * al, ell
 
 
 def profiles(G):
@@ -568,12 +679,15 @@ def profiles(G):
     rc = v["CABLE_R"]
     yf = v["Y_FLOOR"] + v["CABLE_HALF"]
     z_top = v["Z_DRV_F"] - v["J1_MATED_H"]
-    G["lead"] = [(jx, jy, z_top), (jx, jy, z_top - rc), (jx, yf + rc, z_top - rc), (jx, yf, z_top - 2 * rc),
-                 (v["FJ_X"], yf, v["FJ_BEND_Z"]), (v["FJ_X"], v["FJ_EXIT_Y"], v["FJ_EXIT_Z"])]
+    desc, desc_len, desc_run = lead_descent(v)                  # the fascia end: exit ... floor
+    v["FJ_Z_END"], v["FJ_DESCENT_RUN"] = desc[-1][0], desc_run
+    G["lead_desc"] = desc
+    G["lead"] = [(jx, jy, z_top), (jx, jy, z_top - rc), (jx, yf + rc, z_top - rc), (jx, yf, z_top - 2 * rc)]
+    G["lead"] += [(v["FJ_X"], y, z) for z, y in reversed(desc)]   # lead[4] is where it leaves the floor, the last the plug's exit
     L = rc * math.pi / 2 * 2                                    # the two quarter bends at DRV J1
     L += (jy - (yf + rc))                                       # down to the floor
-    L += math.hypot(v["FJ_X"] - jx, (z_top - 2 * rc) - v["FJ_BEND_Z"])   # along the floor, diagonal
-    L += rc * math.radians(90 + v["FASCIA_RAKE"])               # up into the fascia plug
+    L += math.hypot(v["FJ_X"] - jx, (z_top - 2 * rc) - v["FJ_Z_END"])    # along the floor, diagonal
+    L += desc_len                                               # up the slope into the fascia plug
     v["LEAD_PATH"] = round(L, 1)
     fixings(G)
     fascia_frame(G)
@@ -672,7 +786,10 @@ def fascia_frame(G):
     ff["holes"] = [(ff["ribs"][0], v["FF_HOLE_T"]), (ff["ribs"][1], v["FF_HOLE_T"]),
                    (ff["px0"] + v["FF_HOLE_E"], tb), (ff["px1"] - v["FF_HOLE_E"], tb)]
     fj = fas["parts"]["J1"]["box"]
-    ff["j1_notch"] = (fj[0] + v["FASCIA_X0"] - 1.0, fj[1] + v["FASCIA_X0"] + 1.0)
+    # the bottom ledge (FF_LEDGE wide, behind the panel's bottom edge) is cut over J1 only if J1's courtyard reaches it: the side-entry
+    # plug did (its mouth and lead were at the bottom edge), the upright one ends above it
+    ff["j1_clear"] = (v["FF_PANEL_H"] - v["FF_LEDGE"]) - fj[3]
+    ff["j1_notch"] = (fj[0] + v["FASCIA_X0"] - 1.0, fj[1] + v["FASCIA_X0"] + 1.0) if ff["j1_clear"] < 0.5 else None
     ff["rot_notch"] = (v["SILL_NOTCH_X0"], v["SILL_NOTCH_X1"])
     G["ff"] = ff
 
@@ -965,24 +1082,81 @@ def checks(G, G_lay, G_ff=None):
                                            ", ".join("%.1f-%.1f" % s for s in G["sill_leads"]), led_lo - v["SILL_TOP_Y"]),
         "OK", "the module rides up a lead-in if it comes in up to %g mm off" % li)
     blk = [b for b in G["blocks"] if b[0] == "trench"][0]
+    g_tr, g_top, g_base = v["IN12_BOT"] - blk[2], v["TOP_LIP_Y0"] - v["DRV_TOP_Y"], v["DRV_BOT_Y"] - (v["Y_FLOOR"] + v["END_BLOCK"])
+    ok7 = g_tr >= v["GLASS_BLK_CLR"] - 1e-6 and g_top >= v["MOD_CLR"] - 1e-6 and g_base >= v["MOD_CLR"] - 1e-6
     row("7", "sweep past the new blocks (F7)",
         "trench blocks %.2f under H10's and ИН-15А's glass (X %.1f-%.1f and %.1f-%.1f); top plate's rear lip %.2f over "
         "TS06-DRV's top edge; base blocks and lip %.2f under its bottom edge"
-        % (v["IN12_BOT"] - blk[2], G["block_x"][0], G["block_x"][1], v["X_IN_R"] - v["END_BLOCK"], v["X_IN_R"],
-           v["TOP_LIP_Y0"] - v["DRV_TOP_Y"], v["DRV_BOT_Y"] - (v["Y_FLOOR"] + v["END_BLOCK"])),
-        "OK", "the top lip keeps the review's %.1f, the same as each cheek; FR4 edge on plastic, not glass" % v["MOD_CLR"])
+        % (g_tr, G["block_x"][0], G["block_x"][1], v["X_IN_R"] - v["END_BLOCK"], v["X_IN_R"], g_top, g_base),
+        "OK" if ok7 else "FAIL",
+        "the top lip keeps the review's %.1f, the same as each cheek; FR4 edge on plastic, not glass. The base blocks stand END_BLOCK "
+        "%.0f tall on the floor, so they are what holds the floor at Y %.1f (check 8): with the side-entry J1 the floor was %.1f "
+        "and they had %.2f" % (v["MOD_CLR"], v["END_BLOCK"], v["Y_FLOOR"], v["FLOOR_REV_A"],
+                               v["DRV_BOT_Y"] - (v["FLOOR_REV_A"] + v["END_BLOCK"])))
 
-    # 8. the fascia lead
-    row("8", "fascia J1 (side entry, lead towards the bottom edge) vs the floor",
-        "lead's lowest point Y %.2f; floor put at Y %.1f - %.1f mm below the FreeCAD frame's 0, "
-        "fascia's bottom edge %.1f above the floor" % (v["FJ_LOW_Y"], v["Y_FLOOR"], -v["Y_FLOOR"],
-                                                        v["FAS_BOT_Y"] - v["Y_FLOOR"]), "NOTE",
-        "this costs %.1f mm of height; a trough %.0f mm deep in the base under X %.0f-%.0f would save it"
-        % (-v["Y_FLOOR"], -v["Y_FLOOR"] + 1, v["FASCIA_X0"] + fas["parts"]["J1"]["box"][0] - 2, v["FASCIA_X0"] + fas["parts"]["J1"]["box"][1] + 2))
-    kick_clr = (v["FASCIA_T"] + 0.5) - v["KICK_T"]            # plug's near face 0.5 off the fascia's back
-    row("8", "kick strip (%.1f thick) vs the mated fascia plug below the fascia's edge" % v["KICK_T"],
-        "%.1f mm (plug's near face assumed 0.5 off the fascia's back)" % kick_clr,
-        "TIGHT" if kick_clr < 1 else "OK")
+    # 8. the fascia lead (fascia R rev B: an upright J1, the plug stands off the back, the wires leave straight back)
+    j1 = fas["parts"]["J1"]
+    saved = v["FLOOR_REV_A"] - v["Y_FLOOR"]
+    y_blk8 = min(v["Y_FLOOR_LEAD"], v["DRV_BOT_Y"] - v["MOD_CLR"] - v["END_BLOCK"] + v["BASE_T"])   # the floor if the base blocks were END_BLOCK tall in all
+    row("8", "fascia J1 (upright, wires leave straight back) vs the floor",
+        "wires leave the mated plug at Y %.2f, Z %.2f (%.1f off the back), lowest point there Y %.2f: the model's rule (that less %.1f, never above "
+        "the frame's 0) puts the floor at Y %.1f; the base's end blocks (check 7) hold it at Y %.1f, %.1f below the frame's 0, with %.2f mm "
+        "under TS06-DRV's bottom edge. Side-entry J1 (rev A): floor Y %.1f; fascia's bottom edge %.2f above the floor"
+        % (v["FJ_EXIT_Y"], v["FJ_EXIT_Z"], v["FJ_MATED_H"], v["FJ_LOW_Y"], v["FLOOR_CLR"], v["Y_FLOOR_LEAD"], v["Y_FLOOR"], -v["Y_FLOOR"],
+           g_base, v["FLOOR_REV_A"], v["FAS_BOT_Y"] - v["Y_FLOOR"]),
+        "OK",
+        "the bend that cost %.1f mm of height is gone; the case is %.1f mm lower. The floor could rise %.1f more, to Y %.1f, if the base's "
+        "end blocks were cut to END_BLOCK tall counting the %.0f mm base (their top %.1f under TS06-DRV's bottom edge), not END_BLOCK above "
+        "it: the lead no longer needs the room. Not done: it changes the base's blocks"
+        % (-v["FLOOR_REV_A"], saved, y_blk8 - v["Y_FLOOR"], y_blk8, v["BASE_T"], v["MOD_CLR"]))
+    # the plug (header body, standing FJ_MATED_H) and the wires over it, against the two КМД1 bodies (either way round) in the plane of the
+    # fascia: both are prisms along its normal, so the distance is the one between their footprints on the back
+    bx0, bx1, bt0, bt1 = [j1["body"][0] + v["FASCIA_X0"], j1["body"][1] + v["FASCIA_X0"], j1["body"][2], j1["body"][3]]
+    worst, who, t_edge = 99.0, "", 0.0
+    for ref, (x, t) in sorted(j1["r_buttons"].items()):          # fascia R's own SW4 and SW5 (the stand-in's are 2 mm higher)
+        for ax, al in ((v["KMD1_A"], v["KMD1_B"]), (v["KMD1_B"], v["KMD1_A"])):     # across X, along the face (orientation not captured)
+            dx = max(0.0, x - ax / 2 - bx1, bx0 - (x + ax / 2))
+            dt = max(0.0, t - al / 2 - bt1, bt0 - (t + al / 2))
+            t_edge = max(t_edge, t + al / 2)
+            d_ = math.hypot(dx, dt)
+            if d_ < worst:
+                worst, who = d_, "%s (%g across x %g along the face, at X %.1f, %.1f down)" % (ref, ax, al, x, t)
+    row("8", "fascia plug and its wires vs the КМД1 bodies (SW4, SW5; 20 deep, assumed)",
+        "%.2f mm between the plug's body (X %.1f-%.1f, %.1f-%.1f down the face, %.1f mated) and %s; the wires leave over the pin row, %.2f from "
+        "the nearest body edge (fascia R's own SW4 and SW5)" % (worst, bx0, bx1, bt0, bt1, v["FJ_MATED_H"], who,
+                                                                v["FJ_PIN_T"] - v["CABLE_HALF"] - t_edge),
+        "OK" if worst >= 1.0 else "TIGHT" if worst >= 0 else "FAIL", "depth and orientation of the КМД1 assumed: the bodies hang beside the plug, not over it")
+    edge_clr = v["FASCIA_H"] - j1["box"][3]
+    row("8", "kick strip (%.1f thick) vs the fascia plug" % v["KICK_T"],
+        "the plug's courtyard ends %.2f above the fascia's bottom edge (the strip starts there, down the face); its wires leave backwards"
+        % edge_clr, "OK" if edge_clr >= 1.0 else "TIGHT" if edge_clr >= 0 else "FAIL",
+        "side-entry J1 (rev A): the plug stood below the edge, 0.5 mm from the strip (TIGHT)")
+    hw = (bx1 - bx0) / 2
+    hz = G["fpt"](bt0, v["FASCIA_T"] + v["FJ_MATED_H"])
+    hy = G["fpt"](bt0, v["FASCIA_T"])[0]                             # the highest point of the plug: its foot, at the control side
+    near = min(math.hypot(max(0.0, abs(h[0] - v["FJ_X"]) - hw), max(0.0, abs(h[1] - (bt0 + bt1) / 2) - (bt1 - bt0) / 2)) - 3.5
+               for h in j1["r_holes"])                          # fascia R's own M2.5 holes, r 3.5 boss, to the plug's body
+    clr = [("the sill's underside (Y %.1f)" % (v["SILL_TOP_Y"] - v["SILL_T"]), v["SILL_TOP_Y"] - v["SILL_T"] - hy),
+           ("TS06-DISP's bottom edge (Y %.1f)" % v["DISP_BOT_Y"], v["DISP_BOT_Y"] - hy),
+           ("TS06-DRV's front face (Z %.1f; the module comes out the other way)" % v["Z_DRV_F"], v["Z_DRV_F"] - hz[1]),
+           ("the cheeks", min(bx0 - v["X_IN_L"], v["X_IN_R"] - bx1)), ("the nearest of R's four screw bosses (r 3.5)", near)]
+    row("8", "fascia plug (%.1f mated) vs the sill, TS06-DISP, TS06-DRV, the cheeks and the fascia bosses" % v["FJ_MATED_H"],
+        "; ".join("%.1f to %s" % (c, n) for n, c in clr), "OK" if min(c for n, c in clr) >= 1.0 else "TIGHT",
+        "the plug stands %.1f off the back at the bottom of the fascia, behind the controls' bodies' footprints, not under the tubes" % v["FJ_MATED_H"])
+    row("8", "fascia lead: plug to floor",
+        "leaves the plug along the fascia's normal (%g deg below horizontal), bends (R %g) to %g deg, runs %.1f straight, bends back to horizontal "
+        "and lies on the floor from Z %.1f (DRV J1's drop column is at Z %.1f, %.1f beyond)"
+        % (v["FASCIA_RAKE"], v["CABLE_R"], v["FJ_SLOPE"], v["FJ_DESCENT_RUN"], v["FJ_Z_END"], v["Z_DRV_F"] - v["J1_MATED_H"] - 2 * v["CABLE_R"],
+           v["Z_DRV_F"] - v["J1_MATED_H"] - 2 * v["CABLE_R"] - v["FJ_Z_END"]),
+        "OK" if v["FJ_Z_END"] < v["Z_DRV_F"] - v["J1_MATED_H"] - 2 * v["CABLE_R"] else "TIGHT",
+        "side-entry J1 (rev A): out along the board, down the rake, one %g deg bend of R %g onto the floor" % (90 + v["FASCIA_RAKE"], v["CABLE_R"]))
+    gx = min(bx0 - v["X_IN_L"], v["X_IN_R"] - bx1)
+    row("8", "room to push in and pull out the fascia plug with the module out",
+        "%.2f mm to the КМД1 body on the controls' side (a pinch needs about %.0f), %.2f from the plug's body up the face to the buttons' "
+        "landing pads (their hand wires come down beside it), open on the bottom-edge side (%.2f to the bottom edge and the kick strip beyond), "
+        "%.1f mm along X to the cheek, no other part beside it" % (worst, v["PINCH_CLR"], bt0 - j1["r_button_pad_t"], edge_clr, gx),
+        "OK" if worst >= v["PINCH_CLR"] and edge_clr >= v["PINCH_CLR"] else "TIGHT",
+        "by hand: reached from behind, the module drawn back; pinch the housing's two long faces, or from the open side and its ends")
     slack = v["LEAD_LEN"] - v["LEAD_PATH"]
     row("8", "fascia lead length", "path %.0f mm (plug to plug, diagonal on the floor) vs a %.0f mm lead: %.0f mm slack"
         % (v["LEAD_PATH"], v["LEAD_LEN"], slack), "TIGHT" if slack < 40 else "OK",
@@ -1235,9 +1409,13 @@ def checks_frame(G):
     row("ribs (with their boss and tie heads) vs the stand-in's controls and back-side parts",
         "%.2f mm, the rib at X %.1f to %s" % (g, x, ref), "OK" if g >= 1.0 else "TIGHT" if g >= 0 else "FAIL",
         "set in the two widest gaps between the stand-in's parts; the 179 board has to leave them free")
+    if ff["j1_notch"]:
+        j1txt = "bottom ledge cut over X %.1f-%.1f for J1's plug and lead" % ff["j1_notch"]
+    else:
+        j1txt = ("bottom ledge not cut: the upright J1's courtyard ends %.2f above it and the wires leave backwards (it was cut over X "
+                 "146.7-165.9 for the side-entry plug)" % ff["j1_clear"])
     row("frame vs the rotary and the fascia's J1",
-        "top rail cut over X %.1f-%.1f, as the sill is (the rotary's rim); bottom ledge cut over X %.1f-%.1f for J1's "
-        "plug and lead" % (ff["rot_notch"] + ff["j1_notch"]), "OK", "")
+        "top rail cut over X %.1f-%.1f, as the sill is (the rotary's rim); %s" % (ff["rot_notch"] + (j1txt,)), "OK", "")
     row("the sill",
         "bears on the frame's top rail across the width (not over the rotary) and is screwed down into the %d rib "
         "heads (M2.5, countersunk into the sill's top)" % len(ff["ribs"]), "OK",
@@ -1306,13 +1484,17 @@ def write_scad(G, d, path):
     L.append("FASCIA_HOLES = %s;  // board: TS06-FASCIA [x, y, drill], fascia frame (y down from top)" % _scad(fas["holes"]))
     ctl = [[k, p["at"][0], p["at"][1], p["panel_hole"]] for k, p in sorted(fas["parts"].items()) if k.startswith("SW")]
     L.append("FASCIA_CTRL  = %s;  // board: SW1-SW5 [ref, x, y, panel hole]" % _scad(ctl))
-    L.append("FJ_BOX       = %s;  // board: fascia J1 courtyard [x0, x1, y0, y1], back face" % _scad(fas["parts"]["J1"]["box"]))
+    L.append("FJ_BOX       = %s;  // board: fascia J1 courtyard [x0, x1, y0, y1], back face (fascia R rev B's upright J1, in the stand-in's frame)" % _scad(fas["parts"]["J1"]["box"]))
+    L.append("FJ_BODY      = %s;  // board: fascia J1 body (B.Fab) [x0, x1, y0, y1]; its pin contacts at y = FJ_PIN_T" % _scad(fas["parts"]["J1"]["body"]))
+    L.append("FJ_PIN_T     = %s;  // board: fascia J1 pin row, down the face" % _scad(fas["parts"]["J1"]["pin_row_y"]))
     L.append("LEAD = %s;  // derived: fascia lead centre line [X, Y, Z]" % _scad([[round(c, 2) for c in p] for p in G["lead"]]))
     ff = G["ff"]
     L.append("FF_RIB_X = %s;  // derived (variant D): the frame's ribs, in the two widest gaps between the stand-in's "
              "controls and back-side parts" % _scad(ff["ribs"]))
     L.append("FF_HOLES = %s;  // derived (variant D): the 179 panel's M2.5 holes [X, down the face]: over the ribs, and "
              "its bottom corners" % _scad([[round(c, 3) for c in h] for h in ff["holes"]]))
+    L.append("FF_J1_CUT = %s;  // derived (variant D): the bottom ledge is cut over J1 only if J1's courtyard reaches it (the side-entry plug did)"
+             % _scad(bool(ff["j1_notch"])))
     L += ["", "// ---- derived in case_pair.py; case.scad derives the same and echoes it for comparison"]
     for k in ("Z_DISP_F", "Z_DRV_B", "PART_MAX", "Z_REAR_IN", "SOFFIT_Y", "Y_FLOOR", "Z_TOE", "OUT_W", "OUT_H", "OUT_D",
               "SILL_NOTCH_Z", "SILL_NOTCH_X0", "FIX_BASE_Y", "WALL_BLK_Y0", "WALL_BLK_Y1", "FIX_BROW_Y", "FIX_BROW_Z",
@@ -1593,6 +1775,11 @@ def draw_section(G):
     S.text(11, v["IN17_Y"] - v["IN17_H"] / 2 + 1.5, "ИН-17 (phantom)", 1.8, PHANTOM, "middle")
     lead = [(p[2], p[1]) for p in G["lead"]]
     S.poly(lead, stroke=PHANTOM, sw=0.45, dash="2 0.8 0.4 0.8", close=False)
+    fpt_, jb = G["fpt"], B["fascia"]["parts"]["J1"]["body"]       # the fascia's upright plug: header, then the mated housing
+    for s_hi in (v["FJ_HDR_H"], v["FJ_MATED_H"]):
+        S.poly([(fpt_(jb[2], v["FASCIA_T"])[1], fpt_(jb[2], v["FASCIA_T"])[0]), (fpt_(jb[2], v["FASCIA_T"] + s_hi)[1], fpt_(jb[2], v["FASCIA_T"] + s_hi)[0]),
+                (fpt_(jb[3], v["FASCIA_T"] + s_hi)[1], fpt_(jb[3], v["FASCIA_T"] + s_hi)[0]), (fpt_(jb[3], v["FASCIA_T"])[1], fpt_(jb[3], v["FASCIA_T"])[0])],
+               stroke=PHANTOM, sw=0.3, dash="1 0.6", close=True)
     S.text(17, 1.2, "fascia lead %.0f mm (phantom)" % v["LEAD_PATH"], 1.9, PHANTOM)
     # sight lines past the brow's lower edge and the fascia's top edge
     t = math.tan(math.radians(v["VIEW_DEG"]))
@@ -1631,7 +1818,8 @@ def draw_section(G):
                   % (v["Z_FACE"] - v["Z_TOE"], v["GLASS_RECESS"], v["Z_DISP_F"], v["IN12_SEAT"], v["STACK_GAP"],
                      v["PART_MAX"], v["REAR_AIR"], v["REAR_T"]),
                   "Blue-grey dashed skyline: every part on TS06-DRV's rear face, all X. The floor is %.1f below the "
-                  "FreeCAD Y 0 so the fascia lead can leave its side-entry J1 (checks.md, 8)." % -v["Y_FLOOR"]])
+                  "FreeCAD Y 0: the base's end blocks have to clear TS06-DRV's bottom edge (checks.md, 7 and 8); the fascia's J1 is "
+                  "upright and no longer sets it." % -v["Y_FLOOR"]])
 
 
 def draw_plan(G):
@@ -1869,6 +2057,7 @@ def main():
         extract()
     with open(BOARDS, encoding="utf8") as fh:
         B = json.load(fh)
+    use_fascia_j1(B)                                # the ordered fascia's upright J1 in the stand-in's parts
     d = dims(B)
     sets = [a.split("=", 1) for a in sys.argv[1:] if "=" in a and not a.startswith("-")]
     for k, val in sets:                             # what-ifs: NAME=value (not written to params.scad)

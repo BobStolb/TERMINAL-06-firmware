@@ -1,10 +1,11 @@
 {
  "_about": "World-frame geometry of TS06-DISP, TS06-DRV and TS06-FASCIA for the case concept. Written by 3d/case-pair/case_pair.py --extract; do not edit by hand.",
  "sources": {
-  "tools/mkpcb_disp.py": "0c2f660714f4",
+  "tools/mkpcb_disp.py": "64b2e7ae0202",
   "tools/mkpcb_drv.py": "a99332406aa9",
   "tools/ts06pair.py": "a7e4f1dca271",
-  "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb": "3e6969af3c62"
+  "PCB/TS06-FASCIA/TS06-FASCIA.kicad_pcb": "3e6969af3c62",
+  "PCB/TS06-FASCIA-rhythm/TS06-FASCIA-rhythm.kicad_pcb": "90d3c56dda43"
  },
  "disp": {
   "W": 191.4,
@@ -2723,5 +2724,60 @@
     "panel_hole": null
    }
   }
+ },
+ "fascia_j1": {
+  "fp": "TS06_JST_PH_B6B-PH-SM4-TB_Back",
+  "at": [
+   155.4,
+   33.0
+  ],
+  "side": "B.Cu",
+  "rev": "B",
+  "box": [
+   146.70000000000002,
+   164.1,
+   28.25,
+   36.75
+  ],
+  "body": [
+   147.425,
+   163.375,
+   28.75,
+   33.75
+  ],
+  "pin_row_y": 30.5,
+  "pads_y": [
+   30.75,
+   36.25
+  ],
+  "buttons": {
+   "SW4": [
+    150.4,
+    16.0
+   ],
+   "SW5": [
+    171.4,
+    16.0
+   ]
+  },
+  "holes": [
+   [
+    4.5,
+    4.5
+   ],
+   [
+    4.5,
+    35.5
+   ],
+   [
+    186.9,
+    4.5
+   ],
+   [
+    186.9,
+    35.5
+   ]
+  ],
+  "button_pad_t": 26.25
  }
 }

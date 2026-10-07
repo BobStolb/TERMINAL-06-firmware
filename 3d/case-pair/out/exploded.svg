@@ -1,48 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295.6 256.8" width="1183" height="1027">
-<rect x="0" y="0" width="295.6" height="256.8" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295.0 254.0" width="1180" height="1016">
+<rect x="0" y="0" width="295.0" height="254.0" fill="#FFFFFF"/>
 <text x="8" y="10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="5" font-weight="700" fill="#1F2328">EXPLODED SIDE VIEW - WHAT COMES APART, AND WITH WHAT</text>
 <text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">cheeks carry everything; the module (TS06-DISP + TS06-DRV) lifts out backwards as one piece</text>
-<polygon points="64.00,208.80 144.04,208.80 144.04,86.00 81.73,86.00 73.84,123.10 73.84,159.50 64.00,205.80" fill="#F3F5F7" stroke="#6E7781" stroke-width="0.30" stroke-linejoin="round"/>
-<text x="94.84" y="182.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#6E7781" text-anchor="middle" font-weight="400">cheek x2, 6 mm - the only structure</text>
-<circle cx="84.84" cy="203.30" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<circle cx="132.04" cy="203.30" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<circle cx="90.84" cy="157.76" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<circle cx="84.75" cy="105.05" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<circle cx="94.84" cy="90.00" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<circle cx="132.04" cy="90.00" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
-<polygon points="64.00,234.80 144.04,234.80 144.04,231.80 66.04,231.80 67.48,225.04 65.52,224.63 64.00,231.80" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="136.04,234.80 144.04,234.80 144.04,223.80 136.04,223.80" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="136.04,50.00 144.04,50.00 144.04,42.00 136.04,42.00" fill="#57606A" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="80.84,234.80 88.84,234.80 88.84,223.80 80.84,223.80" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="128.04,234.80 144.04,234.80 144.04,223.80 128.04,223.80" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="70.84,161.76 81.84,161.76 81.84,153.76 70.84,153.76" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="63.68,87.05 74.75,87.05 74.75,79.05 63.68,79.05" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="90.84,50.00 98.84,50.00 98.84,42.00 90.84,42.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="128.04,50.00 144.04,50.00 144.04,42.00 128.04,42.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="43.84,163.50 35.52,202.63 37.48,203.04 45.80,163.92" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="60.09,161.50 86.34,161.50 86.34,159.50 60.09,159.50" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="57.84,159.50 86.34,159.50 86.34,123.10 57.84,123.10" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="59.84,101.10 67.73,64.00 70.79,64.00 63.33,99.10 83.34,99.10 83.34,96.10 88.34,96.10 88.34,98.10 85.34,101.10" fill="#F59E42" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="84.16,45.00 84.79,42.00 144.04,42.00 144.04,45.00" fill="#57606A" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="196.04,208.80 197.64,208.80 197.64,86.00 196.04,86.00" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="126.84,164.50 128.44,164.50 128.44,120.50 126.84,120.50" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="139.44,194.50 141.04,194.50 141.04,94.50 139.44,94.50" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="96.84,152.76 122.34,152.76 122.34,123.90 96.84,123.90" fill="#FFE3C2" stroke="#D9822B" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="141.04,113.25 161.04,113.25 161.04,102.75 141.04,102.75" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="141.04,113.30 157.64,113.30 157.64,95.02 141.04,95.02" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="141.04,185.82 156.04,185.82 156.04,167.00 141.04,167.00" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
-<polygon points="141.04,112.50 160.04,112.50 160.04,107.60 141.04,107.60" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
-<text x="104.84" y="239.80" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">base + kick strip: 2 x M3 x 8 per cheek, into 8 mm end blocks</text>
-<text x="40.84" y="208.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">TS06-FASCIA: 4 x M2.5 x 6 into cheek bosses</text>
-<text x="71.84" y="114.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">trench (sill + walls): 1 x M3 x 8 per cheek, into the blocks under H10 / ИН-15А</text>
-<text x="54.84" y="80.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="end" font-weight="400">brow (safety orange): 1 x M3 x 8 per cheek</text>
-<text x="108.84" y="36.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">top plate (black): 2 x M3 x 8 per cheek</text>
-<text x="140.84" y="200.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">module: 4 x M3 x 8 + nylon washers (H5-H8) into cheek bosses, from behind</text>
-<text x="200.64" y="144.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">rear panel (FR4 blank):</text>
-<text x="200.64" y="148.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">6 x M2.5 x 6, 3 into the base's lip</text>
-<text x="200.64" y="152.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">and 3 into the top plate's;</text>
-<text x="200.64" y="156.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">holes slotted ±0.6 along X</text>
-<text x="8" y="246.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Service (review 7): unplug, wait 15 s; 6 screws off the rear panel; 4 module screws; draw the module back ~30 mm and unplug J1 from below; lift out.</text>
-<text x="8" y="249.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Assembly (F9): screw the module in before tightening the crossmember screws, so TS06-DRV sets the cheeks' spacing. The display pulls straight off TS06-DRV (seven strip pairs).</text>
-<text x="8" y="252.8" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Red circles: the cheek's counterbored M3 holes; grey: the end blocks (8 mm) with their inserts.</text>
+<polygon points="64.00,206.00 143.45,206.00 143.45,86.00 81.13,86.00 73.25,123.10 73.25,159.50 64.00,203.00" fill="#F3F5F7" stroke="#6E7781" stroke-width="0.30" stroke-linejoin="round"/>
+<text x="94.25" y="182.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#6E7781" text-anchor="middle" font-weight="400">cheek x2, 6 mm - the only structure</text>
+<circle cx="84.25" cy="200.50" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<circle cx="131.45" cy="200.50" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<circle cx="90.25" cy="157.76" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<circle cx="84.15" cy="105.05" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<circle cx="94.25" cy="90.00" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<circle cx="131.45" cy="90.00" r="3.10" fill="none" stroke="#CF222E" stroke-width="0.25"/>
+<polygon points="64.00,232.00 143.45,232.00 143.45,229.00 66.04,229.00 66.89,225.04 64.93,224.63 64.00,229.00" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="135.45,232.00 143.45,232.00 143.45,221.00 135.45,221.00" fill="#8C959F" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="135.45,50.00 143.45,50.00 143.45,42.00 135.45,42.00" fill="#57606A" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="80.25,232.00 88.25,232.00 88.25,221.00 80.25,221.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="127.45,232.00 143.45,232.00 143.45,221.00 127.45,221.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="70.25,161.76 81.25,161.76 81.25,153.76 70.25,153.76" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="63.08,87.05 74.15,87.05 74.15,79.05 63.08,79.05" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="90.25,50.00 98.25,50.00 98.25,42.00 90.25,42.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="127.45,50.00 143.45,50.00 143.45,42.00 127.45,42.00" fill="#E3E8ED" stroke="#6E7781" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="43.25,163.50 34.93,202.63 36.89,203.04 45.20,163.92" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="59.49,161.50 85.75,161.50 85.75,159.50 59.49,159.50" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="57.25,159.50 85.75,159.50 85.75,123.10 57.25,123.10" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="59.25,101.10 67.13,64.00 70.20,64.00 62.74,99.10 82.75,99.10 82.75,96.10 87.75,96.10 87.75,98.10 84.75,101.10" fill="#F59E42" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="83.56,45.00 84.20,42.00 143.45,42.00 143.45,45.00" fill="#57606A" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="195.45,206.00 197.05,206.00 197.05,86.00 195.45,86.00" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="126.25,164.50 127.85,164.50 127.85,120.50 126.25,120.50" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="138.85,194.50 140.45,194.50 140.45,94.50 138.85,94.50" fill="#2E7D5B" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="96.25,152.76 121.75,152.76 121.75,123.90 96.25,123.90" fill="#FFE3C2" stroke="#D9822B" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="140.45,113.25 160.45,113.25 160.45,102.75 140.45,102.75" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="140.45,113.30 157.05,113.30 157.05,95.02 140.45,95.02" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="140.45,185.82 155.45,185.82 155.45,167.00 140.45,167.00" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<polygon points="140.45,112.50 159.45,112.50 159.45,107.60 140.45,107.60" fill="#AFC2D5" stroke="#1F2328" stroke-width="0.20" stroke-linejoin="round"/>
+<text x="104.25" y="237.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">base + kick strip: 2 x M3 x 8 per cheek, into 8 mm end blocks</text>
+<text x="40.25" y="208.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">TS06-FASCIA: 4 x M2.5 x 6 into cheek bosses</text>
+<text x="71.25" y="114.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">trench (sill + walls): 1 x M3 x 8 per cheek, into the blocks under H10 / ИН-15А</text>
+<text x="54.25" y="80.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="end" font-weight="400">brow (safety orange): 1 x M3 x 8 per cheek</text>
+<text x="108.25" y="36.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">top plate (black): 2 x M3 x 8 per cheek</text>
+<text x="140.25" y="200.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="middle" font-weight="400">module: 4 x M3 x 8 + nylon washers (H5-H8) into cheek bosses, from behind</text>
+<text x="200.05" y="144.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">rear panel (FR4 blank):</text>
+<text x="200.05" y="148.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">6 x M2.5 x 6, 3 into the base's lip</text>
+<text x="200.05" y="152.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">and 3 into the top plate's;</text>
+<text x="200.05" y="156.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.30" fill="#1F2328" text-anchor="start" font-weight="400">holes slotted ±0.6 along X</text>
+<text x="8" y="243.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Service (review 7): unplug, wait 15 s; 6 screws off the rear panel; 4 module screws; draw the module back ~30 mm and unplug J1 from below; lift out.</text>
+<text x="8" y="246.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Assembly (F9): screw the module in before tightening the crossmember screws, so TS06-DRV sets the cheeks' spacing. The display pulls straight off TS06-DRV (seven strip pairs).</text>
+<text x="8" y="250.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Red circles: the cheek's counterbored M3 holes; grey: the end blocks (8 mm) with their inserts.</text>
 </svg>

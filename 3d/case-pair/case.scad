@@ -54,11 +54,14 @@ function zy(p) = [p[1], p[0]];
 FAS_BOT    = fpt(FASCIA_H);
 Z_SILL_F   = Z_FACE + FASCIA_T / cos(r) + 0.2;
 
-// the fascia's own J1 is side-entry and sends its lead toward the fascia's bottom edge: the lead's
-// bend sets how far below the fascia the floor has to be (checks.md, 8)
-FJ_EXIT  = fpt(FJ_BOX[3] + FJ_PLUG_OUT, FASCIA_T + FJ_HDR_H / 2);
-FJ_LOW_Y = FJ_EXIT[0] - CABLE_R * sin(r) - CABLE_R - CABLE_HALF;
-Y_FLOOR  = min(0, floor((FJ_LOW_Y - FLOOR_CLR) * 10) / 10);
+// the fascia's own J1 (fascia R rev B) is UPRIGHT: the plug stands off the back along the fascia's normal and the wires leave its top straight
+// back into the case, over the pin row. The floor is the model's rule on the lead's lowest point at the plug (never above the frame's Y 0),
+// held down by the base's end blocks, which have to clear TS06-DRV's bottom edge by MOD_CLR as the module slides out (checks.md, 7 and 8)
+FJ_EXIT  = fpt(FJ_PIN_T, FASCIA_T + FJ_MATED_H);
+FJ_LOW_Y = FJ_EXIT[0] - CABLE_HALF;
+Y_FLOOR_LEAD  = min(0, floor((FJ_LOW_Y - FLOOR_CLR) * 10) / 10);
+Y_FLOOR_SWEEP = floor((DRV_BOT_Y - END_BLOCK - MOD_CLR) * 10) / 10;
+Y_FLOOR  = min(Y_FLOOR_LEAD, Y_FLOOR_SWEEP);
 Y_BOT    = Y_FLOOR - BASE_T;
 Z_TOE    = Z_FACE - (SILL_TOP_Y - Y_FLOOR) * tan(r);
 Z_BROW_TOP = Z_FACE + (Y_TOP - SOFFIT_Y) * tan(rb);
@@ -317,8 +320,11 @@ module fascia_dressed() {                           // the board, its controls a
                 color("#2d333b") translate([0, 0, -6]) cylinder(h = 6, d = 11);
             }
         }
-        color("#f2f2f2") translate([FJ_BOX[0] + 1, FJ_BOX[2], FASCIA_T]) cube([FJ_BOX[1] - FJ_BOX[0] - 2, FJ_BOX[3] - FJ_BOX[2], FJ_HDR_H]);
-        color("#f2f2f2") translate([FJ_BOX[0] + 3, FJ_BOX[3], FASCIA_T + 0.5]) cube([FJ_BOX[1] - FJ_BOX[0] - 6, FJ_PLUG_OUT, FJ_HDR_H - 1]);
+        // J1, upright: the header (its plastic is 13.9 wide inside the 15.95 outline, which counts the metal tabs) and the mated PHR-6 standing
+        // out of its mouth up to where the wires leave (illustrative bodies)
+        color("#f2f2f2") translate([FJ_BODY[0] + 1.025, FJ_BODY[2], FASCIA_T]) cube([FJ_BODY[1] - FJ_BODY[0] - 2.05, FJ_BODY[3] - FJ_BODY[2], FJ_HDR_H]);
+        color("#e6e1d3") translate([FJ_BODY[0] + 1.5, FJ_PIN_T - 2.0, FASCIA_T + FJ_HDR_H - 1.0])
+            cube([FJ_BODY[1] - FJ_BODY[0] - 3.0, 4.0, FJ_MATED_H - FJ_HDR_H + 1.0]);
         if (FASCIA_FRAME)                           // variant D is drawn for a 179 board that does not exist yet
             color("#d63384") translate([62, FASCIA_H - 5, -0.05]) mirror([0, 1, 0]) mirror([0, 0, 1])
                 linear_extrude(0.2) text("176 STAND-IN", size = 3.2, font = "DejaVu Sans:style=Bold");
@@ -342,7 +348,8 @@ module fascia_frame() difference() {
             translate([FF_X0 + FF_LEDGE, FF_TOP, FASCIA_T - 1])                                      // the window behind
                 cube([FF_X1 - FF_X0 - 2 * FF_LEDGE, FF_PANEL_H - FF_LEDGE - FF_TOP, FF_WEB + 2]);
             translate([SILL_NOTCH_X0, -1, FASCIA_T - 1]) cube([SILL_NOTCH_X1 - SILL_NOTCH_X0, FF_TOP + 2, FF_WEB + 2]);  // rotary
-            translate([FF_J1[0], FF_PANEL_H - FF_LEDGE - 1, FASCIA_T - 1]) cube([FF_J1[1] - FF_J1[0], FF_LEDGE + 2, FF_WEB + 2]);  // J1
+            if (FF_J1_CUT)                         // the side-entry plug reached the ledge; the upright one (rev B) does not
+                translate([FF_J1[0], FF_PANEL_H - FF_LEDGE - 1, FASCIA_T - 1]) cube([FF_J1[1] - FF_J1[0], FF_LEDGE + 2, FF_WEB + 2]);  // J1
         }
         rake() {
             for (x = FF_RIB_X) translate([x - FF_RIB_W / 2, 0, FASCIA_T]) cube([FF_RIB_W, FF_PANEL_H, FF_WEB]);

@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.4 192.8" width="1210" height="771">
-<rect x="0" y="0" width="302.4" height="192.8" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302.4 190.0" width="1210" height="760">
+<rect x="0" y="0" width="302.4" height="190.0" fill="#FFFFFF"/>
 <text x="8" y="10" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="5" font-weight="700" fill="#1F2328">TS06 PAIR CASE - FRONT ELEVATION  1:1</text>
-<text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">concept A · outside 204.4 W x 122.8 H x 81.6 D mm · world X/Y of the FreeCAD assembly</text>
-<polygon points="34.00,148.80 40.00,148.80 40.00,26.00 34.00,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
-<polygon points="232.40,148.80 238.40,148.80 238.40,26.00 232.40,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
-<polygon points="40.00,148.80 232.40,148.80 232.40,145.80 40.00,145.80" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
-<polygon points="40.00,145.80 232.40,145.80 232.40,138.63 40.00,138.63" fill="#BFC7CF" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<text x="8" y="16" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.8" fill="#6E7781">concept A · outside 204.4 W x 120.0 H x 81.0 D mm · world X/Y of the FreeCAD assembly</text>
+<polygon points="34.00,146.00 40.00,146.00 40.00,26.00 34.00,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
+<polygon points="232.40,146.00 238.40,146.00 238.40,26.00 232.40,26.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.35" stroke-linejoin="round"/>
+<polygon points="40.00,146.00 232.40,146.00 232.40,143.00 40.00,143.00" fill="#D0D7DE" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
+<polygon points="40.00,143.00 232.40,143.00 232.40,138.63 40.00,138.63" fill="#BFC7CF" stroke="#1F2328" stroke-width="0.30" stroke-linejoin="round"/>
 <polygon points="44.80,138.63 220.81,138.63 220.81,99.50 44.80,99.50" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
 <circle cx="74.81" cy="113.19" r="8.90" fill="#57606A" stroke="#8C959F" stroke-width="0.30"/>
 <text x="74.81" y="129.19" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#E6EDF3" text-anchor="middle" font-weight="400">SW1 MODE</text>
@@ -21,7 +21,7 @@
 <circle cx="49.30" cy="134.22" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
 <circle cx="216.31" cy="103.90" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
 <circle cx="216.31" cy="134.22" r="1.35" fill="#1F2328" stroke="#8C959F" stroke-width="0.20"/>
-<polygon points="188.21,137.16 205.41,137.16 205.41,127.18 188.21,127.18" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
+<polygon points="187.20,135.45 204.60,135.45 204.60,127.13 187.20,127.13" fill="none" stroke="#8250DF" stroke-width="0.25" stroke-linejoin="round" stroke-dasharray="1 0.8"/>
 <polygon points="43.50,99.50 222.53,99.50 222.53,63.10 43.50,63.10" fill="#2D333B" stroke="#57606A" stroke-width="0.30" stroke-linejoin="round"/>
 <circle cx="53.71" cy="96.00" r="1.50" fill="#F7C873" stroke="#9A6700" stroke-width="0.20"/>
 <circle cx="77.07" cy="96.00" r="1.50" fill="#F7C873" stroke="#9A6700" stroke-width="0.20"/>
@@ -79,42 +79,42 @@
 <polyline points="42.00,78.50 20.50,72.50" fill="none" stroke="#1F2328" stroke-width="0.2"/>
 <circle cx="42.00" cy="78.50" r="0.5" fill="#1F2328"/>
 <text x="19.50" y="73.27" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#1F2328" text-anchor="end" font-weight="400">trench wall</text>
-<polyline points="60.50,122.50 60.50,154.80" fill="none" stroke="#1F2328" stroke-width="0.2"/>
+<polyline points="60.50,122.50 60.50,152.00" fill="none" stroke="#1F2328" stroke-width="0.2"/>
 <circle cx="60.50" cy="122.50" r="0.5" fill="#1F2328"/>
-<text x="61.50" y="155.57" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#1F2328" text-anchor="start" font-weight="400">TS06-FASCIA 176 x 40, raked 12°, 4 x M2.5 x 6</text>
-<polyline points="140.50,142.21 140.50,154.80" fill="none" stroke="#1F2328" stroke-width="0.2"/>
-<circle cx="140.50" cy="142.21" r="0.5" fill="#1F2328"/>
-<text x="141.50" y="155.57" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#1F2328" text-anchor="start" font-weight="400">kick strip (base)</text>
-<line x1="34.00" y1="148.80" x2="34.00" y2="170.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="238.40" y1="148.80" x2="238.40" y2="170.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="34.00" y1="170.80" x2="238.40" y2="170.80" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="34.00" cy="170.80" r="0.45" fill="#2F6DB5"/>
-<circle cx="238.40" cy="170.80" r="0.45" fill="#2F6DB5"/>
-<text x="136.20" y="170.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">204.4 outside</text>
-<line x1="40.00" y1="148.80" x2="40.00" y2="163.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="232.40" y1="148.80" x2="232.40" y2="163.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="40.00" y1="163.80" x2="232.40" y2="163.80" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="40.00" cy="163.80" r="0.45" fill="#2F6DB5"/>
-<circle cx="232.40" cy="163.80" r="0.45" fill="#2F6DB5"/>
-<text x="136.20" y="163.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">192.4 between cheeks</text>
+<text x="61.50" y="152.77" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#1F2328" text-anchor="start" font-weight="400">TS06-FASCIA 176 x 40, raked 12°, 4 x M2.5 x 6</text>
+<polyline points="140.50,140.81 140.50,152.00" fill="none" stroke="#1F2328" stroke-width="0.2"/>
+<circle cx="140.50" cy="140.81" r="0.5" fill="#1F2328"/>
+<text x="141.50" y="152.77" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.20" fill="#1F2328" text-anchor="start" font-weight="400">kick strip (base)</text>
+<line x1="34.00" y1="146.00" x2="34.00" y2="168.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="238.40" y1="146.00" x2="238.40" y2="168.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="34.00" y1="168.00" x2="238.40" y2="168.00" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="34.00" cy="168.00" r="0.45" fill="#2F6DB5"/>
+<circle cx="238.40" cy="168.00" r="0.45" fill="#2F6DB5"/>
+<text x="136.20" y="167.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">204.4 outside</text>
+<line x1="40.00" y1="146.00" x2="40.00" y2="161.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="232.40" y1="146.00" x2="232.40" y2="161.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="40.00" y1="161.00" x2="232.40" y2="161.00" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="40.00" cy="161.00" r="0.45" fill="#2F6DB5"/>
+<circle cx="232.40" cy="161.00" r="0.45" fill="#2F6DB5"/>
+<text x="136.20" y="160.20" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">192.4 between cheeks</text>
 <line x1="43.50" y1="63.10" x2="43.50" y2="60.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="222.53" y1="63.10" x2="222.53" y2="60.10" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="43.50" y1="60.10" x2="222.53" y2="60.10" stroke="#2F6DB5" stroke-width="0.25"/>
 <circle cx="43.50" cy="60.10" r="0.45" fill="#2F6DB5"/>
 <circle cx="222.53" cy="60.10" r="0.45" fill="#2F6DB5"/>
 <text x="133.02" y="59.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400">trench window 179.0 x 36.4</text>
-<line x1="238.40" y1="148.80" x2="247.40" y2="148.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="238.40" y1="145.80" x2="247.40" y2="145.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="247.40" y1="148.80" x2="247.40" y2="145.80" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="247.40" cy="148.80" r="0.45" fill="#2F6DB5"/>
-<circle cx="247.40" cy="145.80" r="0.45" fill="#2F6DB5"/>
-<text x="246.60" y="147.30" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 246.60 147.30)">3.0</text>
-<line x1="238.40" y1="145.80" x2="247.40" y2="145.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="238.40" y1="146.00" x2="247.40" y2="146.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="238.40" y1="143.00" x2="247.40" y2="143.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="247.40" y1="146.00" x2="247.40" y2="143.00" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="247.40" cy="146.00" r="0.45" fill="#2F6DB5"/>
+<circle cx="247.40" cy="143.00" r="0.45" fill="#2F6DB5"/>
+<text x="246.60" y="144.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 246.60 144.50)">3.0</text>
+<line x1="238.40" y1="143.00" x2="247.40" y2="143.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="238.40" y1="138.63" x2="247.40" y2="138.63" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="247.40" y1="145.80" x2="247.40" y2="138.63" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="247.40" cy="145.80" r="0.45" fill="#2F6DB5"/>
+<line x1="247.40" y1="143.00" x2="247.40" y2="138.63" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="247.40" cy="143.00" r="0.45" fill="#2F6DB5"/>
 <circle cx="247.40" cy="138.63" r="0.45" fill="#2F6DB5"/>
-<text x="246.60" y="142.21" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 246.60 142.21)">7.2</text>
+<text x="246.60" y="140.81" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 246.60 140.81)">4.4</text>
 <line x1="238.40" y1="138.63" x2="247.40" y2="138.63" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="238.40" y1="99.50" x2="247.40" y2="99.50" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="247.40" y1="138.63" x2="247.40" y2="99.50" stroke="#2F6DB5" stroke-width="0.25"/>
@@ -133,19 +133,19 @@
 <circle cx="247.40" cy="63.10" r="0.45" fill="#2F6DB5"/>
 <circle cx="247.40" cy="26.00" r="0.45" fill="#2F6DB5"/>
 <text x="246.60" y="44.55" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 246.60 44.55)">37.1</text>
-<line x1="34.00" y1="148.80" x2="22.00" y2="148.80" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
+<line x1="34.00" y1="146.00" x2="22.00" y2="146.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="34.00" y1="26.00" x2="22.00" y2="26.00" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
-<line x1="22.00" y1="148.80" x2="22.00" y2="26.00" stroke="#2F6DB5" stroke-width="0.25"/>
-<circle cx="22.00" cy="148.80" r="0.45" fill="#2F6DB5"/>
+<line x1="22.00" y1="146.00" x2="22.00" y2="26.00" stroke="#2F6DB5" stroke-width="0.25"/>
+<circle cx="22.00" cy="146.00" r="0.45" fill="#2F6DB5"/>
 <circle cx="22.00" cy="26.00" r="0.45" fill="#2F6DB5"/>
-<text x="21.20" y="87.40" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 21.20 87.40)">122.8 outside</text>
+<text x="21.20" y="86.00" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 21.20 86.00)">120.0 outside</text>
 <line x1="34.00" y1="134.50" x2="10.00" y2="134.50" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="34.00" y1="34.50" x2="10.00" y2="34.50" stroke="#2F6DB5" stroke-width="0.20" stroke-dasharray="0.6 0.6"/>
 <line x1="10.00" y1="134.50" x2="10.00" y2="34.50" stroke="#2F6DB5" stroke-width="0.25"/>
 <circle cx="10.00" cy="134.50" r="0.45" fill="#2F6DB5"/>
 <circle cx="10.00" cy="34.50" r="0.45" fill="#2F6DB5"/>
 <text x="9.20" y="84.50" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.40" fill="#2F6DB5" text-anchor="middle" font-weight="400" transform="rotate(-90 9.20 84.50)">TS06-DRV 100</text>
-<text x="8" y="182.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Hidden (dashed): TS06-DRV Y 4-104 and TS06-DISP Y 34-78 outlines, the four module bosses (H5-H8), the jack and USB openings in the cheeks, the fascia connector J1 (violet).</text>
-<text x="8" y="185.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Chain on the right, bottom up: base, kick strip, fascia (projected), trench window, brow. Fascia centred under the tube row, X 4.3-180.3 (the FreeCAD assembly has it elsewhere: review 5).</text>
-<text x="8" y="188.8" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">The grey step under H10 is the trench's end block (8 mm, an M3 x 8 from the cheek into its insert); its twin under ИН-15А sits inside the right wall.</text>
+<text x="8" y="179.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Hidden (dashed): TS06-DRV Y 4-104 and TS06-DISP Y 34-78 outlines, the four module bosses (H5-H8), the jack and USB openings in the cheeks, the fascia connector J1 (violet).</text>
+<text x="8" y="182.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">Chain on the right, bottom up: base, kick strip, fascia (projected), trench window, brow. Fascia centred under the tube row, X 4.3-180.3 (the FreeCAD assembly has it elsewhere: review 5).</text>
+<text x="8" y="186.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="2.4" fill="#6E7781">The grey step under H10 is the trench's end block (8 mm, an M3 x 8 from the cheek into its insert); its twin under ИН-15А sits inside the right wall.</text>
 </svg>

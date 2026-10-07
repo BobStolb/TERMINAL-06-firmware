@@ -39,6 +39,13 @@ not refused.
 It was 204.4 x 120.3 x 83.6. The case review's end blocks (below) put an 8 mm block under the
 top plate at the rear, above TS06-DRV's top edge, so the case is 2.5 mm taller.
 
+**7 October 2026, fascia R rev B: the fascia's J1 is upright.** The wires leave the plug straight back, so the
+7.3 mm the side-entry bend cost is gone: the floor is at Y -4.5 (was -7.3) and the case is **204.4 x 120.0 x 81.0**
+(2.8 mm lower, 0.55 mm shorter at the toe). What holds the floor at -4.5 now is the base's end blocks (8 mm tall on
+the floor), which must clear TS06-DRV's bottom edge by 0.5 as the module slides out (checks.md 7 and 8); the lead
+no longer sets it. The depth, width and what-if tables below predate this and some of the depths (83.6, the 81.6 of
+`PCB/README.md`); `checks.md`, regenerated, has the current ones. `PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md` has the study.
+
 | Width | mm | Source |
 |---|---|---|
 | Boards | 191.4 | `mkpcb_disp.W`, `mkpcb_drv.W` (widened from 176 for the ИН-17 pair's 20.5 mm) |
@@ -48,7 +55,7 @@ top plate at the rear, above TS06-DRV's top edge, so the case is 2.5 mm taller.
 
 | Depth, front to back | mm | Source |
 |---|---|---|
-| Kick-strip toe to the face plane | 9.8 | the 12° rake (spec §6) run down to the floor |
+| Kick-strip toe to the face plane | 9.8 (9.25 since rev B) | the 12° rake (spec §6) run down to the floor |
 | Glass recess behind the face | 1.0 | design: a knock lands on the case, not the glass |
 | ИН-12 glass to TS06-DISP's front face | 30.0 | envD 25.5 (`3d/IN12.FCStd`) + socket seat 4.5 (**assumed**, review "≈ 30") |
 | TS06-DISP | 1.6 | pcbkit |
@@ -62,13 +69,13 @@ top plate at the rear, above TS06-DRV's top edge, so the case is 2.5 mm taller.
 | Height, bottom to top | mm | Source |
 |---|---|---|
 | Base | 3.0 | design |
-| Floor to TS06-DRV's bottom edge | 11.3 | 4.0 in the FreeCAD frame, **+ 7.3 for the fascia lead** (below) |
+| Floor to TS06-DRV's bottom edge | 8.5 (was 11.3) | 4.0 in the FreeCAD frame, + 4.5 for the base's end blocks (below); the fascia lead no longer sets it (was + 7.3) |
 | TS06-DRV | 100.0 | `mkpcb_drv.H` (Y 4 to 104) |
 | Top clearance | 5.5 | 0.5 for the module to slide + an 8 mm rear block − the 3 mm plate (was the review's 3) |
 | Top plate | 3.0 | design |
-| **Outside** | **122.8** | inside, floor to top plate: 116.8 (review: ~106) |
+| **Outside** | **120.0** (was 122.8) | inside, floor to top plate: 114.0 (review: ~106) |
 
-The front face, bottom up: kick strip 7.2 · TS06-FASCIA 39.1 (40 along the 12° rake) · trench
+The front face, bottom up: kick strip 4.4 (7.2 before rev B) · TS06-FASCIA 39.1 (40 along the 12° rake) · trench
 window 36.4 · brow 37.1. The trench window is 179.0 wide (X 3.0–182.0).
 
 What-ifs are one command each (see "Regenerate"):
@@ -79,7 +86,7 @@ What-ifs are one command each (see "Regenerate"):
 | U13, C7 and VT21 laid down (review finding 6) | 204.4 x 122.8 x 78.2 |
 | Tubes soldered straight into the board, no socket seat (`IN12_SEAT=0`) | 204.4 x 122.8 x 79.1 |
 | 7.0 mm PBS instead of 8.5 (`PBS_H=7.0`) | 204.4 x 122.8 x 82.1 |
-| The floor at FreeCAD Y 0, with a trough in the base for the fascia lead | 204.4 x 115.5 x 82.1 |
+| The floor at Y -1.5 (needs the base's end blocks cut to 8 mm tall counting the 3 mm base; not drawn): 3.0 mm lower again | about 204.4 x 117.0 (estimated, not run) |
 | Variant D, the fascia frame (`FASCIA_FRAME=1`) | 204.4 x 122.8 x 83.6 |
 
 ## Review suggestions implemented
@@ -220,8 +227,8 @@ Full table: `checks.md`. What does not simply pass:
 | Sill vs ИН-17 LEDs | 0.59 mm (**tight**), with a lead-in under them. |
 | Right trench wall vs ИН-15А glass | 0.9 mm nominal, 0.5 mm with the +0.4 glass allowance (ok). |
 | SR25 rotary vs sill | The rotary (Ø25.00, 22 deep) comes 1.5 mm below the fascia's top edge. The sill steps back to Z 3.55 over X 20.8–47.8, which leaves a 2.5 mm slot behind the fascia's top edge (**tight**). |
-| Fascia lead vs floor | The fascia's J1 is side-entry and points its lead down the rake. The lead needs the floor **7.3 mm below** the FreeCAD Y 0, and that is where the model puts it. The alternative is a trough 8 mm deep in the base at X 146–167. |
-| Kick strip vs the fascia plug | 0.5 mm (**tight**), on an assumed plug position. |
+| Fascia lead vs floor | Fascia R rev B's J1 is upright: the plug stands 9.5 off the back (assumed) and the wires leave straight back over its pin row, 6.8 above the FreeCAD Y 0. The lead goes to the floor on a 45° slope between two R3 bends. The floor is at **Y -4.5** (was -7.3 with the side-entry J1), held there by the base's end blocks, 0.5 mm under TS06-DRV's bottom edge. |
+| Fascia plug vs the КМД1 bodies and the kick strip | 4.3 mm to the nearest КМД1 body (assumed 20 deep), 3.25 mm from the plug's courtyard to the fascia's bottom edge (the old side-entry plug stood below it, 0.5 mm from the strip: tight). |
 | КМД1 (SW5) vs the fascia's top-right hole | 1.2 or 2.6 mm from the hole centre, depending on how the body is turned (**tight**). Variant D removes it. |
 | Fascia boss vs R5 | −1.2 mm to R5's courtyard: the boss lands on R5's pad (**fail**). Trim the boss, move the hole, or take variant D (1.9 mm clear). |
 | ИН-17 pair | Centres 20.5 apart against Ø20 stems: 0.5 mm stem to stem, 2.2 mm to the glass either side (**tight**). |
@@ -234,8 +241,9 @@ Full table: `checks.md`. What does not simply pass:
   trimmer, discs and DIP sockets.
 - A 9.5 mm 5.5/2.1 barrel whose nose is Ø10, needing 7 mm of engagement.
 - The mini-B receptacle at 7.7 x 4.0, and its overmould at 11 x 8.
-- The fascia lead's geometry: the header 4.8 high, the plug 3.0 past the header mouth, and a
-  bend radius of 3.
+- The fascia lead's geometry: the upright header 6.0 high (inferred: the 6.0 of the through-hole B6B-PH-K's STEP
+  and JST's listing; the SM4-TB datasheet was not readable), the mated PHR-6 9.5 off the fascia's back (the same
+  as DRV J1's), a 45° slope to the floor, and a bend radius of 3.
 - The control bodies behind the fascia: МТ1 30 deep, КМД1 20 deep. The КМД1's orientation is
   not known. (The rotary's 25.00 x 22 is now from the spec.)
 - The LED flange of Ø3.8, the pin tails of 1.5, and low screw heads of 2.0.
