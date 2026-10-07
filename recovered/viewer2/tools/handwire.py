@@ -55,7 +55,7 @@ RW = 0.35                       # hook-up wire, 0.7 mm over the insulation
 CLR = 0.15                      # the least gap kept beside a wire
 RHO = 1.6                       # the one bend radius of every wire's centre line (2.3 wire diameters)
 PITCH = 0.95                    # the wires of a group, one over another: 0.7 mm of wire and 0.25 mm of air
-LF = 1.8                        # the flat run of a wire on its pad's side of the last bend
+LF = 1.2                        # the flat run of a wire on its pad's side of the last bend (covers the pad from its edge to its centre)
 ANG = [-75.0 + 30.0 * k for k in range(6)]            # tools/fascia_art.py: dial position k+1, degrees, y down
 TAP_NET = ["GND", "TAP2", "TAP3", "TAP4", "TAP5", "+5V"]    # position 1..6: 0 V .. 5 V (TERMINAL-06-control-scheme-revB.md)
 
@@ -304,7 +304,7 @@ def check(wires, lugs, body, own, others=()):
                 lo = np.array([body["x0"], body["y0"], 0.0])
                 hi = np.array([body["x1"], body["y1"], body["depth"]])
                 worst["wire-body"] = min(worst["wire-body"], float(box_dist(a, lo, hi).min()) - RW)
-    out = {k: round(v, 2) for k, v in worst.items()}
+    out = {k: (None if v > 1e8 else round(v, 2)) for k, v in worst.items()}      # None: nothing of that kind to be clear of
     out["crossings"] = plan_crossings(list(wires))[0]
     return out
 

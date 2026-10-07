@@ -80,8 +80,10 @@ spread along the floor. Each wire's length is counted from the drawn wire (about
 wired by hand from its lugs to landing pads on the fascia's back. The lugs are read out of the control models in the populated fascia's GLB (the rotary's 12 taps and 2 commons, three lugs on each
 МТ1 and КМД1); the pads and their nets from the board file. Which lug takes which pad is chosen, and said so on the page: the dial's six positions are at -75 to +75 degrees
 (`tools/fascia_art.py`), position 1 is 0 V and 6 is +5 V, so position k is the tap lug at its angle and the wiper is the common on the same side; a lever or a button has three lugs and the board two
-pads, so the two lugs nearest the pads are used and the third stays free (which lug of a real lever is the common is for a meter to say, not the model). The routes and their depths are searched so that no
-wire touches a body, a lug that is not its own, or another wire (the least gaps are printed by the build and checked by the tests). A board with no lug models (A, the stand-in for F) has stand-in control
+pads, so the two lugs nearest the pads are used and the third stays free (which lug of a real lever is the common is for a meter to say, not the model). The routes are dressed as a harness: the dial's seven wires leave their lugs along the lug, lie over the
+body's rear face and run down its right flank one over another as a flat group (0.95 mm pitch), then leave it in the order of the pads, so no two wires cross; a lever's or
+button's two run side by side past the body's lower edge; every bend is an arc of one radius (1.6 mm) and every wire lands flat on its pad. No wire touches a body, a lug that is not its own,
+or another wire (the least gaps are printed by the build and checked by the tests, which also recompute that no two wires cross or touch). A board with no lug models (A, the stand-in for F) has stand-in control
 bodies: its wires start on the body's back face. The hand wires take the colour of their net.
 
 ## The glow switch
@@ -133,6 +135,6 @@ the Wiring switch hides and shows the lead, the hand wires and the pin labels; a
 | `build.sh` | the build; its header lists every input and option |
 | `tools/mksections.sh` | the schematic sections, regenerated from the repository |
 | `tools/order.py`, `tools/populated.py` | the Order view's data; the populated boards' pictures, sizes and model coverage |
-| `tools/handwire.py` | the hand wiring on the fascia's back: lugs from the control models in the populated GLB, pads and nets from the board file, routes searched for clearance (`data/handwire.json`) |
+| `tools/handwire.py` | the hand wiring on the fascia's back: lugs from the control models in the populated GLB, pads and nets from the board file, routes dressed as one harness per control, one bend radius, checked for clearance and crossings (`data/handwire.json`) |
 | `tools/prep_board.py`, `kicad_export.sh`, `glb2json.py`, `stl2gltf.py`, `kparts.py`, `assembly.py`, `facts.py`, `trim.py`, `sections.py` | the build's other steps |
 | `test/run.mjs`, `serve.py` | the checks and their static server (`perf.mjs`, `debug.mjs`: development helpers) |
