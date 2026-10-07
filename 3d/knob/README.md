@@ -169,7 +169,14 @@ Things the numbers say, without reading anything more: the beak knobs cost 20 to
 a genuine РСИ-4 knob is 1 200 ₽ and its size is the open question. **A genuine knob can be bigger than the art allows**: on R the art keeps 9.0 mm from the shaft (D 18), on T layout 1 the skirt cannot pass D 19.66, and it must be
 a 6 mm bore with a fixing the owner can use. Two questions to put to the seller before buying: "диаметр ручки, диаметр отверстия, чем крепится (винт, цанга, плоскость на валу)".
 
-## My pick
+## The owner's pick (2026-10-07, about 14:50 UTC): A
+
+**A is the knob.** The files are ours to change. The default `knob_A.stl` stays the low knob (top 14.3 mm above the face), which
+needs the SR25's metal shaft cut down to 12.0 mm above the face: one hacksaw cut at the bench, done once, with the switch out of the
+fascia. `knob_A_uncut.stl` is the no-cut fallback, 6.0 mm taller (top 20.3 mm). The cut is the default because a low flat knob is
+what the РСИ original is; the shaft's real length is still to be measured (the list below).
+
+## The run's pick (before the owner chose)
 
 **C, the turned knob, in black-anodised aluminium with the bright line.** It has the lowest pointer (6.8 mm above the face, 1.2 mm of shift at 10 degrees, against 1.7 mm for B and 2.5 mm for A), it is the one that is really a
 black instrument with a clear bright pointer, it is the only one of the three that is natural in metal, and one drawing quotes it as aluminium or as brass. **A is the runner-up and the one to print first**, because it is the owner's example and the
