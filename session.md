@@ -1,8 +1,13 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 15:01 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
-* **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
-* **Runs: none.** Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
+## RESUME HERE (updated 07.10.26 21:09 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+* **Mode:** LOUD. The week's pace line is the limit (see Pace).
+* **Run: fascia-pass1** launched 21:09 UTC (cap 0.8 M / 90 min, ends by 22:39): 3 whole-face variants on T1's ring (Rails,
+  Harness, Medallions), only level/plumb/concentric lines; owner 20:58 "striking and coherent, no weird doglegs,
+  symmetrical and pleasing", "do the first variance pass before his input" (xstream dc). On report: view every
+  picture, cherry-pick, verify_pair, push, show the owner the contact sheet. xstream's pack: commons
+  embassy/review/nixie-fascia-fresh-eyes (asked 21:00, c0c4067); its verdict comes later.
+* Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
   * **fascia-j1-upright DONE** 16:12 (0.52 M / 61 min): R rev B, J1 B6B-PH-SM4-TB upright; zip
     fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip (rev A renamed -notordered); DRC 0, DFM PASS, verify 27 PASS; case
     2.8 mm lower (floor -4.5; -1.5 if the base end blocks are cut, not done). Cherry-picked c284e60..9d38b44.
@@ -24,9 +29,8 @@
   reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
   caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
-  open owner asks: the order (fascia now rev B), T3 Q1-3, bench
-  measurements; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass1 (cap 0.8M/90min; page run waits for the owner's go);
+  open owner asks: the order (fascia now rev B), T3 Q1-3, bench measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
