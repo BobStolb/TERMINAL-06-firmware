@@ -318,3 +318,4 @@ Quota: the last reading is 2026-10-03 03:00 (week 73 %, reset 10-06 20:00), so i
 without a fresh reading on the owner's word "stopping progress is the last resort"; QUOTA ask to xstream at 11:34.
 
 * 2026-10-07 fascia-tht-plan: 0.33 M tokens, 21 min. Plan + picture pushed (3ab1677); commons a6b52bc. Picture flaw: the MODE names drawn too big, overlapping (noted in the item).
+* 2026-10-07 12:11 launched fascia-t-concepts (est 0.4-0.5 M, cap 0.8 M / 90 min) and knob-jig (est 0.35-0.5 M, cap 0.8 M / 90 min). Owner: skip xstream queue while idle.

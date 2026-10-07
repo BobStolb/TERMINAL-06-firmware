@@ -1,28 +1,32 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 11:56 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
-* **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
-* **Runs (launched 2026-10-07 11:33 UTC, sonnet, worktrees; briefs in scratchpad `page-wiring/`, `fascia-tht-plan/`):**
-  * **page-wiring:** the real 6-wire JST PH lead + the controls' hand wiring in the 3D view, a Wiring toggle; the fascia
-    selector R and F only. Cap 0.9 M / 90 min. On report: look at the screenshots, cherry-pick, verify 27 PASS, rebuild,
-    full suite, then publish (same url; read the live index.html in full and list the files first).
-  * **fascia-tht-plan: DONE 11:52** (0.33 M / 21 min): `PCB/TS06-FASCIA-THT-front-plan.md` + `.png`, pushed
-    3ab1677; commons item `embassy/review/nixie-fascia-tht-plan/` (a6b52bc). Its 4 questions are open with the owner.
+## RESUME HERE (updated 07.10.26 12:11 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+* **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
+* **Runs (sonnet, worktrees; briefs in scratchpad `<name>/BRIEF.md`):**
+  * **page-wiring** (11:33): the real 6-wire JST PH lead + hand wiring in the 3D view, a Wiring toggle; selector R and F
+    only. Cap 0.9 M / 90 min. On report: screenshots, cherry-pick, verify 27 PASS, rebuild, full suite, publish (same
+    url; read the live index.html in full and list the files first).
+  * **fascia-t-concepts** (12:11): T1 resistors in line with the dial's circle (bigger radius; 0204 and 0207), plus 3 more
+    concepts T2-T4, one with a front THT connector and the wires routed round the fascia. `PCB/TS06-FASCIA-T-concepts.md`.
+    Cap 0.8 M / 90 min. On report: look at the pictures, cherry-pick, push, show the owner.
+  * **knob-jig** (12:11): the dry fit as steps + a printed jig (`3d/jig/`), our own MODE knob (print or turned metal,
+    `3d/knob/`), a meshok search for Soviet knobs (owner allowed; read only). Cap 0.8 M / 90 min. On report: pictures,
+    cherry-pick, push, show the owner. The owner will attach an example knob: save it to `qa/knob/reference/`, commit,
+    and SendMessage it to the run.
+  * fascia-tht-plan DONE 11:52 (0.33 M / 21 min), pushed 3ab1677.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
     no commit and no notice = lost; relaunch from the brief.
-* **Quota:** reading of 10-03 is stale; the week reset 10-06 20:00; launched without a fresh one (owner: stopping is the
-  last resort); QUOTA ask posted to xstream 11:34 (xstream quiet since 10-03 16:10).
+* **Owner's answers to the T plan (10-07 ~12:05):** 1 "expand on dry run, maybe 3d printed trest jig is in order?";
+  2 design our own knob (print or metal), also search meshok; 3 does not like the stagger, wants them in line with the
+  circle; 3 more concepts, one with a THT connector, solder on the back, wires routed back round the fascia. Q4 open.
 * **Waiting for the owner:** the order (own hand): the three zips in `fab/` named in ORDER.md, all in one cart.
-* **Owner's answers 10:37** (answer.json in commons): 1 holes yes + uniform leaders; 2 ИН-17 19.72 mm (22 incl. the
-  pip); 3 publish yes; 4 glow as a switch; 5 order walk-through given 10:41. The order stays the owner's hand: all
-  three in one cart after the fascia zip is final.
-* **Standing word (owner, 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays by my
-  own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
-* **Every ask for the owner goes to xstream too, in LOUD as in QUIET** (owner 11:25: "the point is to have all things
-  that need input in one place"): an item in commons `embassy/review/<id>/` plus a mailbox line, and ask in chat.
+* **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
+  by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
+* **xstream's queue:** owner 10-07: "dont bother with xstreams queue if its idle and not responding". xstream is quiet
+  since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs page-wiring, fascia-tht-plan; open owner
-  asks: the order (own hand), the THT plan's questions; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs page-wiring, fascia-t-concepts,
+  knob-jig; open owner asks: the order (own hand), T plan Q4, the knob example; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
