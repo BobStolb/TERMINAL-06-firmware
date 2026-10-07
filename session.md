@@ -31,9 +31,11 @@
 * **Pace (xstream 20:55 UTC, read 20:54):** week 26 % at 20:14; the owner re-based the line at 20:16: 26 % -> 82 % at the
   reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
   caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
+* **Chat times in MSK (UTC+3)** (owner 10-07 22:5x UTC: "keep replies in chat to msk"). Read from `date -u`, add 3 h;
+  files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass2 (cap 1.0M/100min; page run waits for the owner's go);
-  open owner asks: the order (fascia now rev B), pass1 Q1-3 (V4/V3), bench measurements; plain short replies; times from date -u`.
+  open owner asks: the order (fascia now rev B), pass1 Q1-3 (V4/V3), bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
