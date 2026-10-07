@@ -1,5 +1,7 @@
 # TS06-FASCIA T3, the column left of the dial: three faces (concepts, nothing built)
 
+> Next: [`TS06-FASCIA-pass1.md`](TS06-FASCIA-pass1.md), the first pass of whole faces at right angles (rails, harness, medallions, and one of mine), with the ladder answer.
+
 No board file, generator, footprint, `tools/` file, `fab/` file or page source was touched, and no board was built. The pictures are drawn
 from fascia R's real geometry (the committed board with its control holes opened, the one that was ordered), with the names at their real
 size (2.37 mm; the MODE, FIELD and SUB plates 3.2 mm, KiCad's own stroke font taken from `kicad-cli`'s SVG export), and each face was run
