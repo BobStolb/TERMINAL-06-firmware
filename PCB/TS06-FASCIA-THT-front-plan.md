@@ -1,3 +1,5 @@
+> **2026-10-07, later:** the staggered layout drawn here was not liked (the owner, 10-07); the in-line ring and three more faces are in [TS06-FASCIA-T-concepts.md](TS06-FASCIA-T-concepts.md).
+
 # TS06-FASCIA T: a through-hole fascia, parts from the front (a plan, not a board)
 
 Nothing was built or changed for this page. No board file, generator, footprint or `fab/` file was touched. The numbers
