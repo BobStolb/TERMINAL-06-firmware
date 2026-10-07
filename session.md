@@ -22,8 +22,8 @@
 * **xstream's queue:** owner 10-07: "dont bother with xstreams queue if its idle and not responding". xstream is quiet
   since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min)
-  page-handwire (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, bench
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min) and
+  page-handwire (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, T3 Q1-3, bench
   measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
