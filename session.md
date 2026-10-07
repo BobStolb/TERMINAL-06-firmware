@@ -1,9 +1,11 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 23:03 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 23:15 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Run fascia-pass3: brief ready, waiting on xstream's pace answer** (asked 23:12 UTC, commons 39667e1; launch at
-  23:35 if no answer, stop at once on HOLD). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4).
+* **Run: fascia-pass3** launched 23:15 UTC (cap **0.6 M** / 90 min, ends by 00:45; xstream QUOTA GO 23:15: week 29 % vs
+  line ~27.2). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4); D1 first, D2 only if under
+  0.35 M. On report: view pictures, cherry-pick, verify_pair, push, send the sheet. **After it: nothing new until the
+  morning reading (xstream, about 10:00-11:30 MSK) unless the owner says so.**
   Owner 23:05: "1 combine B* and C* with new info / 2 ok use your best judgement but explain why do we need this /
   3 yes / 4 yes coordinate pace with xstream". Decided: no mode flip (GND rail on top); round corners, one radius.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
@@ -36,7 +38,7 @@
 * **Chat times in MSK (UTC+3)** (owner 10-07 22:5x UTC: "keep replies in chat to msk"). Read from `date -u`, add 3 h;
   files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass3 (cap 0.6M/90min; then nothing new until the morning reading);
   open owner asks: the order (fascia now rev B), pass 3 picks when it reports; title text; fuse for exposed rails, bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
