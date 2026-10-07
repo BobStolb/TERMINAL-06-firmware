@@ -154,7 +154,8 @@ bounding-box gaps, so they can only understate the room.
 | `tube_pins` `in17_wires` | V5, V6 | 11 wires D0.4 from the end of the scaled stubs (5.82 above the board) to 0.8 mm past the back face | pads **measured**; wires **inferred** |
 | `tube_pins` `in17_pip` | V5, V6 | the exhaust pip D3.5 with a round tip, 4.0 mm out of the glass end, between the leads | length the owner's **estimate** ("closer to 4 mm"); diameter **inferred** |
 | `smd_fascia` `r1206_back` | fascia R1-R8 | 3.2 x 1.6 x 0.55 | **inferred** (standard 1206) |
-| `smd_fascia` `jst_s6b_sm4_back` | fascia J1 | housing 13.9 x 7.6 x 4.8, tabs 1.5 x 3.4 | footprint B.Fab **measured**; height **inferred** (`case_pair.py` FJ_HDR_H, assumed) |
+| `smd_fascia` `jst_s6b_sm4_back` | fascia R rev A's J1 (side entry; no board uses it since rev B) | housing 13.9 x 7.6 x 4.8, tabs 1.5 x 3.4 | footprint B.Fab **measured**; height **inferred** (`case_pair.py` FJ_HDR_H, assumed); drawn with y negated, which a back-side footprint does not get (see the next row) |
+| `smd_fascia` `jst_b6b_sm4_back` | fascia R rev B's J1 (upright, top entry) | housing 13.9 x 5.0 x 6.0, tabs 1.6 x 3.0, pads 1.0 x 5.5 | plan **measured** (KiCad's footprint, and the 13.9 of its STEP of the through-hole B6B-PH-K); height 6.0 **inferred** (that STEP and JST's listing; the SM4-TB datasheet was not readable). KiCad has no model for the SM4-TB parts. For a back-side footprint KiCad draws the model with model y = footprint y; this one is drawn so |
 
 ## Placement choices that are inferred (and what they affect)
 

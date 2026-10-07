@@ -451,6 +451,7 @@ cp -R tools "$G/tools"
 rm -rf "$G/tools/__pycache__"
 cp -R PCB/lib "$G/PCB/lib"
 cp -R PCB/TS06-FASCIA "$G/PCB/TS06-FASCIA"
+cp -R PCB/TS06-FASCIA-rhythm "$G/PCB/TS06-FASCIA-rhythm"      # the case model reads fascia R's J1 (3d/case-pair/case_pair.py)
 cp -R 3d/case-pair "$G/3d/case-pair"
 
 # ------------------------------------------------------------------------------ the pair as a whole

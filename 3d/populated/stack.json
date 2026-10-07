@@ -94,7 +94,7 @@
   "BROW_CLR": 0.8,
   "Z_REAR_IN": 69.2,
   "Y_TOP_IN": 109.5,
-  "Y_FLOOR": -7.3,
+  "Y_FLOOR": -4.5,
   "Z_BACK": 27.5,
   "BACK_GAP": 2.5,
   "IN12_Y": 60.166,
@@ -105,7 +105,7 @@
   "REAR_AIR": 5.0,
   "LED_H": 5.3,
   "PIN_TAIL": 1.5,
-  "FJ_HDR_H": 4.8,
+  "FJ_HDR_H": 6.0,
   "SILL_T": 2.0
  },
  "drv_parts": [

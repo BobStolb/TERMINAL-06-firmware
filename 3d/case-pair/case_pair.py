@@ -164,6 +164,18 @@ def _fascia(sexp):
         fas["parts"][ref] = {"fp": name, "at": [x, y], "side": unq(find(fp, "layer")[0][1]),
                              "box": [min(cx), max(cx), min(cy), max(cy)] if cx else None,
                              "panel_hole": max(hole) if hole else None}
+        if ref == "J1":                  # an upright J1 (fascia R rev B) draws its body and its pin contacts on B.Fab: the lead's axis
+            fab, pins = [], []
+            for g in fp:
+                if isinstance(g, list) and g and g[0] in ("fp_line", "fp_rect") and unq(find(g, "layer")[0][1]) == "B.Fab":
+                    pts = [(x + float(find(g, k)[0][1]), y + float(find(g, k)[0][2])) for k in ("start", "end")]
+                    if g[0] == "fp_line":
+                        fab += pts
+                    else:
+                        pins.append((pts[0][1] + pts[1][1]) / 2)
+            if fab and pins:
+                fas["parts"][ref]["body"] = [min(c[0] for c in fab), max(c[0] for c in fab), min(c[1] for c in fab), max(c[1] for c in fab)]
+                fas["parts"][ref]["pin_row_y"] = round(sum(pins) / len(pins), 4)
     fas["holes"].sort()
     return fas
 
@@ -536,6 +548,9 @@ def derive(B, d, lay_down=False):
     # degrees down) and the wires leave its top straight back into the case, over the row of the pin contacts. It used to be a
     # side-entry part whose lead lay along the board and bent 90 + 12 degrees onto the floor, 7.3 mm below the frame's 0.
     fj = fas["parts"]["J1"]
+    if "pin_row_y" not in fj:
+        raise SystemExit("this fascia's J1 (%s) is not the upright part: the lead and the floor are drawn for fascia R rev B's "
+                         "TS06_JST_PH_B6B-PH-SM4-TB_Back (use_fascia_j1, or FASCIA_PCB=<fascia R>)" % fj["fp"])
     v["FJ_X"] = fj["at"][0] + v["FASCIA_X0"]                   # world X: the fascia is centred
     v["FJ_PIN_T"] = fj["pin_row_y"]                             # t (down the face) of the pin contacts: the plug's axis
     ex_y, ex_z = fpt(v["FJ_PIN_T"], v["FASCIA_T"] + v["FJ_MATED_H"])

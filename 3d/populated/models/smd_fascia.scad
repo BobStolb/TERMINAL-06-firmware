@@ -6,7 +6,8 @@
 // variants: r1206_back MODE=0 ; jst_s6b_sm4_back MODE=1 ; jst_b6b_sm4_back MODE=2
 //
 // FRAME  KiCad model frame of the footprint as authored: z up from the face the part is soldered to (KiCad flips
-//        the model for a back-side footprint, so it stands out of the fascia's rear face).
+//        the model for a back-side footprint, so it stands out of the fascia's rear face). Rev B's model (MODE 2) is drawn with model y = footprint y
+//        (read off its render); the older MODE 1 below was drawn with y negated and shows its pins and tabs on the wrong side (no board uses it now).
 //
 // r1206_back (R1-R8, TS06_R_1206_HandSolder, pads at x +-1.85)
 //   body 3.2 x 1.6 x 0.55 mm, end caps 0.5 mm      INFERRED: standard 1206 (3216 metric) chip resistor outline
@@ -37,9 +38,11 @@ if (MODE == 1) {
     if (L == "term") for (k = [0 : 5]) translate([k * 2.0 - 5.0 - 0.25, 2.85 - 1.75, 0]) cube([0.5, 3.5, 0.2]);
 }
 if (MODE == 2) {
-    // model y is the footprint's y negated: housing fp y -4.25..0.75 -> -0.75..4.25, tabs at fp y -1.75 -> +1.75, signal pads at fp y 0.5 -> -0.5 (they run
-    // 2.5 mm out of the body at fp y > 0.75, i.e. model y < -0.75: the solder tails)
-    if (L == "housing") translate([-6.95, -0.75, 0.05]) cube([13.9, 5.0, 5.95]);
-    if (L == "tab") for (s = [-1, 1]) translate([s * 7.4 - 0.8, 1.75 - 1.5, 0]) cube([1.6, 3.0, 0.25]);
-    if (L == "term") for (k = [0 : 5]) translate([k * 2.0 - 5.0 - 0.5, -0.5 - 2.75, 0]) cube([1.0, 5.5, 0.2]);
+    // For a footprint on the BACK KiCad draws the model with its y equal to the footprint's y (the front-side rule, model y = -footprint y, is
+    // turned by the flip about the footprint's x axis that a back-side footprint gets: seen in this part's render, whose first version, drawn
+    // with y negated, had the body on the tail side). Housing fp y -4.25..0.75, tabs at fp y -1.75, signal pads at fp y 0.5; they run
+    // 2.5 mm out of the body at fp y > 0.75: the solder tails
+    if (L == "housing") translate([-6.95, -4.25, 0.05]) cube([13.9, 5.0, 5.95]);
+    if (L == "tab") for (s = [-1, 1]) translate([s * 7.4 - 0.8, -1.75 - 1.5, 0]) cube([1.6, 3.0, 0.25]);
+    if (L == "term") for (k = [0 : 5]) translate([k * 2.0 - 5.0 - 0.5, 0.5 - 2.75, 0]) cube([1.0, 5.5, 0.2]);
 }
