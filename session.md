@@ -4,8 +4,7 @@
 * **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
 * **Runs: none.** All three done 10-07 and cherry-picked (briefs in scratchpad `<name>/BRIEF.md`):
   * **page-wiring** (0.52 M / 60 min): six-wire PH lead, 15 hand wires, Wiring switch, selector R and F. Verify 27 PASS.
-    Next if not done: full suite on the scratchpad build `publish-w/site`, push, then publish (read the live url
-    without `path` first, list files, publish `publish-w/site/index.html` + `publish-files.json`).
+    Full suite 179 PASS. Published as version 7 (12:50 UTC 10-07), same url.
   * **fascia-t-concepts** (0.43 M / 33 min): `PCB/TS06-FASCIA-T-concepts.md` + pictures. T1 beads r 13.7 (0204; 0207
     needs r 17.7, does not fit), joints 0.25 mm outside the plate; T2 plug-in (J1 THT on the face, wires through a
     slot); T3 ladder (column; its leaders slope again); T4 crown (0207 standing). Recommends T1, J1 SMD.
