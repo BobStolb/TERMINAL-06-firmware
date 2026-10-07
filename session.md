@@ -7,8 +7,8 @@
     Part 1 fit study (stops if a clearance fails); Part 2 R rev B, new zip, rev A zip renamed -notordered, ORDER.md, BOM,
     case model floor. On report: look at the pictures, cherry-pick, DRC/DFM/verify_pair 27 PASS, push. Then a page run
     (the lead's fascia end upright, the new J1 model, the Order tab), republish.
-  * **fascia-t3-variants** (est 0.4-0.6 M, cap 0.9 M / 90 min = 16:30): T3's column left of the dial near the edge, three
-    versions T3a-c (gold, white silk, an original imported graphic), contact sheet with T1. On report: look, cherry-pick, push.
+  * **fascia-t3-variants DONE** 15:45 (0.46 M / 40 min): `PCB/TS06-FASCIA-T3-variants.md` + contact sheet; T3a ribbon
+    (recommended), T3b schematic, T3c tubes. Cherry-picked 7a6747c..a494da3, verify 27 PASS. Its 3 questions to the owner.
   * **page-handwire** (launched 15:05; est 0.4-0.6 M, cap 0.8 M / 90 min): tidy the hand wires on the fascia's back (owner:
     "these wires from rotary leads look messy", `qa/page-wiring/reference/`). On report: look, cherry-pick, suite, push.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
@@ -23,8 +23,7 @@
   since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min)
-  fascia-t3-variants (cap 0.9M/90min) and page-handwire
-  (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, bench
+  page-handwire (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, bench
   measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
