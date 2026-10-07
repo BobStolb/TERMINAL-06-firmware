@@ -316,3 +316,5 @@ so solder work is still on the backside and not visible to the user"
 | fascia-tht-plan | plan + mockup for fascia T (THT from the front) | 0.25-0.35 M | 0.5 M / 60 min | |
 Quota: the last reading is 2026-10-03 03:00 (week 73 %, reset 10-06 20:00), so it is stale and the week is new. Launched
 without a fresh reading on the owner's word "stopping progress is the last resort"; QUOTA ask to xstream at 11:34.
+
+* 2026-10-07 fascia-tht-plan: 0.33 M tokens, 21 min. Plan + picture pushed (3ab1677); commons a6b52bc. Picture flaw: the MODE names drawn too big, overlapping (noted in the item).

@@ -1,14 +1,13 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 11:34 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 11:56 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
 * **Runs (launched 2026-10-07 11:33 UTC, sonnet, worktrees; briefs in scratchpad `page-wiring/`, `fascia-tht-plan/`):**
   * **page-wiring:** the real 6-wire JST PH lead + the controls' hand wiring in the 3D view, a Wiring toggle; the fascia
     selector R and F only. Cap 0.9 M / 90 min. On report: look at the screenshots, cherry-pick, verify 27 PASS, rebuild,
     full suite, then publish (same url; read the live index.html in full and list the files first).
-  * **fascia-tht-plan:** a plan + mockup for a 3rd fascia "T": THT parts from the front, joints on the back (owner
-    11:28). Cap 0.5 M / 60 min. On report: look at the picture, cherry-pick, push; show the owner, and post an item to
-    commons `embassy/review/nixie-fascia-tht-plan/` (owner's rule: every ask in one place).
+  * **fascia-tht-plan: DONE 11:52** (0.33 M / 21 min): `PCB/TS06-FASCIA-THT-front-plan.md` + `.png`, pushed
+    3ab1677; commons item `embassy/review/nixie-fascia-tht-plan/` (a6b52bc). Its 4 questions are open with the owner.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
     no commit and no notice = lost; relaunch from the brief.
 * **Quota:** reading of 10-03 is stale; the week reset 10-06 20:00; launched without a fresh one (owner: stopping is the
