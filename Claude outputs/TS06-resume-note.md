@@ -339,3 +339,4 @@ Both launched 15:00 UTC. Quota reading still stale (10-03).
 Launched 15:05 UTC.
 * 2026-10-07 15:45 done: fascia-t3-variants 0.46 M / 40 min; cherry-picked 7a6747c..a494da3, verify 27 PASS.
 * 2026-10-07 16:03 done: page-handwire 0.37 M / 54 min; 187 PASS; cherry-picked ddd950f, b1bdb1b; verify 27 PASS; not published.
+* 2026-10-07 16:12 done: fascia-j1-upright 0.52 M / 61 min; R rev B; cherry-picked c284e60..9d38b44; verify 27 PASS, DFM PASS. Page run held for pace.

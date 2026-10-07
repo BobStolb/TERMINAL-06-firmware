@@ -2,11 +2,11 @@
 
 ## RESUME HERE (updated 07.10.26 15:01 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
-* **Runs (launched 15:00 UTC 10-07; briefs in scratchpad `<name>/BRIEF.md`):**
-  * **fascia-j1-upright** (est 0.5-0.7 M, cap 1.0 M / 100 min = 16:40): fascia R's J1 side entry -> upright B6B-PH-SM4-TB.
-    Part 1 fit study (stops if a clearance fails); Part 2 R rev B, new zip, rev A zip renamed -notordered, ORDER.md, BOM,
-    case model floor. On report: look at the pictures, cherry-pick, DRC/DFM/verify_pair 27 PASS, push. Then a page run
-    (the lead's fascia end upright, the new J1 model, the Order tab), republish.
+* **Runs: none.** Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
+  * **fascia-j1-upright DONE** 16:12 (0.52 M / 61 min): R rev B, J1 B6B-PH-SM4-TB upright; zip
+    fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip (rev A renamed -notordered); DRC 0, DFM PASS, verify 27 PASS; case
+    2.8 mm lower (floor -4.5; -1.5 if the base end blocks are cut, not done). Cherry-picked c284e60..9d38b44.
+    The page still names the rev A zip and draws side entry: page run needed (held for pace).
   * **fascia-t3-variants DONE** 15:45 (0.46 M / 40 min): `PCB/TS06-FASCIA-T3-variants.md` + contact sheet; T3a ribbon
     (recommended), T3b schematic, T3c tubes. Cherry-picked 7a6747c..a494da3, verify 27 PASS. Its 3 questions to the owner.
   * **page-handwire DONE** 16:03 (0.37 M / 54 min): harness dressing, 187 PASS, cherry-picked ddd950f, b1bdb1b, verify 27
@@ -15,7 +15,7 @@
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
 * **Owner's answers 10-07 ~14:50:** T1 good and T3 kept (3 new versions); J1 kept on the back; the rotary body 25 mm (plate
   not calipered); knob A; bench measurements tbd. Upright fascia J1 asked ("maybe we change the connector...").
-* **Open with the owner:** the order waits for fascia R rev B (DISP and DRV zips unchanged); knob A: low, shaft cut to 12 mm (owner agreed 10-07); the
+* **Open with the owner:** the order now takes fascia R rev B (DISP and DRV zips unchanged); knob A: low, shaft cut to 12 mm (owner agreed 10-07); the
   bench measurements (3d/jig/README.md); T plan Q4 (plated holes + moat, 10-board sample); meshok.net if wanted.
 * **Waiting for the owner:** the order (own hand): the zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
@@ -24,8 +24,8 @@
   reading and the week's pace line (ask in commons 628d452). Runs in flight finish. Queued: the page update + republish.
   Owner's 10-07 earlier rule (skip xstream's idle queue) is replaced for pace: ask xstream, check commons each turn.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min) ;
-  open owner asks: the order waits for fascia R rev B, T3 Q1-3, bench
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run held for pace);
+  open owner asks: the order (fascia now rev B), T3 Q1-3, bench
   measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
