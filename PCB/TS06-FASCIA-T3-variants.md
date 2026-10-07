@@ -65,7 +65,11 @@ come with it that are new:
 ## 3. The wiring problem, and why the wires coil
 
 The brief's idea was six gold wires from the column to the six marks. On R's dial the marks stand on the **right half** (angles -75 to +75 degrees,
-position 1 at the top); the column is on the left. So every wire has to get round the dial. What was found:
+position 1 at the top); the column is on the left. So every wire has to get round the dial.
+
+![why the wires coil](TS06-FASCIA-T3-variants/topology.png)
+
+What was found:
 
 * **Straight is out**: a straight wire to a mark passes under the knob (gold may not come within 9.0 mm of the shaft).
 * **Round the outside is out**: a wire that passes outside the lug rings crosses the white leaders of the marks it passes (silk and gold may not
