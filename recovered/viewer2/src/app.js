@@ -18,6 +18,15 @@ const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const BOARD = { DRV: 'TS06-DRV', DISP: 'TS06-DISP', FASCIA: 'TS06-FASCIA' };   // FASCIA follows the chosen variant
 const FV = { A: 'TS06-FASCIA', W: 'TS06-FASCIA-wide', R: 'TS06-FASCIA-rhythm', F: 'TS06-FASCIA' };   // F: the 176 board stands in for the frame's 179 panel
 const FV_NAME = { A: 'A · centred', W: 'W · full width', R: 'R · on the tube grid', F: 'F · in a printed frame' };
+// The fascia selector of the 3D view: these entries, in this order. R is the default: it was picked and fab/ORDER.md orders it. A and W are
+// not drawn in 3D any more (the Fascia variants tab keeps them as the record). The next fascia (a through-hole one is planned) is one more
+// entry here, its board in FV and FV_NAME above and in VARIANTS of tools/assembly.py.
+const FASCIA_PICK = [
+  { v: 'R', label: 'R', title: 'R · on the tube grid, 191.4 mm (picked, in the order)' },
+  { v: 'F', label: 'F', title: 'F · the 176 board in a printed frame (case model only)' },
+];
+const FASCIA_DEFAULT = FASCIA_PICK[0].v;
+const pickable = v => FASCIA_PICK.some(p => p.v === v);
 const HB = -0.045;          // KiCad's GLB: the board's back surface sits at this height (mm), the front at HB + thickness
 const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
 
@@ -29,6 +38,7 @@ async function getJSON(u) {
 }
 let MODEL, PARTS, FACTS, SECTIONS;
 let ORDER = null;                       // data/order.json: what is ready to order (tools/order.py)
+let HAND = null;                        // data/handwire.json: the wires from each control's lugs to its landing pads (tools/handwire.py)
 let POP = { boards: {}, pictures: [] };   // data/populated.json: the boards drawn populated (tools/populated.py)
 const isPop = b => !!(POP.boards || {})[b];
 const hasStack = () => (POP.pictures || []).includes('img/stack-front.png');
@@ -67,7 +77,7 @@ const MAT = {
   wire: std(0xb8b8b8, { metalness: 0.9, roughness: 0.35 }),
   nylon: std(0xece5d6, { roughness: 0.75 }),
   screw: std(0x2b2b2b, { metalness: 0.5, roughness: 0.4 }),
-  lead: std(0x8250df, { roughness: 0.55 }),
+  housing: std(0xe6dfcb, { roughness: 0.55 }),
   white: std(0xf2f2f2, { roughness: 0.5 }),
   knob: std(0x2d333b, { roughness: 0.45 }),
   body: std(0x8c959f, { roughness: 0.5, metalness: 0.3 }),
@@ -178,6 +188,7 @@ function nativeGroupFor(key, gltf, root, bname = BOARD[key], fv) {
   else if (key === 'DRV') buildDrvProxies(g, sub, root, P, ht, refs);
   else if (key === 'FASCIA') buildFasciaProxies(g, sub, root, P, ht, fv);
   for (const [id, grp] of Object.entries(items)) root.addItem(id, grp);
+  if (key === 'FASCIA') buildHandWiring(g, root, bname);          // the wires from each control's lugs to its landing pads
   g.userData.items = items;
   return g;
 }
@@ -496,7 +507,7 @@ function standMatrix(bname) {        // native -> upright, centred: the front fa
   const W = e[1] - e[0], H = e[3] - e[2];
   return new THREE.Matrix4().set(1, 0, 0, -(e[0] + W / 2), 0, 0, -1, e[2] + H / 2, 0, 1, 0, -(HB + HTB(bname)) / 2, 0, 0, 0, 1);
 }
-const variantsAvail = () => Object.keys(FV).filter(v => V.gltf['F' + v] && PARTS[FV[v]] && (v !== 'F' || (MODEL.fascia_variants || {}).F));
+const variantsAvail = () => FASCIA_PICK.map(p => p.v).filter(v => V.gltf['F' + v] && PARTS[FV[v]] && (v !== 'F' || (MODEL.fascia_variants || {}).F));
 function holder(matrix) {
   const h = new THREE.Group();
   h.matrixAutoUpdate = false;
@@ -514,7 +525,7 @@ function exploder(root, dir) {
 const V = {
   scene: new THREE.Scene(),
   roots: {}, gltf: {}, current: 'asm', ready: false, explode: 0,
-  caseOn: true, caseGhost: true, showLabels: true, glow: false, hlList: [], step: -1, dirty: 2, animScale: 1,
+  caseOn: true, caseGhost: true, showLabels: true, wiring: true, glow: false, hlList: [], step: -1, dirty: 2, animScale: 1,
 };
 const invalidate = (n = 2) => { V.dirty = Math.max(V.dirty, n); };   // render on demand: only when something changed
 function initViewer() {
@@ -673,6 +684,213 @@ function stepTween(now) {
 }
 
 // ---- the four scenes
+// ------------------------------------------------------------------------------------------ the lead and the hand wiring
+// THE LEAD. The 6-way JST PH lead of PCB/TS06-DRV/bom.md joins TS06-DRV J1 (a top-entry B6B-PH-K on the display-facing face) to the
+// fascia's J1 (a side-entry S6B-PH-SM4-TB on its back, mouth towards the bottom edge), pin 1 to pin 1 (PCB/README.md: 1 +5V, 2 GND,
+// 3 A6, 4 A7, 5 D7, 6 D8). It is drawn here as six wires in a PHR-6 housing at each end. The ends and their heights are the case model's
+// (the mated plug 9.5 mm off the driver board, the exit 3 mm past the fascia header's mouth), and so are the floor, the 3 mm bend and the
+// 180-200 mm length (190 drawn). Nothing else is invented about the route: it is built from those numbers, as follows.
+//   * DRV end: the wires leave the housing towards the front, bend down (R 3), drop to the floor and bend back along it (R 3).
+//   * fascia end: they leave the housing down the raked face and bend onto the floor (R 3, 90 + 12 degrees).
+//   * on the floor the lead lies in a slack loop: out to the rear, across, and forward to the fascia. The loop's depth is solved so that the
+//     centre line is exactly the lead's length (the shortest way across is the case model's LEAD_PATH, about 139 mm).
+// Near each housing the six wires lie in a row at the header's 2.0 mm pitch and close up to a flat band; on the floor they form a loose
+// bundle (a ring of six, turning slowly), which is how six loose wires lie. The twist that brings pin 1 back to the same side at the
+// other end is spread along the floor, and the length of each wire is counted, not assumed.
+const LEAD_PINS = [
+  { n: 1, net: '+5V', col: 0xd7261e, name: 'red' },
+  { n: 2, net: 'GND', col: 0x33373d, name: 'black' },
+  { n: 3, net: 'A6', col: 0xf0c000, name: 'yellow' },
+  { n: 4, net: 'A7', col: 0x2ea64f, name: 'green' },
+  { n: 5, net: 'D7', col: 0x2f6fe0, name: 'blue' },
+  { n: 6, net: 'D8', col: 0xf2f2ee, name: 'white' },
+];
+const NET_COL = { '+5V': 0xd7261e, GND: 0x33373d, A6: 0xf0c000, A7: 0x2ea64f, D7: 0x2f6fe0, D8: 0xf2f2ee, TAP2: 0x8a5a2b, TAP3: 0x9aa0a6, TAP4: 0xe28a2b, TAP5: 0x1fa3a3, LEVA: 0xd16ba5, LEVB: 0xe8a0b8 };
+const LEAD_GEO = { bend: 3.0, wire: 0.45, ring: 1.15, flat: 1.2, pitch: 2.0, hw: 11.3, ht: 3.5, step: 0.5 };
+const smooth01 = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+const wireMat = col => std(col, { roughness: 0.4, metalness: 0.0 });
+
+class Turtle {       // a centre line made of straight pieces and circular arcs, sampled every LEAD_GEO.step mm
+  constructor(p, t) { this.p = p.clone(); this.t = t.clone().normalize(); this.pts = [p.clone()]; this.len = 0; }
+  line(len) {
+    if (len <= 0) return this;
+    const n = Math.max(1, Math.ceil(len / LEAD_GEO.step)), a = this.p.clone();
+    for (let i = 1; i <= n; i++) this.pts.push(a.clone().addScaledVector(this.t, len * i / n));
+    this.p = this.pts[this.pts.length - 1].clone(); this.len += len;
+    return this;
+  }
+  arc(axis, ang, R) {      // turn by ang (signed, right-hand about axis) on radius R
+    const sg = Math.sign(ang), n = Math.max(2, Math.ceil(Math.abs(ang) * R / LEAD_GEO.step));
+    const c = this.p.clone().addScaledVector(axis.clone().cross(this.t), R * sg), r0 = this.p.clone().sub(c);
+    for (let i = 1; i <= n; i++) this.pts.push(c.clone().add(r0.clone().applyAxisAngle(axis, ang * i / n)));
+    this.t.applyAxisAngle(axis, ang);
+    this.p = this.pts[this.pts.length - 1].clone(); this.len += Math.abs(ang) * R;
+    return this;
+  }
+}
+
+// The centre line of the lead for a fascia variant, and where its housings stand. All in the three.js world.
+function leadGeometry(v) {
+  const f = F(), R = LEAD_GEO.bend, rake = f.FASCIA_RAKE * Math.PI / 180, X = V3(1, 0, 0), Y = V3(0, 1, 0);
+  const Md = boardMatrix('DRV'), Mf = boardMatrix('FASCIA', v), fd = fvData(v);
+  const jd = PARTS[BOARD.DRV].parts.J1, jf = PARTS[FV[v]].parts.J1;
+  const mid = b => [(b[0] + b[1]) / 2, (b[2] + b[3]) / 2];
+  const mated = f.Z_DRV_F - MODEL.lead[0][2];                          // the case model's mated height of J1 + PHR-6 (9.5)
+  const [dx, dy] = mid(jd.box), [fx, fy] = mid(jf.box);
+  const E0 = V3(dx, HB - mated, dy).applyMatrix4(Md);                   // where the wires leave the housing on TS06-DRV, centred on the header
+  const le = fd.lead[fd.lead.length - 1], E = V3(le[0], le[1], -le[2]); // the case model's exit from the fascia's housing
+  const dF = V3(0, 0, 1).transformDirection(Mf);                        // down the raked face, towards the bottom edge
+  // the fascia end, traced backwards from the exit to the floor
+  const rev = Ls => { const T = new Turtle(E, dF); T.line(Ls); T.arc(X, Math.PI / 2 + rake, R); return T; };
+  const Ymin = f.Y_FLOOR + LEAD_GEO.wire + 0.1;                        // the centre line on the floor: the wires just clear it
+  const Ls = Math.max(0, (rev(0).p.y - Ymin) / Math.cos(rake));        // a short straight after the housing, so the foot lands on that height
+  const rv = rev(Ls), Yc = rv.p.y;
+  // the driver end, from the housing to the floor
+  const T = new Turtle(E0, V3(0, 0, 1));
+  T.arc(X, Math.PI / 2, R);
+  T.line(T.p.y - (Yc + R));
+  T.arc(X, Math.PI / 2, R);
+  const D = T.p.clone(), Fp = rv.p.clone();
+  const lenD = T.len, lenF = rv.len, LEN = f.LEAD_LEN;
+  // the floor: a rounded U with equal corners, its depth solved for the lead's length
+  const sx = Math.sign(Fp.x - D.x) || 1, dX = Math.abs(Fp.x - D.x), dZ = Fp.z - D.z;
+  const floor = LEN - lenD - lenF;
+  const Rl = (floor - dX - Math.abs(dZ)) / (Math.PI - 2);
+  if (!(Rl > 8)) throw new Error('the lead has no room for its length');
+  T.arc(Y, -sx * Math.PI / 2, Rl).line(dX - 2 * Rl).arc(Y, -sx * Math.PI / 2, Rl).line(Math.abs(dZ));
+  const pts = T.pts.concat(rv.pts.slice().reverse().slice(1));
+  return { pts, E0, E, dF, Md, Mf, jd, jf, dx, dy, fx, fy, Rl, floorY: Yc, drop: lenD, taut: fd.lead_path, depth: D.z - Rl };
+}
+
+// The six wires along the centre line: positions, with the frame carried along the line (no spin), the row of the housing at each end,
+// the loose ring on the floor, and the turn that puts pin 1 on the same side at the far housing.
+function leadWires(G) {
+  const P = G.pts, N = P.length, L = LEAD_GEO;
+  const tan = P.map((p, i) => P[Math.min(N - 1, i + 1)].clone().sub(P[Math.max(0, i - 1)]).normalize());
+  const s = [0];
+  for (let i = 1; i < N; i++) s.push(s[i - 1] + P[i].distanceTo(P[i - 1]));
+  const S = s[N - 1];
+  const u = [V3(1, 0, 0)];                                              // the row direction at the driver end: pin 1 towards +X
+  for (let i = 1; i < N; i++) {
+    const a = tan[i - 1], b = tan[i], q = new THREE.Quaternion().setFromUnitVectors(a, b);
+    u.push(u[i - 1].clone().applyQuaternion(q).normalize());
+  }
+  // the turn left over at the far housing, where pin 1 must again be on +X
+  const tN = tan[N - 1], uN = u[N - 1], vN = tN.clone().cross(uN);
+  const delta = Math.atan2(V3(1, 0, 0).dot(vN), V3(1, 0, 0).dot(uN));
+  const sA = 24, sB = S - 8, rampR = 9, sT0 = sA + rampR, sT1 = S - 8 - rampR;
+  const phi = [0, 60, 120, 180, 300, 240].map(d => d * Math.PI / 180);  // the ring's order: no two wires cross while the row closes into it
+  const wires = LEAD_PINS.map(() => []);
+  for (let i = 0; i < N; i++) {
+    const si = s[i], b = smooth01((si - sA) / rampR) * smooth01((sB - si) / rampR);
+    const pitch = L.flat + (L.pitch - L.flat) * (1 - smooth01(Math.min(si, S - si) / 12));
+    // along the floor the frame turns by delta (so the row ends up on +X again at the fascia) and the ring spins once round
+    const g = smooth01((si - sT0) / Math.max(1, sT1 - sT0)), al = delta * g, be = 2 * Math.PI * g, ca = Math.cos(al), sa = Math.sin(al);
+    const vv = tan[i].clone().cross(u[i]).normalize();
+    const up = u[i].clone().multiplyScalar(ca).addScaledVector(vv, sa), vp = vv.clone().multiplyScalar(ca).addScaledVector(u[i], -sa);
+    for (let k = 0; k < 6; k++) {
+      const ru = (2.5 - k) * pitch;                                     // pin 1 (k = 0) at +u
+      const ou = (1 - b) * ru + b * L.ring * Math.cos(phi[k] + be), ov = b * L.ring * Math.sin(phi[k] + be);
+      wires[k].push(P[i].clone().addScaledVector(up, ou).addScaledVector(vp, ov).add(V3(0, L.ring * b, 0)));
+    }
+  }
+  return wires.map(w => { let len = 0; for (let i = 1; i < w.length; i++) len += w[i].distanceTo(w[i - 1]); return { pts: w, length: len }; });
+}
+
+function buildLead(v, A) {
+  const f = F(), G = leadGeometry(v), W = leadWires(G), L = LEAD_GEO;
+  const w = new THREE.Group(); w.userData.fv = v; w.name = 'lead:' + v;
+  const parts = [];
+  const info = { v, length: G.pts.reduce((a, p, i) => i ? a + p.distanceTo(G.pts[i - 1]) : 0, 0), taut: G.taut, loopDepth: G.depth, floorY: G.floorY, bend: L.bend, loopRadius: G.Rl, wires: [], pins: LEAD_PINS };
+  LEAD_PINS.forEach((pin, k) => {
+    const sub = W[k].pts.filter((_, i) => i % 2 === 0 || i === W[k].pts.length - 1);
+    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(sub, false, 'centripetal'), sub.length * 2, L.wire, 6, false), wireMat(pin.col));
+    m.name = `wire ${pin.n} ${pin.net}`;
+    m.userData.noHl = true; m.userData.pin = pin.n;
+    w.add(m); parts.push(m);
+    info.wires.push({ pin: pin.n, net: pin.net, colour: pin.name, length: W[k].length, pts: W[k].pts.map(p => [p.x, p.y, p.z]) });
+  });
+  // the two PHR-6 housings, each seated on its J1
+  const hd = holder(G.Md), hf = holder(G.Mf);
+  const mated = f.Z_DRV_F - MODEL.lead[0][2];
+  hd.add(box(L.hw, mated - 1.0, L.ht, MAT.housing, G.dx, HB - (1.0 + mated) / 2, G.dy));
+  const zE = G.jf.box[3] + 3.0, len = zE - 31.0;
+  hf.add(box(L.hw, 3.8, len, MAT.housing, G.fx, HB - 2.4, zE - len / 2));
+  for (const h of [hd, hf]) { h.traverse(o => { o.userData.noHl = true; }); w.add(h); parts.push(h); }
+  info.housings = [{ end: 'TS06-DRV J1', size: [L.hw, L.ht, mated - 1.0], at: [G.E0.x, G.E0.y, G.E0.z] }, { end: 'fascia J1', size: [L.hw, 3.8, len], at: [G.E.x, G.E.y, G.E.z] }];
+  // labels for the six pins, at the driver end, fanned out so they do not sit on one another (they follow the Labels switch)
+  const pins = new THREE.Group(); pins.name = 'pinlabels';
+  const labels = [];
+  LEAD_PINS.forEach((pin, k) => {
+    const el = document.createElement('div');
+    el.className = 'pinlbl';
+    const dxp = 34, dyp = (k - 2.5) * 17, ln = Math.hypot(dxp, dyp), an = Math.atan2(dyp, dxp) * 180 / Math.PI;
+    el.innerHTML = `<i class="dot" style="background:#${pin.col.toString(16).padStart(6, '0')}"></i><i class="ld" style="width:${ln.toFixed(1)}px;transform:rotate(${an.toFixed(1)}deg)"></i><span class="tx" style="transform:translate(${dxp}px,${dyp - 8}px)">${pin.n} ${pin.net}</span>`;
+    const lo = new CSS2DObject(el);
+    lo.position.copy(W[k].pts[Math.min(W[k].pts.length - 1, 4)]);
+    lo.userData.pinLabel = true; lo.userData.noFit = true;
+    pins.add(lo); labels.push(lo);
+  });
+  w.add(pins); parts.push(pins);
+  info.labels = labels;
+  w.userData.lead = info;
+  for (const p of parts) { A.addItem('lead', p); }
+  A.addRef('@lead', w, w);
+  A.group.add(w);
+  V.lead = V.lead || {};
+  V.lead[v] = info;
+  return w;
+}
+// the pin labels are CSS elements: they do not hide with a hidden parent, so they are told
+function syncWireLabels() {
+  const A = V.roots.asm;
+  if (!A) return;
+  for (const info of Object.values(V.lead || {})) for (const lo of info.labels) lo.visible = V.showLabels && isShown(lo.parent) && V.current === 'asm';
+  invalidate();
+}
+
+// THE HAND WIRING on the fascia's back (data/handwire.json, tools/handwire.py): the controls mount from behind with only the bushing through
+// the panel, and each lug is wired by hand to a landing pad on the back. Native coordinates: x, y of the board file, depth behind the back face.
+function buildHandWiring(g, root, bname) {
+  const hb = HAND && HAND.boards && HAND.boards[bname];
+  if (!hb) return null;
+  const grp = new THREE.Group();
+  grp.name = 'handwire';
+  const mats = {};
+  const info = { board: bname, wires: [], lugs: {} };
+  for (const [ref, c] of Object.entries(hb.controls)) {
+    info.lugs[ref] = c.model === 'lugs' ? (c.lugs || []).length : 0;
+    for (const w of c.wires) {
+      const pts = w.pts.map(([x, y, d]) => V3(x, HB - d, y));
+      const sub = pts.filter((_, i) => i % 2 === 0 || i === pts.length - 1);
+      const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(sub, false, 'centripetal'), sub.length * 2, HAND.wire_r, 5, false), mats[w.net] || (mats[w.net] = wireMat(NET_COL[w.net] || 0xbbbbbb)));
+      m.name = `${ref} pad ${w.pad} ${w.net}`;
+      m.userData.noHl = true;
+      grp.add(m);
+      info.wires.push({ ref, pad: w.pad, net: w.net, model: c.model, n: pts.length });
+    }
+  }
+  g.add(grp);
+  root.addItem('handwire', grp);
+  g.userData.handwire = info;
+  return grp;
+}
+
+function setWiring(on) {
+  V.wiring = !!on;
+  $('#wiringon').checked = V.wiring;
+  for (const r of Object.values(V.roots)) if (r !== V.roots.asm) r.setItem('handwire', V.wiring);
+  applyVisibility();
+  syncWireLabels();
+}
+function renderWireNote() {
+  const dot = c => `<i class="wdot" style="background:#${c.toString(16).padStart(6, '0')}"></i>`;
+  $('#wirenote').innerHTML = `<b>Lead</b> (JST PH, pin 1 to pin 1, <span id="leadlen">190</span> mm): ${LEAD_PINS.map(p => `<span class="wp">${dot(p.col)}${p.n} ${p.net} ${p.name}</span>`).join(' ')}. <b>Hand wires</b> on the fascia’s back, from each control’s lugs to its landing pads, take the colour of their net.`;
+}
+function renderFasciaPick() {
+  $('#fvseg').innerHTML = FASCIA_PICK.map(p => `<button type="button" data-fv="${p.v}" aria-pressed="${p.v === V.fv}" title="${esc(p.title)}">${esc(p.label)}</button>`).join('');
+}
+
 function buildRoots() {
   // assembly, in the case model's world (three.js: X, Y, -Z)
   const A = new Root('asm');
@@ -710,16 +928,8 @@ function buildRoots() {
   for (const [, X, Y] of MODEL.case_screws) cs.add(zcylW(f.SCREW_HEAD_D / 2, -f.Z_DRV_B, -f.Z_DRV_B - f.SCREW_HEAD, MAT.screw, X, Y, 16));
   tag(cs, 'case_screws', '@case_screws'); A.addItem('case_screws', cs); A.addRef('@case_screws', cs, drvEx);
   drvEx.add(cs);
-  // the fascia lead: DRV J1 -> floor -> the fascia's J1 (case model's centre line)
-  for (const v of variantsAvail()) {
-    const path = new THREE.CurvePath();
-    const pts = fvData(v).lead.map(p => V3(p[0], p[1], -p[2]));
-    for (let i = 0; i < pts.length - 1; i++) path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
-    const lead = new THREE.Mesh(new THREE.TubeGeometry(path, 96, f.CABLE_HALF + 0.35, 8, false), MAT.lead);
-    const w = new THREE.Group(); w.userData.fv = v; w.add(lead);
-    tag(lead, 'lead', '@lead'); A.addItem('lead', lead); A.addRef('@lead', lead, w);
-    A.group.add(w);
-  }
+  // the fascia lead: six wires and a housing at each end (buildLead), one per fascia variant
+  for (const v of variantsAvail()) buildLead(v, A);
   // the case
   // explode vectors: case.scad's ex([dX, dY, dZ]) in world, as (dX, dY, -dZ) here
   const EX = { cheek_l: [-40, 0, 0], cheek_r: [40, 0, 0], brow: [0, 36, 12], top: [0, 62, 0], trench: [0, 0, 30], base: [0, -30, 0], rear: [0, 0, -50], fascia_frame: [0, -8, 42] };
@@ -731,6 +941,7 @@ function buildRoots() {
     const m = new THREE.Mesh(o.geometry, new THREE.MeshStandardMaterial({ color: CASE_COL[name], roughness: 0.75, metalness: 0.05, flatShading: true, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide }));
     m.applyMatrix4(o.matrixWorld);
     A.caseMats.push(m.material);
+    (A.caseMeshes = A.caseMeshes || []).push(m);
     const ex = exploder(A, EX[name] || [0, 0, 0]);
     const w = new THREE.Group();
     if (name === 'fascia_frame') w.userData.fv = 'F';       // variant D: shown only with F
@@ -768,7 +979,7 @@ function buildRoots() {
 }
 
 function setFascia(v, opts = {}) {
-  if (!FV[v] || (V.ready && !variantsAvail().includes(v))) v = 'A';
+  if (!FV[v] || !pickable(v) || (V.ready && !variantsAvail().includes(v))) v = FASCIA_DEFAULT;
   V.fv = v; store.set('fascia', v);
   BOARD.FASCIA = FV[v];
   $$('#fvseg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.fv === v));
@@ -783,7 +994,9 @@ function setFascia(v, opts = {}) {
     renderFacts();
     if (UI.scene === 'FASCIA') { UI.shot = Math.min(UI.shot, IMGS.FASCIA().length - 1); renderShots(); setDims(); }
   }
-  if (V.ready) highlight(V.hlList);
+  const ld = V.lead && V.lead[v];
+  if (ld && $('#leadlen')) $('#leadlen').textContent = ld.length.toFixed(0);
+  if (V.ready) { highlight(V.hlList); syncWireLabels(); }
 }
 function setExplode(e) {
   V.explode = e;
@@ -802,7 +1015,7 @@ function setCaseLook() {
 const CASE_PARTS = ['cheek_l', 'cheek_r', 'brow', 'top', 'trench', 'base', 'rear', 'fascia_frame'];
 const SHELL = ['cheek_l', 'cheek_r', 'brow', 'top', 'trench', 'base'];
 const ALL_ITEMS = ['drv', 'drv.strips', 'disp', 'disp.strips', 'nano', 'rtc', 'contacts', 'leds', 'in12', 'in15', 'in17', 'ins1',
-  'standoffs', 'case_screws', 'fascia', 'lead', ...CHIPS.map(c => 'chip:' + c), ...CASE_PARTS];
+  'standoffs', 'case_screws', 'fascia', 'lead', 'handwire', ...CHIPS.map(c => 'chip:' + c), ...CASE_PARTS];
 function applyVisibility() {
   const A = V.roots.asm;
   invalidate();
@@ -811,9 +1024,11 @@ function applyVisibility() {
   for (const id of A.items.keys()) {
     let on = vis.has(id);
     if (CASE_PARTS.includes(id)) on = on && V.caseOn;
-    if (id === 'lead') on = on && V.explode < 0.05;
+    if (id === 'lead') on = on && V.wiring && V.explode < 0.05;
+    if (id === 'handwire') on = (A.stepVis ? A.stepVis.has('fascia') : true) && V.wiring;      // the hand wires go with the fascia
     A.setItem(id, on);
   }
+  syncWireLabels();
 }
 
 // ---- highlight
@@ -837,7 +1052,7 @@ function highlight(list) {          // list: [{ key: 'DRV:U11', note: 'out' | un
     const { objs, frame } = ent;
     const out = h.note === 'out';
     if (!out) for (const o of objs) o.traverse(m => {
-      if (m.isMesh && !m.userData.noFit && !m.userData.hlDeco && m.material !== MAT.hl) {
+      if (m.isMesh && !m.userData.noFit && !m.userData.hlDeco && !m.userData.noHl && m.material !== MAT.hl) {
         const orig = m.material;
         m.material = MAT.hl;
         root.hl.push({ restore: () => { m.material = m.userData.glassPlain ? (V.glow ? MAT.glass : m.userData.glassPlain) : orig; } });
@@ -933,6 +1148,7 @@ function setScene(s, opts = {}) {
   $('#stepchip').hidden = !(s === 'asm' && V.step >= 0);
   if (V.ready) {
     highlight(V.hlList);
+    syncWireLabels();
     if (!opts.keepCamera) view('fit');
   }
 }
@@ -965,9 +1181,10 @@ const XS = ['XS11', 'XS12', 'XS21', 'XS22', 'XS23', 'XS24', 'XS25'], XP = XS.map
 
 function steps() {
   const f = F();
-  const fd = fvData(V.fv || 'A'), lead = fd.lead_path, gap = f.STACK_GAP;
+  const fd = fvData(V.fv || FASCIA_DEFAULT), taut = fd.lead_path, gap = f.STACK_GAP;
+  const ld = V.lead && V.lead[V.fv || FASCIA_DEFAULT], leadLen = ld ? ld.length : f.LEAD_LEN;
   const r5 = (fd.fascia_checks || []).find(r => /R5/.test(r.what));
-  const fname = FV_NAME[V.fv || 'A'];
+  const fname = FV_NAME[V.fv || FASCIA_DEFAULT];
   return [
     { g: 'build', n: '1', title: 'Build the driver board', vis: on('drv'), explode: 0, cam: 'isoBL', fit: 'all',
       hl: hlRefs('DRV', 'U14', 'L1', 'C7', 'VT21', 'RP1', 'XS1'),
@@ -1050,7 +1267,7 @@ function steps() {
       <li>Then the clock, BOARD_TYPE 4, all six tubes: right order and digits, no ghosting, no flicker.</li></ul>` },
     { g: 'bench', n: 'S7', title: 'The fascia', hv: true, vis: on(MODULE, TUBES_ALL, 'nano', 'rtc', allChips, 'fascia', 'lead'), explode: 0, cam: 'lowL', fit: 'all',
       hl: [...hlRefs('FASCIA', 'SW1', 'SW2', 'SW3', 'SW4', 'SW5', 'J1'), { key: 'DRV:J1' }, { key: '@lead', label: 'PH lead, 1:1' }],
-      body: `<p>Power off. Check the PH lead is one-to-one, pin 1 to pin 1, and plug it into J1 (+5 V, GND, A6, A7, D7, D8). Type <code>r</code>.</p>
+      body: `<p>Power off. Check the PH lead is one-to-one, pin 1 to pin 1, and plug it into J1 (+5 V red, GND black, A6 yellow, A7 green, D7 blue, D8 white). Type <code>r</code>.</p>
       <ul><li>A6, the MODE rotary: 0, 205, 409, 614, 818, 1023 (±7 codes) for positions 1–6.</li>
       <li>A7, the levers: 1023 open, 682 FIELD, 512 SUB, 409 both.</li>
       <li>"−" and "+" read DOWN. Always bring a pair up with the panel connected: with it unplugged A6 floats.</li></ul>` },
@@ -1068,10 +1285,10 @@ function steps() {
       <li>The tube glass sits 1 mm behind the face plane, so a knock lands on the case. The module lifts out backwards as one piece.</li>
       <li>The USB slot in the left cheek is open to the rear edge; the 12 V jack passes the right cheek through a Ø9 hole with a Ø14 counterbore from outside.</li></ul>` },
     { g: 'case', n: '9', title: 'Fit the fascia and its lead', vis: on(MODULE, TUBES_ALL, 'nano', 'rtc', allChips, 'case_screws', SHELL, 'fascia_frame', 'fascia', 'lead'), explode: 0, cam: 'lowL', fit: 'all', caseOn: true,
-      hl: [{ key: 'FASCIA:J1' }, { key: 'DRV:J1' }, { key: '@lead', label: `lead path ${lead} mm` }],
+      hl: [{ key: 'FASCIA:J1' }, { key: 'DRV:J1' }, { key: '@lead', label: `PH lead, ${+leadLen.toFixed(0)} mm` }],
       body: `<p>${V.fv === 'F' ? `F: the printed frame screws to the cheeks (2 × M3 × 8) and the panel drops into its rabbet (4 × M2.5 × 6, plus 2 countersunk ties down through the sill). The 176 board stands in for the frame's 179 panel at X ${fd.X0}.` : `The fascia (${esc(fname)}, ${esc(BOARD.FASCIA)}) screws to four M2.5 bosses on the cheeks (M2.5 × 6) at FASCIA_X0 ${fd.X0} mm`}, raked back ${f.FASCIA_RAKE}°. Switch the variant with the <b>Fascia</b> buttons above the model.</p>
-      <ul><li>The 6-way JST PH lead runs from DRV J1 down to the floor, across it, and up into the fascia's side-entry J1: a ${lead} mm path for a ${f.LEAD_LEN} mm lead (the BOM: 180–200 mm).</li>
-      <li>Beep it out one-to-one before plugging it in.</li></ul>
+      <ul><li>The 6-way JST PH lead (${+leadLen.toFixed(0)} mm; the BOM says 180–200 mm) leaves DRV J1 towards the front, drops to the floor, lies on it in a slack loop and climbs the raked fascia into its side-entry J1. The shortest way across is ${taut} mm, so about ${Math.round(leadLen - taut)} mm of the lead is slack: it is what lets the module come back for J1 to be reached from below.</li>
+      <li>Wires: 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8 (pin 1 to pin 1 at both ends). Beep it out one-to-one before plugging it in.</li></ul>
       ${r5 && r5.status !== 'OK' ? `<div class="caution">Case model, ${esc(r5.status)}: ${esc(r5.what)}: ${esc(r5.result)}.</div>` : ''}
       <p style="font-size:13px;color:var(--muted)">The case parts drawn are the committed case model's, made for A: its bosses and sill notch do not move with the variant.</p>` },
     { g: 'case', n: '10', title: 'Fit the rear panel', vis: on(MODULE, TUBES_ALL, 'nano', 'rtc', allChips, 'case_screws', CASE_PARTS, 'fascia', 'lead'), explode: 0, cam: 'isoBR', fit: 'all', caseOn: true,
@@ -1227,7 +1444,7 @@ function renderFacts() {
       ['Stack', `glass front Z 0 → TS06-DISP ${n('Z ' + f.Z_DISP_F)} → ${n(f.STACK_GAP + ' mm')} gap → TS06-DRV ${n('Z ' + f.Z_DRV_F + '–' + f.Z_DRV_B)}, parts towards the rear panel at ${n('Z ' + f.Z_REAR_IN)}`],
       ['Driver', `mirrored: DRV x = ${f.BOARD_W} − DISP x; its top edge ${n(f.DRV_Y0 + ' mm')} above the display's`],
       ['Fascia', `${esc(FV_NAME[V.fv])} (${esc(BOARD.FASCIA)}) at ${n('FASCIA_X0 ' + fvData(V.fv).X0)}, raked ${n(f.FASCIA_RAKE + '°')}, top edge on the sill at ${n('Y ' + f.SILL_TOP_Y)}`],
-      ['Fascia lead', `path ${n(fvData(V.fv).lead_path + ' mm')} for a ${n(f.LEAD_LEN + ' mm')} lead (BOM 180–200 mm)`],
+      ['Fascia lead', (() => { const ld = (V.lead || {})[V.fv]; return ld ? `${n(ld.length.toFixed(0) + ' mm')} drawn, six wires, a PHR-6 housing at each end (BOM: 180–200 mm); the shortest way across the floor is ${n(ld.taut + ' mm')}, so the rest lies in a slack loop` : `${n(f.LEAD_LEN + ' mm')} (BOM 180–200 mm)`; })()],
       ['Case checks', Object.entries(fvData(V.fv).checks || c).map(([k, v]) => `<span class="pill ${k === 'OK' ? 'ok' : k === 'FAIL' ? 'bad' : k === 'TIGHT' ? 'warn' : 'acc'}">${v} ${esc(k)}</span>`).join(' ') + '<br><span style="color:var(--muted);font-size:12.5px">Two FAILs are the rejected jack openings, kept on record' + (V.fv === 'A' ? '; one is open: the fascia boss on R5' : '') + '.</span>']];
     note = isPop('TS06-DRV') ? 'The boards are drawn populated (3d/populated): every part has its body, and the fascia R carries its gold. The tubes are the repo’s STEP files; the case parts are the case model’s.'
       : 'The tubes are drawn from the case model’s envelopes (ИН-12/ИН-15 19.47 × 28.86 × 25.5, ИН-17 face 14 × 20 on a Ø20 stem, ИНС-1 Ø6.97), in warm glass.';
@@ -1357,7 +1574,7 @@ function renderVariants() {
   const pics = VARIANTS.pictures || [];
   $('#fvouter').textContent = `${F().OUT_W} × ${F().OUT_H} × ${F().OUT_D.toFixed(1)} mm`;
   $('#fvtable').innerHTML = `<thead><tr><th></th>${keys.map(head).join('')}</tr></thead><tbody>${rows.map(([l, k]) => `<tr><th>${esc(l)}</th>${keys.map(v => `<td>${cell(VARIANT_ROWS[v][k])}</td>`).join('')}</tr>`).join('')}
-    <tr><th>In 3D</th>${keys.map(v => `<td><button type="button" class="linkbtn" data-fv3d="${v}"${PARTS[FV[v]] ? '' : ' disabled'}>Show ${v} in the case</button></td>`).join('')}</tr></tbody>`;
+    <tr><th>In 3D</th>${keys.map(v => `<td>${pickable(v) && PARTS[FV[v]] ? `<button type="button" class="linkbtn" data-fv3d="${v}">Show ${v} in the case</button>` : '<span style="color:var(--muted);font-size:12.5px">the record only: not drawn in 3D</span>'}</td>`).join('')}</tr></tbody>`;
   const sel = $('#fvpic');
   if (!pics.length) { $('#fvpics').hidden = true; return; }
   sel.innerHTML = pics.map((p, i) => `<option value="${i}">${esc(p.label)}</option>`).join('');
@@ -1390,7 +1607,8 @@ function renderNotes() {
     ...(pop ? [] : [['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem, 19.72 mm of glass (measured) on a 10.28 mm seat, ИНС-1 Ø6.97. The glowing numerals are decoration.']]),
     ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
     ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.']]),
-    ['Standoffs, screws, the fascia lead', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8, the lead along its centre line.'],
+    ['Standoffs, screws', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8.'],
+    ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1. Its ends, the 9.5 mm mated height, the floor, the 3 mm bend and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>); a control with no lug model is wired from its body’s back face.'],
     ['The case', 'The printable parts from <code>3d/case-pair/out/*.stl</code> (cheeks, brow, top plate, trench, base, rear panel, and the fascia frame for F), where the case model places them. The cheeks are the default build, with the fascia bosses A, W and R use.'],
     ['Fascia A, W, R and F', 'A, W and R are their own boards, exported like the others and placed at the case model’s X0 for each (4.305, 0, 0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs.'],
   ];
@@ -1508,7 +1726,7 @@ function fpTodayFacts(v) {
   const b = fpBoard(v), P = (PARTS[FPB[v]] || {}).parts || {}, n = x => `<span class="num">${x}</span>`;
   if (!b) return '<dt>Board</dt><dd>not in this build</dd>';
   const j = P.J1 || {};
-  return [['Board', `<code>PCB/${esc(FPB[v])}</code>${v === 'A' ? ' <span class="pill acc">committed</span>' : ''}`],
+  return [['Board', `<code>PCB/${esc(FPB[v])}</code>${v === 'A' ? ' <span class="pill acc">committed</span>' : v === 'R' ? ' <span class="pill acc">picked, ordered by fab/ORDER.md</span>' : ''}`],
     ['Outline', n(fpSize(v) + ' mm') + `, ${n((+b.thickness).toFixed(1) + ' mm')} FR4`],
     ['Copper', `${n(b.tracks)} tracks, all on B.Cu; ${n(b.vias)} vias`],
     ['Parts', `${n(b.parts)}: R1–R8, SW1–SW5, J1`],
@@ -1516,9 +1734,9 @@ function fpTodayFacts(v) {
     ['Finish', '2.0 mm FR4, black mask, white silk, ENIG (PCB/README.md)']]
     .map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('') + `<dt>Checked</dt><dd>${mk('seen')} this page’s build, from the board file</dd>`;
 }
-let FPV = 'A';
+let FPV = 'R';
 function fpShowToday(v) {
-  FPV = FACTS.boards[FPB[v]] ? v : 'A';
+  FPV = FACTS.boards[FPB[v]] ? v : 'R';
   $$('#fp-fvseg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.fp === FPV));
   const f = $('#fp-front'), k = $('#fp-back');
   f.src = `img/${FPB[FPV]}-top.png`; f.alt = `${FPB[FPV]}, front, KiCad render`;
@@ -1526,7 +1744,7 @@ function fpShowToday(v) {
   $('#fp-todayfacts').innerHTML = fpTodayFacts(FPV);
 }
 const fpTodayName = () => `today’s TS06-FASCIA, ${fpSize('A')} mm (board A, the committed one; its height was compressed from 52 to 40 mm in 2026-09)`;
-const fpOpenChoice = () => `Which fascia is built is still the owner’s open choice: A, W or R (${fpSize('W')} mm), or F, a 179 × 40 panel in a printed frame (PCB/TS06-FASCIA-variants.md).`;
+const fpOpenChoice = () => `The fascia built is R (${fpSize('R')} mm): picked, and ordered by fab/ORDER.md. A, W (${fpSize('W')} mm) and F, a 179 × 40 panel in a printed frame, stay as the record (PCB/TS06-FASCIA-variants.md).`;
 
 // ---- the dial explainer (A1's "What the controls do")
 function fpDialSVG() {
@@ -1778,8 +1996,7 @@ function fpThenNow() {
 }
 function renderPanel() {
   // today's board
-  const v0 = V.fv in FPB ? V.fv : 'A';
-  fpShowToday(v0);
+  fpShowToday('R');                      // the picker offers R only
   // disagreements
   $('#fp-difflist').innerHTML = fpDiffs().map(([k, t]) => `<li data-d="${k}">${t}</li>`).join('');
   // dial explainer
@@ -1854,7 +2071,8 @@ function wire() {
   $('#caseon').addEventListener('change', e => { V.caseOn = e.target.checked; applyVisibility(); });
   $('#caseghost').addEventListener('change', e => { V.caseGhost = e.target.checked; setCaseLook(); });
   $('#glowon').addEventListener('change', e => { if (UI.mode !== '3d') setMode('3d'); setGlow(e.target.checked); });
-  $('#labelson').addEventListener('change', e => { V.showLabels = e.target.checked; V.labelR.domElement.style.display = V.showLabels ? '' : 'none'; invalidate(); });
+  $('#labelson').addEventListener('change', e => { V.showLabels = e.target.checked; V.labelR.domElement.style.display = V.showLabels ? '' : 'none'; syncWireLabels(); invalidate(); });
+  $('#wiringon').addEventListener('change', e => setWiring(e.target.checked));
   $('#sidetabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setSide(b.dataset.side); });
   $('#steplist').addEventListener('click', e => {
     const b = e.target.closest('button[data-step]');
@@ -1991,13 +2209,17 @@ async function main() {
     VARIANTS = await getJSON('data/variants.json').catch(() => VARIANTS);
     ORDER = await getJSON('data/order.json').catch(() => null);
     POP = await getJSON('data/populated.json').catch(() => POP);
+    HAND = await getJSON('data/handwire.json').catch(() => null);          // the hand wiring on the fascia's back (tools/handwire.py)
   } catch (e) {
     $('#loading').innerHTML = `<div class="row">The page data did not load: ${esc(e.message)}</div>`;
     throw e;
   }
-  V.fv = store.get('fascia', isPop('TS06-FASCIA-rhythm') ? 'R' : 'A');       // R is the board that is ordered
-  BOARD.FASCIA = FV[V.fv] && PARTS[FV[V.fv]] ? FV[V.fv] : (V.fv = 'A', FV.A);
+  V.fv = store.get('fascia', FASCIA_DEFAULT);       // R is the board that is picked and ordered; a stored A or W (the old selector) falls back to it
+  if (!pickable(V.fv) || !PARTS[FV[V.fv]]) V.fv = FASCIA_DEFAULT;
+  BOARD.FASCIA = FV[V.fv];
+  renderFasciaPick();
   STEPS = steps();
+  renderWireNote();
   wire();
   renderVariants();
   renderStepList();
@@ -2019,7 +2241,8 @@ async function main() {
     await Promise.all([
       loadGLTF('DRV', '3d/TS06-DRV.gltf.json', 'TS06-DRV'),
       loadGLTF('DISP', '3d/TS06-DISP.gltf.json', 'TS06-DISP'),
-      ...Object.entries(FV).filter(([v, b]) => PARTS[b] && v !== 'F').map(([v, b]) => loadGLTF('F' + v, `3d/${b}.gltf.json`, b)),
+      // the boards of the selector (F stands on A's board, so A loads when F is offered)
+      ...Object.entries(FV).filter(([v, b]) => PARTS[b] && v !== 'F' && (pickable(v) || (v === 'A' && pickable('F')))).map(([v, b]) => loadGLTF('F' + v, `3d/${b}.gltf.json`, b)),
       loadGLTF('CASE', '3d/case.gltf.json', 'case'),
     ]);
   } catch (e) { console.warn('model load failed', e); return; }
@@ -2034,6 +2257,7 @@ async function main() {
   else frameBox(visibleBox(V.roots[UI.scene].group), 'front', 1, 0);
   document.body.dataset.ready = '1';
 }
+V.THREE = THREE; V.boardMatrix = boardMatrix; V.frame = () => F(); V.setWiring = setWiring; V.model = () => MODEL;
 window.TS06 = V;                      // for the tests: camera, controls, state
 V.getSteps = () => STEPS;
 main();

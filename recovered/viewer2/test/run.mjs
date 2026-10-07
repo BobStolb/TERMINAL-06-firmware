@@ -16,7 +16,8 @@ const REPO = path.resolve(ROOT, '..', '..');
 const SITE = process.env.SITE ? path.resolve(process.env.SITE) : path.join(ROOT, 'site');
 const THREE = process.env.THREE ? path.resolve(process.env.THREE) : path.join(REPO, '3d', 'populated', 'stack', 'vendor', 'three');
 const SHOTS = process.env.SHOTS ? path.resolve(process.env.SHOTS) : path.join(ROOT, 'shots');
-const ONLY_NEW = process.env.ONLY_NEW === '1';
+const ONLY_WIRING = process.env.ONLY_WIRING === '1';       // just the wiring checks (the lead, the hand wiring, the Wiring switch, the fascia selector)
+const ONLY_NEW = process.env.ONLY_NEW === '1' || ONLY_WIRING;
 fs.mkdirSync(SHOTS, { recursive: true });
 const PORT = 8766;
 const server = spawn('python3', [path.join(HERE, 'serve.py'), String(PORT)], { cwd: SITE, stdio: 'ignore' });
@@ -185,7 +186,7 @@ if (!ONLY_NEW) {
   // jump from the list: S3, S5, 9
   const idx = await page.evaluate(() => [...document.querySelectorAll('#steplist button')].map(b => b.textContent));
   const find = re => idx.findIndex(t => re.test(t)) - 1;
-  for (const [re, name, want] of [[/U12 first/, 'S3', /U12 first/], [/U11 out/, 'S5', /U11 out/], [/Fit the fascia/, 'step09', /lead path/], [/rear panel/, 'step10', /rear panel/]]) {
+  for (const [re, name, want] of [[/U12 first/, 'S3', /U12 first/], [/U11 out/, 'S5', /U11 out/], [/Fit the fascia/, 'step09', /PH lead/], [/rear panel/, 'step10', /rear panel/]]) {
     const i = find(re);
     await page.click(`#steplist button[data-step="${i}"]`); await settle(page);
     await page.waitForTimeout(300);
@@ -204,7 +205,8 @@ if (!ONLY_NEW) {
       for (const [id, objs] of A.items) {
         let want = vis.has(id);
         if (['cheek_l', 'cheek_r', 'brow', 'top', 'trench', 'base', 'rear', 'fascia_frame'].includes(id)) want = want && V.caseOn;
-        if (id === 'lead') want = want && V.explode < 0.05;
+        if (id === 'lead') want = want && V.wiring && V.explode < 0.05;
+        if (id === 'handwire') want = vis.has('fascia') && V.wiring;       // the hand wires go with the fascia
         const shown = objs.some(o => o.visible);
         if (shown !== want) bad.push(id + (want ? ' missing' : ' extra'));
       }
@@ -228,7 +230,7 @@ if (!ONLY_NEW) {
   await shot(page, 'd1280-light-chip-RP1');
 
   // ---- fascia variants
-  for (const v of ['W', 'R', 'F', 'A']) {
+  for (const v of ['F', 'R']) {
     await page.click(`#fvseg button[data-fv="${v}"]`); await page.waitForTimeout(300);
     const s = await page.evaluate(() => { const V = window.TS06; let shown = []; V.roots.asm.group.traverse(o => { if (o.userData.fv && o.visible) shown.push(o.userData.fv); }); return { fv: V.fv, shown: [...new Set(shown)] }; });
     ok(`fascia variant ${v} swaps the board`, s.fv === v && s.shown.length === 1 && s.shown[0] === v, JSON.stringify(s));
@@ -398,14 +400,14 @@ if (!ONLY_NEW) {
   // today's board, from the build
   {
     const res = [];
-    for (const [v, b] of [['A', 'TS06-FASCIA'], ['W', 'TS06-FASCIA-wide'], ['R', 'TS06-FASCIA-rhythm']]) {
+    for (const [v, b] of [['R', 'TS06-FASCIA-rhythm']]) {
       await page.click(`#fp-fvseg button[data-fp="${v}"]`);
       await page.waitForFunction(() => ['#fp-front', '#fp-back'].every(s => document.querySelector(s).complete), null, { timeout: 30000 });
       const r = await page.evaluate(() => ({ imgs: ['#fp-front', '#fp-back'].map(s => document.querySelector(s).naturalWidth > 0), dl: document.querySelector('#fp-todayfacts').textContent }));
       res.push(r.imgs.every(Boolean) && r.dl.includes(sz(b)) && r.dl.includes(b));
     }
-    await page.click('#fp-fvseg button[data-fp="A"]');
-    ok('front panel: today’s boards A, W, R shown from the build (renders + facts)', res.every(Boolean), res.join(','));
+    const picker = await page.evaluate(() => [...document.querySelectorAll('#fp-fvseg button')].map(b => b.dataset.fp));
+    ok('front panel: the board picker offers R only (A and W are out); R shown from the build (renders + facts)', res.every(Boolean) && picker.join() === 'R', `${res.join(',')}; picker ${picker.join()}`);
   }
   await page.locator('#fp-today').screenshot({ path: path.join(SHOTS, 'd1280-light-panel-today.png') });
   // the disagreements
@@ -475,7 +477,7 @@ if (!ONLY_NEW) {
   // the drawings as they were
   {
     const h = await txt(page, '#fp-histlabel');
-    ok('old drawings labelled: superseded by today’s fascia, the choice still open', h.startsWith(`History: superseded by today’s TS06-FASCIA, ${sz('TS06-FASCIA')} mm`) && h.includes('still the owner’s open choice') && h.includes(sz('TS06-FASCIA-wide')), h.slice(0, 160));
+    ok('old drawings labelled: superseded by today’s fascia, R picked and ordered by fab/ORDER.md', h.startsWith(`History: superseded by today’s TS06-FASCIA, ${sz('TS06-FASCIA')} mm`) && h.includes('The fascia built is R') && h.includes('fab/ORDER.md') && h.includes(sz('TS06-FASCIA-wide')), h.slice(0, 200));
     const f = await page.evaluate(() => { const s = document.querySelector('#fp-a1front svg'); return { t: s.textContent, n: s.querySelectorAll('*').length, w: s.getBoundingClientRect().width }; });
     ok('migrated A1 panel drawing, front: redrawn 176 × 52 by its own code', f.t.includes('176.00') && f.t.includes('52.00') && f.t.includes('FORMAT/DATE') && f.t.includes('FIELD') && f.n > 80 && f.w > 500, `${f.n} elements, ${f.w.toFixed(0)} px wide`);
     await page.locator('#fp-history').scrollIntoViewIfNeeded();
@@ -550,7 +552,7 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
 // ================================================================ populated boards and the Order view
 // The boards are the GLBs and pictures of 3d/populated/ (the fascia R as ordered, with its Plates print and Divider gold),
 // and the Order view reads fab/ORDER.md and the fit table. Each piece has its own check below.
-{
+if (!ONLY_WIRING) {
   const rd = f => JSON.parse(fs.readFileSync(path.join(SITE, 'data', f), 'utf8'));
   const pop = rd('populated.json'), order = rd('order.json');
   const BOARDS3 = ['TS06-DRV', 'TS06-DISP', 'TS06-FASCIA-rhythm'];
@@ -834,6 +836,123 @@ for (const scheme of ONLY_NEW ? [] : ['light', 'dark']) {
     ok(`Order phone ${scheme}: fits 390, three boards stacked, no console errors`, r.sw <= 390 && r.right <= 390 && r.boards === 3 && r.rows === order.fit.rows.length && e2.length === 0, `scrollWidth ${r.sw}, card right edge ${r.right.toFixed(0)} ` + e2.slice(0, 3).join(' || '));
     await c2.close();
   }
+}
+
+
+// ================================================================ the wiring: the lead, the hand wiring, the Wiring switch, the fascia selector
+// The lead is six wires and a housing at each end; its length is counted from the drawn wires; no wire point may lie inside a board, a
+// standoff or the case's walls (a ray cast from the point through the case's closed shells: an odd number of crossings is inside).
+{
+  const hw = JSON.parse(fs.readFileSync(path.join(SITE, 'data', 'handwire.json'), 'utf8'));
+  const { ctx, page, errs } = await newPage({ w: 1280, h: 900 });
+  await load(page, '', true);
+  const sel = await page.evaluate(() => ({ btns: [...document.querySelectorAll('#fvseg button')].map(b => b.dataset.fv + ':' + b.getAttribute('aria-pressed')), fv: window.TS06.fv, hidden: document.querySelector('#fvseg').hidden }));
+  ok('fascia selector: exactly R and F, R the default and pressed', sel.btns.join() === 'R:true,F:false' && sel.fv === 'R' && !sel.hidden, sel.btns.join(' '));
+  // the lead, for both fascias of the selector
+  const L = await page.evaluate(() => {
+    const V = window.TS06, out = {};
+    for (const [v, l] of Object.entries(V.lead || {})) out[v] = { n: l.wires.length, housings: l.housings.map(h => h.end), len: l.length, wl: l.wires.map(w => w.length), nets: l.wires.map(w => w.net + ' ' + w.colour).join(', '), taut: l.taut, loop: l.loopDepth };
+    return out;
+  });
+  const vs = Object.keys(L);
+  ok('the lead exists for R and F only', vs.sort().join() === 'F,R', vs.join());
+  for (const v of ['R', 'F']) {
+    const l = L[v];
+    ok(`lead ${v}: six wires, a housing at each end, pins 1-6 +5V GND A6 A7 D7 D8 in red black yellow green blue white`,
+      l.n === 6 && l.housings.length === 2 && l.housings.join() === 'TS06-DRV J1,fascia J1' && l.nets === '+5V red, GND black, A6 yellow, A7 green, D7 blue, D8 white', l.nets + '; ' + l.housings.join(' + '));
+    const lo = Math.min(...l.wl), hi = Math.max(...l.wl);
+    ok(`lead ${v}: its length is within 180-200 mm (centre line ${l.len.toFixed(1)} mm, wires ${lo.toFixed(1)}-${hi.toFixed(1)} mm; the shortest way across is ${l.taut} mm)`, l.len >= 180 && l.len <= 200 && lo >= 180 && hi <= 200 && l.taut < lo,
+      `centre ${l.len.toFixed(2)}, wires ${l.wl.map(x => x.toFixed(1)).join(' / ')}`);
+  }
+  // no wire point inside a board's box, a standoff or the case's walls
+  for (const v of ['R', 'F']) {
+    await page.click(`#fvseg button[data-fv="${v}"]`); await page.waitForTimeout(300);
+    const r = await page.evaluate(v => {
+      const V = window.TS06, f = V.frame(), T = V.THREE, M = V.model(), l = V.lead[v], fv = M.fascia_variants[v];
+      V.scene.updateMatrixWorld(true);
+      const margin = 0.45;                                   // a wire's own radius
+      const boxes = [['TS06-DRV', 0, f.BOARD_W, f.DRV_BOT_Y, f.DRV_TOP_Y, -f.Z_DRV_B, -f.Z_DRV_F], ['TS06-DISP', 0, f.BOARD_W, f.DISP_BOT_Y, f.DISP_TOP_Y, -f.Z_DISP_B, -f.Z_DISP_F]];
+      const inv = V.boardMatrix('FASCIA', v).clone().invert(), HB = -0.045;
+      const res = { pts: 0, board: {}, fascia: 0, standoff: 0, wall: 0, ctl: null, minFloor: 9e9 };
+      const A = V.roots.asm, rc = new T.Raycaster(), up = new T.Vector3(0, 1, 0);
+      rc.far = 400;
+      const inCase = p => { rc.set(p, up); return rc.intersectObjects(A.caseMeshes, false).length % 2 === 1; };
+      res.ctl = [inCase(new T.Vector3(-3.5, 50, -20)), inCase(new T.Vector3(96, 50, -20))];      // a point in the left cheek, one in the air
+      for (const w of l.wires) w.pts.forEach((q, i) => {
+        const p = new T.Vector3(...q);
+        res.pts++;
+        res.minFloor = Math.min(res.minFloor, q[1] - f.Y_FLOOR);
+        for (const b of boxes) if (q[0] > b[1] - margin && q[0] < b[2] + margin && q[1] > b[3] - margin && q[1] < b[4] + margin && q[2] > b[5] - margin && q[2] < b[6] + margin) res.board[b[0]] = (res.board[b[0]] || 0) + 1;
+        const n = p.clone().applyMatrix4(inv);
+        if (n.x > -margin && n.x < fv.W + margin && n.z > -margin && n.z < fv.H + margin && n.y > HB - margin && n.y < HB + 2.0 + margin) res.fascia++;
+        for (const [X, Y] of M.standoffs) if (Math.hypot(q[0] - X, q[1] - Y) < 3.2 + margin && q[2] > -f.Z_DRV_F - margin && q[2] < -f.Z_DISP_F + margin) res.standoff++;
+        if (i % 3 === 0 && inCase(p)) res.wall++;
+      });
+      return res;
+    }, v);
+    ok(`lead ${v}: no wire point inside TS06-DRV, TS06-DISP or the fascia board's box, or a standoff (a wire's radius kept clear)`, Object.keys(r.board).length === 0 && r.fascia === 0 && r.standoff === 0, `${r.pts} points; boards ${JSON.stringify(r.board)}, fascia ${r.fascia}, standoffs ${r.standoff}`);
+    ok(`lead ${v}: no wire point inside the case's walls (the check itself: a cheek point reads ${r.ctl[0]}, a point in the air ${r.ctl[1]}); the wires keep above the floor`, r.ctl[0] === true && r.ctl[1] === false && r.wall === 0 && r.minFloor > 0, `${r.wall} points inside of ${Math.ceil(r.pts / 3)} tested; lowest wire centre ${r.minFloor.toFixed(2)} mm over the floor`);
+  }
+  await page.click('#fvseg button[data-fv="R"]'); await page.waitForTimeout(300);
+  // the hand wiring: wires from lugs to pads; clearance data of the build
+  {
+    const R = hw.boards['TS06-FASCIA-rhythm'].controls, A = hw.boards['TS06-FASCIA'].controls;
+    const nR = Object.values(R).reduce((a, c) => a + c.wires.length, 0);
+    const clr = Object.values(R).map(c => c.clearance);
+    ok('hand wiring R: 15 wires from the lugs of the control models (7 for the dial, 2 for each lever and button), none touching a body, a lug of another wire, or another wire',
+      nR === 15 && Object.values(R).every(c => c.model === 'lugs') && R.SW1.lugs.length === 14 && ['SW2', 'SW3', 'SW4', 'SW5'].every(k => R[k].lugs.length === 3) && clr.every(c => c['wire-wire'] > 0 && c['wire-lug'] > 0 && c['wire-body'] > 0),
+      `dial ${R.SW1.lugs.length} lugs, levers and buttons ${R.SW2.lugs.length} each; least gaps ${Math.min(...clr.map(c => c['wire-wire']))} / ${Math.min(...clr.map(c => c['wire-lug']))} / ${Math.min(...clr.map(c => c['wire-body']))} mm`);
+    ok('hand wiring F (the stand-in A board): the models there have no lugs, so each wire starts on the body’s back face',
+      Object.values(A).every(c => c.model === 'standin' && c.wires.length >= 2) && Object.values(A).reduce((a, c) => a + c.wires.length, 0) === 15, `${Object.values(A).map(c => c.model).join(',')}`);
+    const ends = Object.entries(R).every(([ref, c]) => c.wires.every(w => { const pad = c.pads[w.pad]; const e = w.pts[w.pts.length - 1]; return pad && Math.hypot(e[0] - pad[0], e[1] - pad[1]) < 0.05 && pad[2] === w.net && e[2] < 0.6; }));
+    ok('hand wiring R: every wire ends on its landing pad, and its net is the pad’s net in the board file', ends, 'checked against pad positions and nets');
+    const nHand = root => page.evaluate(root => {
+      const V = window.TS06, shown = o => { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; };
+      let k = 0; V.roots[root].group.traverse(o => { if (o.isMesh && /^SW\d pad/.test(o.name) && shown(o)) k++; });
+      return k;
+    }, root);
+    const cnt = { asm: await nHand('asm') };
+    await page.click('#sc-FASCIA'); await settle(page);
+    cnt.fascia = await nHand('FASCIA');
+    await page.click('#sc-asm'); await settle(page);
+    ok('hand wiring is drawn on the fascia: 15 wires in the assembly (the shown fascia), and in the fascia scene', cnt.asm === 15 && cnt.fascia === 15, JSON.stringify(cnt));
+  }
+  // the Wiring switch: on by default; off hides the lead, the hand wires and the pin labels; on shows them again
+  {
+    const count = () => page.evaluate(() => {
+      const V = window.TS06, shown = o => { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; };
+      let lead = 0, hand = 0;
+      V.roots.asm.group.traverse(o => { if (o.isMesh && shown(o)) { if (/^wire \d/.test(o.name)) lead++; else if (/^SW\d pad/.test(o.name)) hand++; } });
+      const labels = [...document.querySelectorAll('.pinlbl')].filter(e => e.isConnected && e.style.display !== 'none' && getComputedStyle(e).display !== 'none').length;
+      return { lead, hand, labels, on: document.querySelector('#wiringon').checked, wv: V.wiring };
+    });
+    await page.click('#deck [data-view="isoL"]'); await settle(page);
+    const on0 = await count();
+    ok('Wiring switch: on at load (the lead’s 6 wires, 15 hand wires, six pin labels with Labels on)', on0.on && on0.wv && on0.lead === 6 && on0.hand === 15 && on0.labels === 6, JSON.stringify(on0));
+    await page.click('label[for="wiringon"]'); await settle(page);
+    const off = await count();
+    ok('Wiring switch off: the lead, the hand wires and the pin labels are hidden', !off.on && off.lead === 0 && off.hand === 0 && off.labels === 0, JSON.stringify(off));
+    await page.click('label[for="wiringon"]'); await settle(page);
+    const on1 = await count();
+    ok('Wiring switch back on: they show again', on1.on && on1.lead === 6 && on1.hand === 15 && on1.labels === 6, JSON.stringify(on1));
+    await page.click('label[for="labelson"]'); await settle(page);
+    const nl = await count();
+    ok('Labels off hides the six pin labels and leaves the wires', nl.lead === 6 && nl.labels === 0, JSON.stringify(nl));
+    await page.click('label[for="labelson"]'); await settle(page);
+  }
+  // a stored A or W from the old selector falls back to R
+  await page.evaluate(() => localStorage.setItem('ts06v2:fascia', JSON.stringify('W')));
+  await page.reload();
+  await page.waitForFunction(() => document.body.dataset.ready === '1', null, { timeout: 240000 });
+  const fb = await page.evaluate(() => ({ fv: window.TS06.fv, btns: [...document.querySelectorAll('#fvseg button')].map(b => b.dataset.fv) }));
+  ok('a stored fascia W (the old selector) falls back to R', fb.fv === 'R' && fb.btns.join() === 'R,F', JSON.stringify(fb));
+  // the Fascia variants tab: one line at its top, R picked and ordered (fab/ORDER.md); the record stays
+  await page.click('#dt-fascia');
+  const fvt = await page.evaluate(() => { const e = document.querySelector('#doc-fascia > :first-child'); return { line: e.textContent.replace(/\s+/g, ' ').trim(), id: e.id, cols: [...document.querySelectorAll('#fvtable thead th')].map(t => t.textContent.trim()).filter(Boolean).length,
+    btns: [...document.querySelectorAll('#fvtable button[data-fv3d]')].map(b => b.dataset.fv3d).join() }; });
+  ok('Fascia variants tab: its first line says R was picked and is in the order (fab/ORDER.md); the four columns stay as the record; only R and F open in 3D', fvt.id === 'fv-picked' && /^R was picked/.test(fvt.line) && fvt.line.includes('fab/ORDER.md') && fvt.cols === 4 && fvt.btns === 'R,F', fvt.line.slice(0, 100) + ' | ' + fvt.btns);
+  ok('wiring: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
+  await ctx.close();
 }
 
 await browser.close();

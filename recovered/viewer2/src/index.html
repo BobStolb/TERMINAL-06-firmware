@@ -144,6 +144,10 @@ button { font-family: inherit; }
 .lbl { font: 600 11px/1 var(--f-mono); color: #fff; background: rgba(194,65,12,.92); padding: 3px 6px; border-radius: 5px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.35); margin-top: -14px; }
 .lbl.out { background: rgba(120,120,120,.92); text-decoration: line-through; }
 .lbl.note { background: rgba(28,26,23,.88); }
+.pinlbl { position: relative; width: 0; height: 0; pointer-events: none; }
+.pinlbl .dot { position: absolute; left: -3px; top: -3px; width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.55); }
+.pinlbl .ld { position: absolute; left: 0; top: 0; height: 0; border-top: 1px solid rgba(40,40,40,.65); transform-origin: 0 0; }
+.pinlbl .tx { position: absolute; left: 0; top: 0; font: 600 11px/1 var(--f-mono); color: #fff; background: rgba(28,26,23,.9); padding: 3px 6px; border-radius: 5px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
 .loading { z-index: 3; position: absolute; left: 12px; right: 12px; bottom: 12px; display: grid; gap: 6px; font: 12px var(--f-mono); color: var(--text); pointer-events: none; }
 .loading .row { display: flex; gap: 8px; align-items: center; background: color-mix(in srgb, var(--surface) 85%, transparent); padding: 4px 8px; border-radius: 6px; }
 .loading .bar2 { flex: 1; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
@@ -170,6 +174,9 @@ button { font-family: inherit; }
 .cam.z { font: 600 15px/1 var(--f-mono); padding: 4px 10px; }
 .asm { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
 .asm[hidden] { display: none; }
+.wirenote { flex: 1 1 100%; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.wirenote .wp { white-space: nowrap; margin-right: 6px; }
+.wirenote .wdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; box-shadow: inset 0 0 0 1px rgba(128,128,128,.7); }
 .glowdeck { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line); }
 .glowdeck[hidden] { display: none; }
 .glownote { font-size: 12.5px; color: var(--muted); flex: 1 1 240px; min-width: 0; }
@@ -365,6 +372,7 @@ td.n, th.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; fon
 .ladders .grid2 > div { min-width: 0; }
 .ladders table { margin: 8px 0 10px; }
 .fptoday .seg button { font-size: 12.5px; }
+.pickline { font-size: 14px; margin: 0 0 12px; padding: 8px 12px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 6px 6px 0; }
 @media (max-width: 1000px) { .fptoday { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) {
   .dialx { grid-template-columns: minmax(0, 1fr); }
@@ -425,12 +433,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
           <button class="tab" role="tab" id="sc-DISP" data-scene="DISP" aria-selected="false">Display <small>TS06-DISP</small></button>
           <button class="tab" role="tab" id="sc-FASCIA" data-scene="FASCIA" aria-selected="false">Fascia <small>TS06-FASCIA</small></button>
         </div>
-        <div class="seg" role="group" aria-label="Fascia variant" id="fvseg">
-          <button type="button" data-fv="A" aria-pressed="true" title="A · centred, 176 mm">Fascia A</button>
-          <button type="button" data-fv="W" aria-pressed="false" title="W · full width, 191.4 mm">W</button>
-          <button type="button" data-fv="R" aria-pressed="false" title="R · on the tube grid, 191.4 mm (recommended)">R</button>
-          <button type="button" data-fv="F" aria-pressed="false" title="F · the 176 board in a printed frame (case model only)">F</button>
-        </div>
+        <div class="seg" role="group" aria-label="Fascia" id="fvseg"><!-- the entries are FASCIA_PICK in app.js: R (default) and F --></div>
         <div class="seg" role="group" aria-label="Model or pictures" id="modeseg">
           <button type="button" data-mode="3d" aria-pressed="true">3D</button>
           <button type="button" data-mode="img" aria-pressed="false" id="imgbtn">KiCad renders</button>
@@ -467,6 +470,8 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
         <label class="toggle" for="caseon"><input type="checkbox" id="caseon" checked><span class="sw" aria-hidden="true"></span><span>Case</span></label>
         <label class="toggle" for="caseghost"><input type="checkbox" id="caseghost" checked><span class="sw" aria-hidden="true"></span><span>See-through</span></label>
         <label class="toggle" for="labelson"><input type="checkbox" id="labelson" checked><span class="sw" aria-hidden="true"></span><span>Labels</span></label>
+        <label class="toggle" for="wiringon"><input type="checkbox" id="wiringon" checked aria-describedby="wirenote"><span class="sw" aria-hidden="true"></span><span>Wiring</span></label>
+        <div class="wirenote" id="wirenote"></div>
       </div>
       <div class="glowdeck" id="glowdeck" hidden>
         <label class="toggle" for="glowon"><input type="checkbox" id="glowon" aria-describedby="glownote"><span class="sw" aria-hidden="true"></span><span>Numerals glow</span></label>
@@ -597,9 +602,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
       <div class="fptoday">
         <div>
           <div class="seg" role="group" aria-label="Fascia board" id="fp-fvseg" style="margin-bottom:8px">
-            <button type="button" data-fp="A" aria-pressed="true">A · TS06-FASCIA</button>
-            <button type="button" data-fp="W" aria-pressed="false">W · wide</button>
-            <button type="button" data-fp="R" aria-pressed="false">R · rhythm</button>
+            <button type="button" data-fp="R" aria-pressed="true">R · rhythm</button>
           </div>
           <div class="shotpair">
             <figure><img id="fp-front" alt="" loading="lazy"><figcaption>Front, KiCad render of the board file</figcaption></figure>
@@ -609,7 +612,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
         <div>
           <dl id="fp-todayfacts"></dl>
           <p style="font-size:13.5px;margin-top:12px" data-from="A2 §01"><span class="from">A2 · 01 The front face</span><br>Every control the customer touches, laid out to scale. Nothing on this side is a solder joint — every pad lands on the back — so what you see here is mask, silkscreen, and bare ENIG gold where the mask is deliberately opened. <span class="mk seen">seen</span> <span style="color:var(--muted);font-size:12.5px">still true: every pad is on B.Cu and the gold is F.Cu artwork</span></p>
-          <p style="font-size:13.5px;color:var(--muted)">Which fascia is built is <b>still the owner’s open choice</b>: A, W, R or F, scored in <button type="button" class="linkbtn" data-goto="fascia">Fascia variants</button>. A is the committed board.</p>
+          <p style="font-size:13.5px;color:var(--muted)">The fascia is <b>R</b>: picked, and the one <code>fab/ORDER.md</code> orders. A, W and F are kept as the record in <button type="button" class="linkbtn" data-goto="fascia">Fascia variants</button>; A is the committed board the old pages below were written for.</p>
         </div>
       </div>
     </div>
@@ -752,7 +755,8 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
   </section>
 
   <section class="docpanel" id="doc-fascia" role="tabpanel" aria-labelledby="dt-fascia" hidden>
-    <p class="lead">The boards grew to 191.4 mm for the ИН-17 pair; the fascia was drawn for 176. Four ways to sit it under the tube row, scored side by side in <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-FASCIA-variants.md" target="_blank" rel="noopener">PCB/TS06-FASCIA-variants.md</a>. <b>R is recommended; the owner chooses.</b> All four keep the same case outside, <span id="fvouter">204.4 × 122.8 × 83.6 mm</span>, and every one still needs larger legends (at least 3 mm caps) and a dry fit of a real КМД1 and МТ1.</p>
+    <p class="pickline" id="fv-picked"><b>R was picked and is the fascia of the order</b>: <code>fab/ORDER.md</code> orders <code>fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip</code>. This tab stays as the record of the four ways that were scored; the 3D view offers R and F.</p>
+    <p class="lead">The boards grew to 191.4 mm for the ИН-17 pair; the fascia was drawn for 176. Four ways to sit it under the tube row, scored side by side in <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-FASCIA-variants.md" target="_blank" rel="noopener">PCB/TS06-FASCIA-variants.md</a>. <b>R was recommended and picked.</b> All four keep the same case outside, <span id="fvouter">204.4 × 122.8 × 83.6 mm</span>, and every one still needs larger legends (at least 3 mm caps) and a dry fit of a real КМД1 and МТ1.</p>
     <div class="tablewrap card" style="padding:0 4px;margin-bottom:16px"><table id="fvtable"></table></div>
     <div id="fvpics">
       <div class="pane" id="fvpane">
@@ -761,7 +765,7 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
         <div class="pz dark" id="fvpz" tabindex="0" aria-label="Composite: drag to pan, scroll or pinch to zoom"><img id="fvimg" alt="" draggable="false"></div>
       </div>
     </div>
-    <p style="font-size:13px;color:var(--muted);margin-top:10px">The fascia buttons above the 3D view swap the board in place: X0 4.305 for A, 0 for W and R; F shows the printed frame with the 176 board standing in for its 179 panel. The cheeks drawn are the committed case model's default ones, made for A, so their fascia bosses and the sill notch stay where A needs them, and are still there with F.</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:10px">The fascia buttons above the 3D view (R and F) swap the board in place: R at X0 0; F shows the printed frame with the 176 board of A standing in for its 179 panel, at X0 4.305. A and W are not drawn in 3D. The cheeks drawn are the committed case model's default ones, made for A, so their fascia bosses and the sill notch stay where A needs them, and are still there with F.</p>
   </section>
 
   <section class="docpanel" id="doc-order" role="tabpanel" aria-labelledby="dt-order" hidden>
