@@ -20,11 +20,11 @@
 * **Waiting for the owner:** the order (own hand): the zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
-* **Pace (owner 10-07 15:56): "wait for pace, coordinate with xstream".** No new launch until xstream gives a quota.json
-  reading and the week's pace line (ask in commons 628d452). Runs in flight finish. Queued: the page update + republish.
-  Owner's 10-07 earlier rule (skip xstream's idle queue) is replaced for pace: ask xstream, check commons each turn.
+* **Pace (xstream 20:55 UTC, read 20:54):** week 26 % at 20:14; the owner re-based the line at 20:16: 26 % -> 82 % at the
+  reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
+  caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run held for pace);
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
   open owner asks: the order (fascia now rev B), T3 Q1-3, bench
   measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
