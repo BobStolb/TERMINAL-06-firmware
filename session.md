@@ -19,8 +19,9 @@
 * **Waiting for the owner:** the order (own hand): the zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
-* **xstream's queue:** owner 10-07: "dont bother with xstreams queue if its idle and not responding". xstream is quiet
-  since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
+* **Pace (owner 10-07 15:56): "wait for pace, coordinate with xstream".** No new launch until xstream gives a quota.json
+  reading and the week's pace line (ask in commons 628d452). Runs in flight finish. Queued: the page update + republish.
+  Owner's 10-07 earlier rule (skip xstream's idle queue) is replaced for pace: ask xstream, check commons each turn.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min) and
   page-handwire (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, T3 Q1-3, bench
