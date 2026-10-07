@@ -151,7 +151,7 @@ VALUE = {"SW1": "SR25 6-pos", "SW2": "FIELD", "SW3": "SUB", "SW4": "MINUS", "SW5
          "R1": "4k7", "R2": "4k7", "R3": "4k7", "R4": "4k7", "R5": "4k7", "R6": "10k", "R7": "20k", "R8": "10k"}
 FP = {"SW1": "TS06_Rotary_SR25_PanelMount_Rhythm", "SW2": "TS06_MT1_Lever_PanelMount",
       "SW3": "TS06_MT1_Lever_PanelMount", "SW4": "TS06_KMD1_Button_PanelMount",
-      "SW5": "TS06_KMD1_Button_PanelMount", "J1": "TS06_JST_PH_S6B-PH-SM4-TB_Back"}
+      "SW5": "TS06_KMD1_Button_PanelMount", "J1": "TS06_JST_PH_B6B-PH-SM4-TB_Back"}   # rev B: upright (rev A: ..._S6B-PH-SM4-TB_Back, side entry)
 FP.update({r: "TS06_R_1206_HandSolder" for r in ("R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8")})
 BACK = {r for r in FP if r.startswith(("R", "J"))}
 
@@ -161,8 +161,17 @@ ROT_PAD_DY = 15.0
 LADDER_Y = 35.2                        # the five 4k7 in a row under the landing pads
 LEV_PAD_DY, LEV_R_Y = 9.5, 30.0        # lever pads (footprint), their pull-downs 4.5 below them
 REF_AT = {}                            # a reference that must move off a neighbour (none now)
-J1_DX = 5.0                            # J1 right of the minus button: its pin 5 (D7) under that button's D7 pad
-J1_Y = 33.4                            # as on TS06-FASCIA: courtyard bottom 38.5, where the case model's lead leaves
+J1_DX = 5.0                            # J1 right of the minus button: its pin 6 (D8) under that button's pad gap, pin 5 (D7) under its D7 pad
+# J1, the upright B6B-PH-SM4-TB (rev B). Its footprint origin, y: the six pads (1.0 x 5.5, centred 0.5 below the origin) run
+# J1_Y-2.25 .. J1_Y+3.25 (the last 2.5 mm are the solder tails, out of the body towards the bottom edge), the body
+# (F.Fab) J1_Y-4.25 .. J1_Y+0.75, the pin contacts at J1_Y-2.5, the courtyard J1_Y-4.75 .. J1_Y+3.75. At 33.0 the courtyard
+# ends 3.25 mm from the bottom edge and starts 2.0 mm under the minus button's landing pads (y 24.75-26.25), whose hand
+# wires come down beside it; the tails end 36.25, which leaves the two channels A6 and A7 take under them.
+J1_Y = 33.0
+J1_PAD_Y0, J1_PAD_Y1 = J1_Y - 2.25, J1_Y + 3.25     # the pads' ends: the top ones are under the body, the bottom ones are the tails
+J1_BODY_Y0, J1_BODY_Y1 = J1_Y - 4.25, J1_Y + 0.75   # the body's outline, F.Fab
+J1_PIN_Y = J1_Y - 2.5                                # the pin contacts' row: the mated plug's wires leave straight back over it
+REV = "B"                              # the J1 change (side entry -> upright) is a new revision of the fascia R: rev A is the zip kept as a record
 
 
 def U(s):
@@ -219,6 +228,9 @@ def layout(key):
     # passes under the pins from the plus button, and everything else comes from the left. The
     # study tried it between the levers (a 60 mm shorter cable) and found no planar routing that
     # left every GND pad on the pour: A7's four ends (both levers, R6, pin 4) straddle it.
+    # Rev B: the part is upright (B6B-PH-SM4-TB). Same place and the same pin order, so the same topology: D8 and D7
+    # still drop into the pads' top ends from above (now under the body), A6, A7 and +5V still come in from below
+    # (now at the tails), and pad 2 (GND) still gets the pour from above.
     P["J1"] = (round(a["SW4"] + J1_DX, 4), J1_Y)
     tracks = []
 
@@ -246,8 +258,9 @@ def layout(key):
     jx, jy = P["J1"]
     s4, s5 = a["SW4"], a["SW5"]
     yd8 = CY + 7.0
-    trk("D8", [(jx - 5.0, jy - 2.85), (s4, jy - 2.85 - 1.0), (s4, yd8), (s5 + 1.6, yd8), (s5 + 1.6, CY + LEV_PAD_DY)])
-    trk("D7", [(s4 + 1.6, CY + LEV_PAD_DY), (s4 + 1.6, jy - 5.7), (jx - 3.0, jy - 5.3), (jx - 3.0, jy - 2.85)])
+    yin = J1_PAD_Y0 + 0.6                 # a track ends 0.6 mm inside its pad's top end, under the body
+    trk("D8", [(jx - 5.0, yin), (s4, yin - 1.0), (s4, yd8), (s5 + 1.6, yd8), (s5 + 1.6, CY + LEV_PAD_DY)])
+    trk("D7", [(s4 + 1.6, CY + LEV_PAD_DY), (s4 + 1.6, J1_PAD_Y0 - 3.05), (jx - 3.0, J1_PAD_Y0 - 2.65), (jx - 3.0, yin)])
     return dict(key=key, a=a, P=P, fixed=tracks)
 
 
@@ -393,11 +406,11 @@ def model(L, clr=0.2):
     # are 1.0 mm, legal for a 0.25 track, and a solder bridge waiting for a hand iron. A track
     # still ends in its own pad through the pad's end (join() opens a net's own copper).
     jx, jy = L["P"]["J1"]
-    for gx in (-4.0, -2.0, 0.0, 2.0, 4.0):                              # the five gaps between six pins
-        B.keepouts.append((jx + gx - 0.5, jy - 4.6, jx + gx + 0.5, jy - 1.1, "*"))
-    # the channel under the pins, between them and the retention tabs, is A6's and A7's: they come
-    # in from the left and turn up into pins 3 and 4 from below, as on TS06-FASCIA
-    B.keepouts.append((jx - 8.1, jy - 1.1, jx + 8.1, jy + 1.2, "*", {"A6", "A7"}))
+    for gx in (-4.0, -2.0, 0.0, 2.0, 4.0):                              # the five gaps between six pins, along the whole pads
+        B.keepouts.append((jx + gx - 0.5, J1_PAD_Y0, jx + gx + 0.5, J1_PAD_Y1, "*"))
+    # the channel under the tails is A6's and A7's: they come in from the left and turn up into pins 3 and 4 from
+    # below, as on TS06-FASCIA (the retention tabs of the upright part stand beside the pads, not under them)
+    B.keepouts.append((jx - 8.1, J1_PAD_Y1, jx + 8.1, J1_PAD_Y1 + 2.2, "*", {"A6", "A7"}))
     # (the minus button's gap carries D8, laid by hand in layout(): see there)
     for r in ("SW2", "SW3", "SW4", "SW5"):
         x, y = L["P"][r]
@@ -484,8 +497,8 @@ def write_pcb(L, G, tracks, path):
     o = out.append
     o('(kicad_pcb\n\t(version %d)\n\t(generator "%s")\n\t(generator_version "%s")' % (VER, GEN, GENV))
     o('\t(general\n\t\t(thickness %.1f)\n\t\t(legacy_teardrops no)\n\t)\n\t(paper "A3")' % THK)
-    o('\t(title_block\n\t\t(title "%s")\n\t\t(rev "A")\n\t\t(company "TERMINAL-06")\n'
-      '\t\t(comment 1 "the fascia on the tube grid, alignment %s: %s")\n\t)' % (NAME, L["key"], L["a"]["title"].replace('"', "'")))
+    o('\t(title_block\n\t\t(title "%s")\n\t\t(rev "%s")\n\t\t(company "TERMINAL-06")\n'
+      '\t\t(comment 1 "the fascia on the tube grid, alignment %s: %s")\n\t)' % (NAME, REV, L["key"], L["a"]["title"].replace('"', "'")))
     o('\n'.join(['\t(layers', '\t\t(0 "F.Cu" signal)', '\t\t(2 "B.Cu" signal)',
                  '\t\t(9 "F.Adhes" user "F.Adhesive")', '\t\t(11 "B.Adhes" user "B.Adhesive")',
                  '\t\t(13 "F.Paste" user)', '\t\t(15 "B.Paste" user)',
@@ -567,7 +580,7 @@ def write_pcb(L, G, tracks, path):
 
 def write_project(path):
     """The .kicad_pro, fp-lib-table, sym-lib-table and the schematic: TS06-FASCIA's, renamed. The
-    netlist is unchanged; the schematic names SW1's new footprint."""
+    netlist is unchanged; the schematic names SW1's new footprint and, since rev B, J1's upright one."""
     d = os.path.dirname(path)
     base = os.path.splitext(path)[0]
     pro = json.load(open(ORIG + ".kicad_pro", encoding="utf8"))
@@ -581,6 +594,9 @@ def write_project(path):
     sch = sch.replace('(title "TS06-FASCIA - control panel and product face")',
                       '(title "%s - control panel and product face, on the tube grid")' % NAME)
     sch = sch.replace('"TS06:TS06_Rotary_SR25_PanelMount"', '"TS06:%s"' % FP["SW1"])
+    sch = sch.replace('"TS06:TS06_JST_PH_S6B-PH-SM4-TB_Back"', '"TS06:%s"' % FP["J1"])     # rev B: J1 is the upright part
+    assert '(rev "A")' in sch
+    sch = sch.replace('(rev "A")', '(rev "%s")' % REV, 1)
     open(base + ".kicad_sch", "w", encoding="utf8", newline="\n").write(sch)
 
 

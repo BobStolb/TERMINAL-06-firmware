@@ -236,6 +236,50 @@ write("TS06_JST_PH_S6B-PH-SM4-TB_Back",
       "the mechanical load - the signal pads do not. Cable exits toward +Y.",
       "connector JST PH SMT 6way panel TERMINAL-06", b, -6.2, 6.6, hide_val=True)
 
+# ------------------------------------------------- JST PH B6B-PH-SM4-TB, top entry (upright) SMT
+# The part that replaces the side-entry one above as fascia R's J1 (rev B): the mouth faces straight out of the
+# fascia's back and the six wires leave it straight back into the case, instead of lying along the board and
+# bending 90 + 12 degrees onto the floor (J1-UPRIGHT.md in PCB/TS06-FASCIA-rhythm).
+#
+# Land pattern taken from KiCad 10's Connector_JST library, JST_PH_B6B-PH-SM4-TB_1x06-1MP_P2.00mm_Vertical (drawn by KiCad
+# from JST's manufacturer drawing; not invented here). Library frame, y down: six pads 1.0 x 5.5 at y +0.5 on a 2.0 pitch
+# (pin 1 at x -5), two retention tabs 1.6 x 3.0 at (+-7.4, -1.75), body outline (F.Fab) x +-7.975, y -4.25..+0.75, the pin
+# contacts at y -2.5; the pads run 2.5 mm out of the body towards +y (the solder tails). Same body width as the side-entry
+# part (15.9 + 0.05 of outline): JST's B = A + 5.9 with A = 2.0 x (n-1) = 10.0.
+#
+# MIRRORED IN X for the back, exactly as the side-entry footprint above, and for the same reason: seen from the front
+# the part's pin 1 is at +5, so J1's pin order on the board (1 +5V ... 6 D8, right to left) is the one TS06-FASCIA and
+# R already have, and the hand-laid D7 / D8 tracks above the connector still meet pins 5 and 6. The tails point to
+# +y (the bottom edge of the board), the body stands to -y of them. Pin 1 is marked by the library's silk stub.
+# The two MP pads are the retention tabs: they hold the part down and carry no net.
+PH_UP_PADS = [("1", 5.0), ("2", 3.0), ("3", 1.0), ("4", -1.0), ("5", -3.0), ("6", -5.0)]
+b = [rrpad(n, x, 0.5, 1.0, 5.5) for n, x in PH_UP_PADS]
+b += [rrpad("MP", 7.4, -1.75, 1.6, 3.0), rrpad("MP", -7.4, -1.75, 1.6, 3.0)]
+for x1, y1, x2, y2 in [(-7.975,-4.25,7.975,-4.25), (7.975,-4.25,7.975,0.75), (7.975,0.75,-7.975,0.75),
+                       (-7.975,0.75,-7.975,-4.25),
+                       (5.5,0.75,5.0,0.042893), (5.0,0.042893,4.5,0.75)]:       # the pin-1 chevron on the tail side
+    b.append(line(x1, y1, x2, y2, "B.Fab", 0.1))
+for x in PH_UP_PADS:                                                            # the six pin contacts, at y -2.5
+    b.append(f'\t(fp_rect\n\t\t(start {x[1] - 0.25:.4f} -2.75)\n\t\t(end {x[1] + 0.25:.4f} -2.25)\n\t\t(stroke\n\t\t\t(width 0.1)\n'
+             f'\t\t\t(type solid)\n\t\t)\n\t\t(fill no)\n\t\t(layer "B.Fab")\n\t\t{U()}\n\t)')
+for x1, y1, x2, y2 in [(-8.085,-4.36,8.085,-4.36), (8.085,-4.36,8.085,-3.51), (-8.085,-4.36,-8.085,-3.51),
+                       (8.085,0.01,8.085,0.86), (-8.085,0.01,-8.085,0.86),
+                       (8.085,0.86,5.76,0.86), (-8.085,0.86,-5.76,0.86),
+                       (5.76,0.86,5.76,3.25)]:                                  # the stub beside pad 1 marks pin 1
+    b.append(line(x1, y1, x2, y2, "B.SilkS", SILK_W))
+for x1, y1, x2, y2 in [(-8.48,-4.75,8.48,-4.75), (8.48,-4.75,8.48,-3.75), (8.48,-3.75,8.7,-3.75), (8.7,-3.75,8.7,0.25),
+                       (8.7,0.25,8.48,0.25), (8.48,0.25,8.48,1.25), (8.48,1.25,6.0,1.25), (6.0,1.25,6.0,3.75),
+                       (6.0,3.75,-6.0,3.75), (-6.0,3.75,-6.0,1.25), (-6.0,1.25,-8.48,1.25), (-8.48,1.25,-8.48,0.25),
+                       (-8.48,0.25,-8.7,0.25), (-8.7,0.25,-8.7,-3.75), (-8.7,-3.75,-8.48,-3.75), (-8.48,-3.75,-8.48,-4.75)]:
+    b.append(line(x1, y1, x2, y2, "B.CrtYd", 0.05))
+write("TS06_JST_PH_B6B-PH-SM4-TB_Back",
+      "JST PH B6B-PH-SM4-TB: 6-way, 2.0 mm pitch, top entry (upright), surface mount, 2 A / 100 V. "
+      "Land pattern from KiCad's Connector_JST library (JST manufacturer drawing), mirrored in X for back-side mounting "
+      "(pin 1 at +5 seen from the front). The mouth faces away from the board; the wires leave straight up. "
+      "The solder tails run 2.5 mm out of the body towards +Y. MP pads are the retention tabs and carry the "
+      "mechanical load - the signal pads do not.",
+      "connector JST PH SMT 6way upright top-entry panel TERMINAL-06", b, -6.2, 6.6, hide_val=True)
+
 
 # ============================================================ THROUGH-HOLE VARIANT
 # Footprints for TS06-FASCIA-THT, the board where the ladder is on show. Everything

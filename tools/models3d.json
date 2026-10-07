@@ -130,6 +130,11 @@
    "kind": "made",
    "note": "JST PH side-entry SMD header S6B-PH-SM4-TB"
   },
+  "JST_PH_SM_UP": {
+   "file": "${TS06_POP}/jst_b6b_sm4_back.wrl",
+   "kind": "made",
+   "note": "JST PH upright (top-entry) SMD header B6B-PH-SM4-TB, 13.9 x 5.0 x 6.0 (KiCad's library has the footprint but no model)"
+  },
   "KMD1_button": {
    "file": "${TS06_3D}/KMD1.step",
    "rotate": [
@@ -488,9 +493,9 @@
       "R1206"
      ]
     },
-    "TS06_JST_PH_S6B-PH-SM4-TB_Back": {
+    "TS06_JST_PH_B6B-PH-SM4-TB_Back": {
      "models": [
-      "JST_PH_SM"
+      "JST_PH_SM_UP"
      ]
     }
    },
