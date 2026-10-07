@@ -9,6 +9,9 @@
   Owner 23:22: "1" = let pass 3 finish, pick one face tomorrow, park it, no pass 4.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none. Nothing new until the morning reading** (xstream, about 10:00-11:30 MSK) unless the owner says so.
+* **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
+  title): plan + grill in `Claude outputs/TS06-parked.md` P1a; brief ready scratchpad fascia-pass4/BRIEF.md. Launch after
+  the morning reading with xstream's GO and the owner's go (cap 0.6 M). Title: owner to pick from my candidates.
   Owner 23:05: "1 combine B* and C* with new info / 2 ok use your best judgement but explain why do we need this /
   3 yes / 4 yes coordinate pace with xstream". Decided: no mode flip (GND rail on top); round corners, one radius.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
