@@ -1,6 +1,6 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 23:15 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 23:45 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Owner's standing ask (10-07 ~23:22 UTC):** "I want you to remind me to keep my adhd in check and dont blindly follow
   me when I say run things". Before any run on the owner's word, check: does it move the main goal (the order), does the
   pace allow it, is a decision open first? If not, say so plainly, suggest the smaller step or parking it, ask once.
@@ -8,13 +8,13 @@
   23:25: "also my adhd tasks still get planned out and grilled if not running"): `Claude outputs/TS06-parked.md` (P1-P6).
   Owner 23:22: "1" = let pass 3 finish, pick one face tomorrow, park it, no pass 4.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Run: fascia-pass3** launched 23:15 UTC (cap **0.6 M** / 90 min, ends by 00:45; xstream QUOTA GO 23:15: week 29 % vs
-  line ~27.2). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4); D1 first, D2 only if under
-  0.35 M. On report: view pictures, cherry-pick, verify_pair, push, send the sheet. **After it: nothing new until the
-  morning reading (xstream, about 10:00-11:30 MSK) unless the owner says so.**
+* **Runs: none. Nothing new until the morning reading** (xstream, about 10:00-11:30 MSK) unless the owner says so.
   Owner 23:05: "1 combine B* and C* with new info / 2 ok use your best judgement but explain why do we need this /
   3 yes / 4 yes coordinate pace with xstream". Decided: no mode flip (GND rail on top); round corners, one radius.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
+  * **fascia-pass3 DONE** 23:42 (0.33 M / 27 min): `PCB/TS06-FASCIA-pass3.md` + sheet + dial crop; D1 (rails fold as a
+    pair), D2 (rails close both ends, bezel; run's pick and mine); no flip. Run recommends equal name pitch; I recommend
+    level leaders (equal pitch hooks 4 leaders; owner: no doglegs). Cherry-picked f4ec9fb, 27 PASS. Owner: pick once (P1).
   * **fascia-pass2 DONE** 22:59 (0.45 M / 36 min): `PCB/TS06-FASCIA-pass2.md` + sheet; A, A*, B, B*, C, C*. Pick B*
     (rails + circles + art; = xstream's pick); A* the no-flip option; C not to build. Its Qs: B* or A*; round corners
     r 1.79; title strip text. Cherry-picked b105030, 8ed6c81, 27 PASS.
@@ -40,7 +40,7 @@
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
 * **The Pace Act** (commons laws/2026-10-07-the-pace-act.md; co-signed 23:19 UTC, standing word): xstream keeps readings;
   bands by points over the line (AHEAD +1..+2: caps 0.6 M; FLAG +2+: GO first); LAUNCH line before any run of 0.3 M+,
-  DONE after with the actual. Owed: DONE for fascia-pass3. Am. 1 (a priority list) in force 23:26, then the owner 23:27: "priorities should be kept out... no place to put in
+  DONE after with the actual. DONE for pass 3 sent. Am. 1 (a priority list) in force 23:26, then the owner 23:27: "priorities should be kept out... no place to put in
   law": Am. 2 (no list; the owner decides in chat) IN FORCE 23:29.
 * **The Open Access Act** (rucurl, Russian sites, local PC only) co-signed 23:39 UTC with a session check: nixie sends no
   FETCH relay... settled by the owner 23:4x UTC: "use your best judgement to get the info cheaply". Cheapest route
@@ -51,7 +51,7 @@
 * **Chat times in MSK (UTC+3)** (owner 10-07 22:5x UTC: "keep replies in chat to msk"). Read from `date -u`, add 3 h;
   files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass3 (cap 0.6M/90min; then nothing new until the morning reading);
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (nothing new until the morning reading);
   open owner asks: the order (fascia now rev B), pass 3 picks when it reports; title text; fuse for exposed rails, bench measurements; plain short replies; times from date -u, shown in chat as MSK; remind the owner to keep ADHD in check, don't blindly launch runs`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
