@@ -2,8 +2,9 @@
 
 ## RESUME HERE (updated 07.10.26 23:03 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none.** xstream's VERDICT (commons 8e263ed): pick bus and medallions (= pass 2 B); left ladder a mistake;
-  its critics may add to verdict.md (said before 23:20 UTC): check and tell the owner.
+* **Runs: none.** xstream's VERDICT (commons 8e263ed) = pass 2 B; critics' addendum d5a63d4 (22:49 UTC; pass 2 missed it):
+  rail polarity (keep NORMAL at 0 V or flip on every face), six names at one equal pitch (bends on one arc), rails may
+  start at SUB, gold = circuit only and ornament white, more white art. Pass 3 on B* offered to the owner (~0.4-0.5 M).
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
   * **fascia-pass2 DONE** 22:59 (0.45 M / 36 min): `PCB/TS06-FASCIA-pass2.md` + sheet; A, A*, B, B*, C, C*. Pick B*
     (rails + circles + art; = xstream's pick); A* the no-flip option; C not to build. Its Qs: B* or A*; round corners
