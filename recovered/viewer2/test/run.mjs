@@ -953,6 +953,22 @@ if (!ONLY_WIRING) {
   ok('Fascia variants tab: its first line says R was picked and is in the order (fab/ORDER.md); the four columns stay as the record; only R and F open in 3D', fvt.id === 'fv-picked' && /^R was picked/.test(fvt.line) && fvt.line.includes('fab/ORDER.md') && fvt.cols === 4 && fvt.btns === 'R,F', fvt.line.slice(0, 100) + ' | ' + fvt.btns);
   ok('wiring: no console errors', errs.length === 0, errs.slice(0, 3).join(' || '));
   await ctx.close();
+  // the phone, light and dark: the Wiring switch and its legend fit 390 px, the selector offers R and F, the lead and its pin labels are there
+  for (const scheme of ['light', 'dark']) {
+    const { ctx: c2, page: p2, errs: e2 } = await newPage({ w: 390, h: 844, scheme, touch: true, mobile: true });
+    await load(p2, '', true);
+    await p2.evaluate(() => { const V = window.TS06; V.controls.target.set(96, -2, -25); V.camera.position.set(96, -110, -95); V.controls.update(); V.dirty = 3; });
+    await p2.locator('.stagecard').scrollIntoViewIfNeeded();
+    const r = await p2.evaluate(() => {
+      const V = window.TS06, rect = s => document.querySelector(s).getBoundingClientRect();
+      return { sw: document.documentElement.scrollWidth, noteRight: rect('#wirenote').right, noteH: rect('#wirenote').height, toggle: rect('label[for="wiringon"]'), fvs: [...document.querySelectorAll('#fvseg button')].map(b => b.dataset.fv).join(), lead: Object.keys(V.lead).join() };
+    });
+    await settle(p2);
+    await shot(p2, `p390-${scheme}-wiring`);
+    ok(`wiring phone ${scheme}: the Wiring switch and its legend fit 390 px, the selector offers R and F, no console errors`, r.sw <= 390 && r.noteRight <= 390 && r.toggle.width > 0 && r.toggle.right <= 390 && r.fvs === 'R,F' && r.lead === 'R,F' && e2.length === 0,
+      `scrollWidth ${r.sw}, legend right edge ${r.noteRight.toFixed(0)}, toggle right edge ${r.toggle.right.toFixed(0)}, ${e2.slice(0, 2).join(' || ')}`);
+    await c2.close();
+  }
 }
 
 await browser.close();

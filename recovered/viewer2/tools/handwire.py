@@ -295,7 +295,7 @@ def standin(ref, X0, body, pads, at):
     """No lug model: each wire starts on the stand-in body's back face (depth `dep`) and runs to its pad."""
     _, X, t, a, b, dep = body
     cx, cy = X - X0, t
-    names = sorted(pads, key=lambda n: int(n))
+    names = sorted(pads, key=lambda n: pads[n][0])          # left to right, so the wires do not cross on their way down
     wires, nets = [], []
     n = len(names)
     for i, nm in enumerate(names):

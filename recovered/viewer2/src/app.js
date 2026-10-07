@@ -888,7 +888,7 @@ function renderWireNote() {
   $('#wirenote').innerHTML = `<b>Lead</b> (JST PH, pin 1 to pin 1, <span id="leadlen">190</span> mm): ${LEAD_PINS.map(p => `<span class="wp">${dot(p.col)}${p.n} ${p.net} ${p.name}</span>`).join(' ')}. <b>Hand wires</b> on the fascia’s back, from each control’s lugs to its landing pads, take the colour of their net.`;
 }
 function renderFasciaPick() {
-  $('#fvseg').innerHTML = FASCIA_PICK.map(p => `<button type="button" data-fv="${p.v}" aria-pressed="${p.v === V.fv}" title="${esc(p.title)}">${esc(p.label)}</button>`).join('');
+  $('#fvseg').innerHTML = FASCIA_PICK.map((p, i) => `<button type="button" data-fv="${p.v}" aria-pressed="${p.v === V.fv}" title="${esc(p.title)}">${i ? '' : 'Fascia '}${esc(p.label)}</button>`).join('');
 }
 
 function buildRoots() {
@@ -1602,7 +1602,7 @@ function renderNotes() {
     ['Black boards with white silkscreen', 'Each board’s own stackup: the GLB export and <code>kicad-cli pcb render --use-board-stackup-colors</code>. TS06-DRV and TS06-DISP carry black mask and white silk; TS06-FASCIA’s file has no stackup, so the build adds the one PCB/README.md orders (2.0 mm, black, white, ENIG) to a scratch copy.'],
     ['Tracks faintly under the mask, gold pads', 'KiCad’s copper, pads and zones, exported after the pours were refilled (the committed files store no fill).'],
     ['Parts with KiCad bodies', `TS06-DRV ${d['TS06-DRV'].bodies}, TS06-DISP ${d['TS06-DISP'].bodies}, TS06-FASCIA ${d['TS06-FASCIA'].bodies}. Their glTF nodes are named by reference (U11, XS21, …), which is how a step or a section finds them.`],
-    ...(pop ? [['Stand-in bodies', 'Only on the boards that are not populated, the fascia variants A and W: control bodies from the case model’s depths. The populated boards need none, so the build and bring-up steps show and hide the parts’ own bodies.']] : []),
+    ...(pop ? [['Stand-in bodies', 'Only on the board that is not populated, A, which stands in for F: control bodies from the case model’s depths. The populated boards need none, so the build and bring-up steps show and hide the parts’ own bodies.']] : []),
     ['Every other part', 'Found by its footprint in the <code>.kicad_pcb</code>: position, pads and courtyard, read by the build (<code>data/parts.json</code>). A part with no body gets a proxy (below) or, when highlighted, a thin box on its courtyard.'],
     ...(pop ? [] : [['Warm glass tubes', 'Proxies from the case model’s envelopes: ИН-12/ИН-15 19.47 × 28.86 × 25.5 mm on a 4.5 mm socket seat, ИН-17 face 14 × 20 on a Ø20 stem, 19.72 mm of glass (measured) on a 10.28 mm seat, ИНС-1 Ø6.97. The glowing numerals are decoration.']]),
     ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
@@ -1610,7 +1610,7 @@ function renderNotes() {
     ['Standoffs, screws', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8.'],
     ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1. Its ends, the 9.5 mm mated height, the floor, the 3 mm bend and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>); a control with no lug model is wired from its body’s back face.'],
     ['The case', 'The printable parts from <code>3d/case-pair/out/*.stl</code> (cheeks, brow, top plate, trench, base, rear panel, and the fascia frame for F), where the case model places them. The cheeks are the default build, with the fascia bosses A, W and R use.'],
-    ['Fascia A, W, R and F', 'A, W and R are their own boards, exported like the others and placed at the case model’s X0 for each (4.305, 0, 0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs.'],
+    ['Fascia R and F in 3D', 'The 3D view offers R (the default: picked, and ordered by fab/ORDER.md) and F. R is its own board, exported like the others and placed at the case model’s X0 (0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs, at X0 4.305. A and W are not drawn in 3D any more; the Fascia variants tab keeps them as the record.'],
   ];
   $('#notesbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
 }

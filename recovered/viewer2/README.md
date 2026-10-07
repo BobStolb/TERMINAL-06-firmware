@@ -46,9 +46,43 @@ fascia is **R as it is ordered**: the Plates white print and the Divider gold (`
   contacts are part of the tube's node and a chip's socket part of the chip's, so they appear together.
 * The board pictures (`img/<board>-top|iso|bottom.png`) are the populated ones, and the case pictures end with the
   populated stack (front, angled). The fascia shown first is R.
-* The fascia variants A and W are not ordered and are not populated: they are drawn as before (bare KiCad body plus the
-  case model's control bodies), and the facts panel says so. `POPULATED=0` draws all boards that way.
+* The 3D view's fascia selector offers **R and F** only, R the default (it was picked, and `fab/ORDER.md` orders it). A and W are not
+  drawn in 3D any more; the Fascia variants tab keeps them, with the other columns, as the record. F is the case model's printed frame with
+  A's 176 board standing in for its 179 panel, so that board is not populated: it is drawn as before (bare KiCad body plus the case model's
+  control bodies), and the facts panel says so. `POPULATED=0` draws all boards that way. The selector is one list, `FASCIA_PICK` in
+  `src/app.js`: the next fascia (a through-hole one is planned) is one more entry there, its board in `FV` and `FV_NAME` and in `VARIANTS` of
+  `tools/assembly.py`. The Front panel tab's board picker is R only.
 * The tracks are not in the DRV and DISP GLBs (they lie under the black mask; the files would pass 15 MB); pads, silk and mask are. The fascia R's GLB does carry its copper, because its gold is copper graphics that KiCad exports only then. The page gives the finish gold a diffuse lean, so it reads as gold and not as pale cream under its soft light.
+
+## The wiring
+
+The Assembly scene draws the fascia's **lead** and the **hand wiring** on the fascia's back. A **Wiring** switch (on at load) under the camera deck
+hides and shows both; with **Labels** on, six labels name the lead's pins. The wires hide and show with their parts in the build stepper (the lead
+with `lead`, the hand wires with `fascia`); the lead also hides when the model is exploded, because it stays in the case.
+
+**The lead** (`leadGeometry`, `leadWires` and `buildLead` in `src/app.js`) is `PCB/TS06-DRV/bom.md`'s: 6-way JST PH, 1:1, 180 to 200 mm (190 drawn).
+Six wires, a PHR-6 housing seated on each J1: pin 1 red +5V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8 (`PCB/README.md` fixes the order for both
+builds; pin 1 is on the +X side at both J1s). What is read from where:
+
+| What | From |
+|---|---|
+| The two J1s: positions, and that the driver's is a top-entry B6B-PH-K on the display-facing face and the fascia's a side-entry S6B-PH-SM4-TB on its back, mouth to the bottom edge | the boards' files through `data/parts.json` (`tools/kparts.py`), placed by the same matrices as the boards |
+| The mated height (9.5 mm), where the wires leave the fascia's housing, the floor, the 3 mm bend radius, the 190 mm length | the case model (`3d/case-pair/case_pair.py`: `J1_MATED_H`, `FJ_PLUG_OUT`, `Y_FLOOR`, `CABLE_R`, `LEAD_LEN`) through `data/model.json` |
+| The housings' size (11.3 mm across, 3.5 mm thick), the wire (0.9 mm over the insulation) | typical PH figures, not measured here |
+
+The route between the ends is built, not typed: leave the driver's housing towards the front, bend down (R 3), drop, bend back along the floor; lie on the floor in a
+slack loop, out to the rear, across and forward; climb the raked fascia (bend of 90 + 12 degrees, R 3) into the fascia's housing. The loop's size is solved so that the centre line
+is the lead's length; the shortest way across is the case model's `LEAD_PATH` (about 138 mm), so about 52 mm of the lead is slack. Near each housing the wires lie in a row at
+the header's 2.0 mm pitch and close up to a flat band; on the floor they lie as a loose bundle, turning slowly, and the turn that puts pin 1 on the same side at the far housing is
+spread along the floor. Each wire's length is counted from the drawn wire (about 190 mm, within 2 mm of each other); the tests print them.
+
+**The hand wiring** (`tools/handwire.py` writes `data/handwire.json`): the MODE rotary, the two levers and the two buttons mount from behind with only the bushing through the panel, so each is
+wired by hand from its lugs to landing pads on the fascia's back. The lugs are read out of the control models in the populated fascia's GLB (the rotary's 12 taps and 2 commons, three lugs on each
+МТ1 and КМД1); the pads and their nets from the board file. Which lug takes which pad is chosen, and said so on the page: the dial's six positions are at -75 to +75 degrees
+(`tools/fascia_art.py`), position 1 is 0 V and 6 is +5 V, so position k is the tap lug at its angle and the wiper is the common on the same side; a lever or a button has three lugs and the board two
+pads, so the two lugs nearest the pads are used and the third stays free (which lug of a real lever is the common is for a meter to say, not the model). The routes and their depths are searched so that no
+wire touches a body, a lug that is not its own, or another wire (the least gaps are printed by the build and checked by the tests). A board with no lug models (A, the stand-in for F) has stand-in control
+bodies: its wires start on the body's back face. The hand wires take the colour of their net.
 
 ## The glow switch
 
@@ -81,11 +115,14 @@ build time. Rebuild after `fab/` or the fit table changes.
 
 ## The tests
 
-`test/run.mjs` drives the built page in Chromium (software GL: about 8 minutes in all, 158 checks; `ONLY_NEW=1` runs just the 46 checks of the
-populated boards, the glow switch and the Order view, about 5 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
+`test/run.mjs` drives the built page in Chromium (software GL: about 12 minutes in all, 179 checks; `ONLY_NEW=1` runs just the checks of the
+populated boards, the glow switch, the Order view and the wiring; `ONLY_WIRING=1` just the 23 wiring checks, about 1.5 minutes). It serves `site/` on port 8766, answers the CDN's three.js from the vendored copy
 and fails on any console error or request that leaves the machine. The checks cover the camera deck, the stepper, the sections, the front
 panel view, light, dark and phone widths, and, for the populated boards: the files and their limits, the GLBs loaded with their
-parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D view, the glow switch (there, off at load, on shows the numerals, off hides them, on the desktop and the phone, light and dark) and every row of the Order view.
+parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D view, the glow switch (there, off at load, on shows the numerals, off hides them, on the desktop and the phone, light and dark) and every row of the Order view. The wiring checks: the fascia selector offers exactly R and F; the lead has six wires in the right colours and a housing at each end,
+its length (the centre line and every wire) is within 180 to 200 mm, and no wire point is inside TS06-DRV, TS06-DISP, the fascia board, a standoff or the case's walls
+(a ray from the point through the case's shells; the check is itself checked on a point in a cheek and a point in the air); the hand wiring ends on its pads, with the nets of the board file;
+the Wiring switch hides and shows the lead, the hand wires and the pin labels; a stored A or W falls back to R; the Fascia variants tab says R was picked; the phone, light and dark.
 `SITE=`, `THREE=` and `SHOTS=` point the test at a build and a screenshot folder elsewhere.
 
 ## Files
@@ -96,5 +133,6 @@ parts, no stand-in bodies, the pictures, the gold in the picture and in the 3D v
 | `build.sh` | the build; its header lists every input and option |
 | `tools/mksections.sh` | the schematic sections, regenerated from the repository |
 | `tools/order.py`, `tools/populated.py` | the Order view's data; the populated boards' pictures, sizes and model coverage |
+| `tools/handwire.py` | the hand wiring on the fascia's back: lugs from the control models in the populated GLB, pads and nets from the board file, routes searched for clearance (`data/handwire.json`) |
 | `tools/prep_board.py`, `kicad_export.sh`, `glb2json.py`, `stl2gltf.py`, `kparts.py`, `assembly.py`, `facts.py`, `trim.py`, `sections.py` | the build's other steps |
 | `test/run.mjs`, `serve.py` | the checks and their static server (`perf.mjs`, `debug.mjs`: development helpers) |
