@@ -335,3 +335,5 @@ the left of the rotary near the edge? letting us combine more gold leads between
 | fascia-j1-upright | R's J1 upright (B6B-PH-SM4-TB): fit study, then R rev B, zip, case floor | 0.5-0.7 M | 1.0 M / 100 min | |
 | fascia-t3-variants | T3 column left of the dial, T3a-c, contact sheet with T1 | 0.4-0.6 M | 0.9 M / 90 min | |
 Both launched 15:00 UTC. Quota reading still stale (10-03).
+| page-handwire | tidy hand wires on the fascia back (owner: "look messy") | 0.4-0.6 M | 0.8 M / 90 min | |
+Launched 15:05 UTC.
