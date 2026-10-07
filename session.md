@@ -14,7 +14,7 @@
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
 * **Owner's answers 10-07 ~14:50:** T1 good and T3 kept (3 new versions); J1 kept on the back; the rotary body 25 mm (plate
   not calipered); knob A; bench measurements tbd. Upright fascia J1 asked ("maybe we change the connector...").
-* **Open with the owner:** the order waits for fascia R rev B (DISP and DRV zips unchanged); knob A: low, shaft cut to 12 mm (my call, owner: "youre free to change them"); the
+* **Open with the owner:** the order waits for fascia R rev B (DISP and DRV zips unchanged); knob A: low, shaft cut to 12 mm (owner agreed 10-07); the
   bench measurements (3d/jig/README.md); T plan Q4 (plated holes + moat, 10-board sample); meshok.net if wanted.
 * **Waiting for the owner:** the order (own hand): the zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays

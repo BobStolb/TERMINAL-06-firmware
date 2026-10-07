@@ -174,7 +174,7 @@ a 6 mm bore with a fixing the owner can use. Two questions to put to the seller 
 **A is the knob.** The files are ours to change. The default `knob_A.stl` stays the low knob (top 14.3 mm above the face), which
 needs the SR25's metal shaft cut down to 12.0 mm above the face: one hacksaw cut at the bench, done once, with the switch out of the
 fascia. `knob_A_uncut.stl` is the no-cut fallback, 6.0 mm taller (top 20.3 mm). The cut is the default because a low flat knob is
-what the РСИ original is; the shaft's real length is still to be measured (the list below).
+what the РСИ original is, and the owner agreed (10-07: "youre free to cut the shaft its a cheap component"); the shaft's real length is still to be measured (the list below).
 
 ## The run's pick (before the owner chose)
 
