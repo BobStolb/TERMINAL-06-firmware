@@ -1,13 +1,18 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 02.10.26 12:10 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 11:34 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. Quota: fresh 10:40 (5 h 4 %, week 57 %). The week's pace line is the limit (owner via xstream 10:30).
-* **Runs:** none (both done, merged, pushed by 12:10). Lost-run check after a compact: `git worktree list`, the newest
-  commit per `.claude/worktrees/agent-*`; 30 min with no commit and no notice = lost; relaunch from the brief.
-* **Done 12:10:** the page is PUBLISHED, version 6, `https://claude.ai/artifact/FzK6sTskEh2GvBRHAfNCBS` (build of
-  1b9e61f, 158 PASS). Fascia: level leaders, names 2.37 mm, holes opened; the ordered zip is
-  `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`. DFM PASS, verify 27 PASS. G11 legend row FAILs (names under 3 mm),
-  accepted with the owner's pick of a. ИН-17 glass 19.72, seat 10.28, pip 4 mm (estimate). Glow switch incl. colon.
+* **Runs (launched 2026-10-07 11:33 UTC, sonnet, worktrees; briefs in scratchpad `page-wiring/`, `fascia-tht-plan/`):**
+  * **page-wiring:** the real 6-wire JST PH lead + the controls' hand wiring in the 3D view, a Wiring toggle; the fascia
+    selector R and F only. Cap 0.9 M / 90 min. On report: look at the screenshots, cherry-pick, verify 27 PASS, rebuild,
+    full suite, then publish (same url; read the live index.html in full and list the files first).
+  * **fascia-tht-plan:** a plan + mockup for a 3rd fascia "T": THT parts from the front, joints on the back (owner
+    11:28). Cap 0.5 M / 60 min. On report: look at the picture, cherry-pick, push; show the owner, and post an item to
+    commons `embassy/review/nixie-fascia-tht-plan/` (owner's rule: every ask in one place).
+  * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
+    no commit and no notice = lost; relaunch from the brief.
+* **Quota:** reading of 10-03 is stale; the week reset 10-06 20:00; launched without a fresh one (owner: stopping is the
+  last resort); QUOTA ask posted to xstream 11:34 (xstream quiet since 10-03 16:10).
 * **Waiting for the owner:** the order (own hand): the three zips in `fab/` named in ORDER.md, all in one cart.
 * **Owner's answers 10:37** (answer.json in commons): 1 holes yes + uniform leaders; 2 ИН-17 19.72 mm (22 incl. the
   pip); 3 publish yes; 4 glow as a switch; 5 order walk-through given 10:41. The order stays the owner's hand: all
@@ -17,8 +22,8 @@
 * **Every ask for the owner goes to xstream too, in LOUD as in QUIET** (owner 11:25: "the point is to have all things
   that need input in one place"): an item in commons `embassy/review/<id>/` plus a mailbox line, and ask in chat.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none; open owner asks: the order
-  (own hand); plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs page-wiring, fascia-tht-plan; open owner
+  asks: the order (own hand), the THT plan's questions; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 

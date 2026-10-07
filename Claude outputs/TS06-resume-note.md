@@ -305,3 +305,14 @@ nixie-fascia-leaders (blocking the order) and nixie-page-final (3 bench question
 ## 12:10 UTC: the page published (version 6, build of 1b9e61f, 158 PASS); stack pictures by me (1b9e61f)
 The publish needed: Read of the live index.html in full (the 30.09 build, no hand edits; the new build keeps every id
 and adds the Order tab and the glow switch), then the file listing (79 files), then the publish went through.
+
+## 2026-10-07 11:28 UTC, the owner, verbatim
+"can you work on the wiring viz in product page? now its just one awkward purple wire / leave fascia variants R and F in
+the selector, also plan the third option of THT fascia, my preference is that we populate the components from the front
+so solder work is still on the backside and not visible to the user"
+| Run | What | Estimate | Cap | Actual |
+|---|---|---|---|---|
+| page-wiring | the 6-wire lead and hand wiring in 3D, Wiring toggle, selector R and F | 0.4-0.6 M | 0.9 M / 90 min | |
+| fascia-tht-plan | plan + mockup for fascia T (THT from the front) | 0.25-0.35 M | 0.5 M / 60 min | |
+Quota: the last reading is 2026-10-03 03:00 (week 73 %, reset 10-06 20:00), so it is stale and the week is new. Launched
+without a fresh reading on the owner's word "stopping progress is the last resort"; QUOTA ask to xstream at 11:34.
