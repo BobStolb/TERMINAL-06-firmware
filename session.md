@@ -11,8 +11,8 @@
     Cap 0.8 M / 90 min. On report: look at the pictures, cherry-pick, push, show the owner.
   * **knob-jig** (12:11): the dry fit as steps + a printed jig (`3d/jig/`), our own MODE knob (print or turned metal,
     `3d/knob/`), a meshok search for Soviet knobs (owner allowed; read only). Cap 0.8 M / 90 min. On report: pictures,
-    cherry-pick, push, show the owner. The owner will attach an example knob: save it to `qa/knob/reference/`, commit,
-    and SendMessage it to the run.
+    cherry-pick, push, show the owner. The owner's examples (РСИ-4 lobed knob, клювик knobs) are in
+    `qa/knob/reference/` (5f77444) and were sent to the run 12:12.
   * fascia-tht-plan DONE 11:52 (0.33 M / 21 min), pushed 3ab1677.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
     no commit and no notice = lost; relaunch from the brief.
@@ -26,7 +26,7 @@
   since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs page-wiring, fascia-t-concepts,
-  knob-jig; open owner asks: the order (own hand), T plan Q4, the knob example; plain short replies; times from date -u`.
+  knob-jig; open owner asks: the order (own hand), T plan Q4; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
