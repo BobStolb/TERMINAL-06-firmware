@@ -4,7 +4,9 @@
 * **Owner's standing ask (10-07 ~23:22 UTC):** "I want you to remind me to keep my adhd in check and dont blindly follow
   me when I say run things". Before any run on the owner's word, check: does it move the main goal (the order), does the
   pace allow it, is a decision open first? If not, say so plainly, suggest the smaller step or parking it, ask once.
-  Name tangents and the late hour. The owner still decides.
+  Name tangents and the late hour. The owner still decides. Ideas not run still get **planned and grilled** (owner
+  23:25: "also my adhd tasks still get planned out and grilled if not running"): `Claude outputs/TS06-parked.md` (P1-P6).
+  Owner 23:22: "1" = let pass 3 finish, pick one face tomorrow, park it, no pass 4.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Run: fascia-pass3** launched 23:15 UTC (cap **0.6 M** / 90 min, ends by 00:45; xstream QUOTA GO 23:15: week 29 % vs
   line ~27.2). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4); D1 first, D2 only if under
