@@ -9,8 +9,9 @@
     (the lead's fascia end upright, the new J1 model, the Order tab), republish.
   * **fascia-t3-variants DONE** 15:45 (0.46 M / 40 min): `PCB/TS06-FASCIA-T3-variants.md` + contact sheet; T3a ribbon
     (recommended), T3b schematic, T3c tubes. Cherry-picked 7a6747c..a494da3, verify 27 PASS. Its 3 questions to the owner.
-  * **page-handwire** (launched 15:05; est 0.4-0.6 M, cap 0.8 M / 90 min): tidy the hand wires on the fascia's back (owner:
-    "these wires from rotary leads look messy", `qa/page-wiring/reference/`). On report: look, cherry-pick, suite, push.
+  * **page-handwire DONE** 16:03 (0.37 M / 54 min): harness dressing, 187 PASS, cherry-picked ddd950f, b1bdb1b, verify 27
+    PASS. Tested build in scratchpad page-handwire/final/site (pre-J1). NOT published: publish after the J1 page update.
+    Pad order to remove A6's over-pass: +5V, TAP5, TAP4, A6, TAP3, TAP2, GND (for R rev B, if wanted).
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
 * **Owner's answers 10-07 ~14:50:** T1 good and T3 kept (3 new versions); J1 kept on the back; the rotary body 25 mm (plate
   not calipered); knob A; bench measurements tbd. Upright fascia J1 asked ("maybe we change the connector...").
@@ -23,8 +24,8 @@
   reading and the week's pace line (ask in commons 628d452). Runs in flight finish. Queued: the page update + republish.
   Owner's 10-07 earlier rule (skip xstream's idle queue) is replaced for pace: ask xstream, check commons each turn.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min) and
-  page-handwire (cap 0.8M/90min); open owner asks: the order waits for fascia R rev B, T3 Q1-3, bench
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min) ;
+  open owner asks: the order waits for fascia R rev B, T3 Q1-3, bench
   measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
