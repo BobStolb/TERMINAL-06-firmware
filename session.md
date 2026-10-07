@@ -1,13 +1,13 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 22:23 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 23:03 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Run: fascia-pass2** launched 22:23 UTC (cap 1.0 M / 100 min, ends by 00:03): owner 22:20 "combine v3 with circular
-  outlines, v4 with rails+circles and some aspects of v2 with less bunching. add an artistic pass, xstream is now awake
-  so his input too". Faces A, B, C + artistic A*, B*, C*. It reads xstream's verdict.md (commons fresh-eyes pack) at
-  start and before its sheet; asked xstream 22:24 (3eb9f51). On report: view every picture, cherry-pick, verify_pair,
-  push, send the owner the sheet; fold in xstream's verdict if it came late.
+* **Runs: none.** xstream's VERDICT (commons 8e263ed): pick bus and medallions (= pass 2 B); left ladder a mistake;
+  its critics may add to verdict.md (said before 23:20 UTC): check and tell the owner.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
+  * **fascia-pass2 DONE** 22:59 (0.45 M / 36 min): `PCB/TS06-FASCIA-pass2.md` + sheet; A, A*, B, B*, C, C*. Pick B*
+    (rails + circles + art; = xstream's pick); A* the no-flip option; C not to build. Its Qs: B* or A*; round corners
+    r 1.79; title strip text. Cherry-picked b105030, 8ed6c81, 27 PASS.
   * **fascia-pass1 DONE** 21:41 (0.41 M / 29 min): `PCB/TS06-FASCIA-pass1.md` + contact sheet; V1 Rails, V2 Harness
     (fails), V3 Medallions, V4 Rails+rings (run's pick). Ladder answer: left spot caused the coil; beads belong on the
     ring. Its 3 Qs: V4 or V3; +5V on top (flips the mode table); a PTC on J1 pin 1. Cherry-picked affe98b, 27 PASS.
@@ -34,8 +34,8 @@
 * **Chat times in MSK (UTC+3)** (owner 10-07 22:5x UTC: "keep replies in chat to msk"). Read from `date -u`, add 3 h;
   files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass2 (cap 1.0M/100min; page run waits for the owner's go);
-  open owner asks: the order (fascia now rev B), pass1 Q1-3 (V4/V3), bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
+  open owner asks: the order (fascia now rev B), pass2 Q1-3 (B* or A*, round corners, title text), bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
