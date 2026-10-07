@@ -5,6 +5,7 @@ The fascia goes to Rezonit with the clock's electronics. For a small production 
 | Board | Size | Stack | Status |
 |---|---|---|---|
 | **TS06-FASCIA** | 176 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | Routed. The control panel AND the printed product face. One board, not two. Surface-mount build: no solder visible from the front. Height compressed from the original 52mm 2026-09 - see below. |
+| **TS06-FASCIA-rhythm** (fascia R) | 191.4 × 40 mm | 2.0 mm FR4, black mask, white silk, ENIG | **The fascia of the order** (`fab/ORDER.md`). Controls on the tubes' grid, surface-mount on the back, no plated hole. **Rev B (7.10.26): J1 is an upright JST B6B-PH-SM4-TB** (top entry: the plug stands off the back and the wires leave straight back; rev A had the side-entry S6B-PH-SM4-TB, whose lead bent 90 + 12 degrees onto the floor and cost the case 7.3 mm) - `PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md`, `PCB/TS06-FASCIA-rhythm/bom.md`. The 176 TS06-FASCIA above is unchanged (it keeps the side-entry part). |
 | **TS06-FASCIA-THT** | 176 × 52 mm | same stack, ENIG | Second build of the same board, routed. Through-hole, with the A6 divider ON the face. Pick one to fabricate; they are alternatives, not a pair. Not yet height-compressed (the SMD build was chosen for fabrication). |
 | **TS06-DISP** + **TS06-DRV** | 191.4 × 44 mm + 191.4 × 100 mm | 1.6 mm, matte black | **The through-hole pair (25.09.26), the build for a small production run.** A display board with the tubes and nothing else, plugged by pin strips into a driver board behind it, the way AlexGyver builds his. **Zero vias on either board.** Both at rev B (30.09.26): TS06-DRV rev B is routed and merged, `tools/verify_pair.sh` gives 27 PASS, 0 FAIL, 0 SKIP, and the fab packages are in `../fab/`. Not ordered. See below. |
 | **TS06-MAIN** / **TS06-MAIN-THT** | 176 × 96 mm | 1.6 mm, matte black | **The whole clock on one board**, two builds, one outline, one netlist. Placed and checked; routing in progress — see below. Replaces the inherited AlexGyver board, SEC and COLON. |
@@ -88,6 +89,8 @@ fixed board. `tools/mkpcb_fascia_rhythm.py` now refuses to draw a composite from
 whose F.SilkS ring encloses a control hole off-centre (`silk_rings_off_centre()`).
 `tools/render_kicad.py` renders a board in KiCad 10 with the black mask and white silk
 that are ordered.
+
+**Fascia R, rev B (7.10.26): J1 is upright.** The footprint `TS06_JST_PH_B6B-PH-SM4-TB_Back` (KiCad's land pattern, mirrored in X for the back; SMD, no plated hole) keeps the pin order and the place between the buttons; the case model's floor rose from Y -7.3 to -4.5 (204.4 × 120.0 × 81.0 mm outside). The rest of this section is about the 176 TS06-FASCIA.
 
 **J1 pin order is fixed for both builds: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8.** It used
 to be whatever the surface-mount routing preferred (D8, D7, GND, A7, +5V, A6). The

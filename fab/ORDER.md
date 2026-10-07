@@ -9,10 +9,18 @@ Status: the three zips are built and checked, and every row of the DFM check pas
 four findings the fascia had in the first version of this sheet (silk lines, back legend text, mask slivers, the
 finish in its job file) are fixed in the generators and the zip is rebuilt; they are closed below.
 
+**Fascia R is now rev B (7 October 2026): J1 is an upright JST B6B-PH-SM4-TB** instead of the side-entry S6B-PH-SM4-TB, so the six-wire lead
+leaves it straight back and no longer bends 90 + 12 degrees at the base (the owner, about 14:50 UTC: "maybe we change the connector from a 90
+degree bend to normal upright?"; `PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md`). **This replaces the fascia zip: nothing had been placed.** The zip
+to send is `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip`. Everything else on the fascia is as rev A: the board, the gold, the holes, the
+leaders, the thickness, the finish. The rev A zip is kept as `fab/TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip`: **do not send it.**
+The case is 2.8 mm lower with the upright part (`3d/case-pair/checks.md`). The DISP and DRV zips are unchanged.
+
 **The fascia zip is the one with the control holes opened** (the owner, 2026-10-02: "1-  yes", 10:37 UTC; `fab/HOLES-VARIANT.md`)
-**and the level leaders** (the owner, 11:31 UTC: "a"). `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the fascia to
-send to the fab. The zip this sheet named before, with the holes as drawn (8.8 and 8.0 mm) and the sloped leaders, is kept as
-`fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`: **it is NOT ordered**, a record of what was not picked. Do not send it.
+**and the level leaders** (the owner, 11:31 UTC: "a"). `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` (rev B, see above) is the fascia to
+send to the fab. The zip with the holes as drawn (8.8 and 8.0 mm) and the sloped leaders is kept as
+`fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`: **it is NOT ordered**, a record of what was not picked. Nor is the rev A zip with the
+holes opened and the level leaders, `fab/TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip` (side-entry J1). Do not send either.
 
 ## The three zips
 
@@ -22,7 +30,7 @@ All three are in this folder. Upload one zip per board; each holds the Gerbers, 
 |---|---|---|---|---|---|---|
 | TS06-DISP rev B (the tubes) | `fab/TS06-DISP-revB-fab.zip` (120 kB) | 191.4 x 44.0 mm | 2 | 1.6 mm | 179 / 10 | all PASS |
 | TS06-DRV rev B (the driver) | `fab/TS06-DRV-revB-fab.zip` (333 kB) | 191.4 x 100.0 mm | 2 | 1.6 mm | 427 / 8 | all PASS |
-| Fascia R rev A with the Divider gold, control holes opened, level leaders | `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` (49 kB) | 191.4 x 40.0 mm | 2 | **2.0 mm** | 0 / 9 | all PASS |
+| Fascia R rev B (upright J1) with the Divider gold, control holes opened, level leaders | `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` (49 kB) | 191.4 x 40.0 mm | 2 | **2.0 mm** | 0 / 9 | all PASS |
 
 Notes on the table:
 * The job files inside the zips say 191.5 x 44.1, 191.5 x 100.1 and 191.45 x 40.05: they add the width of the outline line. The boards are the sizes in the table.
@@ -30,7 +38,8 @@ Notes on the table:
 * The fascia is **2.0 mm** thick, not 1.6 mm. That is deliberate: the case is drawn for a 2.0 mm fascia (`PCB/README.md`, `3d/case-pair`). Make sure the fab quote says 2.0 mm for this one.
 * **The fascia's five control holes are opened by 0.4 mm** (the dial 9.2 mm, the levers and buttons 8.4 mm; the four M2.5 screw holes stay 2.7): 0.29 mm a side round the bushings instead of 0.09 (`fab/HOLES-VARIANT.md`, the fit table `3d/populated/fit-table.md`). The drill file in the zip holds one 9.2, four 8.4 and four 2.7 mm.
 * **The fascia's leaders are level** (`tools/fascia_art.py`, style `level`): each of the six position names stands at its mark's height and is joined to it by one level white line. To make that fit, the six names are **2.37 mm** tall (the nameplates MODE, FIELD and SUB stay 3.2 mm), below the 3 mm legend rule of G11 (see "The G11 conditions" below).
-* **Not ordered:** `fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip` is the fascia as it was before the two picks, holes 8.8 / 8.0 and the sloped leaders, kept as a record. It is not to be sent; the page's Order view does not list it.
+* **Not ordered:** `fab/TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip` is rev A (side-entry J1) as it stood before the change to the upright part, a record. And
+  `fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip` is the fascia as it was before the two picks, holes 8.8 / 8.0 and the sloped leaders, kept as a record. Neither is to be sent; the page's Order view does not list it.
 * The fascia has no plated holes (every part is surface-mounted on its back; the front holes are for the switch bodies and screws). Its zip therefore has no plated drill file. It does carry a back solder-paste layer, for the eight 1206 resistors, in case you want a stencil; ignore it if you solder by hand.
 * The gold of the fascia is in the zip as copper on the front with openings in the front mask over it. That was read back out of the Gerbers, not just trusted: the mask is open over all of the gold (see "What was checked").
 
@@ -49,7 +58,7 @@ Pictures: `fab/preview/` (the fascia with the gold, and the three boards side by
 
 ## Picked by the owner (closed, 2026-10-02)
 
-* **The control holes opened by 0.4 mm** (10:37 UTC: "1-  yes"): the fascia zip is `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip`, 0.29 mm a side round each bushing instead of 0.09 (`fab/HOLES-VARIANT.md`). The play is the price: until its nut is tightened a part can sit up to 0.29 mm off centre. A dry fit with real parts (G14) closes that.
+* **The control holes opened by 0.4 mm** (10:37 UTC: "1-  yes"): the fascia zip is `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` (rev A's had the same holes), 0.29 mm a side round each bushing instead of 0.09 (`fab/HOLES-VARIANT.md`). The play is the price: until its nut is tightened a part can sit up to 0.29 mm off centre. A dry fit with real parts (G14) closes that.
 * **Level leaders** (11:31 UTC: "a"): the white lines from the dial's six positions to their names are level, each name at its mark's height (the names 2.37 mm; see "The G11 conditions"). The other two styles the owner was shown (dogleg, centred) and the sloped one are still options in `tools/fascia_art.py`; the zip is rebuilt with one by `bash tools/mkfab.sh TS06-FASCIA-rhythm --leaders dogleg` (its name then carries the style).
 
 ## Your open choices
@@ -80,7 +89,7 @@ Parts and a bench are needed for these; the prototype run is the way to close th
 * `bash tools/mkfab.sh`: PASS for all three (the pours are in the Gerbers; the fascia's gold is in F.Cu and open in F.Mask, with no thin mask web over it). The DISP and DRV zips are unchanged by the rebuild.
 * `python3 tools/dfm_check.py`: every row PASS on all three boards, exit 0. It is KiCad's DRC with generic fab limits (below, *inferred*), plus a second reading of the zips themselves. Every check was also run on a deliberately broken board first and shows FAIL there (the self-test, 17 rows).
 * `python3 tools/dfm_check.py --g11`: the boss-to-R5 row passes; **the legend row FAILs** for the six position names (2.37 mm set, below the 3 mm rule; the owner's pick of the level leaders), and the command exits 1 (below).
-* The fascia rows above are the ordered zip, `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` (holes opened, level leaders), read on 2026-10-02 after the two picks; the numbers did not move against the zip before them. The zip not ordered is not in these tables.
+* The fascia rows above are the ordered zip, `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` (holes opened, level leaders, upright J1), read on 2026-10-07; against rev A only the copper clearance moved (0.375 to 0.325 mm: A7 passes 0.325 mm under the tails of the new J1), and every row still passes. The zip not ordered is not in these tables.
 * `python3 tools/fascia_art.py --selftest`: the art check's model of the slash in FORMAT/DATE (a stroke, not a box across the name) reads its four planted cases as it must; the six names' size, 2.37 mm, is the largest at which `tools/fascia_art.py` and `tools/fascia_gold.py` pass every check with the leaders level.
 
 The limits used (all *inferred*, typical of a low-cost two-layer service): track width 0.15 mm; copper clearance 0.15 mm; plated drill 0.3 mm; non-plated drill 0.5 mm; annular ring 0.15 mm; copper to board edge 0.3 mm; hole to hole 0.5 mm wall to wall; silk line 0.15 mm; silk text height 1.0 mm; mask sliver 0.1 mm; board within 400 x 500 mm.
@@ -90,7 +99,7 @@ Worst values found (smaller is nearer the limit):
 | | TS06-DISP | TS06-DRV | Fascia R |
 |---|---|---|---|
 | Track width (limit 0.15) | 0.25 | 0.25 | 0.25 |
-| Copper clearance (0.15) | 0.25 | 0.21 | 0.375 |
+| Copper clearance (0.15) | 0.25 | 0.21 | 0.325 (rev A 0.375) |
 | Annular ring (0.15) | 0.30 | 0.20 | over 0.40 |
 | Copper to edge (0.3) | 0.75 | 0.75 | over 0.80 |
 | Smallest plated / non-plated drill (0.3 / 0.5) | 0.9 / 3.2 | 0.8 / 3.2 | none / 2.7 |

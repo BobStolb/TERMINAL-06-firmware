@@ -4,7 +4,7 @@
     python3 tools/fab_preview.py OUTDIR [--gold divider] [--px-per-mm 12]
 
 writes into OUTDIR (it is made if missing):
-    fascia-R-divider-top.png    the fascia R (TS06-FASCIA-rhythm, rev A) with the gold, seen from the front
+    fascia-R-divider-top.png    the fascia R (TS06-FASCIA-rhythm, rev B) with the gold, seen from the front
     three-boards-top.png        TS06-DISP, TS06-DRV and the fascia, top views, one under the other, labelled
 
 The fascia is the art board that tools/fascia_gold.py builds in a scratch directory (nothing under PCB/ is
@@ -145,7 +145,7 @@ def main():
     ppm = min(a.px_per_mm, 11.0)
     parts = [("TS06-DISP rev B: the tubes (front face)", os.path.join(ROOT, "PCB", "TS06-DISP", "TS06-DISP.kicad_pcb")),
              ("TS06-DRV rev B: the driver (front face)", os.path.join(ROOT, "PCB", "TS06-DRV", "TS06-DRV.kicad_pcb")),
-             ("Fascia R (TS06-FASCIA-rhythm rev A) with the %s gold" % a.gold, art)]
+             ("Fascia R (TS06-FASCIA-rhythm rev B) with the %s gold" % a.gold, art)]
     ims = []
     for label, b in parts:
         out = os.path.join(tmp, os.path.basename(b) + ".png")

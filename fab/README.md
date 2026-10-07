@@ -7,8 +7,10 @@ One zip per board of the through-hole pair, built from the committed boards by `
 the circuit-as-ornament silkscreen art; TS06-DRV unchanged), with KiCad 10.0.6's `kicad-cli` in Docker.
 First built at b8d3f25 (the rev B merge).
 
-The fascia R (rev A, with the Divider gold) was added on 02.10.26: `TS06-FASCIA-R-revA-divider-holes04-fab.zip` (the ordered one: control holes
-opened 0.4 mm and level leaders, picked by the owner the same day; the first fascia zip, holes as drawn, is kept as `TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`: NOT ordered), below.
+The fascia R (rev A, with the Divider gold) was added on 02.10.26. **On 07.10.26 it became rev B** (J1 is the upright JST B6B-PH-SM4-TB instead of the
+side-entry S6B-PH-SM4-TB, `PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md`): `TS06-FASCIA-R-revB-divider-holes04-fab.zip` is the ordered one (control holes
+opened 0.4 mm and level leaders, picked by the owner on 02.10.26). Rev A's zip with those holes is kept as `TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip`
+and the first fascia zip, holes as drawn, as `TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`: both NOT ordered. See below.
 It was rebuilt the same day, after the design-for-manufacture check (`tools/dfm_check.py`, the table below) had found
 four things on it: thin silk, a small back legend, slivers of mask at four dial rings, and "None" as the finish in its job file.
 All four are fixed in the generators; TS06-DISP's and TS06-DRV's zips did not change.
@@ -36,7 +38,7 @@ layers: every part is through-hole (no SMD pads on either board), and neither bo
 |---|---|---|---|
 | TS06-DISP rev B | 191.5 × 44.1 mm | 179 | 10 |
 | TS06-DRV rev B | 191.5 × 100.1 mm | 427 | 8 |
-| Fascia R rev A, Divider gold | 191.45 × 40.05 mm, 2.0 mm thick | 0 | 9 |
+| Fascia R rev B, Divider gold | 191.45 × 40.05 mm, 2.0 mm thick | 0 | 9 |
 
 TS06-DISP's silkscreen files carry the art: front 29 kB to 121 kB, back 104 kB to 173 kB. Its
 copper, mask, outline and drill files are the same as before the art, apart from the creation
@@ -49,7 +51,7 @@ finish and the mask colour are chosen when the boards are ordered.
 
 ## The fascia R zip
 
-`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the fascia `PCB/TS06-FASCIA-rhythm` (rev A) with the Plates white
+`TS06-FASCIA-R-revB-divider-holes04-fab.zip` is the fascia `PCB/TS06-FASCIA-rhythm` (rev B) with the Plates white
 print and a gold: the **Divider** by default. The committed board has no gold of its own, so `tools/mkfab.sh`
 builds the art board in its scratch directory with `tools/fascia_gold.py divider OUT --base R` (that
 script's own checks must be clean) and plots that. Nothing under `PCB/` is written.
@@ -65,7 +67,7 @@ script's own checks must be clean) and plots that. Nothing under `PCB/` is writt
   run on a mask with the gold's openings removed, and must FAIL. Found: the openings are present, and no thin web
   of mask is left over the gold (the Divider's lines end clear of the dial rings' holes; before, four rings had 0.05 mm slivers).
 * The name carries the gold. `--gold VARIANT` picks another (`ladder`, `fans`, `guilloche`; `none` is the bare
-  board, `TS06-FASCIA-R-revA-bare-fab.zip`). Only the divider is laid out for R; the other three stop on their own
+  board, `TS06-FASCIA-R-revB-bare-fab.zip`). Only the divider is laid out for R; the other three stop on their own
   checks (`tools/fascia_gold.py` says why).
 
 ## Design-for-manufacture check
@@ -77,7 +79,7 @@ rule's limit; the fascia R's column is after the fixes, with the value it had be
 | Rule | Limit | TS06-DISP | TS06-DRV | Fascia R (before the fixes) |
 |---|---|---|---|---|
 | Track width | 0.15 | 0.25 | 0.25 | 0.25 |
-| Copper clearance | 0.15 | 0.25 | 0.21 | 0.375 |
+| Copper clearance | 0.15 | 0.25 | 0.21 | 0.325 (rev A 0.375) |
 | Annular ring | 0.15 | 0.30 | 0.20 | over 0.40 |
 | Copper to edge | 0.30 | 0.75 | 0.75 | over 0.80 |
 | Silk line, DRC text stroke | 0.15 | 0.15 | 0.15 | 0.15 (0.12) |
@@ -127,7 +129,7 @@ bash tools/mkfab.sh TS06-FASCIA-rhythm --committed-holes   # the fascia as commi
 python3 tools/dfm_check.py --committed-holes          # the same DFM check on that zip (the default checks the ordered one)
 ```
 
-`TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the ordered fascia zip (the dial hole 8.8 opened to 9.2, the lever and button holes 8.0 to 8.4:
+`TS06-FASCIA-R-revB-divider-holes04-fab.zip` is the ordered fascia zip (the dial hole 8.8 opened to 9.2, the lever and button holes 8.0 to 8.4:
 the owner's pick, 2026-10-02) with the level leaders (his second pick, the same day). The zip with the holes as drawn is kept as
 `TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip`, not ordered. `HOLES-VARIANT.md` says what differs and the margins; `ORDER.md` names the zip.
 

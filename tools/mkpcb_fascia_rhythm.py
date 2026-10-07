@@ -29,8 +29,8 @@ boards' own outline: it spans cheek to cheek with the same 0.5 mm the display an
 and the case's fascia bosses sit on the cheeks instead of reaching 8 mm in from them.
 
 WHAT IS THE SAME AS TS06-FASCIA. The netlist, the parts, the footprints of the four levers and
-buttons, the connector and its pin order (1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8), the 2.0 mm
-stack, the four M2.5 corner holes, and the two rules of spec §6: no plated hole anywhere (the
+buttons, the connector's pin order (1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8; since rev B the connector
+itself is upright), the 2.0 mm stack, the four M2.5 corner holes, and the two rules of spec §6: no plated hole anywhere (the
 front carries only the decorative gold) and no back-side part inside a control body.
 
 WHAT IS NEW.
@@ -41,6 +41,12 @@ WHAT IS NEW.
     withdrawn 26.94) then stays under the case's sill: the sill need not be stepped back.
   * The dial is lettered radially: each name sits at the end of its own tick, so the lettering
     ends 26 mm right of the shaft, under the colon, and leaves the minutes free.
+  * REV B (7 October 2026; the owner: "maybe we change the connector from a 90 degree bend to normal upright?"): J1 is the
+    upright JST B6B-PH-SM4-TB, TS06_JST_PH_B6B-PH-SM4-TB_Back (written by tools/mkfp.py from KiCad's land pattern, mirrored in X
+    for the back, SMD only), instead of rev A's side-entry S6B-PH-SM4-TB. The plug stands straight off the back and the six
+    wires leave straight back into the case, so the lead no longer bends 90 + 12 degrees onto the floor (3d/case-pair: the
+    floor 2.8 mm higher). Same place between the buttons, same pin order, same topology; origin y 33.0 (J1_Y). The title block
+    says rev B, and so does the zip's name (tools/mkfab.sh reads it). PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md has the study.
   * Everything on the back is placed from the controls' positions (layout()). J1 keeps TS06-FASCIA's
     place between the buttons and TS06-FASCIA's topology (layout() says why): the ladder, the
     lever pull-downs and the two button lines are laid by hand; A6, A7 and +5V are routed by

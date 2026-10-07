@@ -6,7 +6,7 @@ so that a product page can use them later; nothing in this folder is published.
 
 | Picture | What it shows |
 |---|---|
-| `fascia-R-divider-top.png` | The fascia R (`PCB/TS06-FASCIA-rhythm`, rev A) with the Plates white print and the Divider gold, seen from the front: the six position names, MODE / FIELD / SUB nameplates, the dial drawn as its own resistor divider, the SUB rule, the lever ladder and the two key frames. 191.4 x 40 mm. |
+| `fascia-R-divider-top.png` | The fascia R (`PCB/TS06-FASCIA-rhythm`, rev B) with the Plates white print and the Divider gold, seen from the front: the six position names, MODE / FIELD / SUB nameplates, the dial drawn as its own resistor divider, the SUB rule, the lever ladder and the two key frames. 191.4 x 40 mm. |
 | `three-boards-top.png` | The three boards one under the other, each labelled: TS06-DISP rev B (the tubes), TS06-DRV rev B (the driver) and the fascia R with the Divider gold. Same scale for all three. |
 
 ## Regenerate

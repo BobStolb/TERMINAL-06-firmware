@@ -1,10 +1,13 @@
 # Fascia R with opened bushing holes: the ordered zip
 
-**PICKED.** The owner chose it (2026-10-02, 10:37 UTC: "1-  yes"), so `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` is the
+**PICKED.** The owner chose it (2026-10-02, 10:37 UTC: "1-  yes"), so `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` is the
 fascia zip that `fab/ORDER.md` names. The zip with the holes as drawn (8.8 and 8.0 mm) is kept, renamed, as the one that was
 NOT ordered: `fab/TS06-FASCIA-R-revA-divider-slope-notordered-fab.zip` (it also has the sloped leaders the owner replaced with
 the level ones at 11:31 UTC: "a"). The committed board `PCB/TS06-FASCIA-rhythm` keeps its 8.8 / 8.0 holes: the opened board is
 written by `tools/mkpcb_fascia_rhythm.py --open-holes` (scratch), never into `PCB/`. Nothing was sent to a board house.
+**Rev B (7 October 2026):** the same holes are in the rev B zip (`fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip`, upright J1:
+`PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md`); rev A's zip with them is `fab/TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip`, not ordered.
+The numbers below were taken on rev A and do not depend on J1.
 (The text below was written before the pick; its numbers are unchanged. "The variant" is the ordered board; "as ordered" in its
 tables is the committed board, the one not ordered.)
 
@@ -48,7 +51,7 @@ The repo has no model of the nuts, so this is not checked; a dry fit with real p
 
 ## The zip
 
-`fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` (49 kB, 11 files, the same names as the zip not ordered with `-holes04`).
+`fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` (49 kB, 11 files, the same names as the zip not ordered with `-holes04`).
 Built by `bash tools/mkfab.sh TS06-FASCIA-rhythm` (the default since the pick; `--open-holes` says the same); nothing under `PCB/` is
 written. As first built (same leaders as the zip not ordered; the level leaders of 11:31 UTC then changed its silk and gold files too)
 against that zip five files differ: the non-plated drill file and its map (the five hole sizes), the back copper (the ground pour keeps
@@ -67,7 +70,7 @@ both silk files, the outline, the paste layer and the job file are identical.
 
 ## What was done when it was picked
 
-`fab/ORDER.md`'s table names `fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip` and says the other one was not ordered; the page's
+`fab/ORDER.md`'s table names `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip` and says the other one was not ordered; the page's
 Order view reads it from there. Nothing else changes: the other two zips, the quantity, 2.0 mm, ENIG, black mask, white silk and
 the "no fab number on the face" request all stay. `bash tools/mkfab.sh` builds the opened zip by default (`--committed-holes`
 builds the not-ordered one, named `...-notordered-fab.zip`); `python3 tools/dfm_check.py` checks it by default

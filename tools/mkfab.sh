@@ -3,7 +3,7 @@
 #
 #     tools/mkfab.sh                          # all three: TS06-DISP, TS06-DRV and the fascia R with the divider gold
 #     tools/mkfab.sh TS06-DRV                 # one board
-#     tools/mkfab.sh TS06-FASCIA-rhythm       # the fascia R (rev A) with the default gold, divider
+#     tools/mkfab.sh TS06-FASCIA-rhythm       # the fascia R (rev B, from its title block) with the default gold, divider
 #     tools/mkfab.sh TS06-FASCIA-rhythm --gold ladder     # another gold; --gold none is the bare board
 #     tools/mkfab.sh TS06-FASCIA-rhythm --leaders slope   # another leader style for the white names (level is the default, the
 #                                             # owner's pick; slope, dogleg, centred: tools/fascia_art.py); a zip's name carries it
@@ -11,7 +11,7 @@
 #     tools/mkfab.sh --keep                   # keep the scratch directory and say where
 #     tools/mkfab.sh TS06-FASCIA-rhythm --committed-holes # the fascia as committed (8.8 / 8.0 holes): NOT the ordered one, a zip named ...-notordered-fab.zip
 #                                             # (the ordered fascia has every control bushing hole opened by 0.4 mm, 8.8 -> 9.2, 8.0 -> 8.4:
-#                                             # fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip, what the default builds)
+#                                             # fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip, what the default builds)
 #
 # For each board it:
 #   1. copies the board, its project (net classes), its .kicad_dru (the 0.8 mm HV pad rule, which the
@@ -40,7 +40,7 @@
 # zip is built on the opened board by default (--open-holes says the same): step 1 builds the scratch base board with
 # `tools/mkpcb_fascia_rhythm.py --out FILE --open-holes` (the committed board and PCB/lib are not touched; without the flag that
 # script writes the committed board byte for byte), the gold is drawn on it with `tools/fascia_gold.py --base-pcb`, and the
-# zip's name carries `-holes04`: fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip is the ORDERED fascia zip. After the Gerbers are
+# zip's name carries `-holes04`: fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip is the ORDERED fascia zip (rev A's, with the side-entry J1, is kept as ...-revA-divider-holes04-notordered-fab.zip). After the Gerbers are
 # read back, the non-plated drill file must hold exactly the opened sizes (one 9.2, four 8.4, four 2.7).
 # --committed-holes builds the board as committed (8.8 / 8.0 holes) instead, in a zip whose name carries `-notordered`: a
 # record of what was not picked (fab/ORDER.md); the DISP and DRV zips are the same either way.
