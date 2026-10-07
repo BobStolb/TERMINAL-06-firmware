@@ -1,28 +1,28 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 12:48 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 15:01 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
-* **Runs: none.** All three done 10-07 and cherry-picked (briefs in scratchpad `<name>/BRIEF.md`):
-  * **page-wiring** (0.52 M / 60 min): six-wire PH lead, 15 hand wires, Wiring switch, selector R and F. Verify 27 PASS.
-    Full suite 179 PASS. Published as version 7 (12:50 UTC 10-07), same url.
-  * **fascia-t-concepts** (0.43 M / 33 min): `PCB/TS06-FASCIA-T-concepts.md` + pictures. T1 beads r 13.7 (0204; 0207
-    needs r 17.7, does not fit), joints 0.25 mm outside the plate; T2 plug-in (J1 THT on the face, wires through a
-    slot); T3 ladder (column; its leaders slope again); T4 crown (0207 standing). Recommends T1, J1 SMD.
-  * **knob-jig** (0.44 M / 31 min): `3d/jig/` (dry fit steps, plate + shims + lead former, STL) and `3d/knob/` (A РСИ
-    reading, B chicken-head, C turned aluminium, pick C; STLs assume the shaft sawn to 12 mm above the face).
-    meshok.net EGRESS_BLOCKED (network policy); no listing read.
+* **Runs (launched 15:00 UTC 10-07; briefs in scratchpad `<name>/BRIEF.md`):**
+  * **fascia-j1-upright** (est 0.5-0.7 M, cap 1.0 M / 100 min = 16:40): fascia R's J1 side entry -> upright B6B-PH-SM4-TB.
+    Part 1 fit study (stops if a clearance fails); Part 2 R rev B, new zip, rev A zip renamed -notordered, ORDER.md, BOM,
+    case model floor. On report: look at the pictures, cherry-pick, DRC/DFM/verify_pair 27 PASS, push. Then a page run
+    (the lead's fascia end upright, the new J1 model, the Order tab), republish.
+  * **fascia-t3-variants** (est 0.4-0.6 M, cap 0.9 M / 90 min = 16:30): T3's column left of the dial near the edge, three
+    versions T3a-c (gold, white silk, an original imported graphic), contact sheet with T1. On report: look, cherry-pick, push.
   * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
-* **Open with the owner:** concepts Q1-4 (ring or column; J1 on face or back; caliper the plate + which body on order;
-  0204 lying or 0207 standing); the knob pick and the shaft saw; the bench measurements list (3d/jig/README.md);
-  T plan Q4 (plated holes + moat, 10-board sample); meshok.net in Allowed domains if wanted.
-* **Waiting for the owner:** the order (own hand): the three zips in `fab/` named in ORDER.md, all in one cart.
+* **Owner's answers 10-07 ~14:50:** T1 good and T3 kept (3 new versions); J1 kept on the back; the rotary body 25 mm (plate
+  not calipered); knob A; bench measurements tbd. Upright fascia J1 asked ("maybe we change the connector...").
+* **Open with the owner:** the order waits for fascia R rev B (DISP and DRV zips unchanged); shaft saw for knob A; the
+  bench measurements (3d/jig/README.md); T plan Q4 (plated holes + moat, 10-board sample); meshok.net if wanted.
+* **Waiting for the owner:** the order (own hand): the zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
 * **xstream's queue:** owner 10-07: "dont bother with xstreams queue if its idle and not responding". xstream is quiet
   since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none; open owner asks: the order
-  (own hand), concepts Q1-4, knob pick + shaft saw, bench measurements; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-j1-upright (cap 1.0M/100min)
+  and fascia-t3-variants (cap 0.9M/90min); open owner asks: the order waits for fascia R rev B, shaft saw, bench
+  measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 

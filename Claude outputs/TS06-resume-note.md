@@ -320,3 +320,18 @@ without a fresh reading on the owner's word "stopping progress is the last resor
 * 2026-10-07 fascia-tht-plan: 0.33 M tokens, 21 min. Plan + picture pushed (3ab1677); commons a6b52bc. Picture flaw: the MODE names drawn too big, overlapping (noted in the item).
 * 2026-10-07 12:11 launched fascia-t-concepts (est 0.4-0.5 M, cap 0.8 M / 90 min) and knob-jig (est 0.35-0.5 M, cap 0.8 M / 90 min). Owner: skip xstream queue while idle.
 * 2026-10-07 12:48 done: page-wiring 0.52 M / 60 min; fascia-t-concepts 0.43 M / 33 min; knob-jig 0.44 M / 31 min. All cherry-picked; verify 27 PASS.
+
+## 2026-10-07 ~14:50 UTC, the owner, verbatim
+"wiring looks good, noe that I look at ot maybe we change the connector from a 90 degree bend to normal upright? so we
+don't have the bending wire at the base for no reason, also t1 looks good and t3 intrigues me, maybe that row can move to
+the left of the rotary near the edge? letting us combine more gold leads between the switch and levers?
+1. both but t3 changes into 3 more versions with diverse design implemeting gold traces, white silkscreen, maybe imported graphics. in our style
+2 kept on back
+3 25
+4 A
+5 tbd"
+| Run | What | Estimate | Cap | Actual |
+|---|---|---|---|---|
+| fascia-j1-upright | R's J1 upright (B6B-PH-SM4-TB): fit study, then R rev B, zip, case floor | 0.5-0.7 M | 1.0 M / 100 min | |
+| fascia-t3-variants | T3 column left of the dial, T3a-c, contact sheet with T1 | 0.4-0.6 M | 0.9 M / 90 min | |
+Both launched 15:00 UTC. Quota reading still stale (10-03).
