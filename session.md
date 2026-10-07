@@ -1,6 +1,10 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
 ## RESUME HERE (updated 07.10.26 23:15 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+* **Owner's standing ask (10-07 ~23:22 UTC):** "I want you to remind me to keep my adhd in check and dont blindly follow
+  me when I say run things". Before any run on the owner's word, check: does it move the main goal (the order), does the
+  pace allow it, is a decision open first? If not, say so plainly, suggest the smaller step or parking it, ask once.
+  Name tangents and the late hour. The owner still decides.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Run: fascia-pass3** launched 23:15 UTC (cap **0.6 M** / 90 min, ends by 00:45; xstream QUOTA GO 23:15: week 29 % vs
   line ~27.2). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4); D1 first, D2 only if under
@@ -42,7 +46,7 @@
   files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass3 (cap 0.6M/90min; then nothing new until the morning reading);
-  open owner asks: the order (fascia now rev B), pass 3 picks when it reports; title text; fuse for exposed rails, bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
+  open owner asks: the order (fascia now rev B), pass 3 picks when it reports; title text; fuse for exposed rails, bench measurements; plain short replies; times from date -u, shown in chat as MSK; remind the owner to keep ADHD in check, don't blindly launch runs`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
