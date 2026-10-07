@@ -1,9 +1,12 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 21:41 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 22:23 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none.** xstream's fresh-eyes pack: commons embassy/review/nixie-fascia-fresh-eyes (asked 21:00, c0c4067);
-  its verdict comes later (xstream dc at 21:05).
+* **Run: fascia-pass2** launched 22:23 UTC (cap 1.0 M / 100 min, ends by 00:03): owner 22:20 "combine v3 with circular
+  outlines, v4 with rails+circles and some aspects of v2 with less bunching. add an artistic pass, xstream is now awake
+  so his input too". Faces A, B, C + artistic A*, B*, C*. It reads xstream's verdict.md (commons fresh-eyes pack) at
+  start and before its sheet; asked xstream 22:24 (3eb9f51). On report: view every picture, cherry-pick, verify_pair,
+  push, send the owner the sheet; fold in xstream's verdict if it came late.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
   * **fascia-pass1 DONE** 21:41 (0.41 M / 29 min): `PCB/TS06-FASCIA-pass1.md` + contact sheet; V1 Rails, V2 Harness
     (fails), V3 Medallions, V4 Rails+rings (run's pick). Ladder answer: left spot caused the coil; beads belong on the
@@ -29,7 +32,7 @@
   reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
   caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs fascia-pass2 (cap 1.0M/100min; page run waits for the owner's go);
   open owner asks: the order (fascia now rev B), pass1 Q1-3 (V4/V3), bench measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
