@@ -65,3 +65,5 @@ pace allow it, is a decision open first.
 * T plan Q4 (plated holes with a black moat, a 10-board T sample first): decided with P1's build.
 * meshok.net in the session's allowed domains: the owner's own setting, only if wanted for buying parts.
 * The Pace Act art. 7: settled by the owner (10-07 23:27 UTC): no priority list in law; Amendment 2 proposed.
+* JST PH B6B-PH-SM4-TB heights (*inferred* in the J1-upright write-up; jst-mfg.com refused by this session's network):
+  one FETCH ask to xstream when the page run or a T build needs them (owner 23:4x: "get the info cheaply"). Not tonight.

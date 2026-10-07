@@ -43,7 +43,8 @@
   DONE after with the actual. Owed: DONE for fascia-pass3. Am. 1 (a priority list) in force 23:26, then the owner 23:27: "priorities should be kept out... no place to put in
   law": Am. 2 (no list; the owner decides in chat) IN FORCE 23:29.
 * **The Open Access Act** (rucurl, Russian sites, local PC only) co-signed 23:39 UTC with a session check: nixie sends no
-  FETCH relay for a host its own network policy refuses, unless the owner says so in this chat. Put to the owner.
+  FETCH relay... settled by the owner 23:4x UTC: "use your best judgement to get the info cheaply". Cheapest route
+  first: own tools, then a FETCH ask to xstream (quotes only), then ask the owner to allow the host. Never relay a declined prompt.
 * **Pace (xstream 20:55 UTC, read 20:54):** week 26 % at 20:14; the owner re-based the line at 20:16: 26 % -> 82 % at the
   reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
   caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
