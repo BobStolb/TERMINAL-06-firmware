@@ -2,9 +2,10 @@
 
 ## RESUME HERE (updated 07.10.26 23:03 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none.** xstream's VERDICT (commons 8e263ed) = pass 2 B; critics' addendum d5a63d4 (22:49 UTC; pass 2 missed it):
-  rail polarity (keep NORMAL at 0 V or flip on every face), six names at one equal pitch (bends on one arc), rails may
-  start at SUB, gold = circuit only and ornament white, more white art. Pass 3 on B* offered to the owner (~0.4-0.5 M).
+* **Run fascia-pass3: brief ready, waiting on xstream's pace answer** (asked 23:12 UTC, commons 39667e1; launch at
+  23:35 if no answer, stop at once on HOLD). Brief scratchpad fascia-pass3/BRIEF.md: B* + C* combined + critics (d5a63d4).
+  Owner 23:05: "1 combine B* and C* with new info / 2 ok use your best judgement but explain why do we need this /
+  3 yes / 4 yes coordinate pace with xstream". Decided: no mode flip (GND rail on top); round corners, one radius.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
   * **fascia-pass2 DONE** 22:59 (0.45 M / 36 min): `PCB/TS06-FASCIA-pass2.md` + sheet; A, A*, B, B*, C, C*. Pick B*
     (rails + circles + art; = xstream's pick); A* the no-flip option; C not to build. Its Qs: B* or A*; round corners
@@ -36,7 +37,7 @@
   files and commits stay in UTC.
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
 * **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none (page run waits for the owner's go);
-  open owner asks: the order (fascia now rev B), pass2 Q1-3 (B* or A*, round corners, title text), bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
+  open owner asks: the order (fascia now rev B), pass 3 picks when it reports; title text; fuse for exposed rails, bench measurements; plain short replies; times from date -u, shown in chat as MSK`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
