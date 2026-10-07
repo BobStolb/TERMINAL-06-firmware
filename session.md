@@ -1,32 +1,29 @@
 # session.md: where the TS06 orchestrator ("nixie") picks up
 
-## RESUME HERE (updated 07.10.26 12:11 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
+## RESUME HERE (updated 07.10.26 12:48 UTC; keep this block at 30 lines or fewer, history goes below or to the resume note)
 * **Mode:** LOUD. The week's pace line is the limit (owner via xstream). Quota reading stale (10-03); week reset 10-06.
-* **Runs (sonnet, worktrees; briefs in scratchpad `<name>/BRIEF.md`):**
-  * **page-wiring** (11:33): the real 6-wire JST PH lead + hand wiring in the 3D view, a Wiring toggle; selector R and F
-    only. Cap 0.9 M / 90 min. On report: screenshots, cherry-pick, verify 27 PASS, rebuild, full suite, publish (same
-    url; read the live index.html in full and list the files first).
-  * **fascia-t-concepts** (12:11): T1 resistors in line with the dial's circle (bigger radius; 0204 and 0207), plus 3 more
-    concepts T2-T4, one with a front THT connector and the wires routed round the fascia. `PCB/TS06-FASCIA-T-concepts.md`.
-    Cap 0.8 M / 90 min. On report: look at the pictures, cherry-pick, push, show the owner.
-  * **knob-jig** (12:11): the dry fit as steps + a printed jig (`3d/jig/`), our own MODE knob (print or turned metal,
-    `3d/knob/`), a meshok search for Soviet knobs (owner allowed; read only). Cap 0.8 M / 90 min. On report: pictures,
-    cherry-pick, push, show the owner. The owner's examples (РСИ-4 lobed knob, клювик knobs) are in
-    `qa/knob/reference/` (5f77444) and were sent to the run 12:12.
-  * fascia-tht-plan DONE 11:52 (0.33 M / 21 min), pushed 3ab1677.
-  * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`; 30 min with
-    no commit and no notice = lost; relaunch from the brief.
-* **Owner's answers to the T plan (10-07 ~12:05):** 1 "expand on dry run, maybe 3d printed trest jig is in order?";
-  2 design our own knob (print or metal), also search meshok; 3 does not like the stagger, wants them in line with the
-  circle; 3 more concepts, one with a THT connector, solder on the back, wires routed back round the fascia. Q4 open.
+* **Runs: none.** All three done 10-07 and cherry-picked (briefs in scratchpad `<name>/BRIEF.md`):
+  * **page-wiring** (0.52 M / 60 min): six-wire PH lead, 15 hand wires, Wiring switch, selector R and F. Verify 27 PASS.
+    Next if not done: full suite on the scratchpad build `publish-w/site`, push, then publish (read the live url
+    without `path` first, list files, publish `publish-w/site/index.html` + `publish-files.json`).
+  * **fascia-t-concepts** (0.43 M / 33 min): `PCB/TS06-FASCIA-T-concepts.md` + pictures. T1 beads r 13.7 (0204; 0207
+    needs r 17.7, does not fit), joints 0.25 mm outside the plate; T2 plug-in (J1 THT on the face, wires through a
+    slot); T3 ladder (column; its leaders slope again); T4 crown (0207 standing). Recommends T1, J1 SMD.
+  * **knob-jig** (0.44 M / 31 min): `3d/jig/` (dry fit steps, plate + shims + lead former, STL) and `3d/knob/` (A РСИ
+    reading, B chicken-head, C turned aluminium, pick C; STLs assume the shaft sawn to 12 mm above the face).
+    meshok.net EGRESS_BLOCKED (network policy); no listing read.
+  * Lost-run check after a compact: `git worktree list`, the newest commit per `.claude/worktrees/agent-*`.
+* **Open with the owner:** concepts Q1-4 (ring or column; J1 on face or back; caliper the plate + which body on order;
+  0204 lying or 0207 standing); the knob pick and the shaft saw; the bench measurements list (3d/jig/README.md);
+  T plan Q4 (plated holes + moat, 10-board sample); meshok.net in Allowed domains if wanted.
 * **Waiting for the owner:** the order (own hand): the three zips in `fab/` named in ORDER.md, all in one cart.
 * **Standing word (owner, 10-02 10:01 UTC, Co-sign Act art. 8):** co-sign `ORIGIN: SOVEREIGN` laws xstream.store relays
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
 * **xstream's queue:** owner 10-07: "dont bother with xstreams queue if its idle and not responding". xstream is quiet
   since 10-03: asks go to the chat only until xstream answers again (then the 10-02 one-place rule is back).
 * **Pictures the owner pastes are lost at a compact.** Copy them at once to `qa/<task>/reference/` and commit.
-* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs page-wiring, fascia-t-concepts,
-  knob-jig; open owner asks: the order (own hand), T plan Q4; plain short replies; times from date -u`.
+* **Keep line:** `/compact keep: resume from session.md RESUME HERE; mode LOUD; runs none; open owner asks: the order
+  (own hand), concepts Q1-4, knob pick + shaft saw, bench measurements; plain short replies; times from date -u`.
 * **The full log, the launch log and the rules:** `Claude outputs/TS06-resume-note.md`.
 ---
 
