@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1400" viewBox="0 0 2400 1400" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="100%" height="100%" fill="white"/>
+<polygon points="1026.0,1000.0 1090.6,1000.0 1102.0,988.6 1102.0,855.6 1086.8,840.4 1037.4,840.4 1026.0,829.0 1026.0,585.8 995.6,555.4 760.0,555.4 760.0,631.4 874.0,631.4 874.0,889.8 1026.0,889.8" fill="#d9dde3" stroke="#000000" stroke-width="3"/>
+<polygon points="494.0,1000.0 429.4,1000.0 418.0,988.6 418.0,855.6 433.2,840.4 482.6,840.4 494.0,829.0 494.0,585.8 524.4,555.4 760.0,555.4 760.0,631.4 646.0,631.4 646.0,889.8 494.0,889.8" fill="#eef0f3" stroke="#000000" stroke-width="2"/>
+<line x1="646.0" y1="804.3" x2="486.4" y2="804.3" stroke="#000000" stroke-width="2" stroke-dasharray="10,6"/>
+<line x1="646.0" y1="709.3" x2="486.4" y2="709.3" stroke="#000000" stroke-width="2" stroke-dasharray="10,6"/>
+<line x1="760.0" y1="1040.0" x2="760.0" y2="515.4" stroke="#c04000" stroke-width="1" stroke-dasharray="24,6,4,6"/>
+<polygon points="760.0,555.4 995.6,555.4 995.6,570.6 760.0,570.6" fill="#ffffff" stroke="#c04000" stroke-width="2"/>
+<line x1="418.0" y1="1000.0" x2="418.0" y2="1128.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="1102.0" y1="1000.0" x2="1102.0" y2="1128.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="418.0" y1="1120.0" x2="1102.0" y2="1120.0" stroke="#003a8c" stroke-width="2"/>
+<polygon points="418.0,1120.0 432.0,1124.5 432.0,1115.5" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="1102.0,1120.0 1088.0,1115.5 1088.0,1124.5" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="760.0" y="1114.0" font-size="22" fill="#003a8c" text-anchor="middle">D 18.0 (+0 / -0.1)</text>
+<line x1="494.0" y1="555.4" x2="494.0" y2="477.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="1026.0" y1="555.4" x2="1026.0" y2="477.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="494.0" y1="485.4" x2="1026.0" y2="485.4" stroke="#003a8c" stroke-width="2"/>
+<polygon points="494.0,485.4 508.0,489.9 508.0,480.9" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="1026.0,485.4 1012.0,480.9 1012.0,489.9" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="760.0" y="479.4" font-size="22" fill="#003a8c" text-anchor="middle">14.0 ±0.1 knurled grip</text>
+<line x1="494.0" y1="1000.0" x2="494.0" y2="1068.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="1026.0" y1="1000.0" x2="1026.0" y2="1068.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="494.0" y1="1060.0" x2="1026.0" y2="1060.0" stroke="#003a8c" stroke-width="2"/>
+<polygon points="494.0,1060.0 508.0,1064.5 508.0,1055.5" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="1026.0,1060.0 1012.0,1055.5 1012.0,1064.5" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="760.0" y="1054.0" font-size="22" fill="#003a8c" text-anchor="middle">pocket 14.0 +0.1 / 0</text>
+<line x1="646.0" y1="631.4" x2="646.0" y2="595.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="874.0" y1="631.4" x2="874.0" y2="595.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="646.0" y1="603.4" x2="874.0" y2="603.4" stroke="#003a8c" stroke-width="2"/>
+<polygon points="646.0,603.4 660.0,607.9 660.0,598.9" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="874.0,603.4 860.0,598.9 860.0,607.9" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="760.0" y="597.4" font-size="22" fill="#003a8c" text-anchor="middle">bore 6.00 +0.05 / 0</text>
+<line x1="1106.0" y1="1000.0" x2="1210.0" y2="1000.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="1106.0" y1="555.4" x2="1210.0" y2="555.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="1202.0" y1="1000.0" x2="1202.0" y2="555.4" stroke="#003a8c" stroke-width="2"/>
+<polygon points="1202.0,1000.0 1206.5,986.0 1197.5,986.0" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="1202.0,555.4 1197.5,569.4 1206.5,569.4" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="1194.0" y="785.4" font-size="22" fill="#003a8c" text-anchor="end">11.7 overall</text>
+<line x1="1106.0" y1="1000.0" x2="1290.0" y2="1000.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="1106.0" y1="840.4" x2="1290.0" y2="840.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="1282.0" y1="1000.0" x2="1282.0" y2="840.4" stroke="#003a8c" stroke-width="2"/>
+<polygon points="1282.0,1000.0 1286.5,986.0 1277.5,986.0" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="1282.0,840.4 1277.5,854.4 1286.5,854.4" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="1274.0" y="927.9" font-size="22" fill="#003a8c" text-anchor="end">4.2 skirt</text>
+<line x1="414.0" y1="1000.0" x2="310.0" y2="1000.0" stroke="#003a8c" stroke-width="1"/>
+<line x1="414.0" y1="889.8" x2="310.0" y2="889.8" stroke="#003a8c" stroke-width="1"/>
+<line x1="318.0" y1="1000.0" x2="318.0" y2="889.8" stroke="#003a8c" stroke-width="2"/>
+<polygon points="318.0,1000.0 322.5,986.0 313.5,986.0" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="318.0,889.8 313.5,903.8 322.5,903.8" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="310.0" y="952.6" font-size="22" fill="#003a8c" text-anchor="end">pocket 2.9</text>
+<line x1="414.0" y1="889.8" x2="230.0" y2="889.8" stroke="#003a8c" stroke-width="1"/>
+<line x1="414.0" y1="631.4" x2="230.0" y2="631.4" stroke="#003a8c" stroke-width="1"/>
+<line x1="238.0" y1="889.8" x2="238.0" y2="631.4" stroke="#003a8c" stroke-width="2"/>
+<polygon points="238.0,889.8 242.5,875.8 233.5,875.8" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="238.0,631.4 233.5,645.4 242.5,645.4" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="230.0" y="768.3" font-size="22" fill="#003a8c" text-anchor="end">bore 6.8 deep</text>
+<line x1="490.0" y1="889.8" x2="396.0" y2="889.8" stroke="#003a8c" stroke-width="1"/>
+<line x1="490.0" y1="756.8" x2="396.0" y2="756.8" stroke="#003a8c" stroke-width="1"/>
+<line x1="404.0" y1="889.8" x2="404.0" y2="756.8" stroke="#003a8c" stroke-width="2"/>
+<polygon points="404.0,889.8 408.5,875.8 399.5,875.8" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<polygon points="404.0,756.8 399.5,770.8 408.5,770.8" fill="#003a8c" stroke="#003a8c" stroke-width="1"/>
+<text x="396.0" y="831.0" font-size="22" fill="#003a8c" text-anchor="end">M3 axis 3.5</text>
+<text x="486.0" y="727.8" font-size="20" fill="#000000" text-anchor="end">M3 tapped, radial (dashed)</text>
+<text x="760.0" y="90.8" font-size="26" fill="#000000" text-anchor="middle">SECTION (half), datum A = the underside rim</text>
+<text x="760.0" y="120.0" font-size="20" fill="#444444" text-anchor="middle">chamfers: rim 0.3, skirt top 0.4, grip base 0.3, grip top 0.8 (45 deg)</text>
+<circle cx="1900.0" cy="560.0" r="342.0" fill="none" stroke="#000000" stroke-width="3"/>
+<circle cx="1900.0" cy="560.0" r="326.8" fill="none" stroke="#777777" stroke-width="1"/>
+<circle cx="1900.0" cy="560.0" r="266.0" fill="none" stroke="#000000" stroke-width="3"/>
+<circle cx="1900.0" cy="560.0" r="235.6" fill="none" stroke="#777777" stroke-width="1"/>
+<line x1="2152.7" y1="560.0" x2="2166.0" y2="560.0" stroke="#999999" stroke-width="1"/>
+<line x1="2150.1" y1="524.0" x2="2163.3" y2="522.1" stroke="#999999" stroke-width="1"/>
+<line x1="2142.5" y1="488.8" x2="2155.2" y2="485.1" stroke="#999999" stroke-width="1"/>
+<line x1="2129.9" y1="455.0" x2="2142.0" y2="449.5" stroke="#999999" stroke-width="1"/>
+<line x1="2112.6" y1="423.4" x2="2123.8" y2="416.2" stroke="#999999" stroke-width="1"/>
+<line x1="2091.0" y1="394.5" x2="2101.0" y2="385.8" stroke="#999999" stroke-width="1"/>
+<line x1="2065.5" y1="369.0" x2="2074.2" y2="359.0" stroke="#999999" stroke-width="1"/>
+<line x1="2036.6" y1="347.4" x2="2043.8" y2="336.2" stroke="#999999" stroke-width="1"/>
+<line x1="2005.0" y1="330.1" x2="2010.5" y2="318.0" stroke="#999999" stroke-width="1"/>
+<line x1="1971.2" y1="317.5" x2="1974.9" y2="304.8" stroke="#999999" stroke-width="1"/>
+<line x1="1936.0" y1="309.9" x2="1937.9" y2="296.7" stroke="#999999" stroke-width="1"/>
+<line x1="1900.0" y1="307.3" x2="1900.0" y2="294.0" stroke="#999999" stroke-width="1"/>
+<line x1="1864.0" y1="309.9" x2="1862.1" y2="296.7" stroke="#999999" stroke-width="1"/>
+<line x1="1828.8" y1="317.5" x2="1825.1" y2="304.8" stroke="#999999" stroke-width="1"/>
+<line x1="1795.0" y1="330.1" x2="1789.5" y2="318.0" stroke="#999999" stroke-width="1"/>
+<line x1="1763.4" y1="347.4" x2="1756.2" y2="336.2" stroke="#999999" stroke-width="1"/>
+<line x1="1734.5" y1="369.0" x2="1725.8" y2="359.0" stroke="#999999" stroke-width="1"/>
+<line x1="1709.0" y1="394.5" x2="1699.0" y2="385.8" stroke="#999999" stroke-width="1"/>
+<line x1="1687.4" y1="423.4" x2="1676.2" y2="416.2" stroke="#999999" stroke-width="1"/>
+<line x1="1670.1" y1="455.0" x2="1658.0" y2="449.5" stroke="#999999" stroke-width="1"/>
+<line x1="1657.5" y1="488.8" x2="1644.8" y2="485.1" stroke="#999999" stroke-width="1"/>
+<line x1="1649.9" y1="524.0" x2="1636.7" y2="522.1" stroke="#999999" stroke-width="1"/>
+<line x1="1647.3" y1="560.0" x2="1634.0" y2="560.0" stroke="#999999" stroke-width="1"/>
+<line x1="1649.9" y1="596.0" x2="1636.7" y2="597.9" stroke="#999999" stroke-width="1"/>
+<line x1="1657.5" y1="631.2" x2="1644.8" y2="634.9" stroke="#999999" stroke-width="1"/>
+<line x1="1670.1" y1="665.0" x2="1658.0" y2="670.5" stroke="#999999" stroke-width="1"/>
+<line x1="1687.4" y1="696.6" x2="1676.2" y2="703.8" stroke="#999999" stroke-width="1"/>
+<line x1="1709.0" y1="725.5" x2="1699.0" y2="734.2" stroke="#999999" stroke-width="1"/>
+<line x1="1734.5" y1="751.0" x2="1725.8" y2="761.0" stroke="#999999" stroke-width="1"/>
+<line x1="1763.4" y1="772.6" x2="1756.2" y2="783.8" stroke="#999999" stroke-width="1"/>
+<line x1="1795.0" y1="789.9" x2="1789.5" y2="802.0" stroke="#999999" stroke-width="1"/>
+<line x1="1828.8" y1="802.5" x2="1825.1" y2="815.2" stroke="#999999" stroke-width="1"/>
+<line x1="1864.0" y1="810.1" x2="1862.1" y2="823.3" stroke="#999999" stroke-width="1"/>
+<line x1="1900.0" y1="812.7" x2="1900.0" y2="826.0" stroke="#999999" stroke-width="1"/>
+<line x1="1936.0" y1="810.1" x2="1937.9" y2="823.3" stroke="#999999" stroke-width="1"/>
+<line x1="1971.2" y1="802.5" x2="1974.9" y2="815.2" stroke="#999999" stroke-width="1"/>
+<line x1="2005.0" y1="789.9" x2="2010.5" y2="802.0" stroke="#999999" stroke-width="1"/>
+<line x1="2036.6" y1="772.6" x2="2043.8" y2="783.8" stroke="#999999" stroke-width="1"/>
+<line x1="2065.5" y1="751.0" x2="2074.2" y2="761.0" stroke="#999999" stroke-width="1"/>
+<line x1="2091.0" y1="725.5" x2="2101.0" y2="734.2" stroke="#999999" stroke-width="1"/>
+<line x1="2112.6" y1="696.6" x2="2123.8" y2="703.8" stroke="#999999" stroke-width="1"/>
+<line x1="2129.9" y1="665.0" x2="2142.0" y2="670.5" stroke="#999999" stroke-width="1"/>
+<line x1="2142.5" y1="631.2" x2="2155.2" y2="634.9" stroke="#999999" stroke-width="1"/>
+<line x1="2150.1" y1="596.0" x2="2163.3" y2="597.9" stroke="#999999" stroke-width="1"/>
+<polygon points="1884.8,560.0 1915.2,560.0 1915.2,216.1 1884.8,216.1" fill="#ffffff" stroke="#c04000" stroke-width="2"/>
+<line x1="1900.0" y1="580.0" x2="1900.0" y2="178.0" stroke="#c04000" stroke-width="1" stroke-dasharray="24,6,4,6"/>
+<line x1="1518.0" y1="560.0" x2="2282.0" y2="560.0" stroke="#c04000" stroke-width="1" stroke-dasharray="24,6,4,6"/>
+<text x="1918.0" y="182.0" font-size="20" fill="#c04000" text-anchor="start">pointer line 0.8 wide x 0.4 deep,</text>
+<text x="1918.0" y="206.0" font-size="20" fill="#c04000" text-anchor="start">cut through the anodise: bright metal</text>
+<text x="1900.0" y="962.8" font-size="26" fill="#000000" text-anchor="middle">TOP VIEW (pointer shown up)</text>
+<circle cx="1900.0" cy="826.0" r="5.0" fill="none" stroke="#000000" stroke-width="2"/>
+<text x="1914.0" y="856.0" font-size="20" fill="#000000" text-anchor="start">M3</text>
+<text x="60.0" y="1149.2" font-size="24" fill="#000000" text-anchor="start">TS06 MODE knob C, turned: one piece, round, black with a bright pointer line.  Datum A = the underside rim.  Scale: views 1:1 at 38 px/mm.</text>
+<text x="60.0" y="1182.0" font-size="20" fill="#222222" text-anchor="start">Material: aluminium 6082-T6 or 6061-T6 (black anodising), or brass CuZn39Pb3 (CW614N, free-cutting; black chemical finish or left bright).</text>
+<text x="60.0" y="1208.0" font-size="20" fill="#222222" text-anchor="start">Finish (aluminium): black dyed anodising, type II, 10 to 15 um, sealed.  The pointer line is cut or laser-engraved AFTER anodising so the metal shows.</text>
+<text x="60.0" y="1234.0" font-size="20" fill="#222222" text-anchor="start">Grip: straight knurl on the 14.0 mm band, about 1.0 mm pitch (44 flutes drawn; the turner's knurl may differ), finished diameter 14.0 +/-0.2.</text>
+<text x="60.0" y="1260.0" font-size="20" fill="#222222" text-anchor="start">Bore 6.00 +0.05 / 0 mm, a slide fit on the SR25's 6 mm shaft; concentric with the 18.0 outside to 0.05 TIR; square to the underside rim within 0.05.</text>
+<text x="60.0" y="1286.0" font-size="20" fill="#222222" text-anchor="start">M3 radial hole at 180 deg from the pointer line, 3.5 above the pocket ceiling (6.4 above the rim): tapped M3, thread through the whole grip wall, burr-free into the bore.</text>
+<text x="60.0" y="1312.0" font-size="20" fill="#222222" text-anchor="start">Pocket (underneath) 14.0 +0.1 / 0 mm by 2.9 deep: it clears the shaft nut (across corners up to 13.3 mm, INFERRED: measure the nut and say if it is wider).</text>
+<text x="60.0" y="1338.0" font-size="20" fill="#222222" text-anchor="start">General tolerance +/-0.1 mm; edges broken 0.1; no sharp burrs; surface Ra 1.6 on the skirt top and grip.  The 18.0 mm skirt diameter is one parameter of knob.scad (D).</text>
+<text x="60.0" y="1364.0" font-size="20" fill="#222222" text-anchor="start">Shaft form of the SR25 (plain, D-flat or knurled) is NOT confirmed: the set screw works on all three, so no flat is cut in the bore.</text>
+<text x="60.0" y="1390.0" font-size="20" fill="#222222" text-anchor="start">Quantity: 1 prototype, then 10 or 20.  Do not copy a maker name or number onto the part.</text>
+</svg>
