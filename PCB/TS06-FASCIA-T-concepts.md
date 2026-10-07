@@ -1,5 +1,7 @@
 # TS06-FASCIA T: the resistors in line with the circle, and three more faces (concepts, nothing built)
 
+**The owner's answers of 2026-10-07 (about 14:50 UTC), after the concepts:** keep both T1 and T3, with T3 becoming three new versions (the column left of the dial, near the edge: [`TS06-FASCIA-T3-variants.md`](TS06-FASCIA-T3-variants.md)); J1 stays SMD on the back; the rotary on order is the 25 mm SR25 (its plate is not yet measured with a caliper); the knob is A (Ø18.0; whether the shaft may be sawn is not answered); the bench measurements are still to be done.
+
 No board file, generator, footprint or `fab/` file was touched, and no board was built. The pictures are drawn from R's real
 geometry (the committed fascia R board with its control holes opened, the one that was ordered), with the white silk and the
 Divider gold that `tools/fascia_art.py` and `tools/fascia_gold.py` draw, run from a scratch script. The names are drawn with
