@@ -861,9 +861,9 @@ function buildHandWiring(g, root, bname) {
   for (const [ref, c] of Object.entries(hb.controls)) {
     info.lugs[ref] = c.model === 'lugs' ? (c.lugs || []).length : 0;
     for (const w of c.wires) {
+      // the tool's points are already dense (straights and arcs of one bend radius): drawn as they are, a round section of 8 sides
       const pts = w.pts.map(([x, y, d]) => V3(x, HB - d, y));
-      const sub = pts.filter((_, i) => i % 2 === 0 || i === pts.length - 1);
-      const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(sub, false, 'centripetal'), sub.length * 2, HAND.wire_r, 5, false), mats[w.net] || (mats[w.net] = wireMat(NET_COL[w.net] || 0xbbbbbb)));
+      const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), pts.length, HAND.wire_r, 8, false), mats[w.net] || (mats[w.net] = wireMat(NET_COL[w.net] || 0xbbbbbb)));
       m.name = `${ref} pad ${w.pad} ${w.net}`;
       m.userData.noHl = true;
       grp.add(m);
@@ -1608,7 +1608,7 @@ function renderNotes() {
     ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
     ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.']]),
     ['Standoffs, screws', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8.'],
-    ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1. Its ends, the 9.5 mm mated height, the floor, the 3 mm bend and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>); a control with no lug model is wired from its body’s back face.'],
+    ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1. Its ends, the 9.5 mm mated height, the floor, the 3 mm bend and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>), dressed as a harness: the dial’s seven wires leave their lugs in order, lie over the body’s rear face and run down its right flank one over another as a flat group (0.95 mm pitch), then turn off to their pads in the order of the pads, so no wire crosses another; a lever’s or button’s two run side by side past the body’s lower edge. Every bend has the same radius (1.6 mm) and every wire lands flat on its pad. A control with no lug model is wired from its body’s back face.'],
     ['The case', 'The printable parts from <code>3d/case-pair/out/*.stl</code> (cheeks, brow, top plate, trench, base, rear panel, and the fascia frame for F), where the case model places them. The cheeks are the default build, with the fascia bosses A, W and R use.'],
     ['Fascia R and F in 3D', 'The 3D view offers R (the default: picked, and ordered by fab/ORDER.md) and F. R is its own board, exported like the others and placed at the case model’s X0 (0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs, at X0 4.305. A and W are not drawn in 3D any more; the Fascia variants tab keeps them as the record.'],
   ];

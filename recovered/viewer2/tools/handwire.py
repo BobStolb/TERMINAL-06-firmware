@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The hand wiring on the back of the fascia: one short wire from each control's lugs to its landing pads.
+"""The hand wiring on the back of the fascia: one wire from each control's lugs to its landing pads, dressed as a harness.
 
     python3 handwire.py REPO SITE_DATA_DIR OUT.json
 
@@ -23,10 +23,28 @@ WHAT IS CHOSEN HERE, AND SAID SO ON THE PAGE
     same side; the other six taps and the other common stay free. A lever or a button has three lugs and the board two
     pads: the two lugs nearest the pads are used (the middle one to pad 2, the lower one to pad 1), the third stays
     free. Which lug of a real lever is the common is for a meter to say, not the model.
-  * the routes and their depths, found here so that no wire touches a body, a lug that is not its own, or another wire.
+  * the routes, as a careful builder would dress them (route_rotary, route_plate; the drawing is seen from the back, x to the
+    right, y down, depth toward the viewer):
+      - one group, one path. The dial's seven wires leave their lugs on the lugs' side that faces the group, run down along the
+        lug, lie over the body's rear face to the group's line (the first pad column that clears the body's right flank), turn
+        down it and run down the flank one over another, the wire that joined first lowest, a flat group standing on edge with
+        PITCH between the wires. At the foot of the flank each wire leaves the group in the order of the pads: to the left along
+        the pad row, straight on, or (the pads to the right) off the flank to the right, the farther pad first, so no two
+        wires cross as seen from the back, and none passes through another (the one that is higher passes over).
+      - one bend radius, RHO, for every bend of every wire (fillet() draws true circular arcs and refuses a route whose
+        straights cannot hold them), straight between bends, and every wire lands flat on its pad (the last bend levels it out,
+        then it lies on the pad to the pad's centre).
+      - a lever's or button's two wires leave the plates' two ends, run down the page side by side, and turn down together
+        past the body's lower edge, as close to it as a clearance allows. (A stand-in body with its pads too close under it
+        for that, the buttons of board A, has its wires go down the body's two sides instead.)
+      - the clearances are checked here (check()): wire to wire (exact, segment to segment), to a lug that is not its own, to the
+        body, the plan crossings, and the bend radius. They are written into the data for the page's tests.
+    The common of the dial is the one wire that joins the group between two taps and leaves it on the other side from them
+    (its pad, A6, is the last at the right): as a group stacked on edge it needs no crossing. As a flat ribbon it would cross
+    the taps' wires once; the pad row would then need A6 between TAP4 and TAP3, the dial's own order.
 Standard library, plus numpy (the same as 3d/populated's tools).
 """
-import itertools, json, math, os, struct, sys
+import json, math, os, struct, sys
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +53,9 @@ import kparts                                                  # noqa: E402  (th
 
 RW = 0.35                       # hook-up wire, 0.7 mm over the insulation
 CLR = 0.15                      # the least gap kept beside a wire
+RHO = 1.6                       # the one bend radius of every wire's centre line (2.3 wire diameters)
+PITCH = 0.95                    # the wires of a group, one over another: 0.7 mm of wire and 0.25 mm of air
+LF = 1.8                        # the flat run of a wire on its pad's side of the last bend
 ANG = [-75.0 + 30.0 * k for k in range(6)]            # tools/fascia_art.py: dial position k+1, degrees, y down
 TAP_NET = ["GND", "TAP2", "TAP3", "TAP4", "TAP5", "+5V"]    # position 1..6: 0 V .. 5 V (TERMINAL-06-control-scheme-revB.md)
 
@@ -149,39 +170,108 @@ def lugs_of(P, back):
 
 
 # ---------------------------------------------------------------------------------------------- paths
-def fillet(pts, rho=1.6, step=0.4):
-    """A dense polyline through the waypoints with each corner rounded (a quadratic bezier), points about `step` apart."""
+# A wire is a polyline of corners (x, y, depth). Every corner is rounded by a true circular arc of ONE radius, RHO, the same
+# for every wire of every control: the wire turns the same way everywhere, runs straight between turns, and a corner that
+# the straights cannot hold is an error (it is never shrunk), so the drawing cannot hide a tight kink.
+def fillet(pts, rho=None, step=0.25):
+    """The corners `pts` joined by straights and circular arcs of radius rho (mm); returns (dense points, shortest straight, arcs).
+    A straight shorter than the two arcs on its ends (their tangent lengths) raises: the route must be designed to fit."""
+    rho = RHO if rho is None else rho
     P = [np.array(p, float) for p in pts]
-    out = [P[0]]
-    for i in range(1, len(P) - 1):
+    n = len(P)
+    tl = [0.0] * n                                                # tangent length of each corner
+    turn = [0.0] * n
+    for i in range(1, n - 1):
         a, b = P[i] - P[i - 1], P[i + 1] - P[i]
-        la, lb = np.linalg.norm(a), np.linalg.norm(b)
-        r = min(rho, 0.45 * la, 0.45 * lb)
-        if r < 1e-6 or la < 1e-9 or lb < 1e-9:
+        ua, ub = a / np.linalg.norm(a), b / np.linalg.norm(b)
+        turn[i] = math.acos(max(-1.0, min(1.0, float(ua @ ub))))
+        tl[i] = rho * math.tan(turn[i] / 2.0) if turn[i] > 1e-4 else 0.0
+    short = 9e9
+    for i in range(n - 1):
+        free = float(np.linalg.norm(P[i + 1] - P[i])) - tl[i] - tl[i + 1]
+        short = min(short, free)
+        if free < -1e-6:
+            raise ValueError("a straight of %.2f mm between corners %d and %d cannot hold two bends of radius %.2f (%s)" % (free + tl[i] + tl[i + 1], i, i + 1, rho, pts[i]))
+    out = [P[0]]
+    for i in range(1, n - 1):
+        if turn[i] <= 1e-4:
             out.append(P[i])
             continue
-        q0, q1 = P[i] - a / la * r, P[i] + b / lb * r
-        n = max(3, int(r * 3))
-        for k in range(n + 1):
-            t = k / n
-            out.append((1 - t) ** 2 * q0 + 2 * (1 - t) * t * P[i] + t ** 2 * q1)
+        a, b = P[i] - P[i - 1], P[i + 1] - P[i]
+        ua, ub = a / np.linalg.norm(a), b / np.linalg.norm(b)
+        q0 = P[i] - ua * tl[i]
+        nv = ub - ua * float(ua @ ub)
+        nv /= np.linalg.norm(nv)
+        c = q0 + nv * rho
+        m = max(3, int(math.ceil(turn[i] * rho / step)))
+        for k in range(m + 1):
+            s = turn[i] * k / m
+            out.append(c + (q0 - c) * math.cos(s) + ua * rho * math.sin(s))
     out.append(P[-1])
     dense = [out[0]]
     for p in out[1:]:
         seg = p - dense[-1]
         L = np.linalg.norm(seg)
         if L > 1e-9:
-            m = max(1, int(math.ceil(L / step)))
+            m = max(1, int(math.ceil(L / 0.8)))
             base = dense[-1]
             for k in range(1, m + 1):
                 dense.append(base + seg * (k / m))
-    return np.array(dense)
+    return np.array(dense), short
 
 
-def seg_dist_pts(A, B):
-    """Smallest distance between two dense point sets (their segments are short enough to compare by points)."""
-    d = np.linalg.norm(A[:, None, :] - B[None, :, :], axis=2)
-    return float(d.min())
+def min_radius(dense):
+    """The smallest radius of curvature (mm) along a dense polyline (circle through each three points 4 apart)."""
+    r = 9e9
+    for i in range(0, len(dense) - 8, 1):
+        a, b, c = dense[i], dense[i + 4], dense[i + 8]
+        ab, bc, ca = np.linalg.norm(b - a), np.linalg.norm(c - b), np.linalg.norm(a - c)
+        area2 = np.linalg.norm(np.cross(b - a, c - a))
+        if area2 > 1e-9:
+            r = min(r, ab * bc * ca / (2.0 * area2))
+    return r
+
+
+def seg_seg_dist(A, B):
+    """Smallest distance between two polylines (exact: segment to segment), A and B as Nx3 arrays."""
+    p0, d1 = A[:-1][:, None, :], (A[1:] - A[:-1])[:, None, :]
+    q0, d2 = B[:-1][None, :, :], (B[1:] - B[:-1])[None, :, :]
+    r = p0 - q0
+    a, e, f = (d1 * d1).sum(-1), (d2 * d2).sum(-1), None
+    b, c = (d1 * d2).sum(-1), (d1 * r).sum(-1)
+    f = (d2 * r).sum(-1)
+    den = a * e - b * b
+    s = np.where(den > 1e-12, np.clip((b * f - c * e) / np.where(den > 1e-12, den, 1), 0, 1), 0.0)
+    t = (b * s + f) / np.where(e > 1e-12, e, 1)
+    t = np.clip(t, 0, 1)
+    s = np.clip((b * t - c) / np.where(a > 1e-12, a, 1), 0, 1)
+    t = np.clip((b * s + f) / np.where(e > 1e-12, e, 1), 0, 1)
+    diff = (p0 + d1 * s[..., None]) - (q0 + d2 * t[..., None])
+    return float(np.sqrt((diff * diff).sum(-1)).min())
+
+
+def plan_crossings(wires):
+    """Pairs of wires whose plan views (x, y) cross each other transversally (more than 20 degrees apart), as seen from the back.
+    Wires of a dressed group lie over each other (parallel in plan, stacked in depth): that is not a crossing."""
+    n = 0
+    pairs = []
+    for i in range(len(wires)):
+        for j in range(i + 1, len(wires)):
+            A, B = wires[i][:, :2], wires[j][:, :2]
+            p, d1 = A[:-1][:, None, :], (A[1:] - A[:-1])[:, None, :]
+            q, d2 = B[:-1][None, :, :], (B[1:] - B[:-1])[None, :, :]
+            den = d1[..., 0] * d2[..., 1] - d1[..., 1] * d2[..., 0]
+            w = q - p
+            with np.errstate(divide="ignore", invalid="ignore"):
+                t = (w[..., 0] * d2[..., 1] - w[..., 1] * d2[..., 0]) / den
+                u = (w[..., 0] * d1[..., 1] - w[..., 1] * d1[..., 0]) / den
+            l1, l2 = np.hypot(d1[..., 0], d1[..., 1]), np.hypot(d2[..., 0], d2[..., 1])
+            sin = np.abs(den) / np.maximum(l1 * l2, 1e-12)
+            hit = (t > 0.02) & (t < 0.98) & (u > 0.02) & (u < 0.98) & (sin > math.sin(math.radians(20)))
+            if hit.any():
+                n += 1
+                pairs.append((i, j))
+    return n, pairs
 
 
 def box_dist(p, lo, hi):
@@ -189,19 +279,19 @@ def box_dist(p, lo, hi):
     return np.linalg.norm(q, axis=-1)
 
 
-def check(wires, lugs, body, own):
-    """The least clearance (mm) of any wire to a body, to a lug that is not its own, and to another wire. Wires are dense (x, y, depth)."""
+def check(wires, lugs, body, own, others=()):
+    """The least clearance (mm) of any wire to a body, to a lug that is not its own, and to another wire (surface to surface),
+    and the number of plan crossings. Wires are dense (x, y, depth). `others`: wires of the other controls of the board."""
     worst = {"wire-wire": 9e9, "wire-lug": 9e9, "wire-body": 9e9}
     for i, a in enumerate(wires):
-        for b in wires[i + 1:]:
-            worst["wire-wire"] = min(worst["wire-wire"], seg_dist_pts(a, b) - 2 * RW)
+        for b in list(wires[i + 1:]) + list(others):
+            worst["wire-wire"] = min(worst["wire-wire"], seg_seg_dist(a, b) - 2 * RW)
+        arc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(a, axis=0), axis=1))])
         for j, l in enumerate(lugs):
-            lo = np.array([l["x"] - l["w"] / 2, l["y"] - l["t"] / 2, l["d0"]])
+            # a lug stands from the body's rear face to its tip (the model's tip vertices are all the tool reads: d0 = d1)
+            lo = np.array([l["x"] - l["w"] / 2, l["y"] - l["t"] / 2, body["depth"] if body else l["d0"]])
             hi = np.array([l["x"] + l["w"] / 2, l["y"] + l["t"] / 2, l["d1"]])
-            pts = a[2:] if j == own[i] else a                  # a wire starts on its own lug
-            if j == own[i]:
-                arc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(a, axis=0), axis=1))])
-                pts = a[arc > 2.0]
+            pts = a[arc > 8.0] if j == own[i] else a              # a wire starts on its own lug, and runs down along it
             if len(pts):
                 worst["wire-lug"] = min(worst["wire-lug"], float(box_dist(pts, lo, hi).min()) - RW)
         if body:
@@ -214,7 +304,9 @@ def check(wires, lugs, body, own):
                 lo = np.array([body["x0"], body["y0"], 0.0])
                 hi = np.array([body["x1"], body["y1"], body["depth"]])
                 worst["wire-body"] = min(worst["wire-body"], float(box_dist(a, lo, hi).min()) - RW)
-    return {k: round(v, 2) for k, v in worst.items()}
+    out = {k: round(v, 2) for k, v in worst.items()}
+    out["crossings"] = plan_crossings(list(wires))[0]
+    return out
 
 
 # ---------------------------------------------------------------------------------------------- the controls
@@ -258,18 +350,49 @@ def rotary(lugs, pads, at):
         items.append((l, net, n, pads[n][:2]))
     return items, ring + com
 
+def route_rotary(items, at, body):
+    """The dial's seven wires as ONE dressed group (the page draws it from the back, x to the right, y down, depth toward the viewer).
 
-def route_rotary(items, at, depths):
+    Each wire leaves its lug on the lug's side that faces the group, runs down along the lug to just above the body's rear face,
+    and lies over that face (a straight, parallel to the board) to the group's line XB, beside the body's right flank. There it
+    turns down and joins the group: the seven wires run down the flank one over another (a flat group standing on edge, side by
+    side at the pitch PITCH, the wire that joined first lowest), so from every side they run as one path. At the foot of the flank
+    each wire leaves the group in the order of its pad and lands on it flat: the wires for the pads to the left turn left along
+    the pad row (the group's lowest part is a row of seven, then fewer); the wire for the pad under the line goes straight on; the
+    wires for the pads to the right turn right, the farther pad first. The wire that joined first is the lowest of the group, so
+    every wire later down the line (and every wire that turns away) passes over the ones below it, never through them."""
     cx, cy = at
-    wires = []
-    for (l, net, n, (px, py)), dk in zip(items, depths):
-        rx, ry = l["x"] - cx, l["y"] - cy
-        r = math.hypot(rx, ry)
-        ux, uy = rx / r, ry / r
-        jd = l["d1"] - 1.3                                       # the joint, 1.3 mm from the lug's tip
-        rout = 13.4 if r > 8 else 13.0
-        wires.append([(l["x"], l["y"], jd), (cx + ux * rout, cy + uy * rout, dk), (px, py, dk), (px, py, RW)])
-    return wires
+    rad, back = body["r"], body["depth"]
+    H = back + 2.1                                              # the run over the body's rear face (1.4 mm of air under the wire)
+    order = sorted(items, key=lambda it: it[0]["y"])            # the order the lugs are met going down the flank
+    edge = cx + rad
+    XB = min(it[3][0] for it in items if it[3][0] >= edge + 2.4)    # the line of the group: the first pad column that clears the flank
+    D0 = RW + 2 * RHO + 0.25                                    # the lowest level of the group
+    py = max(it[3][1] for it in items)
+    ya = py - RHO - LF                                          # where a wire coming down onto its pad starts to level out
+    right = sorted([it for it in order if it[3][0] > XB + 0.01], key=lambda it: it[3][0])    # pad nearest the line first
+    yp = {}
+    for r, it in enumerate(right):
+        yp[it[2]] = ya - 2 * RHO - 1.0 - (2 * RHO + 0.4) * r         # turn-away heights: the farther pad's wire turns off higher up
+    wires, info = [], []
+    for idx, (l, net, n, (px, pyy)) in enumerate(order):
+        D = D0 + PITCH * idx
+        x0, y0 = l["x"] + l["w"] / 2 + RW, l["y"]
+        jd = l["d1"] - 1.3
+        pts = [(x0, y0, jd), (x0, y0, H), (XB, y0, H), (XB, y0, D)]
+        if abs(px - XB) < 0.01:
+            pts += [(XB, ya, D), (XB, ya, RW), (XB, pyy, RW)]
+            kind = "straight on"
+        elif px < XB:
+            xa = px + RHO + LF
+            pts += [(XB, pyy, D), (xa, pyy, D), (xa, pyy, RW), (px, pyy, RW)]
+            kind = "left"
+        else:
+            pts += [(XB, yp[n], D), (px, yp[n], D), (px, ya, D), (px, ya, RW), (px, pyy, RW)]
+            kind = "right"
+        wires.append(pts)
+        info.append({"level": round(D, 3), "turn": kind})
+    return order, wires, info
 
 
 def plate(lugs, pads, at, body_back):
@@ -280,38 +403,81 @@ def plate(lugs, pads, at, body_back):
     return items
 
 
-def route_plate(items, at, ylow):
-    wires = []
+def route_plate(items, body):
+    """The pair of wires of a lever or a button: out of the lug plates toward the pads, side by side, level over the body's rear
+    face, down past the body's lower edge together (one line of drops, the same height), and out flat onto their pads. The wire of
+    the middle lug passes the lower lug on the side of its own pad, a clearance away, and settles into its lane before the lug."""
+    low = items[0][0]
+    # both wires turn down on one line, yc: as far down the page as the lower lug allows a wire of bend radius RHO to leave it, and
+    # not lower than a bend's room above the pads (the lower lug of a button is only 3 mm from them: its wire dives from the plate at once)
+    yc = min(low["y"] + RHO, items[0][3][1] - RHO - 0.1)
+    wires, info = [], []
     for k, (l, net, n, (px, py)) in enumerate(items):
         jd = l["d1"] - 1.3
-        side = 1.0 if n == "2" else -1.0
-        xo = l["x"] + side * 2.5                                  # round the lug plate's side (it is 3.0 wide)
-        yo = ylow + 1.9                                            # below the body's lower edge
-        wires.append([(l["x"] + side * 0.6, l["y"], jd), (xo, l["y"], jd - 0.2 * k), (xo, yo, jd - 0.2 * k), (px, py - 0.4, 3.5), (px, py, RW)])
-    return wires
+        if n == "1":                                               # from the lower lug, straight down the page to the drop
+            xs = px
+            pts = [(xs, yc - RHO, jd), (xs, yc, jd), (xs, yc, RW), (px, py, RW)]
+        else:                                                      # from the middle lug, down the lower lug's right side
+            xc = low["x"] + low["w"] / 2 + RW + CLR                # the plate's right end, a clearance off the lower plate's end
+            pts = [(xc, l["y"], jd), (xc, yc, jd), (xc, yc, RW), (px, py, RW)]
+        wires.append(pts)
+        info.append({"level": round(jd, 3), "turn": "pad " + n})
+    return wires, info
+
+
+def route_plate_side(items, body):
+    """A lever or button whose pads sit too close under its body for a wire to come down in front of the pads' edge and level out
+    (the stand-in buttons of board A: the pads are 1 mm below the body): the wires leave the plates in opposite directions, down
+    past the body's two sides, and land flat on their pads from the outside, along the pads' long side."""
+    wires, info = [], []
+    for k, (l, net, n, (px, py)) in enumerate(items):
+        jd = l["d1"] - 1.3
+        yl = l["y"]
+        if n == "1":
+            xs, xl = l["x"] - 1.0, body["x0"] - RW - 0.3
+        else:
+            xs, xl = l["x"] + 1.0, body["x1"] + RW + 0.3
+        pts = [(xs, yl, jd), (xl, yl, jd), (xl, py, jd), (xl, py, RW), (px, py, RW)]
+        wires.append(pts)
+        info.append({"level": round(jd, 3), "turn": "pad " + n + " side"})
+    return wires, info
 
 
 def standin(ref, X0, body, pads, at):
-    """No lug model: each wire starts on the stand-in body's back face (depth `dep`) and runs to its pad."""
+    """No lug model: the control is the case model's stand-in body, and its wires start on the body's back face (depth `dep`),
+    where a lug would be. Virtual lugs are put there, and the wires are routed exactly as the real ones are: the dial's seven as one
+    group down its flank, a lever's or button's two side by side past the body's lower edge. Returns the corner lists and the nets."""
     _, X, t, a, b, dep = body
     cx, cy = X - X0, t
-    names = sorted(pads, key=lambda n: pads[n][0])          # left to right, so the wires do not cross on their way down
-    wires, nets = [], []
-    n = len(names)
-    for i, nm in enumerate(names):
-        px, py, net = pads[nm][:3]
-        # the start: along the body's lower rear edge, spread over its width; depth = the body's back face
-        sx = cx + (i - (n - 1) / 2) * min(2.0, (a - 4) / max(1, n - 1)) if ref != "SW1" else cx + (i - 3) * 1.6
-        sy = cy + (b / 2 - 1.2 if ref != "SW1" else 7.0)
-        wires.append([(sx, sy, dep), (sx, sy + 2.0, dep + 1.0), (px, py - 1.0, dep + 1.0 - 0.3 * i), (px, py - 0.4, 3.5), (px, py, RW)])
-        nets.append((net, nm))
-    return wires, nets
+    py = max(v[1] for v in pads.values())
+    if ref == "SW1":
+        rad = a / 2
+        XB = min(v[0] for v in pads.values() if v[0] >= cx + rad + 2.4)
+        # the order the wires join the group: the pads to the right (they turn away first, so they go lowest), then the pad on the
+        # line, then the pads to the left from the nearest (the farther the pad, the higher the wire, so it passes over the others)
+        names = sorted(pads, key=lambda nm: (0 if pads[nm][0] > XB + 0.01 else 1 if abs(pads[nm][0] - XB) < 0.01 else 2, abs(pads[nm][0] - XB)))
+        items = []
+        for i, nm in enumerate(names):
+            lug = {"x": cx + 4.0, "y": cy - 9.0 + 3.0 * i, "w": 0.1, "t": 0.1, "d0": dep + 1.75, "d1": dep + 1.75}
+            items.append((lug, pads[nm][2], nm, pads[nm][:2]))
+        bd = {"kind": "cyl", "x": cx, "y": cy, "r": rad, "depth": dep}
+        order, wires, _ = route_rotary(items, (cx, cy), bd)
+        return wires, [(it[1], it[2]) for it in order], bd
+    y1 = cy + b / 2
+    bd = {"kind": "box", "x0": cx - a / 2, "x1": cx + a / 2, "y0": cy - b / 2, "y1": y1, "depth": dep}
+    room = py - RHO - 0.1 >= y1 + RW + CLR
+    ylow = (y1 - 0.9) if room else py - 2 * RHO - 0.1
+    lugs = [{"x": cx, "y": ylow, "w": 3.0, "t": 0.8, "d0": dep + 3.0, "d1": dep + 3.0},
+            {"x": cx, "y": ylow - 6.0 if room else ylow, "w": 3.0, "t": 0.8, "d0": dep + 3.0, "d1": dep + 3.0}]
+    items = [(lugs[0], pads["1"][2], "1", pads["1"][:2]), (lugs[1], pads["2"][2], "2", pads["2"][:2])]
+    wires, _ = route_plate(items, bd) if room else route_plate_side(items, bd)
+    return wires, [(it[1], it[2]) for it in items], bd
 
 
 def build(repo, data_dir):
     out = {"about": "Written by recovered/viewer2/tools/handwire.py. Native fascia coordinates: x and y as in the board file (y down the page), "
-                    "depth = mm behind the back face. Wires are dense polylines, radius %.2f mm." % RW,
-           "wire_r": RW, "boards": {}}
+                    "depth = mm behind the back face. Wires are dense polylines, radius %.2f mm; every bend has radius %.2f mm." % (RW, RHO),
+           "wire_r": RW, "bend_r": RHO, "boards": {}}
     model = json.load(open(os.path.join(data_dir, "model.json"), encoding="utf8"))
     for board, key, populated in (("TS06-FASCIA-rhythm", "R", True), ("TS06-FASCIA", "A", False)):
         path = os.path.join(repo, "PCB", board, board + ".kicad_pcb")
@@ -327,6 +493,7 @@ def build(repo, data_dir):
                 P = node_points(js, b)
                 info["lugs_from"] = os.path.relpath(glb, repo).replace(os.sep, "/")
         brd = kparts.board(path)["parts"]
+        built = {}
         for ref in ("SW1", "SW2", "SW3", "SW4", "SW5"):
             at = brd[ref]["at"][:2]
             pads = pad_net(root, ref)
@@ -347,33 +514,41 @@ def build(repo, data_dir):
                 c["body"] = body
                 if ref == "SW1":
                     items, rel = rotary(lugs, pads, at)
-                    best = None
-                    for perm in itertools.permutations(range(7)):
-                        depths = [12.6 + 1.25 * i for i in perm]
-                        raw = route_rotary(items, at, depths)
-                        dense = [fillet(w) for w in raw]
-                        res = check(dense, lugs, body, [lugs.index(it[0]) for it in items])
-                        score = min(res.values())
-                        if best is None or score > best[0]:
-                            best = (score, raw, dense, res, depths)
-                        if score >= 0.35:
-                            break
-                    score, raw, dense, res, depths = best
+                    items, raw, route = route_rotary(items, at, body)
                 else:
                     items = plate(lugs, pads, at, back)
-                    raw = route_plate(items, at, body["y1"])
-                    dense = [fillet(w) for w in raw]
-                    res = check(dense, lugs, body, [lugs.index(it[0]) for it in items])
-                c["clearance"] = res
-                c["wires"] = [{"net": it[1], "pad": it[2], "lug": {"x": it[0]["x"], "y": it[0]["y"]},
-                               "pts": [[round(float(v), 3) for v in p] for p in d]} for it, d in zip(items, dense)]
+                    raw, route = route_plate(items, body)
+                fl = [fillet(w) for w in raw]
+                dense = [f[0] for f in fl]
+                c["route"] = route
+                c["bend_radius"] = round(min(min_radius(d) for d in dense), 2)
+                c["_items"], c["_dense"] = items, dense
             else:
                 bodies = {b[0]: b for b in model["fascia_variants"][("F" if key == "A" else key)]["bodies"]}
                 X0 = model["fascia_variants"]["F" if key == "A" else key]["X0"]
-                raw, nets = standin(ref, X0, bodies[ref], pads, at)
-                dense = [fillet(w) for w in raw]
+                raw, nets, bd = standin(ref, X0, bodies[ref], pads, at)
+                dense = [fillet(w)[0] for w in raw]
                 c["model"] = "standin"
-                c["wires"] = [{"net": n[0], "pad": n[1], "pts": [[round(float(v), 3) for v in p] for p in d]} for n, d in zip(nets, dense)]
+                c["bend_radius"] = round(min(min_radius(d) for d in dense), 2)
+                c["_nets"], c["_dense"], c["_body"] = nets, dense, bd
+            built[ref] = c
+        # the clearances, with every wire of the board in view: a wire of one control may not touch a wire of another
+        all_dense = {r2: c2["_dense"] for r2, c2 in built.items()}
+        for ref, c in built.items():
+            dense = c["_dense"]
+            others = [d for r2, ds in all_dense.items() if r2 != ref for d in ds]
+            if c["model"] == "lugs":
+                items = c["_items"]
+                c["clearance"] = check(dense, c["lugs"], c["body"], [c["lugs"].index(it[0]) for it in items], others)
+                c["wires"] = [{"net": it[1], "pad": it[2], "lug": {"x": it[0]["x"], "y": it[0]["y"]}, "level": c["route"][i]["level"], "turn": c["route"][i]["turn"],
+                               "length": round(float(np.linalg.norm(np.diff(d, axis=0), axis=1).sum()), 1),
+                               "pts": [[round(float(v), 3) for v in p] for p in d]} for i, (it, d) in enumerate(zip(items, dense))]
+            else:
+                c["clearance"] = check(dense, [], c.pop("_body"), [], others)
+                c["wires"] = [{"net": n[0], "pad": n[1], "length": round(float(np.linalg.norm(np.diff(d, axis=0), axis=1).sum()), 1),
+                               "pts": [[round(float(v), 3) for v in p] for p in d]} for n, d in zip(c["_nets"], dense)]
+            for k in ("_items", "_dense", "_nets"):
+                c.pop(k, None)
             info["controls"][ref] = c
         out["boards"][board] = info
     return out
@@ -385,8 +560,9 @@ def main(repo, data_dir, out):
         json.dump(res, fh, ensure_ascii=False, separators=(",", ":"))
     for b, info in res["boards"].items():
         for ref, c in info["controls"].items():
-            print("  %-20s %s %-7s %2d wires %s" % (b, ref, c["model"], len(c["wires"]),
-                  ("lugs %d, clearance %s" % (len(c["lugs"]), c["clearance"])) if c["model"] == "lugs" else "(no lug model: from the stand-in body's back face)"))
+            ln = [w["length"] for w in c["wires"]]
+            print("  %-20s %s %-7s %2d wires, %.0f-%.0f mm, bends r %.2f, %s" % (b, ref, c["model"], len(c["wires"]), min(ln), max(ln), c["bend_radius"],
+                  ("lugs %d, clearance %s" % (len(c["lugs"]), c["clearance"])) if c["model"] == "lugs" else "(no lug model: from the stand-in body's back face) clearance %s" % c["clearance"]))
 
 
 if __name__ == "__main__":

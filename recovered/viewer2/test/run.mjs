@@ -906,6 +906,74 @@ if (!ONLY_WIRING) {
       Object.values(A).every(c => c.model === 'standin' && c.wires.length >= 2) && Object.values(A).reduce((a, c) => a + c.wires.length, 0) === 15, `${Object.values(A).map(c => c.model).join(',')}`);
     const ends = Object.entries(R).every(([ref, c]) => c.wires.every(w => { const pad = c.pads[w.pad]; const e = w.pts[w.pts.length - 1]; return pad && Math.hypot(e[0] - pad[0], e[1] - pad[1]) < 0.05 && pad[2] === w.net && e[2] < 0.6; }));
     ok('hand wiring R: every wire ends on its landing pad, and its net is the pad’s net in the board file', ends, 'checked against pad positions and nets');
+    // the dressing: no two wires cross or touch (recomputed here from the points, exact segment to segment), one bend radius, wires land flat
+    {
+      const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dotp = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+      const segSeg = (p1, q1, p2, q2) => {                     // closest distance of two 3D segments (Ericson)
+        const d1 = sub(q1, p1), d2 = sub(q2, p2), r = sub(p1, p2), a = dotp(d1, d1), e = dotp(d2, d2), f = dotp(d2, r);
+        let s, t;
+        if (a < 1e-12 && e < 1e-12) { s = t = 0; }
+        else if (a < 1e-12) { s = 0; t = Math.min(1, Math.max(0, f / e)); }
+        else {
+          const c = dotp(d1, r);
+          if (e < 1e-12) { t = 0; s = Math.min(1, Math.max(0, -c / a)); }
+          else {
+            const b = dotp(d1, d2), den = a * e - b * b;
+            s = den > 1e-12 ? Math.min(1, Math.max(0, (b * f - c * e) / den)) : 0;
+            t = (b * s + f) / e;
+            if (t < 0) { t = 0; s = Math.min(1, Math.max(0, -c / a)); } else if (t > 1) { t = 1; s = Math.min(1, Math.max(0, (b - c) / a)); }
+          }
+        }
+        const c1 = [p1[0] + d1[0] * s, p1[1] + d1[1] * s, p1[2] + d1[2] * s], c2 = [p2[0] + d2[0] * t, p2[1] + d2[1] * t, p2[2] + d2[2] * t];
+        return Math.hypot(...sub(c1, c2));
+      };
+      const polyDist = (A, B) => { let m = 9e9; for (let i = 0; i + 1 < A.length; i++) for (let j = 0; j + 1 < B.length; j++) m = Math.min(m, segSeg(A[i], A[i + 1], B[j], B[j + 1])); return m; };
+      const planCross = (A, B) => {                            // transversal crossings (> 20 degrees) of two plan views
+        for (let i = 0; i + 1 < A.length; i++) for (let j = 0; j + 1 < B.length; j++) {
+          const d1 = [A[i + 1][0] - A[i][0], A[i + 1][1] - A[i][1]], d2 = [B[j + 1][0] - B[j][0], B[j + 1][1] - B[j][1]];
+          const den = d1[0] * d2[1] - d1[1] * d2[0], l1 = Math.hypot(...d1), l2 = Math.hypot(...d2);
+          if (l1 < 1e-9 || l2 < 1e-9 || Math.abs(den) / (l1 * l2) < Math.sin(20 * Math.PI / 180)) continue;
+          const w = [B[j][0] - A[i][0], B[j][1] - A[i][1]], t = (w[0] * d2[1] - w[1] * d2[0]) / den, u = (w[0] * d1[1] - w[1] * d1[0]) / den;
+          if (t > 0.02 && t < 0.98 && u > 0.02 && u < 0.98) return true;
+        }
+        return false;
+      };
+      const minRadius = P => {                                 // the circle through three points 4 apart, the smallest along the wire
+        let m = 9e9;
+        for (let i = 0; i + 8 < P.length; i++) {
+          const a = P[i], b = P[i + 4], c = P[i + 8], ab = Math.hypot(...sub(b, a)), bc = Math.hypot(...sub(c, b)), ca = Math.hypot(...sub(a, c));
+          const u = sub(b, a), v = sub(c, a), cr = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], area2 = Math.hypot(...cr);
+          if (area2 > 1e-9) m = Math.min(m, ab * bc * ca / (2 * area2));
+        }
+        return m;
+      };
+      const rw = hw.wire_r;
+      for (const [bname, tag] of [['TS06-FASCIA-rhythm', 'R'], ['TS06-FASCIA', 'F']]) {
+        const ctl = hw.boards[bname].controls;
+        const W = [];
+        for (const [ref, c] of Object.entries(ctl)) for (const w of c.wires) W.push({ ref, pad: w.pad, pts: w.pts });
+        let gap = 9e9, who = '', cross = 0;
+        for (let i = 0; i < W.length; i++) for (let j = i + 1; j < W.length; j++) {
+          const g = polyDist(W[i].pts, W[j].pts) - 2 * rw;
+          if (g < gap) { gap = g; who = `${W[i].ref}.${W[i].pad}/${W[j].ref}.${W[j].pad}`; }
+          if (planCross(W[i].pts, W[j].pts)) cross++;
+        }
+        ok(`hand wiring ${tag}: no two of the ${W.length} wires cross or touch (least gap between wire surfaces ${gap.toFixed(2)} mm, ${who}), and none crosses another as seen from the back (${cross} crossings)`, W.length === 15 && gap >= 0.15 && cross === 0, `${gap.toFixed(3)} mm, ${cross} crossings`);
+        const rmin = Math.min(...W.map(w => minRadius(w.pts)));
+        ok(`hand wiring ${tag}: every bend of every wire has the one radius ${hw.bend_r} mm (the sharpest found in the points: ${rmin.toFixed(2)} mm), and the data says so`,
+          rmin >= hw.bend_r - 0.05 && Object.values(ctl).every(c => Math.abs(c.bend_radius - hw.bend_r) < 0.05), `${rmin.toFixed(3)} mm`);
+        const flat = W.every(w => { const e = w.pts[w.pts.length - 1]; let k = w.pts.length - 1, arc = 0; while (k > 0 && arc < 0.5) { arc += Math.hypot(...sub(w.pts[k], w.pts[k - 1])); k--; } return e[2] < rw + 0.01 && w.pts[k][2] < rw + 0.1; });
+        ok(`hand wiring ${tag}: every wire lands flat on its pad (the last 0.5 mm lies within 0.1 mm of the board's surface)`, flat, '');
+      }
+      // the dial's group: the seven wires, one over another at a fixed pitch, each leaving its lug along the lug
+      const d = R.SW1, lv = d.wires.map(w => w.level).sort((a, b) => a - b);
+      const pitch = lv.slice(1).map((v, i) => v - lv[i]);
+      ok('hand wiring R: the dial’s seven wires run as one group, one over another at a fixed pitch of 0.95 mm', lv.length === 7 && pitch.every(p => Math.abs(p - 0.95) < 0.01) && d.wires.every(w => ['left', 'right', 'straight on'].includes(w.turn)), `levels ${lv.map(v => v.toFixed(2)).join(' ')}`);
+      const runAlong = w => { let k = 0; while (k + 1 < w.pts.length && Math.hypot(w.pts[k + 1][0] - w.pts[0][0], w.pts[k + 1][1] - w.pts[0][1]) < 0.02) k++; return w.pts[0][2] - w.pts[k][2]; };
+      const alongs = d.wires.map(w => runAlong(w));
+      ok('hand wiring R: each wire of the dial leaves its lug along the lug (straight toward the board beside it for at least 0.7 mm, the six taps for 4.5 mm, before its first bend)',
+        alongs.every(a => a >= 0.7) && d.wires.every((w, i) => w.pts[0][2] < 19 || alongs[i] >= 4.5), alongs.map(a => a.toFixed(1)).join(' '));
+    }
     const nHand = root => page.evaluate(root => {
       const V = window.TS06, shown = o => { for (let p = o; p; p = p.parent) if (!p.visible) return false; return true; };
       let k = 0; V.roots[root].group.traverse(o => { if (o.isMesh && /^SW\d pad/.test(o.name) && shown(o)) k++; });
