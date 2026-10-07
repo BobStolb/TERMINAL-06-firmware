@@ -9,7 +9,19 @@ The checker of `tools/fascia_gold.py` (`check()`) was run on the art of every co
 Items marked *inferred* are typical figures, not something a datasheet, a measurement or a fab told us here. There is **no
 price** on this page: none was looked up. The scratch scripts are in the run's output folder, not in the repo.
 
+All four keep the board (191.4 x 40 mm, 2.0 mm), the five controls where R has them (SW1 to SW5), the SUB rule, the keys and the
+white plates. The only control that moves is the dial in T1's 0207 variant, which is rejected (section 2).
+
 ![the four faces, same scale](TS06-FASCIA-T-concepts/contact-sheet.png)
+
+**The knob, as numbers (for the knob run).** The largest knob that leaves the resistors in view, in plan view, skirt included
+(a knob h mm tall hides a further 0.176 h mm for a viewer 10 degrees off axis: take that off the radius):
+
+| | T1 and T2 (ring, 0204) | T3 (column) | T4 (ring, 0207 standing) |
+|---|---|---|---|
+| Largest knob, plan view | **Ø24** (r 12.1) | **Ø23.6** keeps the marks and leaders in view; **Ø32** still shows every name and all five resistors | **Ø23.9** (r 11.95) |
+| At 6 / 10 / 15 mm tall | Ø22.1 / Ø20.7 / Ø19.0 | marks: Ø21.5 / Ø20.1 / Ø18.3; names: Ø30.1 / Ø28.7 / Ø26.9 | Ø21.8 / Ø20.4 / Ø18.6 |
+| What limits it | the beads' inner edge, r 12.62 | the leaders start at r 12.3; the nearest name box is 16.6 mm out; the resistors are 26 mm out | the pegs' inner edge, r 12.45 |
 
 ## 1. The owner's words
 
@@ -146,7 +158,7 @@ height are the only new case questions; `case_pair.py` was not run or changed.
 | Where the joints are | all on the back; J1's six front pads are under the housing |
 | What could show on the front | the connector body (a large black block on the black face), the plug and the wires (by design), the strap, the three slots; a meniscus at the ring's holes as T1 |
 | Conflicts | knob as T1; rotary plate as T1; the "-" button: its joints 6.9 mm from the body envelope; levers: none; case: the floor and the lead path (above), the three slots |
-| Build cost (*inferred*) | T1's 1.3 to 1.5 M plus 0.15 to 0.2 M: a front S6B-PH-K-S footprint and its 3D model, three board slots, the back tracks to the new J1, the case lead and floor |
+| Build cost (*inferred*) | T1's four runs (1 and 4 grow), 1.3 to 1.5 M plus 0.15 to 0.2 M: a front S6B-PH-K-S footprint and its 3D model, three board slots, the back tracks to the new J1, the case lead and floor |
 | Risks | the plug's insertion force goes into six joints (the footprint notes the part has no retention tabs); the housing is tall (4.8 mm, *inferred*) next to the owner's wish for a clean face; the slot near the edge of a 2.0 mm board; the wires' look is the cable maker's, not ours |
 
 **Largest knob:** as T1, **Ø24 in plan view, Ø22.1 at 6 mm tall down to Ø17.2 at 20 mm** (the same ring).
@@ -170,7 +182,7 @@ trace 5 climbs 45 degrees into the box's side above FIELD's plate. Tap rows at y
 | Where the joints are | all on the back, 26 mm or more from the shaft: **nowhere near the rotary's plate**, so its problem cannot occur whatever the plate's true size; the column is 5 mm from the lever's body envelope |
 | What could show on the front | as T1 |
 | Conflicts | knob (below); rotary plate: none; FIELD: column to its swing 9 mm; the names, leaders and rule change (silk and gold redrawn); case: none |
-| Build cost (*inferred*) | T1's 1.3 to 1.5 M plus about 0.2 M: new silk layout (right-aligned names, leaders), a new SUB-rule routine |
+| Build cost (*inferred*) | T1's four runs (run 2, the art, grows), 1.3 to 1.5 M plus about 0.2 M: new silk layout (right-aligned names, leaders), a new SUB-rule routine |
 | Risks | the face looks different from R and from every earlier picture (a bigger decision for the owner); FORMAT/DATE's leader is steep; the names are 2.37 mm still, though the rows (6.1 to 6.9 mm) would allow 3.0 mm if FORMAT/DATE (about 19 mm at 3.0) is given room |
 
 **Largest knob:** there is no ring round the shaft, so the resistors are never behind the knob (the nearest body is 26 mm out). In plan
@@ -198,7 +210,7 @@ T1 (0204 lying); they would be 0207 standing as well if one look is wanted (not 
 | Where the joints are | all on the back; the ring's ten at r 12.75 inner edge: 0.25 mm outside the plate, as T1 |
 | What could show on the front | the pegs (by design), their bent leads over the disc, a meniscus as T1 |
 | Conflicts | knob (below); rotary plate as T1; a knob taller than the pegs hides the near ones from below; case: nothing stands 7 mm out in front of the face |
-| Build cost (*inferred*) | T1's 1.3 to 1.5 M plus about 0.1 M: a standing 0207 footprint and 3D model, the link pads |
+| Build cost (*inferred*) | T1's four runs (run 1 grows), 1.3 to 1.5 M plus about 0.1 M: a standing 0207 footprint and 3D model, the link pads |
 | Risks | the pegs are tall and sit at an angle to the viewer, so the colour bands read less than T1's; a finger can bend a bent lead; the same 0.25 mm plate margin |
 
 **Largest knob:** the pegs' inner edge is r 12.45, so in plan view **Ø23.9** (r 11.95); for a viewer 10 degrees off axis r = 11.95 - 0.176 h
