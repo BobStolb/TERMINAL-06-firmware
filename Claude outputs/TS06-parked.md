@@ -64,6 +64,4 @@ pace allow it, is a decision open first.
   built.
 * T plan Q4 (plated holes with a black moat, a 10-board T sample first): decided with P1's build.
 * meshok.net in the session's allowed domains: the owner's own setting, only if wanted for buying parts.
-* The Pace Act art. 7 order (nixie last when room is short) against the owner's 10-01 priority ("previously running or
-  brand new > nixie completed pcb ordered > dashboard"): **proposed as Pace Act Amendment 1** on the owner's word
-  (10-07 23:24 UTC, "propose the amendment to pace act to xstream"); waits for xstream's co-sign.
+* The Pace Act art. 7: settled by the owner (10-07 23:27 UTC): no priority list in law; Amendment 2 proposed.

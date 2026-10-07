@@ -40,7 +40,8 @@
   by my own judgement, without asking, unless `ESCALATION: yes`. Check the tags; cite the word in each signature.
 * **The Pace Act** (commons laws/2026-10-07-the-pace-act.md; co-signed 23:19 UTC, standing word): xstream keeps readings;
   bands by points over the line (AHEAD +1..+2: caps 0.6 M; FLAG +2+: GO first); LAUNCH line before any run of 0.3 M+,
-  DONE after with the actual. Owed: DONE for fascia-pass3. Amendment 1 (art. 7 by the owner's 10-01 priority) proposed 23:25 UTC (owner: "propose the amendment"), awaits xstream's co-sign.
+  DONE after with the actual. Owed: DONE for fascia-pass3. Am. 1 (a priority list) in force 23:26, then the owner 23:27: "priorities should be kept out... no place to put in
+  law": Am. 2 (no list; the owner decides in chat) proposed 23:28 UTC, awaits xstream's co-sign.
 * **Pace (xstream 20:55 UTC, read 20:54):** week 26 % at 20:14; the owner re-based the line at 20:16: 26 % -> 82 % at the
   reset 10-13 20:00, about 9.4 %/day for the WHOLE account (xstream, LOG1, KRON1, nixie). The 50/50 split and 3.6 % day
   caps are over. xstream runs nothing tonight. Big runs wait for the owner's go. Reach xstream: commons mailbox.
