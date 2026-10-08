@@ -12,6 +12,8 @@
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
   title): plan + grill in `Claude outputs/TS06-parked.md` P1a; brief ready scratchpad fascia-pass4/BRIEF.md. Launch after
   the morning reading with xstream's GO and the owner's go (cap 0.6 M). Title: owner to pick from my candidates.
+  xstream asked for a review of pass 3 + this plan at 00:47 UTC (commons 4871c1f; verdict-pass3.md in the pack). Pace
+  00:33 UTC: week 30 % vs line 27.7 (+2.3, FLAG); out of FLAG ~02:00 UTC, on the line ~07:15 UTC.
   Owner 23:05: "1 combine B* and C* with new info / 2 ok use your best judgement but explain why do we need this /
   3 yes / 4 yes coordinate pace with xstream". Decided: no mode flip (GND rail on top); round corners, one radius.
 * Done 10-07 (briefs in scratchpad `<name>/BRIEF.md`):
