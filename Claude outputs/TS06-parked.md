@@ -33,6 +33,9 @@ pace allow it, is a decision open first.
   see integrated complexity from C* / title line should be something else completely / ... maybe we have the traces from
   rotary positions/levers/buttons actually physsically point to the bulbs they will be changing, since fascia sits right
   underneath the bulbs."
+* **Principle (10-08 ~00:00 UTC):** "info first as a design choice, deal with clutter creatively": the information
+  stays; clutter is solved by form (merge lines into pointers, shape the rail, a tube-map glyph per screen, ink
+  hierarchy, quiet parking screens). In the brief.
 * **What the spec says** (`knowledge/TERMINAL-06-spec.txt` §1 table): FIELD is read on positions 2 SET TIME, 3 DISPLAY,
   4 AMBIENT, 5 FORMAT/DATE; SUB only on 3 and 5, and only when FIELD is thrown to its second position; the keys work on
   2 to 5; positions 1 and 6 read nothing. What each screen changes: SET TIME the hours or minutes tubes; AMBIENT the colon
