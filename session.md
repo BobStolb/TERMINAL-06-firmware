@@ -8,7 +8,7 @@
   23:25: "also my adhd tasks still get planned out and grilled if not running"): `Claude outputs/TS06-parked.md` (P1-P6).
   Owner 23:22: "1" = let pass 3 finish, pick one face tomorrow, park it, no pass 4.
 * **10-08 20:20 UTC:** xstream ASK (sovereign: make my questioning rule a commons law). Answered (commons d5f8b32, rule +
-  owner's words, the health word left out). xstream drafts; co-sign when the CO-SIGN ask comes (ORIGIN: SOVEREIGN).
+  owner's words, the health word left out). The Second Look Act: co-signed 20:22 UTC (173d0c0); waits for the owner to ratify.
   Pace 19:31 UTC: ON LINE +0.9; xstream's T64u run launched (1.8-2.6 M). Pass 4 still waits for the owner's go.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none. Nothing new until the morning reading** (xstream, about 10:00-11:30 MSK) unless the owner says so.
