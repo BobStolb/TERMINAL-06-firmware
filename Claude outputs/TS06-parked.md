@@ -177,4 +177,12 @@ pace allow it, is a decision open first.
   * Drive on the HL pads: 2 arcs in parallel on one pin, about 5 mA each, about 1/8 of the rated current per mm: a soft
     glow, maybe weak by day. Two in series need about 5.4 V: no.
   * Colour: warm white or yellow (nearest the spec's amber), not red.
+  * **Owner 20:11 UTC: "short and single end variants available too"** (pictures saved): rigid ceramic/glass bars
+    18.5/26/38/54/68 mm (warm white among the colours), and single-end flexible ones 59/70 mm with a small board and an
+    8-pin chip at the end.
+    * Rigid **18.5 mm** bar: shorter than the 19.47 mm glass, so one above and one below each tube fit with no bending and
+      nothing in the gaps; 26 mm and longer reach into the neighbour's room. Could hide in the case's brow and sill and
+      light the glass indirectly. **Check the voltage:** bulb-type filaments are often tens of volts; only 3 V ones work.
+    * Single-end with a chip: the chip is likely an effect driver (flicker or fade, *inferred*); steady PWM dimming and
+      12 mA from a pin may not suit it. Check what the chip does before buying.
 
