@@ -18,6 +18,8 @@
   (Steady, Breathe, Glitch, Live), through-fascia variant VT. **disp-lights-pass1 RUNNING** since 22:20 UTC (owner "yes yes
   yes"), sonnet worktree background, cap 0.6 M / 90 min, LAUNCH commons ab8c24c. On report: view pictures, cherry-pick
   (fix attribution lines if wrong), verify_pair, push, send sheet, DONE line.
+  22:33 UTC: note sent to the run (owner "sure"): E1's SET TIME/DISPLAY hop is provisional; the third SUB path must not
+  add a crossing; one crop if one arrangement carries all three SUB paths. Due by ~23:50 UTC (02:50 MSK).
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
