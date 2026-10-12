@@ -254,6 +254,9 @@ pace allow it, is a decision open first.
     spec §1 and §6 text change.
 * **Owner 21:40 UTC:** "option 2 with an artistic pass variats, my zones arent set in stone that was an off the cuff
   sketch to give you an idea / breathe is good idea, matbe glitch mode also?" Option 2 chosen; styles Steady, Breathe,
-  Glitch, Live. Brief ready: scratchpad `disp-lights-pass1/BRIEF.md` (zone variants on DISP + control + driver/power +
+  Glitch, Live. **21:49 UTC owner adds:** the shim under the tubes can inlay a filament under each base (gap up to 3.4 mm);
+  reviews: glows from 2.5-2.7 V at ~150 mA, at 3 V heats and draws >1 A (drive by current); listed length includes the
+  tabs (60 mm = 50 glowing); only 38 mm and up bend, shorter are rigid. Filament width: bench. All in the brief.
+  Brief ready: scratchpad `disp-lights-pass1/BRIEF.md` (zone variants on DISP + control + driver/power +
   fascia impact; no board edits), est 0.4-0.5 M, cap 0.6 M. Launch waits for the owner's when (late hour, stale pace).
 
