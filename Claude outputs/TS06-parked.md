@@ -118,3 +118,20 @@ pace allow it, is a decision open first.
 * The Pace Act art. 7: settled by the owner (10-07 23:27 UTC): no priority list in law; Amendment 2 proposed.
 * JST PH B6B-PH-SM4-TB heights (*inferred* in the J1-upright write-up; jst-mfg.com refused by this session's network):
   one FETCH ask to xstream when the page run or a T build needs them (owner 23:4x: "get the info cheaply"). Not tonight.
+
+## P7. A soldering jig for the ИН-12 and ИН-15 (straight in)
+* **Words:** 10-12 19:0x UTC, owner: "what is best for alignment?" (after "straight in").
+* **Plan:** a printed comb that sits on TS06-DISP (located by its standoff holes) with a cradle per tube at the real pitch
+  (23.36 / 27.42 / 23.36 mm), holding each glass plumb at one gap above the board, about 2 mm (*inferred*). Tack one
+  corner pin per tube, check the row by eye and with a straight edge on the glass fronts, then solder the rest. The
+  case's `IN12_SEAT` becomes that gap (P2).
+* **Grill:**
+  * Not fully home: the glass's rear face and its pip are not a true flat, so each tube would lean its own way, and the
+    iron's heat and the board's flex would sit right at the glass-to-pin seal. No ИН-12 soldering distance is in the repo
+    (the ИН-17's ТУ says 8 mm); *inferred* risk.
+  * Not the case's 4.5 mm: the pins are 6.25 mm (model, not calipered); through a 1.6 mm board (*assumed*) a 4.5 mm gap
+    leaves about 0.15 mm of pin out the back, no joint. Gap at most about 3.5 mm for 1 mm of pin out the back.
+  * Needs one caliper number first: the real free pin length.
+  * Does it move the order? No. Needed when the boards are here, before the tubes go in.
+* **Cost:** a small model run like `3d/jig/` (*inferred* 0.2-0.3 M), or in the P2 run.
+* **When:** after the boards arrive; with or after P2.
