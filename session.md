@@ -15,9 +15,9 @@
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
   **Owner 18:59: "straight in".** Folded into P2 (BOM, step 2, testing doc, case IN12_SEAT). Owner 19:07: pin 6.0 mm; gap 2.0 mm by a jig (P7).
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: fascia-pass4 RUNNING** since 10-12 ~18:58 UTC (owner 18:55: "title agree / dial agree / go / without xstream
-  confirmation, its idle"). Sonnet, worktree, background; cap 0.6 M / 90 min; LAUNCH line commons 256508f. Picks settled:
-  no front title, equal pitch. On report: view pictures, cherry-pick, verify_pair 27 PASS, push, send sheet, DONE line.
+* **Runs: none.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
+  (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
+  SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
   title): plan + grill in `Claude outputs/TS06-parked.md` P1a; brief ready scratchpad fascia-pass4/BRIEF.md. Launch after
   the morning reading with xstream's GO and the owner's go (cap 0.6 M). Title: owner to pick from my candidates.
