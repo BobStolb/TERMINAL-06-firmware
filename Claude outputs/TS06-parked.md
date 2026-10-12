@@ -241,4 +241,15 @@ pace allow it, is a decision open first.
   through the LED row; the owner disliked the one-sided glow). Keep HL9, the "m" (an indicator on D12, not a backlight).
   The freed MCP23017 port-B pins become spares or the lines' enables. Fallback: keep HL footprints only where no line
   passes, not fitted. Owner to decide.
+* **Owner 21:35 UTC: "ok drop those then"** (HL1-HL8 and RN1 go; HL9 "m" stays). Then: "any control scheme changes? we
+  reuse backlight on/off and brightness, but maybe we can also switch zones od backllight?"
+  * Spec §1 today: AMBIENT, FIELD Colon/Backlight, SUB not read, keys cycle that item's styles; DISPLAY Brightness is the
+    only level.
+  * Option 1, no rule change: Backlight's styles become zone presets (Off, Frame, Time, All, Live = a line lights while
+    its group is set or shown, Breathe). No fascia change.
+  * Option 2 (recommended): the SUB rule, unchanged in wording, also holds on AMBIENT: FIELD = Backlight makes SUB read,
+    SUB up = Zone (keys step All, Hours, Minutes, Seconds, AM/PM, Frame, Colon), SUB down = Level of that zone (keys,
+    bottom = off). Per-zone levels kept in EEPROM; DISPLAY Brightness scales all. Cost: fascia R gets one more gold trace
+    from the SUB box to AMBIENT (art only, in the same order), pass 4's E1 needs a third path to SUB (planarity to check);
+    spec §1 and §6 text change.
 
