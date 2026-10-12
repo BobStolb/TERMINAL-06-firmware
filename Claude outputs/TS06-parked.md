@@ -168,4 +168,13 @@ pace allow it, is a decision open first.
   * Colour: red sits next to the neon's orange and may wash the digits; amber or 2200 K warm white filaments exist.
   * Unknown: the listing's length, voltage, thickness, bend radius (the owner can read its specs tab).
   * Next: bench test one ИН-12, one filament, 5 V through 220 R, arcs vs a wrap, red vs amber. No board change.
+  * **Listing specs (owner 20:09 UTC, pictures in qa/backlight-options/reference/):** lengths 38/60/80/95/125/130/145/
+    185/200/255/300/360/450/460 mm (±1-2 mm), 3 V DC, under 300 mA, 100-110 lm, CRI 80; colours warm white, white, red,
+    green, blue, pink, yellow. Not cuttable (*inferred*: COB with end tabs). Thickness not given.
+  * Fit per arc (*inferred*, glass 19.47 wide at 23.36 pitch, filament about 2.5 mm): an arc of about 120 degrees round
+    each end of the glass, about 25-30 mm glowing; so **38 mm** is the length to try (tabs included). A continuous
+    scalloped line over the four ИН-12s is **125-130 mm** (per-tube light lost).
+  * Drive on the HL pads: 2 arcs in parallel on one pin, about 5 mA each, about 1/8 of the rated current per mm: a soft
+    glow, maybe weak by day. Two in series need about 5.4 V: no.
+  * Colour: warm white or yellow (nearest the spec's amber), not red.
 
