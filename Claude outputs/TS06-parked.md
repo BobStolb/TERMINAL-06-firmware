@@ -252,4 +252,8 @@ pace allow it, is a decision open first.
     bottom = off). Per-zone levels kept in EEPROM; DISPLAY Brightness scales all. Cost: fascia R gets one more gold trace
     from the SUB box to AMBIENT (art only, in the same order), pass 4's E1 needs a third path to SUB (planarity to check);
     spec §1 and §6 text change.
+* **Owner 21:40 UTC:** "option 2 with an artistic pass variats, my zones arent set in stone that was an off the cuff
+  sketch to give you an idea / breathe is good idea, matbe glitch mode also?" Option 2 chosen; styles Steady, Breathe,
+  Glitch, Live. Brief ready: scratchpad `disp-lights-pass1/BRIEF.md` (zone variants on DISP + control + driver/power +
+  fascia impact; no board edits), est 0.4-0.5 M, cap 0.6 M. Launch waits for the owner's when (late hour, stale pace).
 

@@ -14,6 +14,9 @@
   leads into the holes, what are these interfaces for bulbs?" (page build step 2, 72 socket contacts). Answered: spec
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
   **Owner 18:59: "straight in".** Folded into P2 (BOM, step 2, testing doc, case IN12_SEAT). Owner 19:07: pin 6.0 mm; gap 2.0 mm by a jig (P7).
+* **10-12/13 light lines (P9):** owner chose B (lines on DISP, plated slots), dropped HL1-HL8, control option 2 + styles
+  (Steady, Breathe, Glitch, Live). Brief `disp-lights-pass1/BRIEF.md` ready, NOT launched (asked: now or morning).
+  The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
