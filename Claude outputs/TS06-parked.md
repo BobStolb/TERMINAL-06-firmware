@@ -236,4 +236,9 @@ pace allow it, is a decision open first.
   takes flat tabs up to about 2.2 mm wide and round leads to 0.9 mm); confirm on one real filament before the order if it
   arrives in time. Each slot blocks both layers: re-routing round about 12-14 new slots on a dense board. The tab bends
   down into the slot just past the silicone; keep the bend off the silicone end (strain).
+* **Owner 21:32 UTC:** "do we keep the original per tube led?" My recommendation: drop HL1-HL8 and RN1 (the lines
+  carry the same information: setting changes the hours or the minutes as a pair, never one digit; the bottom line runs
+  through the LED row; the owner disliked the one-sided glow). Keep HL9, the "m" (an indicator on D12, not a backlight).
+  The freed MCP23017 port-B pins become spares or the lines' enables. Fallback: keep HL footprints only where no line
+  passes, not fitted. Owner to decide.
 
