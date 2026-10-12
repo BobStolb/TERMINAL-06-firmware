@@ -213,4 +213,22 @@ pace allow it, is a decision open first.
   * Clutter: four lines plus the tube glow plus a gold fascia; the owner's own rule says each line must carry meaning.
 * **Cost:** a design run (case renders with the lines, the add-on circuit) *inferred* 0.4-0.6 M; firmware later.
 * **When:** after the order and the P8 bench test.
+* **10-12 20:4x UTC, owner:** "but that does limit us again to a closed case to hide these wires, against our strive of
+  clean integration, the boards are not ordered yet". Offered A (one light connector, lights on their own board) or B
+  (lines on TS06-DISP). **21:0x UTC the owner sketched B** (`qa/disp-light-lines/reference/2026-10-12-owner-sketch-B.png`):
+  group outlines on the display board (hours pair, minutes pair, an arch over the two ИН-17, a box round the ИН-15 pair,
+  marks at the colon), one long line along the bottom under all tubes, red dots for the lead ends, lines on different
+  sides.
+* **B, checks found (21:1x UTC):**
+  * The case hides most of it now: the brow sits 0.8 mm over the glass tops (`BROW_CLR`), the sill at y 39 hides the
+    band below (`SILL_TOP_Y`); the long bottom line sits on that edge. The trench must open about 4 mm top and bottom
+    (a case change; it alters the spec's brow look).
+  * The top band is about 3 mm between the glass and the board edge, with XP12's pin row on the right half.
+  * Landing pads: surface pads, not holes (the tabs are not measured; pads take any tab). Keep the 0.6 mm 185 V class.
+  * Driver: about 6 channels (hours, minutes, seconds, AM/PM, the long line, the colon): one 16-channel I2C PWM chip and
+    small MOSFETs on DISP (I2C is already there; XP12 has only 3 spare pins).
+  * Power: about 0.1 A per line, 0.6 A at 5 V, near double the clock's 3.5 W; the 5 V regulator to check.
+  * Lengths drawn to the sold sizes, corners of one radius (the filament's bend radius not known).
+* **Plan for B:** step 1 a feasibility drawing to scale (DISP + case section, lengths, pads, channels, power), *inferred*
+  0.4-0.5 M; step 2 the DISP and case change, 0.6-1.0 M. Holds the order 1-2 days.
 
