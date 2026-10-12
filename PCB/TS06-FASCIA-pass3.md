@@ -1,5 +1,7 @@
 # TS06-FASCIA pass 3: B* and C* in one face, with xstream's critics folded in (two faces, D1 and D2; concepts, nothing built)
 
+*Next: [TS06-FASCIA-pass4.md](TS06-FASCIA-pass4.md) takes D2 on, with the levers' meaning made plain (two faces, E1 and E2).*
+
 No board file, generator, footprint, `tools/` file, `fab/` file, firmware file or page source was touched, and no board was built. The pictures are drawn
 from fascia R's real geometry (the committed board with its control holes opened, the one that was ordered), names at their real size (2.37 mm; the
 MODE, FIELD and SUB plates 3.2 mm, KiCad's own stroke font), and both faces were run through `check()` of `tools/fascia_gold.py`. Items marked *inferred* are
