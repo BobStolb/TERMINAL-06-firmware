@@ -158,4 +158,14 @@ pace allow it, is a decision open first.
 * **Grill:** a second LED per tube or a centre LED changes TS06-DISP (rev C) and holds the order: not worth it before a
   bench test. Two LEDs on one MCP pin is about 24 mA, at its 25 mA limit. Does it move the order? No, if no board change.
 * **When:** the ring with the case work (P2 or the case run), the bench test when the tubes and LEDs are in hand.
+* **Owner 19:34 UTC:** "good idea on the diffusion but I feel the filaments might work great if used creatively, why
+  wouldn't it work as backlight if it can wrap around the bulbs envelope nicely?" Grill of a filament ring per tube:
+  * Room: the ИН-12 glass is 19.47 x 28.86 mm (model), the pitch 23.36 mm, so 3.9 mm between glasses; two filaments of
+    about 3 mm (*inferred*) need 6. A closed ring does not fit; arcs above and below each tube do.
+  * The case trench sits close to the glass; any wrap widens it (a case change, not printed yet).
+  * Drive: on the board's own HL pads (MCP pin, 220 R, about 12 mA) a filament glows dim and even, per tube kept; more
+    light needs a transistor per tube (DISP change) or one driver for all (per-tube highlight lost).
+  * Colour: red sits next to the neon's orange and may wash the digits; amber or 2200 K warm white filaments exist.
+  * Unknown: the listing's length, voltage, thickness, bend radius (the owner can read its specs tab).
+  * Next: bench test one ИН-12, one filament, 5 V through 220 R, arcs vs a wrap, red vs amber. No board change.
 
