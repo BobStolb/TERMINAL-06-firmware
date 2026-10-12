@@ -15,7 +15,9 @@
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
   **Owner 18:59: "straight in".** Folded into P2 (BOM, step 2, testing doc, case IN12_SEAT). Owner 19:07: pin 6.0 mm; gap 2.0 mm by a jig (P7).
 * **10-12/13 light lines (P9):** owner chose B (lines on DISP, plated slots), dropped HL1-HL8, control option 2 + styles
-  (Steady, Breathe, Glitch, Live). Brief `disp-lights-pass1/BRIEF.md` ready, NOT launched (asked: now or morning).
+  (Steady, Breathe, Glitch, Live), through-fascia variant VT. **disp-lights-pass1 RUNNING** since 22:20 UTC (owner "yes yes
+  yes"), sonnet worktree background, cap 0.6 M / 90 min, LAUNCH commons ab8c24c. On report: view pictures, cherry-pick
+  (fix attribution lines if wrong), verify_pair, push, send sheet, DONE line.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
