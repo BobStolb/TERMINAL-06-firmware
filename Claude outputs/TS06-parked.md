@@ -186,3 +186,31 @@ pace allow it, is a decision open first.
     * Single-end with a chip: the chip is likely an effect driver (flicker or fade, *inferred*); steady PWM dimming and
       12 mA from a pin may not suit it. Check what the chip does before buying.
 
+## P9. Layered light lines on the case (a "glyph" look), user-controllable
+* **Words:** 10-12 20:3x UTC, owner: "Im thinking of a layered approach, have the longest available strips as accents on
+  the case edges or outlines, one horizontal that spans all tubes, one more for the 4 in12s, one for two in17s, and one for
+  in15s basically mirroring what you did for the fascia variant, these lines can be on different sides as to not clutter
+  and create visual interest. Im basically thinking of the back of a nothing phone, feel me? maybe we can even mix colors?
+  user controllable".
+* **Plan:**
+  * Four lines, lengths from the filament listing (tube x from fascia R): the whole row about 185-200 mm; the four ИН-12
+    (x 13-87, about 95 mm with the glass); the two ИН-17 (x 109-129, about 38-60 mm); the ИН-15 pair (x 150-171, about
+    38-60 mm). Put on different edges (top brow, bottom sill, a side) so no two run side by side.
+  * Meaning, not only accent (the owner's "info first"): a line glows when its tube group is being set or shown (SET
+    TIME the ИН-12 line, INFO the ИН-15 line, the seconds line ticks), same logic as the fascia.
+  * Colour: each filament is one colour; mix by giving each layer its own colour and dimming each on its own; two
+    filaments on the main line give a two-colour blend. Any colour needs RGB strips (loses the filament look; addressable
+    ones upset the tube timing).
+  * Drive: one channel per line (or per colour): a small add-on board with a 16-channel I2C PWM chip and small MOSFETs,
+    tapped from the RTC module's 5-way header (I2C + 5 V). No change to the ordered boards. Firmware: a few I2C writes,
+    new items under AMBIENT.
+* **Grill:**
+  * Does it move the order? No; it must not change it (the add-on is separate).
+  * 5 V budget: about 0.1 A per line at accent brightness (*inferred*), 0.4 A for four, plus dropping resistors' heat;
+    the supply's spare current is not known here.
+  * Case: grooves and diffusers in the case edges; the case is not printed yet, so it is the right time to plan, after
+    the bench test (P8) shows how the filaments look.
+  * Clutter: four lines plus the tube glow plus a gold fascia; the owner's own rule says each line must carry meaning.
+* **Cost:** a design run (case renders with the lines, the add-on circuit) *inferred* 0.4-0.6 M; firmware later.
+* **When:** after the order and the P8 bench test.
+
