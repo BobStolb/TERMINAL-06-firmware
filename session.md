@@ -19,7 +19,8 @@
   PCB/TS06-DISP-lights-pass1.md, sheet sent, DONE commons ba31102. Pick: V1 dashes, VT windows as the upgrade; V0 does not fit;
   fascia: E1 cannot take AMBIENT's SUB path without a 2nd crossing, sketch B (rings on the dots, no arcs, no hop) is the
   owner's call. Owner open: V1/VT pick, the SUB-ring fix, samples buy (owner's hand), right wall +4 mm and sill notches.
-  Mockup ASK to xstream (c393770) + PING (3068626) open; xstream likely idle, re-PING check 23:13 UTC.
+  Mockup ASK: xstream received it (00812b7), waits for the owner's go in its own chat; DONE line will follow.
+  PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. No new runs without a fresh check.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: none** (disp-lights-pass1 DONE 23:08 UTC, above). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
