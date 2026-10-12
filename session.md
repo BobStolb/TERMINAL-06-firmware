@@ -15,7 +15,9 @@
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
   or solder direct; if direct: BOM line, step 2 text, case IN12_SEAT (4.5 assumed) to re-check. Fold into P2.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none. Nothing new until the morning reading** (xstream, about 10:00-11:30 MSK) unless the owner says so.
+* **Runs: fascia-pass4 RUNNING** since 10-12 ~18:58 UTC (owner 18:55: "title agree / dial agree / go / without xstream
+  confirmation, its idle"). Sonnet, worktree, background; cap 0.6 M / 90 min; LAUNCH line commons 256508f. Picks settled:
+  no front title, equal pitch. On report: view pictures, cherry-pick, verify_pair 27 PASS, push, send sheet, DONE line.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
   title): plan + grill in `Claude outputs/TS06-parked.md` P1a; brief ready scratchpad fascia-pass4/BRIEF.md. Launch after
   the morning reading with xstream's GO and the owner's go (cap 0.6 M). Title: owner to pick from my candidates.
