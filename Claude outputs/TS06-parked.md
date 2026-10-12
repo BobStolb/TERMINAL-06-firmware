@@ -138,3 +138,24 @@ pace allow it, is a decision open first.
   * Does it move the order? No. Needed when the boards are here, before the tubes go in.
 * **Cost:** a small model run like `3d/jig/` (*inferred* 0.2-0.3 M), or in the P2 run.
 * **When:** after the boards arrive; with or after P2.
+
+## P8. The tube backlight: one LED on one side looks lopsided
+* **Words:** 10-12 19:24 UTC, owner (four shop pictures in `qa/backlight-options/reference/`): "Im not so sure now I like
+  the stock backlight of a single led one one side of the bulb, are any of these better picks or maybe you have other
+  suggestions". The four: a 3 W white star module (5 V), a WS2812 seven-LED round board, red soft LED filaments, a 5 mm
+  amber Piranha.
+* **What the board has:** HL1-HL8, one 3 mm amber LED beside each tube, each on its own MCP23017 pin and 220 R (about
+  12 mA, *inferred*), common return through the MPSA42 on D11 (PWM). Spec: amber only, diffused, behind 2 mm printed
+  shield rings. Per-tube LEDs show which tube a setting changes.
+* **The four, judged:** 3 W white: wrong colour, about 0.6 A each against 12 mA, too big. WS2812 board: about 23 mm, no
+  room round a tube, RGB amber is muddy, its timing upsets the tube multiplexing, rewiring. Filament: a line for a whole
+  row, not per tube, needs its own driver, red is near the neon's orange; maybe a case accent later. Piranha amber: the
+  right colour and a wide beam, the best of the four, but 4 legs on a 5.08 mm square do not fit the 3 mm LED holes, and
+  it is still one point on one side.
+* **Plan (no board change):** a printed light-guide ring round each tube's base, in clear or natural PETG, fed by the
+  existing LED, so the glow goes all round; plus diffused (milky) wide-angle 3 mm amber LEDs instead of clear. Bench test
+  first: one tube, one LED, one printed ring, at the 2.0 mm gap (P7).
+* **Grill:** a second LED per tube or a centre LED changes TS06-DISP (rev C) and holds the order: not worth it before a
+  bench test. Two LEDs on one MCP pin is about 24 mA, at its 25 mA limit. Does it move the order? No, if no board change.
+* **When:** the ring with the case work (P2 or the case run), the bench test when the tubes and LEDs are in hand.
+
