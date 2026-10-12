@@ -263,6 +263,8 @@ pace allow it, is a decision open first.
   **22:07 UTC, owner:** zones start under their control on the fascia and shine through it via empty holes (pictures in
   qa/disp-light-lines/reference/). In the brief as variant VT: single-end filaments (no fascia wiring), holes vs bare
   FR4 windows, a test coupon on the fascia panel, path and holders in the case. Touches fascia R (in the order).
+  **22:15 UTC, owner:** asked what PCB windows are; alternative: fascia parallel next to DISP, lines bent over its top onto
+  the face. In the brief as a short section (case and reach costs, wear; middle way: a lit lip on the fascia's top edge).
   Brief ready: scratchpad `disp-lights-pass1/BRIEF.md` (zone variants on DISP + control + driver/power +
   fascia impact; no board edits), est 0.4-0.5 M, cap 0.6 M. Launch waits for the owner's when (late hour, stale pace).
 
