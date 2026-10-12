@@ -13,7 +13,7 @@
 * **10-12 18:50 UTC, owner asks** (picture qa/disp-tube-mounting/reference/): "I thought the plan was to solder bare lamp
   leads into the holes, what are these interfaces for bulbs?" (page build step 2, 72 socket contacts). Answered: spec
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
-  or solder direct; if direct: BOM line, step 2 text, case IN12_SEAT (4.5 assumed) to re-check. Fold into P2.
+  **Owner 18:59: "straight in".** Folded into P2 (BOM, step 2, testing doc, case IN12_SEAT); needs the seat height.
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
 * **Runs: fascia-pass4 RUNNING** since 10-12 ~18:58 UTC (owner 18:55: "title agree / dial agree / go / without xstream
   confirmation, its idle"). Sonnet, worktree, background; cap 0.6 M / 90 min; LAUNCH line commons 256508f. Picks settled:

@@ -82,6 +82,13 @@ pace allow it, is a decision open first.
 * **When:** after the morning reading (about 10:00-11:30 MSK), if the owner wants the page right before ordering.
   Otherwise after the order.
 
+* **Added 10-12 18:59 UTC, owner: "straight in"** (asked: sockets or solder the ИН-12 / ИН-15 pins straight in). So
+  no socket contacts. The same run also changes: the BOM line of 72 contacts (`tools/bom_pair.py`, regenerate the BOM),
+  build step 2's text and the tube proxies on the page, "socketed" in `PCB/TS06-pair-testing.md`, and the case's
+  `IN12_SEAT` (4.5 mm, *assumed* for a socket) in `3d/case-pair/case_pair.py`, then its checks. The board and the order
+  do not change (the 1.2 mm holes fit the tubes' own pins). Needs one bench number first: how high the ИН-12 glass
+  sits above the board when soldered (pins fully home, or a chosen height with a spacer).
+
 ## P3. A resettable fuse on DRV's J1 pin 1 (only if a rails face is built)
 * **Words:** a pass-1 question (exposed 5 V rails 26.5 mm apart on the face).
 * **Plan:** a PTC on DRV in series with J1 pin 1 (+5V to the fascia). The hold current is *inferred* at about 0.5 A, and
