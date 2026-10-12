@@ -231,4 +231,9 @@ pace allow it, is a decision open first.
   * Lengths drawn to the sold sizes, corners of one radius (the filament's bend radius not known).
 * **Plan for B:** step 1 a feasibility drawing to scale (DISP + case section, lengths, pads, channels, power), *inferred*
   0.4-0.5 M; step 2 the DISP and case change, 0.6-1.0 M. Holds the order 1-2 days.
+* **Owner 21:15 UTC:** "I still think those should be holes and not landing pads which expose solderwork". Decided:
+  plated holes, every joint on the back (like the fascia T plan). Sizing: plated slots about 1.0 x 2.5 mm (*inferred*:
+  takes flat tabs up to about 2.2 mm wide and round leads to 0.9 mm); confirm on one real filament before the order if it
+  arrives in time. Each slot blocks both layers: re-routing round about 12-14 new slots on a dense board. The tab bends
+  down into the slot just past the silicone; keep the bend off the silicone end (strain).
 
