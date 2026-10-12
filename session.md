@@ -15,16 +15,14 @@
   socketed the ИН-12/ИН-15; holes 1.2 mm fit the bare pins, so direct solder works with the order as is. Open: socket
   **Owner 18:59: "straight in".** Folded into P2 (BOM, step 2, testing doc, case IN12_SEAT). Owner 19:07: pin 6.0 mm; gap 2.0 mm by a jig (P7).
 * **10-12/13 light lines (P9):** owner chose B (lines on DISP, plated slots), dropped HL1-HL8, control option 2 + styles
-  (Steady, Breathe, Glitch, Live), through-fascia variant VT. **disp-lights-pass1 RUNNING** since 22:20 UTC (owner "yes yes
-  yes"), sonnet worktree background, cap 0.6 M / 90 min, LAUNCH commons ab8c24c. On report: view pictures, cherry-pick
-  (fix attribution lines if wrong), verify_pair, push, send sheet, DONE line.
-  22:33 UTC: note sent to the run (owner "sure"): E1's SET TIME/DISPLAY hop is provisional; the third SUB path must not
-  add a crossing; one crop if one arrangement carries all three SUB paths. Due by ~23:50 UTC (02:50 MSK).
-  22:5x UTC: owner asked for a GPT image mockup; no GPT tool here, so ASK to xstream (commons c393770: Codex gpt-image-2,
-  the prompt + sketch B + through-fascia-3, KIT 9, pictures internal). Await its DONE line; xstream may be idle.
+  (Steady, Breathe, Glitch, Live), through-fascia variant VT. **disp-lights-pass1 DONE** 23:08 UTC, 0.50 M / 49 min, b54cf46,
+  PCB/TS06-DISP-lights-pass1.md, sheet sent, DONE commons ba31102. Pick: V1 dashes, VT windows as the upgrade; V0 does not fit;
+  fascia: E1 cannot take AMBIENT's SUB path without a 2nd crossing, sketch B (rings on the dots, no arcs, no hop) is the
+  owner's call. Owner open: V1/VT pick, the SUB-ring fix, samples buy (owner's hand), right wall +4 mm and sill notches.
+  Mockup ASK to xstream (c393770) + PING (3068626) open; xstream likely idle, re-PING check 23:13 UTC.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
+* **Runs: none** (disp-lights-pass1 DONE 23:08 UTC, above). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
   SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
