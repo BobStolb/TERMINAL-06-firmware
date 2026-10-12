@@ -260,6 +260,9 @@ pace allow it, is a decision open first.
   **21:53 UTC:** width: a close product (DFRobot, 260 mm, 3 V) is 2 mm diameter, 80 mA (*listing data*). Owner worried
   the lines overpower the nixie glow: low hardware maximum, 12-bit PWM with gamma, per-zone Level on the keys, lines
   follow DISPLAY Brightness. In the brief.
+  **22:07 UTC, owner:** zones start under their control on the fascia and shine through it via empty holes (pictures in
+  qa/disp-light-lines/reference/). In the brief as variant VT: single-end filaments (no fascia wiring), holes vs bare
+  FR4 windows, a test coupon on the fascia panel, path and holders in the case. Touches fascia R (in the order).
   Brief ready: scratchpad `disp-lights-pass1/BRIEF.md` (zone variants on DISP + control + driver/power +
   fascia impact; no board edits), est 0.4-0.5 M, cap 0.6 M. Launch waits for the owner's when (late hour, stale pace).
 
