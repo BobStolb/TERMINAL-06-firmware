@@ -131,7 +131,10 @@ pace allow it, is a decision open first.
     (the ИН-17's ТУ says 8 mm); *inferred* risk.
   * Not the case's 4.5 mm: the pins are 6.25 mm (model, not calipered); through a 1.6 mm board (*assumed*) a 4.5 mm gap
     leaves about 0.15 mm of pin out the back, no joint. Gap at most about 3.5 mm for 1 mm of pin out the back.
-  * Needs one caliper number first: the real free pin length.
+  * **Measured by the owner (10-12 19:07 UTC): free pin length 6.0 mm** ("three fifths of a centimeter / thats the free
+    lead length"; the ИН-12, *assumed*, as asked). DISP is 1.6 mm (fab/ORDER.md). So the gap is 0 to 3.4 mm for 1 mm of
+    pin out the back; at 2.0 mm, 2.4 mm out the back. Pick: **2.0 mm**; case `IN12_SEAT` 4.5 -> 2.0 (glass 2.5 mm nearer
+    the board) in P2.
   * Does it move the order? No. Needed when the boards are here, before the tubes go in.
 * **Cost:** a small model run like `3d/jig/` (*inferred* 0.2-0.3 M), or in the P2 run.
 * **When:** after the boards arrive; with or after P2.
