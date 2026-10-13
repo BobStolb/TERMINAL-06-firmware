@@ -20,6 +20,9 @@
   fascia: E1 cannot take AMBIENT's SUB path without a 2nd crossing, sketch B (rings on the dots, no arcs, no hop) is the
   owner's call. Owner open: V1/VT pick, the SUB-ring fix, samples buy (owner's hand), right wall +4 mm and sill notches.
   Mockup ASK: xstream received it (00812b7), waits for the owner's go in its own chat; DONE line will follow.
+  10-13 12:2x UTC owner: "plan next run": disp-lights-pass2 PLANNED, not launched (brief scratchpad/disp-lights-pass2/BRIEF.md):
+  V3 = the sketch made to fit (window band + under-bulb inlay, free sites first, DISP may grow taller, width fixed), fascia
+  windows where no gold is disturbed, else as non-info design. Cap 0.6 M / 90 min. Waits for the owner's go + a fresh pace reading.
   PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. No new runs without a fresh check.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
