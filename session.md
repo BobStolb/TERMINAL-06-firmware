@@ -26,6 +26,10 @@
   up the remaining usage"), opus worktree background, cap 1.0 M / 120 min, staged commits, LAUNCH commons 324b94e. On report:
   view pictures, cherry-pick all stage commits (check attribution), verify_pair, push, send sheet, DONE line.
   Mockup DONE by xstream (d16dcc2): 2 pictures on the owner's PC only.
+  **front-art A-D RUNNING** since 18:3x UTC (owner: "use it more creative variants of fascia+display board designs with varied
+  led filaments, white mask linework, gold traces art"), 4 opus worktree runs, cap 0.8 M / 90 min each, brief scratchpad/
+  front-art/BRIEF.md, LAUNCH commons 21c0f67. A glyph, B deco, C instrument, D contour; 3 faces each -> PCB/art/. On each report:
+  view sheet, cherry-pick stage commits, push, send sheet; one DONE line for the batch.
   PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. No new runs without a fresh check.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
