@@ -22,11 +22,13 @@
   Mockup ASK: xstream received it (00812b7), waits for the owner's go in its own chat; DONE line will follow.
   10-13 12:2x UTC owner: "plan next run": disp-lights-pass2 PLANNED, not launched (brief scratchpad/disp-lights-pass2/BRIEF.md):
   V3 = the sketch made to fit (window band + under-bulb inlay, free sites first, DISP may grow taller, width fixed), fascia
-  windows where no gold is disturbed, else as non-info design. **RUNNING since 18:1x UTC** (owner: "go with the goal of using
+  windows where no gold is disturbed, else as non-info design. **DONE 18:56 UTC, 0.40 M / 40 min, e4d8144** (was RUNNING since 18:1x UTC (owner: "go with the goal of using
   up the remaining usage"), opus worktree background, cap 1.0 M / 120 min, staged commits, LAUNCH commons 324b94e. On report:
   view pictures, cherry-pick all stage commits (check attribution), verify_pair, push, send sheet, DONE line.
   Mockup DONE by xstream (d16dcc2): 2 pictures on the owner's PC only.
-  **front-art A-D RUNNING** since 18:3x UTC (owner: "use it more creative variants of fascia+display board designs with varied
+  Pass 2 result: V3 all 9 strokes fit (7 filaments; DISP +2.5 top +4.0 bottom; H1/H2/H3 move; gap 2.4); V3b no growth.
+  Owner open: grow DISP + move standoffs, viewing height (brow hides top runs from ~4 deg above), keep 2 frame windows.
+  **front-art A, B, C DONE** (pushed 295776a, 9db86e6, 7866fb3); D RUNNING; started 18:3x UTC (owner: "use it more creative variants of fascia+display board designs with varied
   led filaments, white mask linework, gold traces art"), 4 opus worktree runs, cap 0.8 M / 90 min each, brief scratchpad/
   front-art/BRIEF.md, LAUNCH commons 21c0f67. A glyph, B deco, C instrument, D contour; 3 faces each -> PCB/art/. On each report:
   view sheet, cherry-pick stage commits, push, send sheet; one DONE line for the batch.
