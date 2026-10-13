@@ -28,14 +28,15 @@
   Mockup DONE by xstream (d16dcc2): 2 pictures on the owner's PC only.
   Pass 2 result: V3 all 9 strokes fit (7 filaments; DISP +2.5 top +4.0 bottom; H1/H2/H3 move; gap 2.4); V3b no growth.
   Owner open: grow DISP + move standoffs, viewing height (brow hides top runs from ~4 deg above), keep 2 frame windows.
-  **front-art A, B, C DONE** (pushed 295776a, 9db86e6, 7866fb3); D RUNNING; started 18:3x UTC (owner: "use it more creative variants of fascia+display board designs with varied
+  **front-art A-D DONE** (A 295776a, B 9db86e6, C 7866fb3, D c2b3762; 1.25 M total; DONE commons). Picks: A2, B cathedral,
+  C2 Signal, D2 Watershed. Owner to choose a direction. Was started 18:3x UTC (owner: "use it more creative variants of fascia+display board designs with varied
   led filaments, white mask linework, gold traces art"), 4 opus worktree runs, cap 0.8 M / 90 min each, brief scratchpad/
   front-art/BRIEF.md, LAUNCH commons 21c0f67. A glyph, B deco, C instrument, D contour; 3 faces each -> PCB/art/. On each report:
   view sheet, cherry-pick stage commits, push, send sheet; one DONE line for the batch.
   PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. No new runs without a fresh check.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none** (disp-lights-pass1 DONE 23:08 UTC, above). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
+* **Runs: none** (pass 2 and front-art A-D DONE 10-13, above). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
   SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
