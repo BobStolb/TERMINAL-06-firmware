@@ -111,6 +111,9 @@
   K4W411 = final. Launched grill-K4W411 (brief "Run grill-K4W411", cap 0.5 M; deliver PCB/art/TS06-FASCIA-K4W411-grill.md +
   grill-marked.png). Finals: organic-2-1, organic-2-2, science-2-3, celestial-3, K4W411. BLUPRNT gets its own card. Running:
   BLUPRNT, celestial-2, VAPORWAVE, disp-final-3, grill-K4W411.
+  **22:4x UTC:** BLUPRNT DONE (exploded ИН-12А, stat bars, title block; fonts proposed: Share Tech Mono, B612 Mono, Osifont;
+  drawn with DejaVu stand-ins), pushed; review card ASK in commons 726ca74 (embassy/review/nixie-fascia-bluprnt/). Running:
+  celestial-2, VAPORWAVE, disp-final-3, grill-K4W411.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
