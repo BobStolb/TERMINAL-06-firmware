@@ -135,6 +135,13 @@
   (S2 split into two 38 flex arches pink | blue), 18, 85 % (run's pick). Seconds: the crown has no slot site; three parallel only
   as the lintel. 15/16 channels with one channel per colour, else a second chip. K3 hole vs moved ANODE_H1 fixed by a reroute.
   Pushed, sheet sent. Waiting on the owner's pick. Running: BLUPRNT 2.
+  **23:1x UTC owner (verbatim):** "on kawaii grill:I imagine after we have a list of approved fascias we will look what needs to be
+  done to accomodate all and then make appropriate changes. the visual diagram of the blockers ouve made is helpful but a grill is
+  usually a doc and this time should me as well / on disp3: lintel over arch looks good. if we remove the most bottom green line,
+  will we need to extend the pcb at all?" Plan: when the approved fascia list is complete, one accommodation study across all of
+  them, then the board-change run. Grills: deliver the doc (send the .md), the marked picture as a companion. Sent the K4W411
+  grill .md. DISP: owner likes disp-3-2 (lintel); F3 never needed a PCB change, only the case sill 1.1 lower; without F3 no sill
+  change; disp-3-2 minus F3 = 17 lines (15 by colour), 83 %. Asked whether disp-3-2 without F3 is the display final.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
