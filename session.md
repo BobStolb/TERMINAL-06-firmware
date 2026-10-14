@@ -46,9 +46,11 @@
   front-merge/BRIEF.md) **+ front-pattern P1 Interference, P2 Guilloche, P3 Chladni, P4 Harmonograph** (brief scratchpad
   front-pattern/BRIEF.md); 5 opus worktree runs, background, cap 0.8 M / 90 min each; outputs PCB/art/TS06-FRONT-merge*,
   PCB/art/TS06-FRONT-pattern-P*. On each report: view sheet, cherry-pick stage commits, verify_pair, push, send sheet; one DONE line.
-  PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. New week now: no reading yet.
+  PACE: new week, weekly 3 % at 02:14Z (reset 10-20 20:00Z).
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
-* **Mode:** LOUD. The week's pace line is the limit (see Pace).
+* **Mode: QUIET from 02:13 UTC 10-14** (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
+  weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
+  jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
 * **Runs: 5 RUNNING** (front-merge + front-pattern P1-P4, above). Lost-run check: `git worktree list`. fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
   SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
