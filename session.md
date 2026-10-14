@@ -122,6 +122,8 @@
   celestial-2. Running: celestial-2, disp-final-3, grill-K4W411, BLUPRNT 2.
   **22:5x UTC owner rule (verbatim):** "dont bother with cards in loud mode". In LOUD: no ASK cards; send the sheets in chat and
   take the owner's answer there. Cards only in QUIET. (Open cards stay as they are: themes 738529f, BLUPRNT 726ca74.)
+  **22:5x UTC:** celestial-2 DONE (gravity wells, nebulae, deep field; pick deep field; its 0.62 mm text and 0.12 galaxy arms are
+  under the fab floor), pushed, sheet sent. Running: disp-final-3, grill-K4W411, BLUPRNT 2.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
