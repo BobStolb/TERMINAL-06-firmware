@@ -78,8 +78,9 @@
 * **10-14 19:5x UTC owner queue changes** (brief section "Queue changes" A-C): drop info S/P dots everywhere -> shaped light
   windows; variants may rearrange the pill's resistors + art, show/hide/integrate the rails; redo organic (print with more gold,
   mushroom, rootwork that conveys info) and science (nixie-tech infographic, terrain elevation lines, double slit matching DISP V1).
-  **Running since 20:0x UTC (owner: "run info and kawaii now"; LAUNCH commons c5a65db):** fascia-info, fascia-kawaii (cap
-  0.6 M / 75 min each). Reruns organic-2 + science-2 at 01:00Z (trigger trig_01LeEKqHbQxSv9pBAuMgNcxH). Wave 3 (~07:00Z):
+  **info + kawaii DONE 20:4x UTC, pushed** (info: blueprint / scales / manual, pick scales; flags: scales exposes the +5V rail,
+  manual's text is fragments, printed setting steps are spec-only. kawaii: mochi crowd / plush pals / candy swirl, pick plush
+  pals). Runs: 0. Round 3 so far 1.46 M. Reruns organic-2 + science-2 at 01:00Z (trigger trig_01LeEKqHbQxSv9pBAuMgNcxH). Wave 3 (~07:00Z):
   steampunk, radio, celestial.
 * **Runs (front round 3, LAUNCH commons 3295ddd):** wave 1 19:02 UTC: disp-final (cap 0.8 M / 90 min), fascia-science and
   fascia-organic (cap 0.6 M / 75 min each). Wave 2 ~01:00Z: info, kawaii (send_later set, gated on the weekly line in
