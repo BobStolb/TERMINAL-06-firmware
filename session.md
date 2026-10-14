@@ -63,12 +63,19 @@
   enough": P3-R > the base; Drop: all P2 Guilloche. Codex judge (commons) HOLD on the pack: no pick then, engineering claims
   not in the pack. Mode LOUD (commons b5ca0b4). xstream QUOTA HOLD 09:1x UTC: no launch today without the owner's word in my
   chat (ends 10-15 00:00 UTC); weekly 7 % at 09:07Z vs line 7.9 %.
-  **front-final PLANNED 18:4x UTC, waits for the owner's go** (brief scratchpad front-final/BRIEF.md): 2 opus worktree runs,
-  cap 0.8 M / 90 min each: disp-final (P1-B on V3b, no under-bulb filaments, one diffused RGB LED per bulb: addressable vs
-  plain, parallel colour filaments by the big glyphs, the exact change list) and fascia-family (one light layout behind the
-  fascia, fascias F1 Fringes, F2 Ripple tank, F3 Chladni plate, F4 Two slits cut over it). ASKs and DONE now go to the owner
-  through commons (ASK header -> queue card; REVIEW-REQUEST -> Codex judge, no wake).
-* **Runs: none.** Front round 2 DONE 02:45 UTC (1.74 M in all), pushed: front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not;
+  **10-14 18:5x UTC owner (round 3 go):** "let fascia variants try to stick to one wiring layout but changes are allowed if
+  used creatively to help its theme. they can also vary the colors of filaments ... Mix creative decisions and keep all in wild
+  mode, I really like those where artwork covers the entire board without empty space / three variants of the final display
+  board / three variants for each fascia theme: science, organic, info, kawaii, steampunk, radio, one more of your choosing (I
+  chose celestial) / use ultracode workflows, run these as pace allows, add all to tierlist when completed". Fascia lights sit on
+  the fascia (own pads + new connector, from DRV), not DISP. Brief scratchpad front-final/BRIEF.md (old two-run brief kept as
+  BRIEF-v1-two-runs.md).
+* **Runs (front round 3, LAUNCH commons 3295ddd):** wave 1 19:02 UTC: disp-final (cap 0.8 M / 90 min), fascia-science and
+  fascia-organic (cap 0.6 M / 75 min each). Wave 2 ~01:00Z: info, kawaii (send_later set, gated on the weekly line in
+  quota.json). Wave 3 ~07:00Z: steampunk, radio, celestial. On each report: view sheet, cherry-pick, verify_pair, push, send
+  sheet, DONE in commons. Tier list: ASK card with the 3 DISP faces when disp-final lands; ASK card with all 21 fascia faces
+  when the last theme lands (images under embassy/review/<run>/).
+* **Round 2:** DONE 02:45 UTC (1.74 M in all), pushed: front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not;
   shim wiring via each tube's centre hole; 13/16 ch; pick blue, per zone), P1 242f369 5f6766e (pick B Fringes), P2 035f62c e26ed5c
   (pick G2 Rose engine), P3 cada9cd 23849ab (pick B Nodal lines), P4 0bee2ec b1286de (pick B Persistence). Sheets sent. DONE +
   REVIEW-REQUEST nixie-front-round2 in commons (5ea8338); xstream's verdict pending. My flag: the warm 'own filament per bulb' is
