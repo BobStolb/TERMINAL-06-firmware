@@ -40,7 +40,8 @@
   01:5x owner: likes W's pattern filling DISP + its fascia (decorative windows, rails under mask), C2's sine but a more eye-catching
   curve, D's white/thin-gold alternation; dislikes near-symmetry with an odd bit, awkward filament places; picture
   qa/front-merge/reference/ (double slit). Asks: that pattern + 3 others, 3 versions each. Answers: wire under-bulb lines in the
-  print; vary colour scope; no growth preferred (pass 2 rules if needed); SUB fix "not sure what you're referring to" (explained).
+  print; vary colour scope; no growth preferred (pass 2 rules if needed); SUB fix DECIDED 02:0x UTC: "the small lines are unnecessary, you can just put dots or circles on the closest
+  positions on the ring arond the lever" = no arcs, no stubs; a dot (FIELD only) or circle (also SUB) on FIELD's ring; sent to all 5 runs.
   **RUNNING since 02:0x UTC: front-merge** (base: colon borders, colour under bulbs, wiring in the shim, channels; brief scratchpad
   front-merge/BRIEF.md) **+ front-pattern P1 Interference, P2 Guilloche, P3 Chladni, P4 Harmonograph** (brief scratchpad
   front-pattern/BRIEF.md); 5 opus worktree runs, background, cap 0.8 M / 90 min each; outputs PCB/art/TS06-FRONT-merge*,
