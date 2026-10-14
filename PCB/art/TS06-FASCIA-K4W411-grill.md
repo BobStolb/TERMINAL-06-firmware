@@ -261,7 +261,7 @@ leads to pads at y 6.3 or above. Cost: none.
   * Today the sill stands behind the fascia's top edge down to case Y 37.0 (*measured*, case checks, group 8). That is about the top
     3.6 mm of the face (*inferred*).
   * In variant D, the frame's top rail lies behind the panel to t 4.5 (*measured*: `FF_TOP`).
-  * Nothing on the back may reach above t 4.5: not the stack's top lead and pad (its end is at 5.6), not the P bar's or the
+  * No part, lead, joint or clip on the back may reach above t 4.5 (flat tracks under the mask are fine): not the stack's top lead and pad (its end is at 5.6), not the P bar's or the
     FIELD-up and SUB-up clips (their bodies' tops at 4.9 to 5.3), and not MODE's over-length (finding 7).
   * Cost: none, if the pads go sideways.
 
