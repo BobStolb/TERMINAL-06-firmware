@@ -33,10 +33,16 @@
   led filaments, white mask linework, gold traces art"), 4 opus worktree runs, cap 0.8 M / 90 min each, brief scratchpad/
   front-art/BRIEF.md, LAUNCH commons 21c0f67. A glyph, B deco, C instrument, D contour; 3 faces each -> PCB/art/. On each report:
   view sheet, cherry-pick stage commits, push, send sheet; one DONE line for the batch.
-  PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. No new runs without a fresh check.
+  **10-14 01:2x UTC owner's direction (verbatim in scratchpad front-merge/BRIEF.md):** likes A3's white dotted artwork; more
+  fascia windows round the levers, keeping some thick gold info traces; one small filament per bulb, several per bulb for
+  colour choice, warm orange (matching the neon) the default for all filaments; dislikes in A3: no separate AM glyph, no colon
+  glyph, one glyph alone on one side; "V3b display looks good", colon: two vertical bars as borders instead of the horizontal.
+  **front-merge PLANNED, not launched** (brief scratchpad front-merge/BRIEF.md; 1 opus worktree run, cap 0.8 M / 90 min;
+  output PCB/art/TS06-FRONT-merge*). Waits for the owner's go. V3b = no growth: taken as pass 2 Q1's answer (standoffs stay).
+  PACE 23:00Z: weekly 90 %, owner's stop for new launches 98 %, reset 10-13 20:00Z. New week now: no reading yet.
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
 * **Mode:** LOUD. The week's pace line is the limit (see Pace).
-* **Runs: none** (pass 2 and front-art A-D DONE 10-13, above). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
+* **Runs: none** (pass 2 and front-art A-D DONE 10-13, above; front-merge planned, waits for the go). fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
   SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
