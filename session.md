@@ -97,6 +97,12 @@
   **22:1x UTC:** steampunk DONE (pick Gear train), K4W411 DONE (one face; extra white 18.5 bar for a lit mochi stack, ch 5
   or 6), pushed. Tier card ASK for the 9 theme faces posted (commons 738529f, embassy/review/nixie-fascia-themes-3/).
   Running: BLUPRNT. On its report: push, then one finals card (K4W411 + BLUPRNT). Then the artifact update (ask first).
+  **22:2x UTC owner (verbatim):** "keep celestial3 as final / do more variants on celestial with planets and orbits, mix
+  celestial2 with science 2-2, nebulaes, mix with science 2-1 for a james webb take maybe / mix radio and steampunk for a final
+  VAPORWAVE fascia option / good on kawaii, but rails look a bit wonky, remove them". Finals: organic-2-1, organic-2-2, science-2-3,
+  celestial-3. Brief "Finals 2" I/J. Launched: fascia-celestial-2 (3 faces, cap 0.6 M), fascia-VAPORWAVE (1 face, cap 0.6 M);
+  K4W411 resumed for the rails removal (cap 0.15 M). Running: BLUPRNT, K4W411 fix, celestial-2, VAPORWAVE. Cards: finals card
+  (K4W411 + BLUPRNT) when both are in; celestial-2 + VAPORWAVE on one card later. Themes card 738529f awaits the owner.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
