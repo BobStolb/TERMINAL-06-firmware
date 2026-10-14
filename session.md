@@ -80,7 +80,9 @@
   mushroom, rootwork that conveys info) and science (nixie-tech infographic, terrain elevation lines, double slit matching DISP V1).
   **info + kawaii DONE 20:4x UTC, pushed** (info: blueprint / scales / manual, pick scales; flags: scales exposes the +5V rail,
   manual's text is fragments, printed setting steps are spec-only. kawaii: mochi crowd / plush pals / candy swirl, pick plush
-  pals). Runs: 0. Round 3 so far 1.46 M. Reruns organic-2 + science-2 at 01:00Z (trigger trig_01LeEKqHbQxSv9pBAuMgNcxH). Wave 3 (~07:00Z):
+  pals). Runs: 0. Round 3 so far 1.46 M. Wave 2 at 01:00Z (trigger trig_01LeEKqHbQxSv9pBAuMgNcxH): organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
+  overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
+  everywhere, a gold trace instead (brief A5). Wave 3 (~07:00Z):
   steampunk, radio, celestial.
 * **Runs (front round 3, LAUNCH commons 3295ddd):** wave 1 19:02 UTC: disp-final (cap 0.8 M / 90 min), fascia-science and
   fascia-organic (cap 0.6 M / 75 min each). Wave 2 ~01:00Z: info, kawaii (send_later set, gated on the weekly line in
