@@ -159,6 +159,9 @@
   F2 split pink | blue, F3 two 60 green, K3 pink; the colour of each glyph line may still change). Fronts final: DISP disp-3-4;
   fascias organic-2-1, organic-2-2, science-2-3, celestial-3, K4W411, BLUPRNT. Next: the page update (build + test; publish only
   on the owner's yes).
+  **23:5x UTC:** LAUNCHED page-update (brief scratchpad page-update/BRIEF.md, cap 0.8 M): the held J1 rev B page changes + a
+  Fronts view (disp-3-4 + six fascia finals, web copies at build time); build + suite + shots; no publish. Fallback trigger set
+  to 02:00Z. On its report: cherry-pick, verify_pair, push, view shots, send them, DONE; then ask the owner to publish.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
