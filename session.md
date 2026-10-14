@@ -155,6 +155,10 @@
   80 + 80 hits the m lamp and XP21's 185 V pad. Sill 1.1 lower as before. 19 lines (15 by colour), 872 mA 87 % (680, 68 %
   capped). Run's pick now. Pushed, picture sent. Running: none. Open: owner's yes on disp-3-4 as the display final; theme
   picks; then the artifact update (ask first).
+  **23:5x UTC owner (verbatim):** "yes final but color of the paricular glyphs might change". **DISP final = disp-3-4** (lintel,
+  F2 split pink | blue, F3 two 60 green, K3 pink; the colour of each glyph line may still change). Fronts final: DISP disp-3-4;
+  fascias organic-2-1, organic-2-2, science-2-3, celestial-3, K4W411, BLUPRNT. Next: the page update (build + test; publish only
+  on the owner's yes).
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
