@@ -142,6 +142,10 @@
   them, then the board-change run. Grills: deliver the doc (send the .md), the marked picture as a companion. Sent the K4W411
   grill .md. DISP: owner likes disp-3-2 (lintel); F3 never needed a PCB change, only the case sill 1.1 lower; without F3 no sill
   change; disp-3-2 minus F3 = 17 lines (15 by colour), 83 %. Asked whether disp-3-2 without F3 is the display final.
+  **23:1x UTC:** BLUPRNT 2 DONE (lit 3 = S as the ИН-12А stack's front cathode at (105.61, 15.07); exploded ИН-17 at 1:3 mirrored
+  right, its lit 3 = P at (131.36, 15.61); A6/A7 bars off; fonts Osifont 1.8 / Share Tech Mono 1.5 (no Cyrillic) / B612 Mono
+  Bold 1.2, files in scratchpad only), pushed, sheet + font samples sent. Running: none. Open: display final (disp-3-2 +/- F3),
+  BLUPRNT verdict, themes and celestial-2 / VAPORWAVE picks. Next: the artifact update (ask first).
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
