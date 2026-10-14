@@ -24,6 +24,13 @@ the router on it or the drawn raster (0.043 mm pixels); *inferred* is arithmetic
 * **Channels: 17, 18, 18 of 16.** Sharing one channel per colour brings every variant to **15**.
 * **5 V worst case: 832 / 852 / 852 mA**, and 640 / 660 / 660 mA with the LED cap.
 * **My pick: disp-3-3, the lancets.**
+* **Follow-up (the owner, 23:1x UTC): disp-3-4 is now the pick.** The owner chose the lintel (disp-3-2) and asked to keep F3,
+  extend it and split it too.
+  * **60 + 60 is the longest symmetric pair.** 80 + 80 runs into the m lamp and XP21's 185 V pad.
+  * Both halves stay green. Their split is 6.1 wide, so their slots clear F2's.
+  * The sill stays 1.1 lower, with no other case change.
+  * 19 channels one per line, 15 one per colour. 5 V 872 mA (680 with the cap).
+  * Section 5's last subsection.
 
 ## 1. Split F2 in two colours (all three variants)
 
@@ -124,17 +131,17 @@ with its legs at 100.60 / 137.17. Rules as before: body 2.0, 0.4 to pin pads, 0.
 
 ## 4. Channels and 5 V
 
-| | V1r-1 (approved) | disp-3-1 | disp-3-2 | disp-3-3 |
-|---|---|---|---|---|
-| DISP warm (H, colon Q1 + Q2, M, S, P, F) | 6 | 6 | 6 | 6 |
-| DISP colour lines | 3 (F2, S2, F3) | 5 (F2L, F2R, F3, K3, S2) | 6 (+ S3) | 6 (F2L, F2R, F3, K3, S2L, S2R) |
-| Fascia (new connector) | 6 | 6 | 6 | 6 |
-| **Channels, one per line** | **15** | **17** | **18** | **18** |
-| **Channels, one per colour (option a)** | 14 | **15** | **15** | **15** |
-| DISP filaments; 120 R on DRV (one per filament) | 10; 20 | 12; 22 | 13; 23 | 13; 23 |
-| DISP drive pins / wires | BL_A1 to A8 | + XP25.3, + K3's wire | + XP12.12 | + XP12.13 |
-| 5 V, Mix at 100 %, 20 mA a filament, LEDs full white | 792 mA, 79 % | 832 mA, 83 % | 852 mA, 85 % | 852 mA, 85 % |
-| 5 V with the LED cap (R + G + B <= 255) | 600 mA, 60 % | 640 mA, 64 % | 660 mA, 66 % | 660 mA, 66 % |
+| | V1r-1 (approved) | disp-3-1 | disp-3-2 | disp-3-3 | disp-3-4 |
+|---|---|---|---|---|---|
+| DISP warm (H, colon Q1 + Q2, M, S, P, F) | 6 | 6 | 6 | 6 | 6 |
+| DISP colour lines | 3 (F2, S2, F3) | 5 (F2L, F2R, F3, K3, S2) | 6 (+ S3) | 6 (F2L, F2R, F3, K3, S2L, S2R) | 7 (disp-3-2 with F3L, F3R) |
+| Fascia (new connector) | 6 | 6 | 6 | 6 | 6 |
+| **Channels, one per line** | **15** | **17** | **18** | **18** | **19** |
+| **Channels, one per colour (option a)** | 14 | **15** | **15** | **15** | **15** (16 with a white half) |
+| DISP filaments; 120 R on DRV (one per filament) | 10; 20 | 12; 22 | 13; 23 | 13; 23 | 14; 24 |
+| DISP drive pins / wires | BL_A1 to A8 | + XP25.3, + K3's wire | + XP12.12 | + XP12.13 | + XP12.12, + XP12.13 |
+| 5 V, Mix at 100 %, 20 mA a filament, LEDs full white | 792 mA, 79 % | 832 mA, 83 % | 852 mA, 85 % | 852 mA, 85 % | 872 mA, 87 % |
+| 5 V with the LED cap (R + G + B <= 255) | 600 mA, 60 % | 640 mA, 64 % | 660 mA, 66 % | 660 mA, 66 % | 680 mA, 68 % |
 
 *Inferred* from `TS06-DISP-final.md` section 3c: each filament adds 20 mA. The module is U14, 5 V, 1.0 A. XP12.11 stays spare.
 
@@ -205,7 +212,7 @@ warm default on top and every colour line lit below, with the LEDs off.
 * **Colour settings:** Warm / Rose / Ice / Green / Mix. Green = F3 and S3. The seconds zone takes Ice (S2), Green (S3) or both.
 * **Buildable? Needs X:** the common list, plus S's and S2's slots moved, S3's holes and track, and the DRV side of XP12.12.
 
-### disp-3-3 Two lancets under the lobe (my pick)
+### disp-3-3 Two lancets under the lobe (the first pick)
 
 ![disp-3-3](TS06-DISP-final-3/disp-3-3-lancets.png)
 
@@ -234,9 +241,64 @@ warm default on top and every colour line lit below, with the LEDs off.
 * **Buildable? Needs X:** the common list, plus the lancets' slots, the shared pad, S2R's F.Cu track, the DRV side of XP12.13, and
   SEC moved.
 
-![Colour settings on disp-3-3](TS06-DISP-final-3/colours.png)
+![Detail of disp-3-3](TS06-DISP-final-3/detail-2x.png)
 
-![Detail](TS06-DISP-final-3/detail-2x.png)
+### disp-3-4 The lintel, and F3 split too (my pick; the owner's follow-up)
+
+The owner, 23:1x UTC: "lintel over arch looks good ... on disp3: keep the green line, extend iand split in two also?" The base is
+disp-3-2. F3, the bottom green line, becomes longer and splits in two, as F2 does.
+
+![disp-3-4](TS06-DISP-final-3/disp-3-4-lintel-split-green.png)
+
+**The search** (*measured* with the body and slot checks, row y 38.8 and a nudged row y 39.0; each pair centred on F's centre and
+mirrored on it):
+
+| Pair (sold flex), split width between the inner slots | Result |
+|---|---|
+| 95 + 95 | No: the slots fall past the board edge and into the screw keep-outs |
+| 80 + 80, any split | No: the right body crosses HL9, the m lamp (-2.6). At a 2.0 split the left slot is 0.02 from XP21.3 (ANODE_H10, 185 V; rule 0.8) and on its track; the right slot is on XP25.6 |
+| **60 + 60, 2.0** (F2's own split) | No: each slot lands right under one of F2's. The pads overlap by 0.9 and the inner holes touch |
+| **60 + 60, 6.1** | **Fits: the smallest split that clears F2's slots.** Span x 35.26 to 149.36 → **drawn** |
+| 60 + 60, 10.2 | Fits: span 33.21 to 151.41, but the dark gap at the centre grows to 14.2 |
+| 60 + 60, 14.3 | No: the right slot is 0.03 from XP25.1 (rule 0.25) |
+| Row y 39.0 | The same results. The bodies come 0.45 from XP24.1 and need the sill 1.3 lower: no gain, so the row stays at y 38.8 |
+| Widen F2's split instead (6.1) and keep F3's at 2.0 | Fits, and F3 then steps in 2.05 inside F2. Not drawn: it changes the approved F2 |
+
+* **Creative decision:** F3 becomes F2's twin in form, two 60s split on F's centre, but stays one colour. The bottom two lines read
+  pink | blue over green | green. The lintel (green) still ties the seconds to the frame.
+* **Symmetric**, exactly, on F's centre (x 92.305). Each green half is F2's half moved 2.05 outwards: the slots stagger, so the green
+  ends show 2.05 past F2's ends.
+* **Filaments:**
+  * F3L: 60 flex, green. Slots (35.255, 38.80) on BL_K and (89.255, 38.80), driven.
+  * F3R: 60 flex, green. Slots (95.355, 38.80) on BL_K and (149.355, 38.80), driven.
+  * The single F3 (80) and its slots (55.31, 38.80) and (129.31, 38.80) go.
+  * The dark gap at the centre is 10.1 (F2's is 6.0).
+  * Checks (*measured*):
+    * body: 0.4 to F2, 2.8 to F; 9.98 / 10.02 to the pin pads; 0.65 to XP23.1 / XP24.1 (rule 0.3); 8.65 to HL9's flange;
+    * slots: 0.44 to each of F2's slot pads (rule 0.25). F3R's inner slot and F2R's are both on BL_K, with a 1.05 web between the
+      holes;
+    * slots to board copper: 5.60 or more (F3L), 3.54 (F3R to XP25.1); 7.79 to ANODE_H1 (D6).
+* **The sill and the case:** unchanged from V1r-1. F3 stays in its row, its bodies end at y 39.8, and the sill at y 40.1 (1.1 lower
+  than today) shows them whole. The halves end at x 35.3 and 149.4, inside the window (x 3.0 to 182.0). **No other case change.**
+* **Drive** (*measured*, router):
+  * F3L keeps **BL_A4** at its inner slot, on B.Cu: (76.9, 41.3), (86.8, 41.3), (89.255, 38.8); 13.4 mm.
+  * F3R takes the spare **XP12.13**, as the new net BL_A11, on B.Cu: down the right side of the seconds and past AM's left edge,
+    (137.83, 2.2), (139.5, 3.7), (139.7, 4.1), (139.7, 16.4), (141.7, 18.7), (141.7, 33.4), (146.7, 38.4), (149.1, 38.5),
+    (149.355, 38.8); 42.9 mm. No harness wire is needed. On F.Cu the route is 41.5 mm, but it would cut the pour; B.Cu is drawn.
+  * F2L's BL_A2 and F2R's BL_A9 re-route round the new slots, 17.2 mm each.
+  * XP12.11 is the last spare pin.
+* **Colours:** **green | green, recommended.** The split is there for length; one colour keeps F3 one line under F2's two-tone.
+  * **Inset:** the right half white (the only sold flex colour left that is far from warm; red sits by the neon, and yellow is the
+    warm). It reads cold beside blue, and it breaks the bottom into four colours. Not recommended.
+* **Channels: 19 one per line; 15 one per colour** (Green = F3L, F3R and S3; 16 with a white half). Over 16 one per line: section 4's
+  options (a) to (c).
+* **5 V:** **872 mA, 87 %; 680 mA, 68 % with the LED cap** (*inferred*, 20 mA a filament). The 1.0 A module holds it.
+* **Colour settings:** Warm / Rose / Ice / Green / Mix. Rose = F2L and K3. Ice = F2R and S2. Green = F3L, F3R and S3. Per zone, the
+  frame takes Rose, Ice or Green, and the seconds Ice or Green.
+* **White / gold:** refined V1, yielding round the new slots. White about 1.4 m, gold about 1.6 m.
+* **Buildable? Needs X:** disp-3-2's list, plus section 6's G1 to G6.
+
+![Colour settings on disp-3-4](TS06-DISP-final-3/colours.png)
 
 ## 6. The change-list delta against TS06-DISP-final-2.md
 
@@ -279,28 +341,46 @@ V1r-2's C1 to C4 are replaced by D5 to D9 below.
 | F6 | Art | The fine collapse curve is dropped (the lancets fill its place) | | *measured* |
 | F7 | DRV | The mate of XP12.13 to its channel | | *inferred* |
 
+**disp-3-4 only** (on disp-3-2's E1 to E4):
+
+| # | Board | Change | Check | Mark |
+|---|---|---|---|---|
+| G1 | DISP | F3's slots (55.31, 38.80) and (129.31, 38.80) go (V1r-1 item B1). New slots: F3L (35.255, 38.80) on BL_K and (89.255, 38.80), driven BL_A4; F3R (95.355, 38.80) on BL_K and (149.355, 38.80), driven BL_A11 | 0.44 to F2's slot pads; 3.54 to XP25.1 | *measured* |
+| G2 | DISP | BL_A4 (B.Cu): (76.9, 41.3), (86.8, 41.3), (89.255, 38.8); 13.4 mm. It replaces V1r-1's B2 | router | *measured* |
+| G3 | DISP | XP12.13 becomes BL_A11: B.Cu (137.83, 2.2), (139.5, 3.7), (139.7, 4.1), (139.7, 16.4), (141.7, 18.7), (141.7, 33.4), (146.7, 38.4), (149.1, 38.5), (149.355, 38.8); 42.9 mm | router | *measured* |
+| G4 | DISP | BL_A2 (F2L): (22.1, 41.3), (30.1, 41.3), (34.5, 36.9), (37.0, 36.7), (37.305, 36.4); BL_A9 (F2R): (159.63, 41.3), (157.6, 43.1), (154.0, 43.1), (153.3, 42.4), (153.3, 40.1), (150.1, 36.9), (147.6, 36.7), (147.305, 36.4); 17.2 mm each. They replace D2 and D3 | router | *measured* |
+| G5 | DRV | One more 120 R (24) and, one per line, the 19th channel (section 4 (a) to (c)); the mate of XP12.13 to its channel | room not checked | *inferred* |
+| G6 | Case | None beyond V1r-1's B4 (sill 1.1 lower) | F3's bodies end at y 39.8; sill 40.1 | *inferred* |
+
 ## 7. The checks
 
 *Measured* on the drawn rasters against DISP's board file, with pass 2's body and slot checks and router.
 
-| Check | Rule | V1r-1 | disp-3-1 | disp-3-2 | disp-3-3 |
-|---|---|---|---|---|---|
-| Gold to 185 V F.Cu tracks / pads | 0.6 / 0.8 | 0.67 / 0.84 | 0.67 / 0.84 | 0.67 / 0.84 | 0.67 / 0.84 |
-| Gold to the new F.Cu tracks | 0.35 | | 0.39 | 0.39 | 0.36 |
-| Art to the glass and the colon lamps | 0.3 | 0.31 | 0.31 | 0.31 | 0.31 |
-| Art to the names and the m lamp's ring | own ground | 0.52 | 0.52 | 0.52 | 0.52 |
-| White to gold | 0.15 break | 0.22 | 0.22 | 0.22 | 0.22 |
-| Largest empty spot in the window (radius) | "no empty space" | 0.96 | 0.96 | 0.96 | 0.96 |
-| Line to line (the new lines) | 0.4 | 0.4 | 0.4 (F2 to F, F3; K3 to F) | 0.4 (S3 to S); 0.41 (S3 to P) | 0.4 (lancets to S); 1.4 between their inner legs |
-| Slot or hole pads of different nets | 0.25 | | 0.2 / 0.1 are same-net (BL_K) pairs | 0.30 (S3 to P) | same-net pairs only |
-| 185 V copper to a new slot, hole or track | 0.6 / 0.8 | 0.80 (pass 2's ANODE_H1 to H's slot) | 0.73 (new ANODE_H1 to V2.8), 1.09 (to H's slot) | same | same |
+| Check | Rule | V1r-1 | disp-3-1 | disp-3-2 | disp-3-3 | disp-3-4 |
+|---|---|---|---|---|---|---|
+| Gold to 185 V F.Cu tracks / pads | 0.6 / 0.8 | 0.67 / 0.84 | 0.67 / 0.84 | 0.67 / 0.84 | 0.67 / 0.84 | 0.67 / 0.84 |
+| Gold to the new F.Cu tracks | 0.35 | | 0.39 | 0.39 | 0.36 | 0.39 |
+| Art to the glass and the colon lamps | 0.3 | 0.31 | 0.31 | 0.31 | 0.31 | 0.31 |
+| Art to the names and the m lamp's ring | own ground | 0.52 | 0.52 | 0.52 | 0.52 | 0.52 |
+| White to gold | 0.15 break | 0.22 | 0.22 | 0.22 | 0.22 | 0.22 |
+| Largest empty spot in the window (radius) | "no empty space" | 0.96 | 0.96 | 0.96 | 0.96 | 0.78 |
+| Line to line (the new lines) | 0.4 | 0.4 | 0.4 (F2 to F, F3; K3 to F) | 0.4 (S3 to S); 0.41 (S3 to P) | 0.4 (lancets to S); 1.4 between their inner legs | 0.4 (F3 to F2) |
+| Slot or hole pads of different nets | 0.25 | | 0.2 / 0.1 are same-net (BL_K) pairs | 0.30 (S3 to P) | same-net pairs only | 0.44 (F3 to F2); 0.30 (S3 to P) |
+| 185 V copper to a new slot, hole or track | 0.6 / 0.8 | 0.80 (pass 2's ANODE_H1 to H's slot) | 0.73 (new ANODE_H1 to V2.8), 1.09 (to H's slot) | same | same | same; 7.79 (ANODE_H1 to F3L) |
 
 The largest empty spot (50.3, 38.7) is V1r-1's: the newly shown sill strip under the colon, where the 185 V colon tracks cut the
-gold on both sides.
+gold on both sides. In disp-3-4 F3L's body covers that strip, and the largest spot (0.78) is at (6.6, 32.0), by the left end.
 
 ## 8. My pick
 
-**disp-3-3, the lancets.** It does all three things the owner asked:
+**Now disp-3-4: the lintel with F3 split too.** It is the owner's choice (the lintel over the squared arch) with the owner's follow-up
+(F3 longer and split). Its cost over disp-3-2:
+* one channel (19 one per line, 15 one per colour);
+* 20 mA;
+* one spare pin (XP12.13);
+* no further case change.
+
+**The first pick, kept for the record: disp-3-3, the lancets.** It does all three things the owner asked:
 * F2 in two colours;
 * the colon floor;
 * longer split pieces in the seconds;
