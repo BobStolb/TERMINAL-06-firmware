@@ -48,7 +48,7 @@
   PCB/art/TS06-FRONT-pattern-P*. On each report: view sheet, cherry-pick stage commits, verify_pair, push, send sheet; one DONE line.
   PACE: new week, weekly 3 % at 02:14Z (reset 10-20 20:00Z).
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
-* **Mode: QUIET from 02:13 UTC 10-14** (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
+* **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
 * **Owner 10-14 ~03:xx UTC, overall feedback on round 2** ("outstanding job"; item thoughts will come through the new queue
@@ -58,6 +58,16 @@
   * No single filament per bulb: the warm backlight comes from the surrounding zones. Multicolour per bulb = one diffused LED
     per bulb (my earlier idea), the four-legged RGB kind is fine.
   * Multicolour filaments run parallel to the bigger glyphs instead; no multicolour filament exists, so one filament per colour.
+* **10-14 13:26 UTC tier list (queue card 20261014-031657, relayed in commons):** S "outstanding": P1-B Fringes > P1-W Ripple
+  tank; A "mixing pool": P3-W Chladni plate > P1-R Two slits; B "good ideas and lessons": P4-W > P4-R > P4-B > P3-B; C "not
+  enough": P3-R > the base; Drop: all P2 Guilloche. Codex judge (commons) HOLD on the pack: no pick then, engineering claims
+  not in the pack. Mode LOUD (commons b5ca0b4). xstream QUOTA HOLD 09:1x UTC: no launch today without the owner's word in my
+  chat (ends 10-15 00:00 UTC); weekly 7 % at 09:07Z vs line 7.9 %.
+  **front-final PLANNED 18:4x UTC, waits for the owner's go** (brief scratchpad front-final/BRIEF.md): 2 opus worktree runs,
+  cap 0.8 M / 90 min each: disp-final (P1-B on V3b, no under-bulb filaments, one diffused RGB LED per bulb: addressable vs
+  plain, parallel colour filaments by the big glyphs, the exact change list) and fascia-family (one light layout behind the
+  fascia, fascias F1 Fringes, F2 Ripple tank, F3 Chladni plate, F4 Two slits cut over it). ASKs and DONE now go to the owner
+  through commons (ASK header -> queue card; REVIEW-REQUEST -> Codex judge, no wake).
 * **Runs: none.** Front round 2 DONE 02:45 UTC (1.74 M in all), pushed: front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not;
   shim wiring via each tube's centre hole; 13/16 ch; pick blue, per zone), P1 242f369 5f6766e (pick B Fringes), P2 035f62c e26ed5c
   (pick G2 Rose engine), P3 cada9cd 23849ab (pick B Nodal lines), P4 0bee2ec b1286de (pick B Persistence). Sheets sent. DONE +
