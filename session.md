@@ -120,6 +120,8 @@
   resumed (cap 0.4 M more; real fonts into scratchpad front-final/fonts/, never the repo). Its card waits for the new face.
   **22:5x UTC:** VAPORWAVE DONE, pushed (pink sun S, blue gauge P, pink MODE and key arcs, blue lever arcs); card with
   celestial-2. Running: celestial-2, disp-final-3, grill-K4W411, BLUPRNT 2.
+  **22:5x UTC owner rule (verbatim):** "dont bother with cards in loud mode". In LOUD: no ASK cards; send the sheets in chat and
+  take the owner's answer there. Cards only in QUIET. (Open cards stay as they are: themes 738529f, BLUPRNT 726ca74.)
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
