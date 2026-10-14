@@ -85,6 +85,8 @@
   answer 20:53: V1 Fringes "best, refine, propose how to add one more color of filament glyphs". RUNNING (LAUNCH 28f20b7):
   disp-final-2 (cap 0.8 M), fascia organic-2, science-2, kawaii-2, info-2 (cap 0.6 M each). kawaii-2 DONE 21:3x (pushed; pick picnic pairs). info-2 DONE
   21:3x (pick data sheet), organic-2 DONE 21:4x (pick print), science-2 DONE 21:4x (pick double slit); all pushed.
+  disp-final-2 DONE 21:4x (V1 refined; third colour: V1r-1 green twin under F2 (sill 1.1 lower, unchecked vs case) / V1r-2
+  pink colon floor / V1r-3 red seconds twin; pick V1r-1); tier card ASK 8a16700. Running: steampunk, radio, celestial.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
