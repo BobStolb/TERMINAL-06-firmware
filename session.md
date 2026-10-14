@@ -130,6 +130,11 @@
   DRV has no PWM chip / no fascia connector yet (second 16-ch chip with disp-final-3), J2 7-way + 10 resistors, base windows over
   rev B back copper, P clips on the button boxes, lever-arc and flex lengths, coupon never ordered, faces drawn on the T
   (through-hole) art model while rev B is SMD. All go to the board-change run. Running: disp-final-3, BLUPRNT 2.
+  **23:0x UTC:** disp-final-3 DONE (PCB/art/TS06-DISP-final-3.md): disp-3-1 split (F2 = two 60 flex pink | blue) + K3, seconds
+  as approved, 17 lines, 83 %; disp-3-2 lintel (green 38 rigid over a flat arch, loses the lobe), 18, 85 %; disp-3-3 lancets
+  (S2 split into two 38 flex arches pink | blue), 18, 85 % (run's pick). Seconds: the crown has no slot site; three parallel only
+  as the lintel. 15/16 channels with one channel per colour, else a second chip. K3 hole vs moved ANODE_H1 fixed by a reroute.
+  Pushed, sheet sent. Waiting on the owner's pick. Running: BLUPRNT 2.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
