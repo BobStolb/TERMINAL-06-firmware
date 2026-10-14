@@ -70,6 +70,11 @@
   chose celestial) / use ultracode workflows, run these as pace allows, add all to tierlist when completed". Fascia lights sit on
   the fascia (own pads + new connector, from DRV), not DISP. Brief scratchpad front-final/BRIEF.md (old two-run brief kept as
   BRIEF-v1-two-runs.md).
+* **Round 3 wave 1 DONE 19:4x UTC, pushed:** fascia-organic (print / heartwood / rootwork, pick print), fascia-science (clock
+  tree / wind tunnel / rule 30, pick wind tunnel), disp-final (V1 fringes / V2 ripple + pendulum / V3 whole plate, pick V1;
+  addressable RGB LED per bulb on D11, 14/16 ch, 5 V 77 %). 0.92 M in all. DISP tier card ASK in commons 5b2b195. My flag: the
+  three DISP faces read alike at arm's length (tubes cover most of the board). Owner asked what the two small top-edge fascia
+  lights are (info S and P, pass 2's zone echoes); brief now says drop them or frame + label them; owner's call open.
 * **Runs (front round 3, LAUNCH commons 3295ddd):** wave 1 19:02 UTC: disp-final (cap 0.8 M / 90 min), fascia-science and
   fascia-organic (cap 0.6 M / 75 min each). Wave 2 ~01:00Z: info, kawaii (send_later set, gated on the weekly line in
   quota.json). Wave 3 ~07:00Z: steampunk, radio, celestial. On each report: view sheet, cherry-pick, verify_pair, push, send
