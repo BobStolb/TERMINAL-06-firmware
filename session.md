@@ -150,6 +150,11 @@
   organic-2-1, organic-2-2, science-2-3, celestial-3, K4W411, BLUPRNT. Display: disp-3-2 lintel + F3 kept, longer, split in two:
   disp-final-3 resumed as disp-3-4 (brief "Run disp-final-3b", cap 0.3 M). Running: disp-3-4. Fallback trigger paused (enable
   it again if runs outlast the owner).
+  **23:4x UTC:** disp-3-4 DONE (PCB/art/TS06-DISP-final-3.md, disp-3-4-lintel-split-green.png): F3 = two 60 flex green, y 38.8,
+  slots (35.255 / 89.255) BL_A4 and (95.355 / 149.355) via spare XP12.13 (B.Cu 42.9); split gap 6.1 clears F2's slots by 0.44;
+  80 + 80 hits the m lamp and XP21's 185 V pad. Sill 1.1 lower as before. 19 lines (15 by colour), 872 mA 87 % (680, 68 %
+  capped). Run's pick now. Pushed, picture sent. Running: none. Open: owner's yes on disp-3-4 as the display final; theme
+  picks; then the artifact update (ask first).
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
