@@ -124,6 +124,12 @@
   take the owner's answer there. Cards only in QUIET. (Open cards stay as they are: themes 738529f, BLUPRNT 726ca74.)
   **22:5x UTC:** celestial-2 DONE (gravity wells, nebulae, deep field; pick deep field; its 0.62 mm text and 0.12 galaxy arms are
   under the fab floor), pushed, sheet sent. Running: disp-final-3, grill-K4W411, BLUPRNT 2.
+  **23:0x UTC:** grill-K4W411 DONE (PCB/art/TS06-FASCIA-K4W411-grill.md + grill-marked.png), pushed. Buildable after changes.
+  Blocker until measured: key arcs (flex r 9-11) vs the KMD1 button boxes (13.75 x 16.91, corners r 10.88): owner's bench
+  measure of the gap board-back to box (>= 2.2 mm OK; else spacer or arcs to r 11.9). Needs X, mostly shared by every fascia:
+  DRV has no PWM chip / no fascia connector yet (second 16-ch chip with disp-final-3), J2 7-way + 10 resistors, base windows over
+  rev B back copper, P clips on the button boxes, lever-arc and flex lengths, coupon never ordered, faces drawn on the T
+  (through-hole) art model while rev B is SMD. All go to the board-change run. Running: disp-final-3, BLUPRNT 2.
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
