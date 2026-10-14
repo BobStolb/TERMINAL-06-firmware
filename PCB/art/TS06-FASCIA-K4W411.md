@@ -8,7 +8,7 @@ light windows are possible? space under the buttons is a bit bare too".
 So K4W411 is one face made from the three kawaii-2 faces:
 * kawaii-2-1's quilt and big friends (the daisy, the cub, the bunny in the pill, the hamster, the hearts column);
 * kawaii-2-2's free crowd and its colours;
-* kawaii-2-3's big gold parents and its stitched rails.
+* kawaii-2-3's big gold parents.
 
 All characters are my own. The queue changes A1 to A5 are in: no top-edge dots (S and P are shaped windows), the pill and the
 rails said below, display V1 Fringes above the face, and the AMBIENT cutout C gone with a gold trace in its row.
@@ -26,7 +26,7 @@ board file; *inferred* is arithmetic; *assumed* is my reading.
 
 * **Creative decisions:** kawaii-2's plush quilt under one free, crowded overlay of 189 pals in six shapes, from r 0.7 to 3.6 mm.
   Big pals sit where the two sewn buttons were. A stack of four lit mochi with a lit heart stands left of the pill. The rails are
-  the quilt's running stitch.
+  hidden.
 * **Organic.** The crowd has no mirror: one seed sets every pal's place, size, shape, tilt, face and colour.
   * The quilt's cuts are now only the real ones (round names, legends, windows, screws). kawaii-2 also cut each panel where a
     cut's mirror image fell, and filled two of those cuts with the buttons; both are gone.
@@ -43,9 +43,9 @@ board file; *inferred* is arithmetic; *assumed* is my reading.
   * **New: the lit mochi stack**, one 18.5 rigid bar, plumb, **white** (section 4).
 * **Pill:** as kawaii-2. R7 (20k) and R8 (10k) are splayed 18 degrees out as the bunny's ears; R6 does not move. The circuit,
   values, nets and part do not change (section 5).
-* **Rails: integrated**, as a white running stitch along their whole copper path (section 5).
-* **White:** the line field (0.18 mm at 1.1 mm pitch), the seams, the big friends, the stitched rails and the screws' stitched
-  rings, and 155 white pals (outlines and faces 0.18 mm).
+* **Rails: hidden** under the mask, as in E1 (section 5).
+* **White:** the line field (0.18 mm at 1.1 mm pitch), the seams, the big friends, the screws' stitched rings, and 155 white
+  pals (outlines and faces 0.18 mm).
 * **Gold:** the half-pitch lines (0.22 mm), the petals' midribs, the noses, 34 gold pals, and the white pals' blush. All are
   isolated islands, 0.36 mm or more from copper. AMBIENT's trace is on the gold net. The lit pals' faces are gold islands inside
   their openings (section 4).
@@ -105,7 +105,7 @@ The line field closes round them; the lines stop 0.32 mm short of each pal, as e
   * A gold cat-eared loaf sits between the two key plates, below the paws.
   * Gold and white pals fill both sides of the plates and the strip under them.
   * *Measured:* pals cover 31 per cent of that band's free ground; the board's average is 30 per cent. The rest is the line
-    field and the stitched rail showing between them.
+    field showing between them.
 
 ## 4. The mochi light windows: a lit stack
 
@@ -168,12 +168,13 @@ says a control's state. The four colours are fixed by which part is fitted; none
   * R6 does not move, and the landing dots (the bunny's eyes) do not move.
   * The circuit, values, nets and part type do not change; the route to J1 is as on the ordered board.
   * The heart (S) sits between the ears.
-* **Rails: integrated** as the quilt's running stitch: 0.3 mm white, 0.7 mm dashes, 0.45 mm gaps. It runs over both masked rails
-  along their whole path, with their corners and stubs to the lugs (kawaii-2-3 left the right end hidden for its mirror).
-  * The pals sit on the stitch the way they sit on the lines; the stitch stops 0.32 mm short of each pal.
-  * The line field keeps 0.45 mm off the stitch.
+* **Rails: hidden** under the mask, as in E1. The line field runs on over them, and the pals sit on them.
+  * Over the rails' copper the quilt's half-pitch gold lines turn white, because gold keeps 0.36 mm off copper. So no bare strip
+    is left along either rail.
   * Gold pals keep 0.36 mm from the rails' copper, so the pals that sit on a rail are white.
   * The copper does not change.
+* **Changed after the first look (the owner: "rails look a bit wonky, remove them"):** the white running stitch drawn over both
+  rails is removed. Nothing else changed: same pals, lights, pill and checks.
 
 ## 6. The checks (*measured* on the raster, 23 px per mm)
 
