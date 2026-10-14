@@ -87,6 +87,11 @@
   21:3x (pick data sheet), organic-2 DONE 21:4x (pick print), science-2 DONE 21:4x (pick double slit); all pushed.
   disp-final-2 DONE 21:4x (V1 refined; third colour: V1r-1 green twin under F2 (sill 1.1 lower, unchecked vs case) / V1r-2
   pink colon floor / V1r-3 red seconds twin; pick V1r-1); tier card ASK 8a16700. Running: steampunk, radio, celestial.
+  **21:5x UTC owner finals:** organic-2-1 The print, organic-2-2 Mushroom, science-2-3 Double slit kept as final. Two final
+  runs launched (commons 1c0f368; brief "Finals" G/H): fascia-K4W411 (kawaii merge to one: free crowded mochi of varied size,
+  big pals over the x-in-circle standoff marks, mochi light windows, fill under the keys) and fascia-BLUPRNT (info-2-2 base,
+  no cell windows, exploded nixie diagram, gold stat bars, better OFL font). On the 3 themes' reports: one tier card (9 faces).
+  Fallback trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z. After: the artifact update (the page).
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
