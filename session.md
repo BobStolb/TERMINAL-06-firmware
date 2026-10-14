@@ -51,10 +51,11 @@
 * **Mode: QUIET from 02:13 UTC 10-14** (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
-* **Runs: 1 RUNNING (P3 Chladni).** DONE and pushed 02:2x-02:35 UTC: P4 0bee2ec b1286de (pick B Persistence), P2 035f62c e26ed5c
-  (pick G2 Rose engine), P1 242f369 5f6766e (pick B Fringes), front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not; shim wiring
-  via each tube's centre hole; 13/16 ch; blue, per zone). My flag: the warm 'own filament per bulb' is the bracket's leg, not a
-  separate bar, at most bulbs. After P3: DONE + REVIEW-REQUEST batch in commons. Lost-run check: `git worktree list`. fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
+* **Runs: none.** Front round 2 DONE 02:45 UTC (1.74 M in all), pushed: front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not;
+  shim wiring via each tube's centre hole; 13/16 ch; pick blue, per zone), P1 242f369 5f6766e (pick B Fringes), P2 035f62c e26ed5c
+  (pick G2 Rose engine), P3 cada9cd 23849ab (pick B Nodal lines), P4 0bee2ec b1286de (pick B Persistence). Sheets sent. DONE +
+  REVIEW-REQUEST nixie-front-round2 in commons (5ea8338); xstream's verdict pending. My flag: the warm 'own filament per bulb' is
+  the bracket's leg at most bulbs. **Owner (morning): pick one pattern face or a mix on the base; then the board-change run.** fascia-pass4 DONE 19:30 UTC (0.39 M / 31 min), cherry-picked dd6c5ef; verify 18 PASS 0 FAIL 3 SKIP
   (no Docker in this container: DRC and mate skipped; only docs changed). E1 the run's pick. My flag: DISPLAY's arc to
   SUB hops under SET TIME's line, so the top line can read as SET TIME's. Owner to pick E1/E2 and answer the 3 Qs.
 * **Pass 4 planned, not launched** (owner 23:5x: levers' meaning plain, C* richness, pointers to the tubes, a new
