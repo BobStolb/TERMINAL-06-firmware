@@ -146,6 +146,10 @@
   right, its lit 3 = P at (131.36, 15.61); A6/A7 bars off; fonts Osifont 1.8 / Share Tech Mono 1.5 (no Cyrillic) / B612 Mono
   Bold 1.2, files in scratchpad only), pushed, sheet + font samples sent. Running: none. Open: display final (disp-3-2 +/- F3),
   BLUPRNT verdict, themes and celestial-2 / VAPORWAVE picks. Next: the artifact update (ask first).
+  **23:1x UTC owner (verbatim):** "blueprint to final / on disp3: keep the green line, extend iand split in two also?". Finals:
+  organic-2-1, organic-2-2, science-2-3, celestial-3, K4W411, BLUPRNT. Display: disp-3-2 lintel + F3 kept, longer, split in two:
+  disp-final-3 resumed as disp-3-4 (brief "Run disp-final-3b", cap 0.3 M). Running: disp-3-4. Fallback trigger paused (enable
+  it again if runs outlast the owner).
   Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
