@@ -51,6 +51,13 @@
 * **Mode: QUIET from 02:13 UTC 10-14** (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
+* **Owner 10-14 ~03:xx UTC, overall feedback on round 2** ("outstanding job"; item thoughts will come through the new queue
+  tool, which uses review item nixie-front-round2 as its example: keep that pack as is; next run starts from the tool):
+  * ONE display PCB in the end (it is integrated); the fascias may be several, sold as options. Try keeping the filaments
+    behind the fascia, with different windows per fascia for the same light sources.
+  * No single filament per bulb: the warm backlight comes from the surrounding zones. Multicolour per bulb = one diffused LED
+    per bulb (my earlier idea), the four-legged RGB kind is fine.
+  * Multicolour filaments run parallel to the bigger glyphs instead; no multicolour filament exists, so one filament per colour.
 * **Runs: none.** Front round 2 DONE 02:45 UTC (1.74 M in all), pushed: front-merge 1b48257 37b8d15 (2 per bulb fits, 3 not;
   shim wiring via each tube's centre hole; 13/16 ch; pick blue, per zone), P1 242f369 5f6766e (pick B Fringes), P2 035f62c e26ed5c
   (pick G2 Rose engine), P3 cada9cd 23849ab (pick B Nodal lines), P4 0bee2ec b1286de (pick B Persistence). Sheets sent. DONE +
