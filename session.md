@@ -83,8 +83,8 @@
   pals). Round 3 so far 1.46 M.
   **21:1x UTC: xstream QUOTA RESUME (owner: "let it eat sime usage while it can"; weekly 13 % at 20:4xZ); owner's DISP card
   answer 20:53: V1 Fringes "best, refine, propose how to add one more color of filament glyphs". RUNNING (LAUNCH 28f20b7):
-  disp-final-2 (cap 0.8 M), fascia organic-2, science-2, kawaii-2, info-2 (cap 0.6 M each). Wave 3 (steampunk, radio,
-  celestial) launches as slots free; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
+  disp-final-2 (cap 0.8 M), fascia organic-2, science-2, kawaii-2, info-2 (cap 0.6 M each). kawaii-2 DONE 21:3x (pushed; pick picnic pairs).
+  Wave 3 LAUNCHED 21:3x UTC (commons c7fc9d3): steampunk, radio, celestial; trigger trig_01LeEKqHbQxSv9pBAuMgNcxH at 01:00Z is now a fallback check. After the
   fascias: the artifact update (the page). Queued content: organic-2, science-2, kawaii-2 (merge: k2 background + k1 mochi
   overlaid), info-2 (only info-1 Blueprint stays, expanded; info-2/3 faces dropped). 20:5x UTC owner: AMBIENT window C removed
   everywhere, a gold trace instead (brief A5). Wave 3 (~07:00Z):
