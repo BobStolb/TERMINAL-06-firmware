@@ -98,10 +98,11 @@ lines on the pour leave by XP21.1 (BL_K): 12 filaments and HL9, about 255 mA at 
   anodes from the port expander through RN1.
 * On DISP every line's return slot or hole sits on the one BL_K pour (F.Cu zone, net BL_K).
 * The plan for DRV puts **one N-FET per channel** (front-merge item 8, TS06-DISP-final item 12, final-3 D9 and G5). K4W411's
-  grill wires the fascia that way too: a common anode +5V_L, and each channel's cathodes to a low-side N-FET.
+  grill wires the fascia that way: a common anode +5V_L, and each channel's cathodes to a low-side N-FET. That works on the
+  fascia, whose cathodes are wired per channel.
 
-**The problem** (*inferred*): a low-side N-FET switches a cathode. On DISP all the cathodes are one net, so per-line N-FETs
-there would switch nothing apart. As written, the DRV rev C design cannot drive DISP's lines one at a time.
+**The problem** (*inferred*): a low-side N-FET must sit in a line's cathode. On DISP all the cathodes are one net (BL_K), so there
+is no cathode per line to switch. As written, the DRV rev C design cannot drive DISP's lines one at a time.
 
 **Fix, pick one before DRV rev C is drawn:**
 * **(1) High-side P-FETs, my pick.** One logic-level P-FET per channel, source at +5 V, drain to that channel's 120 R resistors
@@ -185,7 +186,7 @@ Worst margin of each new slot or hole (*measured*: my check, frame above; "rule"
 | M driven (61.10, 30.40) | BL_A3 | K3's driven hole 1.05 | 5.83 |
 | P driven (151.86, 30.40) | BL_A7 | ANODE_AM track 1.48 | 1.48 |
 | P return (138.40, 5.27) | BL_K | BL_A11 track 0.25 (0.25); S3's hole 0.30 | 15.2 |
-| F driven (181.81, 34.0) / return (2.80, 34.0) | | ANODE_PM track 5.63 / standoff hole H1 3.31 | 5.63 / 13.2 |
+| F driven (181.81, 34.0) / return (2.80, 34.0) | BL_A8 / BL_K | ANODE_PM track 5.63 / standoff hole H1 3.31 | 5.63 / 13.2 |
 | S driven (139.57, 18.92) | BL_A6 | BL_A11 track 0.27 | 4.42 |
 | S2 driven (100.60, 22.69) | BL_A5 | KS7 track 0.55 (0.25) | 7.16 |
 | S2 return (137.17, 22.69) | BL_K | BL_A6 track 0.27 | ANODE_S1 track 1.26 |
@@ -195,7 +196,12 @@ Worst margin of each new slot or hole (*measured*: my check, frame above; "rule"
 | F2's shared pad (92.305, 36.40) | BL_K | F3L's driven slot 0.44 | ANODE_M1 track 3.20 |
 | F2R driven (147.305, 36.40) | BL_A9 | BL_A11 track 0.26 | 7.21 |
 | F3L driven / return | BL_A4 / BL_K | F2's pad 0.44 / BL_A2 track 0.27 | 5.60 / 7.79 |
-| F3R driven / return | BL_A11 / BL_K | BL_A9 track 0.27 / 4.30 | 6.18 / 6.71 |
+| F3R driven / return | BL_A11 / BL_K | BL_A9 track 0.27 / F3L's driven slot 4.30 | 6.18 / 6.71 |
+
+Against the tube pins and the strips alone (*measured*):
+* nearest tube pin pad to any new slot or hole: 1.28 (P's driven slot to V9.8, no net);
+* nearest 185 V tube pad: 2.07 (H's driven slot to V2.7, ANODE_H1; rule 0.8);
+* nearest strip pad: 0.64 (P's return slot to XP12.13, which becomes BL_A11).
 
 New tracks, nearest 185 V copper (*measured*):
 * ANODE_H1 (D6, itself 185 V): 0.74 to V2.8 (a pad with no net; the HV track rule 0.6), 0.84 to XP21.5, 1.54 to XP21.3.
@@ -240,14 +246,15 @@ The left end is the return (BL_K), on the A4 gold dummy pad: same net, harmless 
 3. Or keep the polarity and insulate the right cap with a polyimide dot, and cut the gold back. It is cheap, but an assembly step
    decides it.
 
-Shifting the bar left would break the exact symmetry. Dropping the lintel below P's pad would push S2's corners under R 6.
+Shifting the bar left would break the exact symmetry. Dropping the lintel below P's pad would push S2's corners under R 6
+(*inferred*: about R 4.4 with S2's slots where they are).
 
 ### Finding 8. K3's name is a cathode net on DISP (Needs X)
 
 * `TS06-DISP.kicad_pcb` already has a net **K3**: cathode 3 of the ИН-12s, in the CATH class (pattern `K3` in
   `TS06-DISP.kicad_pro`; 6 uses, *measured*).
-* If the board-change run names the colon floor's driven hole "K3", KiCad joins it to that cathode line. The 5 V floor would be
-  wired to a cathode that sits near 185 V class when off (*inferred*).
+* If the board-change run names the colon floor's driven hole "K3", KiCad joins it to that cathode line. The floor's 5 V drive
+  would then be wired to an ИН-12 cathode, and the CATH rules would apply to it (*inferred*).
 * **Fix:** call the bar CF (colon floor) and its net BL_A12, in the board, the harness and the firmware. Cost: none.
 * The face run's own scripts used BL_K3 internally. That is safe, but easy to misread as BL_K.
 
@@ -263,12 +270,12 @@ parts of H, M and P lie on the face outside the shim.
 * The rigid bars hold themselves by their leads (K3 also in its shim channel, D7).
 
 **The back of DISP** (the 11.0 gap to DRV, *inferred* in pass 2):
-* There are 24 slot and hole joints (20 slots, 4 round holes). The new ones are at y 31.6 to 38.8 (F2, F3, K3) and y 6.6 to 22.7 (S, S2, S3). Each has a
-  lead tail.
+* There are 24 slot and hole joints (20 slots, 4 round holes). The new ones are at y 31.6 to 38.8 (F2, F3, K3) and y 6.6 to
+  22.7 (S, S2, S3). Each has a lead tail.
 * The LED carrier (TS06-DISP-final 3a) is not drawn yet. It must keep clear of every one of them, of the F3R track's area (only
   under the mask: no clash), and of the harness.
-* The nearest new joints to an LED pocket are S2's slots, 8.0 from the ИН-17 axes (*measured*). The pockets are about r 3.5 (*assumed*: the LED's r 2.9 flange and a wall).
-  Room, if the carrier is drawn round them.
+* The nearest new joints to an LED pocket are S2's slots, 8.0 from the ИН-17 axes (*measured*). The pockets are about r 3.5
+  (*assumed*: the LED's r 2.9 flange and a wall). Room, if the carrier is drawn round them.
 * Cut every lead tail to 1.5 or less, as the case model assumes (`PIN_TAIL`).
 * Nothing on DISP is near K4W411 #5's button boxes: those are behind the fascia.
 
@@ -283,9 +290,9 @@ everything else as in the repo (*measured*; it wrote nothing).
 * **It breaks the case's own note.** `params.scad` says the sill top must be at least 38 ("review: >= 38") to hide the pads.
   37.9 is under it.
 * **The fascia moves too.** In the model the fascia hangs from the sill's front edge, so it drops 1.1 with it. SW5's top goes
-  from Y 33.16 to 32.06, and the fascia plug from 23.5 to 24.6 under DISP. Every other row keeps its status, except the sill's gap to the old HL5 and HL6 flanges, which gets better
-  (those LEDs go anyway). "Case only" holds:
-  no board changes. But it is not only the sill.
+  from Y 33.16 to 32.06, and the fascia plug from 23.5 to 24.6 under DISP. Every other row keeps its status, except the sill's
+  gap to the old HL5 and HL6 flanges, which gets better (those LEDs go anyway). "Case only" holds: no board changes. But it is
+  not only the sill.
 * **How much drop F3 needs** (the same model, the view at x 92.3, F3's lowest edge at y 39.8):
 
 | Sill lower by | F3's lowest edge seen from | Strip joints seen from | The case note (>= 38) |
@@ -297,7 +304,8 @@ everything else as in the repo (*measured*; it wrote nothing).
 
 **Fix:** lower the sill **0.8, not 1.1**. F3 then shows whole from level and above, and the case note holds. Also blacken the 22
 strip-pin joints of XP21 to XP25 with a paint marker, for views above 33°. Trimming the tails does not help: a shorter tail
-moves the joint further from the sill's back edge, and it shows from a lower angle (*inferred*). Cost: a number in `params.scad`, and the bench look.
+moves the joint further from the sill's back edge, and it shows from a lower angle (*inferred*). Cost: a number in
+`params.scad`, and the bench look.
 
 ## 3. Fab
 
@@ -366,7 +374,7 @@ What a later colour change costs (*inferred*):
 | **Under (b)** | none | none | the table |
 
 **Fix:** choose (b), or (a) with a solder jumper per line to pick its group FET. Use through-hole resistors in a socket strip
-where a colour may change. Cost: (b) as in finding 3; or 13 jumpers.
+where a colour may change. Cost: (b) as in finding 3; or 7 jumpers, one per colour line.
 
 ## 5. The path to a board
 
