@@ -53,6 +53,8 @@
   (0.4 M/50); opus worktree background; brief scratchpad grills/BRIEF.md; LAUNCH commons 6b280de. On each report: check
   trailers, cherry-pick, verify_pair, push, send the .md (+ marked png). After all four: launch routing-plan (0.6 M/75) ->
   PCB/TS06-routing-plan.md. page-update still RUNNING (ask before publish).
+  Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
+  marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
