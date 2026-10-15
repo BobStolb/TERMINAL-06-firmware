@@ -450,6 +450,9 @@ From rev B's file. The DISP grill's list (DISP #15), with this plan's choices:
 4. The colon floor's net is **BL_A12**, not K3 (DISP #8).
 5. HL9 3.0 down (V3b). HL1 to HL8 removed.
 6. XP12.12 = BL_A10, XP12.13 = BL_A11, XP25.3 = BL_A9. The BL_K pour stays: it becomes plain ground on DRV.
+   * F3's halves: F3L on BL_A4 (13.4 mm on B.Cu, G2; 1.54 to the nearest 185 V copper). F3R on BL_A11 from XP12.13 (42.9 mm on
+     B.Cu, G3), which passes P's return slot, F2R's and S's driven slots and CAT_B_AMP at 0.25 to 0.33 (DISP #5): DRC decides.
+   * Under option (b) F3R keeps its own line. Driving it from BL_A4 on DISP (DISP #5's other way) would tie the two halves for good.
 7. The art from the export, yielding round the slots, the holes and the rigid bars' end caps (DISP #11).
 
 **The 185 V rules** (`TS06-DISP.kicad_pro` and `.kicad_dru`): HV class (ANODE_*, COLON_*) 0.6 mm to tracks and 0.8 to HV pads; CATH
