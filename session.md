@@ -48,6 +48,11 @@
   PCB/art/TS06-FRONT-pattern-P*. On each report: view sheet, cherry-pick stage commits, verify_pair, push, send sheet; one DONE line.
   PACE: new week, weekly 3 % at 02:14Z (reset 10-20 20:00Z).
   The order now waits for this DISP change (owner: "the boards are not ordered yet").
+* **10-15 00:0x UTC owner: "run grills on all, compile insights for the final pcb routing plan".** RUNNING since 00:01 UTC:
+  grill-disp34 (0.5 M/60), grill-organic (2-1+2-2, 0.5 M/60), grill-scicel (science-2-3+celestial-3, 0.5 M/60), grill-bluprnt
+  (0.4 M/50); opus worktree background; brief scratchpad grills/BRIEF.md; LAUNCH commons 6b280de. On each report: check
+  trailers, cherry-pick, verify_pair, push, send the .md (+ marked png). After all four: launch routing-plan (0.6 M/75) ->
+  PCB/TS06-routing-plan.md. page-update still RUNNING (ask before publish).
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
