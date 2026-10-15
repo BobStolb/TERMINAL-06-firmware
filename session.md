@@ -61,6 +61,9 @@
   P tail over J2 spot (a), S bar +0.39 mm, coupon both 0.55 "3"s, gold mesh 0.141 and title 0.148 under 0.15, layers need a clipper.
   grill-organic DONE 00:2x UTC, 0.25 M / 20 min, d7c5138: both buildable after changes, no own blocker (K4W411 #5); S bar crosses
   K4W411 stack bar (one pad set needs S on the stack), P clips behind P windows, GND rail 1.86 mm from screws (rule 3.0), raster -> vectors.
+  grill-disp34 DONE 00:2x UTC, 0.34 M / 24 min, d7071f7: buildable after changes on DISP rev C + DRV rev C + case; BLOCKER #7 lintel S3
+  driven end on P return pad + gold (swap ends, BL_A10 on top band); N-FETs cannot switch shared-cathode lines (P-FETs); picks (b)
+  2nd chip; sill 0.8 not 1.1; 7-wire harness; 11:1 brightness spread at 20 mA.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
