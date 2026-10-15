@@ -88,11 +88,11 @@ windows unchanged: MODE arc, FIELD up and down, SUB up and down, the two key arc
 * The stack bar's top pad, at about (107.3, 5.3), lies right behind the organic S window. Copper behind a window darkens it.
 * So one pad set cannot serve both faces. The owner's rule for the base ("the sources and pads stay, windows differ") breaks at S.
 * K4W411's other S place (level at y 8.35, x 109.64 to 128.13, inside the pill) does not suit either: it lights only x 110.6 and
-  right, and the pill's copper starts at x 113.9.
+  right, and the pill's copper starts at x 113.7.
 
 **Fix (a), my pick: put organic's S on K4W411's stack bar.** A face change, no board cost.
-* 2-1: turn the fork upright, about x 106.0 to 108.6, y 7.6 to 12.7. The ridges left of the pill run up and down there (*measured*
-  on the face's crop), so an upright fork follows the print. The fork is 2.6 mm wide: 0.3 mm past the bar body on each side.
+* 2-1: turn the fork upright, about x 106.0 to 108.6, y 7.6 to 12.7. The ridges left of the pill run up and down there (seen on a
+  crop of the face, *assumed*), so an upright fork follows the print. The fork is 2.6 mm wide: 0.3 mm past the bar body on each side.
 * 2-2: stand the mushroom on the bar, cap up, about y 7.6 to 11.2. The stem runs along the bar; the 3.7 mm cap reaches 0.85 mm past
   the body on each side, like K4W411's bottom pal (1.0 mm). It lights better than any level bar (finding 12).
 * Keep the window 1 mm or more below the bar's top end (6.26 centred), for its dark end (K4W411 #8's bench check).
@@ -152,8 +152,8 @@ Cost: small either way. It does not touch the lights.
 * Both faces light 9 filaments: the base's 7, S and P. With K4W411's grouping that is **5 channels**: CH1 MODE, CH2 FIELD up and
   down, CH3 SUB up and down, CH4 the keys, CH5 S and P (*inferred*; the grouping is the face run's *assumed* one and K4W411's).
 * J2's pin map (K4W411 #3) serves both faces unchanged: pin 1 +5V_L, pins 2 to 6 CH1 to CH5, pin 7 spare.
-* Current at 20 mA a filament (120R at Vf 2.6, K4W411 #2): **180 mA**, 20 mA less than K4W411. Every 5 V figure in K4W411 #2 and the
-  display grills drops by 20 mA with an organic face (*inferred*).
+* Current at 20 mA a filament (120R at Vf 2.6, K4W411 #2): **180 mA**, 20 mA less than K4W411. Against the same clock with K4W411, every 5 V
+  figure drops by 20 mA (*inferred*).
 * CH5 carries 40 mA. S and P share it: same colour on each face, same behaviour.
 * If every same-colour source shared one channel: 2-1 would need 1 (all warm), 2-2 would need 2 (warm, green). Then the controls'
   lights could not light one at a time.
@@ -289,3 +289,143 @@ about 1 mm.
   * fascia R: S on the stack's place with an upright fork (finding 1); the lake island's B.Cu shape (finding 7); the rail's mask
     opening, stopped short of the corners (finding 8); a traced print (finding 11);
   * DRV, DISP: nothing beyond K4W411 #1 and #3.
+
+## 3. organic-2-2 Mushroom
+
+![organic-2-2](TS06-FASCIA-organic-2/organic-2-2-mushroom.png)
+
+**Verdict: buildable after changes.** The lights are 2-1's, except S and P, which ship green. New work:
+* stand S on the stack's bar, which also fixes its dim cap;
+* move P up 0.3 mm, onto K4W411's place;
+* try green on the bench;
+* clip the strokes as vectors.
+
+The moved R7 and R8 matter only on the T layout.
+
+### Light sources, end to end
+
+As 2-1's table (section 2), except: **S and P are 18.5 rigid bars, green** (sold: front-merge section 5), on CH5, J2 pin 6. S stands
+on the stack's place (finding 1); P lies on K4W411's P place (finding 2). The seven base lights are warm, as on 2-1.
+
+### Finding 12. The S mushroom on a level bar: a dim cap (Needs X, fixed by finding 1)
+
+*Measured* on my 40 px per mm raster of the window (7.72 mm2, y 4.35 to 7.97), against a 2.0 mm bar body:
+
+| Bar | Window more than 0.5 mm past the body | more than 1.0 mm | farthest point |
+|---|---|---|---|
+| the drawn tail, level at y 6.6 | 20 % | 4 % | 1.25 (the cap's crown) |
+| level, centred on the window's area (y 5.87) | 8 % | 0 % | 1.10 |
+| plumb on the stack's place, the mushroom stood on it (finding 1) | the cap's sides only | 0 % | 0.85 (*inferred*) |
+
+* On the drawn tail the cap's top reads dimmer than its stem, the reverse of a glowing cap (*assumed*; the bench decides).
+* **Fix:** finding 1 (a). If the owner keeps the face as drawn (finding 1 (b)), centre the level bar at y 5.87, not 6.6.
+* Cost: none beyond finding 1.
+
+### Finding 13. P: the drawn bar runs into the push buttons' boxes (Needs X, fixed by finding 2)
+
+* The face run's back view lays P's bar level at y 6.6 (body 5.6 to 7.6), centred on the two mushrooms (*measured*: scratch
+  `pages2.py`).
+* If the boxes stand 13.75 mm across, their top edge is at y 7.545 (K4W411 #6). The bar's body then **overlaps both boxes by
+  0.055 mm**, over x 152.0 to 157.3 and 164.5 to 170.5 (*inferred*). A bar cannot lie flat there.
+* **Fix:** K4W411's P place, y 6.3 (body 5.3 to 7.3). It clears the boxes by 0.245 mm, and the mushrooms still light (finding 2:
+  4 % of the window past 0.5 mm; the stems' feet at 0.85 mm).
+* The stems' feet (y 7.55 to 8.18) lie at x 159.6 to 163.0, inside the gap between the boxes, so no box sits behind them
+  (*inferred*).
+* Cost: none.
+
+### Finding 14. Green S and P (Needs X, bench)
+
+* Green is sold as an 18.5 rigid bar (front-merge section 5). Both green lights share CH5: same colour, same behaviour. OK.
+* **Forward voltage:** the repo has none for any colour (K4W411 #2). A green emitter often runs higher than a warm-white one. At
+  3.0 to 3.2 V a 120R gives 15 to 17 mA, so green would read dimmer than the warm arcs (*assumed*).
+* **Through bare FR4:** the tan board shifts green toward yellow-green (*assumed*, from K4W411 #13's tan reading). The bright mint
+  of the drawing will not show. By day the mushrooms are tan shapes on black; they still read as mushrooms.
+* **Bleed:** the nearest warm windows to a green one are the key arcs, 10.2 mm (+ arc) and 10.3 mm (- arc) from P (*inferred*). No
+  mixing.
+* **Fix:** add green to K4W411 #2's forward-voltage check and to the coupon (K4W411 #10, item 3). Trim S's and P's resistors to
+  match the warm lights. Cost: none.
+
+### Finding 15. The pill: R7 and R8 lean in (OK, with K4W411 #15)
+
+* **On the T layout** (K4W411 #15 (a)):
+  * R7's holes move to (114.50, 2.77) and (117.44, 11.28); R8's move to (123.27, 2.77) and (120.34, 11.28).
+  * The 9.0 mm pitch is kept. The bottom pads are 1.00 mm apart edge to edge (*measured* by the face run), well over the 0.15 rule.
+  * Four holes move; the nets do not.
+  * Their top joints are still in the top band: finding 3.
+  * The S bar on the stack's place keeps 6.2 mm to R7's top joint (*inferred*). The level bar of finding 1 (b) would pass 1.15 mm
+    under it.
+* **On rev B** (K4W411 #15 (b)): R6 to R8 stay surface-mount on the back. The leaning resistors are the cap's outer gills, so they
+  must then be drawn as silk and gold, as K4W411 #15 (b) says for the bunny's ears.
+* Nobody has drawn the back routes from the moved pads to J1 yet (K4W411 #15). Cost: part of #15.
+
+### Finding 16. Fine features and the white rail lines (OK)
+
+| Feature | 2-2 | Limit | |
+|---|---|---|---|
+| Thinnest white (the mycelium's joins, the half gills) | 0.17 measured; drawn at 0.15 to 0.18 | 0.15 | OK, at the limit. The script draws the joins exactly 0.15 wide, and its thin-piece filter keeps pieces down to 0.14 (*measured*: the face script). Emit them at 0.16 or more |
+| Thinnest gold (full gills, little caps) | 0.25 | 0.15 | OK |
+| White to gold; gold to other copper | 0.22; 0.35 | the fab clips silk; 0.15 | OK |
+| Gold to the board edge; to a screw head | 1.61; 3.86 or more | 1.4; 3.0 | OK (*measured*: the face run; my raster for the heads) |
+| Window necks: the narrowest stem | 0.65 | mask web 0.10 | OK. Add a 0.65 stem to the coupon (K4W411 #10) |
+| Pieces | 298 white, 190 gold islands | | OK (K4W411 #11) |
+
+* **The rails' white lines** (0.3 wide, on both masked rails):
+  * on the T layout: silk over masked copper;
+  * on rev B: plain silk, because rev B has no front rails.
+  * Buildable either way.
+* **For the owner:** K4W411's white stitch on the rails was removed at the owner's word ("rails look a bit wonky, remove them").
+  This face draws rail lines again.
+
+### Finding 17. The strokes are clipped on the raster (Needs X)
+
+* Unlike 2-1, this face draws its strokes as polylines: gills, mycelium, the little mushrooms, the pill (*measured*: the face
+  script). So the vectors exist.
+* But every keep-out (names, windows, gold, the pill) and the thin-piece filter run on the raster, after drawing. Emitting the raw
+  polylines would skip them.
+* **Fix:**
+  1. emit the polylines;
+  2. clip them in vector form against the same keep-out outlines;
+  3. drop pieces under the limits;
+  4. re-run K4W411 #16's checks.
+
+  Cost: a clipping step in the emit script; smaller than finding 11.
+
+### Routing needs, 2-2
+
+Same frame, pad rule and evidence marks as 2-1's table. The seven base rows are 2-1's (same windows, parts and pads). Only S, P and
+the S-alt bar differ.
+
+| id | face | board | source (form, sold length, colour) | pad A (x, y, layer) | pad B (x, y, layer) | mA | shares with | proposed channel | connector pin | conflicts (copper, parts, 185 V, case) | evidence |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 22-MODE | 2-2 | fascia R | flex, 38, yellow (warm); r 14.2 about (24.89, 16), 130 to 230 deg | (11.6, 5.6, B.Cu) | (17.0, 27.8, B.Cu) | 20 | none | CH1 | J2.2 | as 21-MODE | *inferred* |
+| 22-FU | 2-2 | fascia R | rigid, 18.5, warm white; on the chord, y 5.9, x 54.7 to 73.2 | (53.7, 5.9, B.Cu) | (74.2, 5.9, B.Cu) | 20 | 22-FD | CH2 | J2.3 | as 21-FU | *inferred* |
+| 22-FD | 2-2 | fascia R | rigid, 18.5, warm white; y 26.1, x 54.7 to 73.2 | (53.7, 26.1, B.Cu) | (74.2, 26.1, B.Cu) | 20 | 22-FU | CH2 | J2.3 | as 21-FD (K4W411 #4) | *measured* (rev B), *inferred* |
+| 22-SU | 2-2 | fascia R | rigid, 18.5, warm white; y 5.9, x 78.1 to 96.6 | (77.1, 5.9, B.Cu) | (97.6, 5.9, B.Cu) | 20 | 22-SD | CH3 | J2.4 | as 21-SU | *inferred* |
+| 22-SD | 2-2 | fascia R | rigid, 18.5, warm white; y 26.1, x 78.1 to 96.6 | (77.1, 26.1, B.Cu) | (97.6, 26.1, B.Cu) | 20 | 22-SU | CH3 | J2.4 | as 21-SD (pad B on A7 until A7 moves) | *measured* (rev B), *inferred* |
+| 22-K- | 2-2 | fascia R | flex, 38, yellow; r 10.0 about (150.4, 16), 105 to 255 deg | (149.3, 6.1, B.Cu), 1.2 mm pad | (149.3, 25.9, B.Cu) | 20 | 22-K+ | CH4 | J2.5 | as 21-K- (K4W411 #5 **Blocker** until measured) | *inferred* |
+| 22-K+ | 2-2 | fascia R | flex, 38, yellow; r 10.0 about (171.4, 16), -75 to 75 deg | (172.5, 6.1, B.Cu), 1.2 mm pad | (172.5, 25.9, B.Cu) | 20 | 22-K- | CH4 | J2.5 | as 21-K+ | *inferred* |
+| 22-S | 2-2 | fascia R | rigid, 18.5, **green**; K4W411's stack place, plumb x 107.3, y 6.26 to 24.76 | (107.3, 5.3, B.Cu), 1.2 mm pad | (109.3, 24.3, B.Cu), sideways | 20 (15 to 17 if green's Vf is 3.0 to 3.2) | 22-P | CH5 | J2.6 | needs the mushroom stood on the bar (findings 1, 12); A7 1.3 mm below the bar's end (K4W411 #8) | *inferred* |
+| 22-S-alt | 2-2 | fascia R | rigid, 18.5, green; level, centred on the window's area, y 5.87, x 99.3 to 117.8 | (98.3, 5.9, B.Cu) | (118.8, 5.9, B.Cu) | 20 | 22-P | CH5 | J2.6 | only if finding 1 (b): crosses the stack's place; T layout: 1.15 mm under R7's moved top joint | *measured* (face script), *inferred* |
+| 22-P | 2-2 | fascia R | rigid, 18.5, **green**; K4W411's P place, y 6.3, x 151.65 to 170.15 (not the drawn y 6.6) | (150.9, 6.3, B.Cu), 1.2 mm pad | (170.9, 6.3, B.Cu), 1.2 mm pad | 20 (15 to 17) | 22-S | CH5 | J2.6 | the drawn y 6.6 overlaps the boxes by 0.055 (finding 13); clips would shade the mushrooms: leads plus adhesive (finding 2) | *measured* (windows), *inferred* |
+
+* **Total:** 180 mA at 20 mA a filament. It is 170 to 174 mA if the two green bars draw 15 to 17 mA (*assumed* Vf).
+* **Channels needed alone:** 9. With K4W411's grouping: 5.
+* **Channels if same-colour sources share:** 2 (warm, green).
+* **Connector pins:** 6 of J2's 7; pin 7 spare.
+* **Changes the other faces may not need:**
+  * fascia R: S on the stack's place with the mushroom stood on it (findings 1, 12); green bars on S and P (finding 14); on the T
+    layout only, R7's and R8's four holes moved (finding 15); the strokes clipped as vectors (finding 17);
+  * DRV, DISP: nothing beyond K4W411 #1 and #3.
+
+## 4. Left open
+
+* Not measured:
+  * the green bar's forward voltage (finding 14);
+  * the push button's stand-off and orientation (K4W411 #5). It also decides whether P can have end clips (finding 2);
+  * a bar's dark end length (K4W411 #8). It sets how low S must sit (finding 1).
+* *Assumed*:
+  * the S and P sources are 18.5 rigid bars (the face run's own assumption);
+  * the height of a through-hole joint (finding 3);
+  * R1's place against the sill's step over the rotary, read on the case model's stand-in board (finding 3).
+* Not done: routing on any board; KiCad DRC; a check of the faces at 46 px per mm (findings 11 and 17); the bench and the coupon.
+* The pad places in both Routing needs tables are proposals, good to about 1 mm. The routing-plan run fixes them.
