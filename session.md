@@ -55,7 +55,8 @@
   PCB/TS06-routing-plan.md.
   **Owner 00:0x: "you can also hold the page update since we will still need one when we build the new pcbs".** page-update
   HELD: told to commit what it has on its worktree branch and stop; keep its branch for the page run after the new boards, do
-  not cherry-pick or publish. Fallback trigger 02:00Z disabled.
+  not cherry-pick or publish. Fallback trigger 02:00Z disabled. Stopped 00:1x UTC, 0.31 M / 16 min: 308f005 (J1 rev B,
+  built, tests not run) + 4eca120 (Fronts build step); saved as patches in `Claude outputs/held/page-update/`.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:

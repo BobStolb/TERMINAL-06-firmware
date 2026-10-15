@@ -1,0 +1,443 @@
+From 308f005c0d63ff521553d45b58c7bb7c3d895d86 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 15 Oct 2026 00:05:50 +0000
+Subject: [PATCH 1/2] viewer2: fascia R rev B on the page (upright J1, the rev
+ B zip, the case 2.8 mm lower)
+
+The build failed as it stood: the case model now draws the lead only for the
+upright J1, and order.py named the rev A zip. assembly.py gives the case model
+R's upright J1 (use_fascia_j1, also for A and W); order.py orders
+fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip and checks ORDER.md's rev B
+paragraph. The page: the lead rises in a gentle S into an upright housing,
+the Order view's rev B card, the case 2.8 mm lower, texts. Tests for the rev B
+zip and the upright lead end. Built clean (30.9 MB, 101 files); the suite was
+not run (the page update is on hold).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WoV3gyAFgmtuk6W6Dr4bdA
+---
+ recovered/viewer2/README.md         | 15 ++++---
+ recovered/viewer2/src/app.js        | 64 ++++++++++++++++++-----------
+ recovered/viewer2/src/index.html    |  5 ++-
+ recovered/viewer2/test/run.mjs      | 34 ++++++++++++++-
+ recovered/viewer2/tools/assembly.py | 18 ++++++--
+ recovered/viewer2/tools/order.py    | 28 +++++++++++--
+ 6 files changed, 127 insertions(+), 37 deletions(-)
+
+diff --git a/recovered/viewer2/README.md b/recovered/viewer2/README.md
+index 7669ef5..89cfcd1 100644
+--- a/recovered/viewer2/README.md
++++ b/recovered/viewer2/README.md
+@@ -35,7 +35,7 @@ node with Playwright for the tests (`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`,
+ 
+ TS06-DRV, TS06-DISP and the fascia R are drawn with every component, from the GLBs of `3d/populated/` (the models
+ that were missing in the Docker image are in `3d/populated/kicad3d`, `3d/populated/models` and `tools/models3d.json`). The
+-fascia is **R as it is ordered**: the Plates white print and the Divider gold (`3d/populated/README.md`).
++fascia is **R as it is ordered**: rev B (J1 the upright B6B-PH-SM4-TB), the Plates white print and the Divider gold (`3d/populated/README.md`).
+ 
+ * The host serves no `.glb`, so `build.sh` quantises each GLB with gltfpack (16-bit positions, named nodes kept) and embeds
+   the buffer in a glTF JSON file. Sizes from the build: TS06-DRV 13.39 MiB GLB to 4.49 MB; TS06-DISP 5.71 MiB to
+@@ -66,13 +66,15 @@ builds; pin 1 is on the +X side at both J1s). What is read from where:
+ 
+ | What | From |
+ |---|---|
+-| The two J1s: positions, and that the driver's is a top-entry B6B-PH-K on the display-facing face and the fascia's a side-entry S6B-PH-SM4-TB on its back, mouth to the bottom edge | the boards' files through `data/parts.json` (`tools/kparts.py`), placed by the same matrices as the boards |
+-| The mated height (9.5 mm), where the wires leave the fascia's housing, the floor, the 3 mm bend radius, the 190 mm length | the case model (`3d/case-pair/case_pair.py`: `J1_MATED_H`, `FJ_PLUG_OUT`, `Y_FLOOR`, `CABLE_R`, `LEAD_LEN`) through `data/model.json` |
++| The two J1s: positions, and that the driver's is a top-entry B6B-PH-K on the display-facing face and the fascia's (fascia R rev B, 7 October 2026) an upright B6B-PH-SM4-TB on its back; rev A's side-entry S6B-PH-SM4-TB is gone | the boards' files through `data/parts.json` (`tools/kparts.py`), placed by the same matrices as the boards; the case model's own J1 (`boards.json` `fascia_j1`, R's) through `data/model.json` |
++| The mated heights (9.5 mm at both ends), where the wires leave the fascia's housing (its top, over the pin row), the floor, the 3 mm bend radius, the 45 degree slope down from the fascia, the 190 mm length | the case model (`3d/case-pair/case_pair.py`: `J1_MATED_H`, `FJ_MATED_H`, `FJ_EXIT_Y/Z`, `Y_FLOOR`, `CABLE_R`, `FJ_SLOPE`, `LEAD_LEN`) through `data/model.json` |
+ | The housings' size (11.3 mm across, 3.5 mm thick), the wire (0.9 mm over the insulation) | typical PH figures, not measured here |
+ 
+ The route between the ends is built, not typed: leave the driver's housing towards the front, bend down (R 3), drop, bend back along the floor; lie on the floor in a
+-slack loop, out to the rear, across and forward; climb the raked fascia (bend of 90 + 12 degrees, R 3) into the fascia's housing. The loop's size is solved so that the centre line
+-is the lead's length; the shortest way across is the case model's `LEAD_PATH` (about 138 mm), so about 52 mm of the lead is slack. Near each housing the wires lie in a row at
++slack loop, out to the rear, across and forward; rise in a gentle S into the fascia's housing (a bend of R 3 up to a 45 degree slope, a straight run, a bend of R 3 to the
++fascia's normal, 12 degrees below horizontal): the housing stands upright on the fascia's back and the wires leave its top straight back, as the case model's `lead_descent`
++draws it. Rev A's side-entry J1 made the lead bend 90 + 12 degrees at the base; that bend is gone. The loop's size is solved so that the centre line
++is the lead's length; the shortest way across is the case model's `LEAD_PATH` (about 143 mm), so about 47 mm of the lead is slack. Near each housing the wires lie in a row at
+ the header's 2.0 mm pitch and close up to a flat band; on the floor they lie as a loose bundle, turning slowly, and the turn that puts pin 1 on the same side at the far housing is
+ spread along the floor. Each wire's length is counted from the drawn wire (about 190 mm, within 2 mm of each other); the tests print them.
+ 
+@@ -110,6 +112,9 @@ A tab under the viewer ("Order"; the address `#order`). It holds, from `data/ord
+ * the open items before ordering, and what only the prototype run can close;
+ * where the fab zips are: links on GitHub under the branch `pcb/kicad-boards`, by their repository path
+   (`fab/TS06-DISP-revB-fab.zip` ...). The zips are not embedded in the page;
++* fascia R **rev B** (7 October 2026, `PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md`): a card under "Whose hand" says J1 is the upright
++  B6B-PH-SM4-TB, the zip to send is `fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip`, rev A's zip is kept renamed `-notordered` (not linked:
++  do not send it), and the case is 2.8 mm lower. `tools/order.py` stops if ORDER.md's rev B paragraph loses any of that;
+ * a line that placing the order is the owner's own hand. The page contacts no board house and holds no account, cart or price.
+ 
+ `tools/order.py` stops the build if `fab/ORDER.md` loses a table or a statement it relies on, so a rewritten sheet is noticed at
+diff --git a/recovered/viewer2/src/app.js b/recovered/viewer2/src/app.js
+index 883a5ba..d89743b 100644
+--- a/recovered/viewer2/src/app.js
++++ b/recovered/viewer2/src/app.js
+@@ -466,10 +466,14 @@ function buildFasciaProxies(g, sub, root, P, ht, fv) {
+     sub('fascia').add(grp);
+     root.addRef('FASCIA:' + ref, grp, g);
+   }
+-  const j1 = P.J1 && P.J1.box;
++  // J1: the case model draws every fascia with the ordered R's upright J1 (rev B, B6B-PH-SM4-TB); a stand-in board (A, for F) still carries
++  // rev A's side-entry part in its file, so its J1 is drawn upright where the case model puts R's (the lead ends there), not on its own pads
++  const rj = MODEL.fascia_j1, own = P.J1 && P.J1.box && /B6B/.test(P.J1.fp || '');
++  const j1 = own ? P.J1.box : rj && rj.body ? [rj.body[0] - d.X0, rj.body[1] - d.X0, rj.body[2], rj.body[3]] : P.J1 && P.J1.box;
+   if (j1) {
+     const grp = new THREE.Group();
+-    grp.add(box(j1[1] - j1[0] - 2, 4.8, j1[3] - j1[2], MAT.white, (j1[0] + j1[1]) / 2, back - 2.4, (j1[2] + j1[3]) / 2));
++    const up = own || (rj && rj.body), hh = up ? (F().FJ_HDR_H || 6.0) : 4.8;
++    grp.add(box(j1[1] - j1[0] - (up ? 0 : 2), hh, j1[3] - j1[2], MAT.white, (j1[0] + j1[1]) / 2, back - hh / 2, (j1[2] + j1[3]) / 2));
+     tag(grp, 'fascia', 'FASCIA:J1');
+     sub('fascia').add(grp);
+     root.addRef('FASCIA:J1', grp, g);
+@@ -686,14 +690,16 @@ function stepTween(now) {
+ // ---- the four scenes
+ // ------------------------------------------------------------------------------------------ the lead and the hand wiring
+ // THE LEAD. The 6-way JST PH lead of PCB/TS06-DRV/bom.md joins TS06-DRV J1 (a top-entry B6B-PH-K on the display-facing face) to the
+-// fascia's J1 (a side-entry S6B-PH-SM4-TB on its back, mouth towards the bottom edge), pin 1 to pin 1 (PCB/README.md: 1 +5V, 2 GND,
+-// 3 A6, 4 A7, 5 D7, 6 D8). It is drawn here as six wires in a PHR-6 housing at each end. The ends and their heights are the case model's
+-// (the mated plug 9.5 mm off the driver board, the exit 3 mm past the fascia header's mouth), and so are the floor, the 3 mm bend and the
+-// 180-200 mm length (190 drawn). Nothing else is invented about the route: it is built from those numbers, as follows.
++// fascia's J1 (fascia R rev B: an upright B6B-PH-SM4-TB on its back; rev A's side-entry S6B-PH-SM4-TB is gone), pin 1 to pin 1
++// (PCB/README.md: 1 +5V, 2 GND, 3 A6, 4 A7, 5 D7, 6 D8). It is drawn here as six wires in a PHR-6 housing at each end. The ends and their
++// heights are the case model's (the mated plug 9.5 mm off the driver board; at the fascia the plug's top, FJ_MATED_H 9.5 mm off the back
++// over the pin row, where the wires leave straight back along the fascia's normal), and so are the floor, the 3 mm bend, the 45 degree
++// slope and the 180-200 mm length (190 drawn). Nothing else is invented about the route: it is built from those numbers, as follows.
+ //   * DRV end: the wires leave the housing towards the front, bend down (R 3), drop to the floor and bend back along it (R 3).
+-//   * fascia end: they leave the housing down the raked face and bend onto the floor (R 3, 90 + 12 degrees).
++//   * fascia end: they leave the housing straight back along the fascia's normal (12 degrees below horizontal), bend to a 45 degree slope
++//     (R 3), run straight, and bend level onto the floor (R 3): a gentle S, as the case model draws it (lead_descent, FJ_SLOPE).
+ //   * on the floor the lead lies in a slack loop: out to the rear, across, and forward to the fascia. The loop's depth is solved so that the
+-//     centre line is exactly the lead's length (the shortest way across is the case model's LEAD_PATH, about 139 mm).
++//     centre line is exactly the lead's length (the shortest way across is the case model's LEAD_PATH, about 143 mm).
+ // Near each housing the six wires lie in a row at the header's 2.0 mm pitch and close up to a flat band; on the floor they form a loose
+ // bundle (a ring of six, turning slowly), which is how six loose wires lie. The twist that brings pin 1 back to the same side at the
+ // other end is spread along the floor, and the length of each wire is counted, not assumed.
+@@ -738,13 +744,16 @@ function leadGeometry(v) {
+   const mated = f.Z_DRV_F - MODEL.lead[0][2];                          // the case model's mated height of J1 + PHR-6 (9.5)
+   const [dx, dy] = mid(jd.box), [fx, fy] = mid(jf.box);
+   const E0 = V3(dx, HB - mated, dy).applyMatrix4(Md);                   // where the wires leave the housing on TS06-DRV, centred on the header
+-  const le = fd.lead[fd.lead.length - 1], E = V3(le[0], le[1], -le[2]); // the case model's exit from the fascia's housing
+-  const dF = V3(0, 0, 1).transformDirection(Mf);                        // down the raked face, towards the bottom edge
+-  // the fascia end, traced backwards from the exit to the floor
+-  const rev = Ls => { const T = new Turtle(E, dF); T.line(Ls); T.arc(X, Math.PI / 2 + rake, R); return T; };
++  const le = fd.lead[fd.lead.length - 1], E = V3(le[0], le[1], -le[2]); // the case model's exit from the fascia's housing: the plug's top
++  const dF = V3(0, -1, 0).transformDirection(Mf);                       // the fascia's normal out of its back: back into the case, 12 deg down
++  // the fascia end, traced from the exit to the floor: a bend to the slope, a straight run, a bend level (the case model's lead_descent)
++  const al = (f.FJ_SLOPE || 45) * Math.PI / 180;
+   const Ymin = f.Y_FLOOR + LEAD_GEO.wire + 0.1;                        // the centre line on the floor: the wires just clear it
+-  const Ls = Math.max(0, (rev(0).p.y - Ymin) / Math.cos(rake));        // a short straight after the housing, so the foot lands on that height
+-  const rv = rev(Ls), Yc = rv.p.y;
++  const ell = (E.y - Ymin - R * (Math.cos(rake) - Math.cos(al)) - R * (1 - Math.cos(al))) / Math.sin(al);
++  if (!(ell >= 0)) throw new Error('the floor is too near the fascia plug for two bends');
++  const rv = new Turtle(E, dF);
++  rv.arc(X, -(al - rake), R).line(ell).arc(X, al, R);
++  const Yc = rv.p.y;
+   // the driver end, from the housing to the floor
+   const T = new Turtle(E0, V3(0, 0, 1));
+   T.arc(X, Math.PI / 2, R);
+@@ -814,10 +823,11 @@ function buildLead(v, A) {
+   const hd = holder(G.Md), hf = holder(G.Mf);
+   const mated = f.Z_DRV_F - MODEL.lead[0][2];
+   hd.add(box(L.hw, mated - 1.0, L.ht, MAT.housing, G.dx, HB - (1.0 + mated) / 2, G.dy));
+-  const zE = G.jf.box[3] + 3.0, len = zE - 31.0;
+-  hf.add(box(L.hw, 3.8, len, MAT.housing, G.fx, HB - 2.4, zE - len / 2));
++  // the fascia's housing stands upright on its J1 (rev B): from 1 mm off the back to the plug's top, where the case model's exit is
++  const eN = G.E.clone().applyMatrix4(G.Mf.clone().invert()), fm = HB - eN.y;            // in the board's own frame; fm: the mated height (9.5)
++  hf.add(box(L.hw, fm - 1.0, L.ht, MAT.housing, eN.x, HB - (1.0 + fm) / 2, eN.z));
+   for (const h of [hd, hf]) { h.traverse(o => { o.userData.noHl = true; }); w.add(h); parts.push(h); }
+-  info.housings = [{ end: 'TS06-DRV J1', size: [L.hw, L.ht, mated - 1.0], at: [G.E0.x, G.E0.y, G.E0.z] }, { end: 'fascia J1', size: [L.hw, 3.8, len], at: [G.E.x, G.E.y, G.E.z] }];
++  info.housings = [{ end: 'TS06-DRV J1', size: [L.hw, L.ht, mated - 1.0], at: [G.E0.x, G.E0.y, G.E0.z] }, { end: 'fascia J1', size: [L.hw, L.ht, fm - 1.0], at: [G.E.x, G.E.y, G.E.z], upright: true }];
+   // labels for the six pins, at the driver end, fanned out so they do not sit on one another (they follow the Labels switch)
+   const pins = new THREE.Group(); pins.name = 'pinlabels';
+   const labels = [];
+@@ -1287,7 +1297,7 @@ function steps() {
+     { g: 'case', n: '9', title: 'Fit the fascia and its lead', vis: on(MODULE, TUBES_ALL, 'nano', 'rtc', allChips, 'case_screws', SHELL, 'fascia_frame', 'fascia', 'lead'), explode: 0, cam: 'lowL', fit: 'all', caseOn: true,
+       hl: [{ key: 'FASCIA:J1' }, { key: 'DRV:J1' }, { key: '@lead', label: `PH lead, ${+leadLen.toFixed(0)} mm` }],
+       body: `<p>${V.fv === 'F' ? `F: the printed frame screws to the cheeks (2 × M3 × 8) and the panel drops into its rabbet (4 × M2.5 × 6, plus 2 countersunk ties down through the sill). The 176 board stands in for the frame's 179 panel at X ${fd.X0}.` : `The fascia (${esc(fname)}, ${esc(BOARD.FASCIA)}) screws to four M2.5 bosses on the cheeks (M2.5 × 6) at FASCIA_X0 ${fd.X0} mm`}, raked back ${f.FASCIA_RAKE}°. Switch the variant with the <b>Fascia</b> buttons above the model.</p>
+-      <ul><li>The 6-way JST PH lead (${+leadLen.toFixed(0)} mm; the BOM says 180–200 mm) leaves DRV J1 towards the front, drops to the floor, lies on it in a slack loop and climbs the raked fascia into its side-entry J1. The shortest way across is ${taut} mm, so about ${Math.round(leadLen - taut)} mm of the lead is slack: it is what lets the module come back for J1 to be reached from below.</li>
++      <ul><li>The 6-way JST PH lead (${+leadLen.toFixed(0)} mm; the BOM says 180–200 mm) leaves DRV J1 towards the front, drops to the floor, lies on it in a slack loop, and rises in a gentle S (two 3 mm bends and a 45° run) straight into the plug on the fascia’s upright J1 (fascia R rev B, JST B6B-PH-SM4-TB): no tight turn at the base. The shortest way across is ${taut} mm, so about ${Math.round(leadLen - taut)} mm of the lead is slack: it is what lets the module come back for J1 to be reached from below.</li>
+       <li>Wires: 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8 (pin 1 to pin 1 at both ends). Beep it out one-to-one before plugging it in.</li></ul>
+       ${r5 && r5.status !== 'OK' ? `<div class="caution">Case model, ${esc(r5.status)}: ${esc(r5.what)}: ${esc(r5.result)}.</div>` : ''}
+       <p style="font-size:13px;color:var(--muted)">The case parts drawn are the committed case model's, made for A: its bosses and sill notch do not move with the variant.</p>` },
+@@ -1433,14 +1443,18 @@ function renderFacts() {
+       ['Case checks', bad.length ? bad.map(r => `<span class="pill ${r.status === 'FAIL' ? 'bad' : 'warn'}">${esc(r.status)}</span> ${esc(r.what)}`).join('<br>') : '<span class="pill ok">no fascia row TIGHT or FAIL</span>'],
+       ['Lead path', n(d.lead_path + ' mm')], ['Area, cost', esc(row.cost || '')], ['Reach', esc(row.reach || '')]];
+     const dep = r => ((d.bodies || []).find(b => b[0] === r) || [])[5];
+-    if (isPop(BOARD.FASCIA)) rows.splice(2, 0, ['As ordered', `drawn with the Plates print (white names and nameplates) and the <b>${esc((POP.gold || 'divider').replace(/^./, c => c.toUpperCase()))} gold</b>, the board <code>fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip</code> is made from (control holes opened 0.4 mm, level leaders); ${popBodies(BOARD.FASCIA)[1]}`]);
++    const ozip = ((ORDER && ORDER.boards) || []).map(b => b.zip).find(z => /FASCIA/.test(z)) || 'fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip';
++    if (isPop(BOARD.FASCIA)) rows.splice(2, 0, ['As ordered', `rev B, drawn with the Plates print (white names and nameplates) and the <b>${esc((POP.gold || 'divider').replace(/^./, c => c.toUpperCase()))} gold</b>, the board <code>${esc(ozip)}</code> is made from (control holes opened 0.4 mm, level leaders, J1 upright); ${popBodies(BOARD.FASCIA)[1]}`]);
++    rows.splice(isPop(BOARD.FASCIA) ? 3 : 2, 0, ['J1', v === 'R' ? 'JST <b>B6B-PH-SM4-TB, upright</b> (rev B, 7 Oct 2026; rev A had the side-entry S6B-PH-SM4-TB): the plug stands off the back and the lead leaves it straight back'
++      : 'the case model gives every fascia the ordered R’s upright J1 (rev B), so the lead ends there; this stand-in board still carries rev A’s side-entry part in its file']);
+     note = isPop(BOARD.FASCIA) ? 'The dial, the two МТ1 levers and the two КМД1 buttons are drawn with their bodies behind the panel and their bushings in the holes; the eight 1206 resistors and the JST header are on the back. The gold shows as yellow in KiCad’s pictures and in the 3D view as a metallic gold.' :
+       `Control bodies behind the panel are proxies with the case model’s depths: rotary Ø${((d.bodies || [])[0] || [])[3]} × ${dep('SW1')} mm, МТ1 ${dep('SW2')} mm, КМД1 ${dep('SW4')} mm.` + (v === 'F' ? ' F: the 176 board stands in for the 179 panel the frame needs; that board is not drawn yet.' : '');
+     if (!isPop(BOARD.FASCIA) && Object.keys(POP.boards || {}).length) note += ' Only the fascia R is drawn populated, with its gold; A and W are the bare boards.';
+   } else {
+     const c = MODEL.checks || {};
+     name = 'Assembly · 3d/case-pair'; sub = 'Both boards, the fascia and the case, placed where the case model puts them. Z runs from the ИН-12 glass front backwards.';
+-    rows = [['Outside', n(`${f.OUT_W} × ${f.OUT_H} × ${f.OUT_D.toFixed(1)} mm`)],
++    const lower = f.FLOOR_REV_A !== undefined ? f.Y_FLOOR - f.FLOOR_REV_A : 0;
++    rows = [['Outside', n(`${f.OUT_W} × ${f.OUT_H} × ${f.OUT_D.toFixed(1)} mm`) + (lower > 0.05 ? `<br><span style="color:var(--muted);font-size:12.5px">${lower.toFixed(1)} mm lower than with rev A’s side-entry fascia J1: the floor at Y ${f.Y_FLOOR}, was ${f.FLOOR_REV_A} (fascia R rev B, the upright J1)</span>` : '')],
+       ['Stack', `glass front Z 0 → TS06-DISP ${n('Z ' + f.Z_DISP_F)} → ${n(f.STACK_GAP + ' mm')} gap → TS06-DRV ${n('Z ' + f.Z_DRV_F + '–' + f.Z_DRV_B)}, parts towards the rear panel at ${n('Z ' + f.Z_REAR_IN)}`],
+       ['Driver', `mirrored: DRV x = ${f.BOARD_W} − DISP x; its top edge ${n(f.DRV_Y0 + ' mm')} above the display's`],
+       ['Fascia', `${esc(FV_NAME[V.fv])} (${esc(BOARD.FASCIA)}) at ${n('FASCIA_X0 ' + fvData(V.fv).X0)}, raked ${n(f.FASCIA_RAKE + '°')}, top edge on the sill at ${n('Y ' + f.SILL_TOP_Y)}`],
+@@ -1572,6 +1586,8 @@ function renderVariants() {
+   const rows = [['Board', 'board'], ['Size (mm)', 'size'], ['Where', 'where'], ['Controls vs the tube above (mm)', 'controls'], ['Fascia boss vs R5', 'r5'],
+     ['SW5 vs the top-right boss', 'sw5'], ['Rotary vs the sill', 'sill'], ['Open slots where TS06-DRV shows', 'slots'], ['Lead path', 'lead'], ['Area, cost', 'cost'], ['Reach', 'reach']];
+   const pics = VARIANTS.pictures || [];
++  const fr = (MODEL.fascia_variants || {}).R;
++  if (fr && fr.lead_path) VARIANT_ROWS.R.lead = `${fr.lead_path} mm (rev B, the upright J1; rev A’s side-entry J1 took 138)`;
+   $('#fvouter').textContent = `${F().OUT_W} × ${F().OUT_H} × ${F().OUT_D.toFixed(1)} mm`;
+   $('#fvtable').innerHTML = `<thead><tr><th></th>${keys.map(head).join('')}</tr></thead><tbody>${rows.map(([l, k]) => `<tr><th>${esc(l)}</th>${keys.map(v => `<td>${cell(VARIANT_ROWS[v][k])}</td>`).join('')}</tr>`).join('')}
+     <tr><th>In 3D</th>${keys.map(v => `<td>${pickable(v) && PARTS[FV[v]] ? `<button type="button" class="linkbtn" data-fv3d="${v}">Show ${v} in the case</button>` : '<span style="color:var(--muted);font-size:12.5px">the record only: not drawn in 3D</span>'}</td>`).join('')}</tr></tbody>`;
+@@ -1608,9 +1624,9 @@ function renderNotes() {
+     ...(pop ? [] : [['Chips, the Nano, the RTC module, F1', 'Proxies. KiCad draws empty DIP sockets; the chip bodies on them are placed from the pads and the socket’s height so the bring-up steps can fit them. The Nano and the MF-RG1100 fuse have no model in the library used here.'],
+     ['Socket contacts and LEDs', 'Proxies at the footprints’ pads: 12 contacts under each socketed tube, 3 mm LEDs 5.3 mm tall.']]),
+     ['Standoffs, screws', 'From the case model: nylon M3 × 11 mm at the display’s four holes, the module screws at TS06-DRV H5–H8.'],
+-    ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1. Its ends, the 9.5 mm mated height, the floor, the 3 mm bend and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>), dressed as a harness: the dial’s seven wires leave their lugs in order, lie over the body’s rear face and run down its right flank one over another as a flat group (0.95 mm pitch), then turn off to their pads in the order of the pads, so no wire crosses another; a lever’s or button’s two run side by side past the body’s lower edge. Every bend has the same radius (1.6 mm) and every wire lands flat on its pad. A control with no lug model is wired from its body’s back face.'],
++    ['The fascia lead and the hand wiring', 'The lead: six wires (pin 1 red +5 V, 2 black GND, 3 yellow A6, 4 green A7, 5 blue D7, 6 white D8) and a PHR-6 housing at each end, seated on its J1; the fascia’s J1 is the upright B6B-PH-SM4-TB of fascia R rev B, so its housing stands straight off the back and the wires leave it straight back. Its ends, the 9.5 mm mated heights, the floor, the 3 mm bends, the 45° slope down from the fascia and the 190 mm length are the case model’s; the route between is built from them (a slack loop on the floor, its depth solved so the centre line is the lead’s length). The hand wiring on the fascia’s back runs from each control’s lugs, found in the control models, to its landing pads (<code>tools/handwire.py</code>), dressed as a harness: the dial’s seven wires leave their lugs in order, lie over the body’s rear face and run down its right flank one over another as a flat group (0.95 mm pitch), then turn off to their pads in the order of the pads, so no wire crosses another; a lever’s or button’s two run side by side past the body’s lower edge. Every bend has the same radius (1.6 mm) and every wire lands flat on its pad. A control with no lug model is wired from its body’s back face.'],
+     ['The case', 'The printable parts from <code>3d/case-pair/out/*.stl</code> (cheeks, brow, top plate, trench, base, rear panel, and the fascia frame for F), where the case model places them. The cheeks are the default build, with the fascia bosses A, W and R use.'],
+-    ['Fascia R and F in 3D', 'The 3D view offers R (the default: picked, and ordered by fab/ORDER.md) and F. R is its own board, exported like the others and placed at the case model’s X0 (0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs, at X0 4.305. A and W are not drawn in 3D any more; the Fascia variants tab keeps them as the record.'],
++    ['Fascia R and F in 3D', 'The 3D view offers R (the default: picked, and ordered by fab/ORDER.md) and F. R is its own board, exported like the others and placed at the case model’s X0 (0). F is the case model’s printed frame with A’s 176 board standing in for the 179 panel it needs, at X0 4.305; its J1 and lead are drawn where the case model puts R’s upright J1 (A’s file still has rev A’s side-entry part). A and W are not drawn in 3D any more; the Fascia variants tab keeps them as the record.'],
+   ];
+   $('#notesbody').innerHTML = rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+ }
+@@ -1650,6 +1666,8 @@ function renderOrder() {
+   el.innerHTML = `
+     <p class="lead">${esc(O.status)} Quantity <b>${O.quantity} of each board</b>, a prototype run. The fascia is shown as ordered: the Plates print and the <b>${esc(gold)} gold</b>.</p>
+     <div class="card ownhand" id="order-ownhand"><div class="tag">Whose hand</div><p><b>${esc(O.own_hand)}</b></p></div>
++    ${O.fascia_rev ? `<div class="card ownhand" id="order-revb" style="margin-top:12px"><div class="tag">${esc(O.fascia_rev.date)} · rev ${esc(O.fascia_rev.rev)}</div>
++      <p><b>${esc(O.fascia_rev.title)}.</b> ${esc(O.fascia_rev.body)}</p><p class="sm" style="margin-top:6px">${esc(O.fascia_rev.not_ordered)} Source: <code>${esc(O.fascia_rev.source)}</code>.</p></div>` : ''}
+     <h2 class="osec">What is ready, board by board</h2>
+     <div class="grid3" id="order-boards">${boards}</div>
+     <h2 class="osec">Design-for-manufacture check</h2>
+@@ -1730,7 +1748,7 @@ function fpTodayFacts(v) {
+     ['Outline', n(fpSize(v) + ' mm') + `, ${n((+b.thickness).toFixed(1) + ' mm')} FR4`],
+     ['Copper', `${n(b.tracks)} tracks, all on B.Cu; ${n(b.vias)} vias`],
+     ['Parts', `${n(b.parts)}: R1–R8, SW1–SW5, J1`],
+-    ['J1', `${esc(j.fp || '?').replace('TS06_', '')} on the ${j.side === 'B' ? 'back' : 'front'}, at ${n((j.at || []).slice(0, 2).join(', '))}`],
++    ['J1', `${esc(j.fp || '?').replace('TS06_', '')} on the ${j.side === 'B' ? 'back' : 'front'}, at ${n((j.at || []).slice(0, 2).join(', '))}${/B6B/.test(j.fp || '') ? ' <span class="pill acc">upright, rev B</span>' : ''}`],
+     ['Finish', '2.0 mm FR4, black mask, white silk, ENIG (PCB/README.md)']]
+     .map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('') + `<dt>Checked</dt><dd>${mk('seen')} this page’s build, from the board file</dd>`;
+ }
+diff --git a/recovered/viewer2/src/index.html b/recovered/viewer2/src/index.html
+index 0d1593f..2b33552 100644
+--- a/recovered/viewer2/src/index.html
++++ b/recovered/viewer2/src/index.html
+@@ -755,8 +755,8 @@ footer { color: var(--muted); font-size: 12.5px; padding-block: 24px 40px; borde
+   </section>
+ 
+   <section class="docpanel" id="doc-fascia" role="tabpanel" aria-labelledby="dt-fascia" hidden>
+-    <p class="pickline" id="fv-picked"><b>R was picked and is the fascia of the order</b>: <code>fab/ORDER.md</code> orders <code>fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip</code>. This tab stays as the record of the four ways that were scored; the 3D view offers R and F.</p>
+-    <p class="lead">The boards grew to 191.4 mm for the ИН-17 pair; the fascia was drawn for 176. Four ways to sit it under the tube row, scored side by side in <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-FASCIA-variants.md" target="_blank" rel="noopener">PCB/TS06-FASCIA-variants.md</a>. <b>R was recommended and picked.</b> All four keep the same case outside, <span id="fvouter">204.4 × 122.8 × 83.6 mm</span>, and every one still needs larger legends (at least 3 mm caps) and a dry fit of a real КМД1 and МТ1.</p>
++    <p class="pickline" id="fv-picked"><b>R was picked and is the fascia of the order</b>: <code>fab/ORDER.md</code> orders <code>fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip</code>, rev B, with J1 the upright JST B6B-PH-SM4-TB (rev A’s side-entry zip is kept as not ordered). This tab stays as the record of the four ways that were scored; the 3D view offers R and F.</p>
++    <p class="lead">The boards grew to 191.4 mm for the ИН-17 pair; the fascia was drawn for 176. Four ways to sit it under the tube row, scored side by side in <a href="https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/PCB/TS06-FASCIA-variants.md" target="_blank" rel="noopener">PCB/TS06-FASCIA-variants.md</a>. <b>R was recommended and picked.</b> All four keep the same case outside, <span id="fvouter">204.4 × 120.0 × 81.0 mm</span>, and every one still needs larger legends (at least 3 mm caps) and a dry fit of a real КМД1 and МТ1.</p>
+     <div class="tablewrap card" style="padding:0 4px;margin-bottom:16px"><table id="fvtable"></table></div>
+     <div id="fvpics">
+       <div class="pane" id="fvpane">
+@@ -792,6 +792,7 @@ PASS  TS06-DISP pours (KiCad)   BL_K F.Cu: 1 piece
+ PASS  case                      envelope 204.4 x 122.8 x 83.6 mm; OPEN: the fascia boss on R5's pad
+ <span class="c">…</span>
+ 19 PASS, 0 FAIL, 0 SKIP</pre>
++      <p style="font-size:13.5px;color:var(--muted)" id="test-revb">Since 07.10.26 (fascia R rev B, J1 the upright B6B-PH-SM4-TB) the case is 2.8 mm lower, <span class="num">204.4 x 120.0 x 81.0 mm</span>, and <code>fab/ORDER.md</code> records <span class="num">27 PASS, 0 FAIL, 0 SKIP</span> for the same command. The run above is kept as it was printed.</p>
+       <p style="font-size:13.5px;color:var(--muted);margin:0">Each line is PASS, FAIL or SKIP. On a FAIL the tool's own words follow, indented. The accepted items are listed in the script's header and in the guide, part B3.</p>
+     </div>
+ 
+diff --git a/recovered/viewer2/test/run.mjs b/recovered/viewer2/test/run.mjs
+index 2cb2594..c46b14e 100644
+--- a/recovered/viewer2/test/run.mjs
++++ b/recovered/viewer2/test/run.mjs
+@@ -808,7 +808,7 @@ if (!ONLY_WIRING) {
+   // the fascia zip is the one with the control holes opened (fab/HOLES-VARIANT.md, picked 2026-10-02): one row in the open list, naming the zip and the margin, backed by the fit table and the file
+   const hv = await page.evaluate(() => [...document.querySelectorAll('#order-open li[data-open="holes"]')].map(l => ({ text: l.textContent.replace(/\s+/g, ' ').trim(), pill: l.querySelector('.pill').textContent.trim(), idx: [...l.parentNode.children].indexOf(l) })));
+   const fitJ = JSON.parse(fs.readFileSync(path.join(REPO, '3d', 'populated', 'fit-table.json'), 'utf8'));
+-  const hzip = 'fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip';
++  const hzip = 'fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip';          // rev B (the upright J1) since 2026-10-07; rev A's zip is -notordered
+   ok('Order: the open list has the fascia-holes row (picked), with the ordered zip and 0.29 mm a side',
+     hv.length === 1 && hv[0].idx === 2 && hv[0].pill === 'does not hold the order' && hv[0].text.includes('Fascia holes: opened by 0.4 mm (picked).')
+     && hv[0].text.includes(hzip) && hv[0].text.includes('0.29 mm a side') && order.open[2].id === 'holes'
+@@ -817,6 +817,21 @@ if (!ONLY_WIRING) {
+     && fitJ.holes_committed.rows.length === 3 && fitJ.holes_committed.rows.every(r => r.margin === 0.09)
+     && order.boards.some(b => b.zip === hzip) && !order.boards.some(b => /notordered/.test(b.zip)),
+     hv.length ? hv[0].text.slice(0, 150) : 'no row');
++  // fascia R rev B (2026-10-07): J1 is the upright B6B-PH-SM4-TB; the Order view names the rev B zip everywhere and never the rev A one
++  {
++    const rb = await page.evaluate(() => {
++      const t = s => (document.querySelector(s) || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim();
++      const fas = [...document.querySelectorAll('#order-boards .ob')].find(b => /Fascia/.test(b.dataset.board));
++      return { card: t('#order-revb'), all: t('#doc-order'), fasName: fas ? fas.querySelector('h3').textContent : '', fasZip: fas ? fas.querySelector('dd a').textContent.trim() : '',
++        zipRow: [...document.querySelectorAll('#order-zips tbody tr')].map(r => r.querySelector('a').textContent.trim()).filter(z => /FASCIA/.test(z)) };
++    });
++    const revA = 'fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip';
++    ok('Order: fascia R is rev B, J1 the upright B6B-PH-SM4-TB; the card, the board and the zip table name fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip, and no rev A zip is linked',
++      /rev B: J1 is upright/.test(rb.card) && rb.card.includes('B6B-PH-SM4-TB') && rb.card.includes('S6B-PH-SM4-TB') && rb.card.includes(hzip) && /2\.8 mm lower/.test(rb.card) && /do not send it/.test(rb.card)
++      && /rev B/.test(rb.fasName) && rb.fasZip === hzip && rb.zipRow.join() === hzip && !rb.all.includes(revA) && !o.zips.some(z => /revA|notordered/.test(z.text))
++      && order.fascia_rev && order.fascia_rev.zip === hzip && fs.existsSync(path.join(REPO, 'fab', 'TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip')) && !fs.existsSync(path.join(REPO, revA)),
++      `${rb.fasName.slice(0, 60)} | ${rb.fasZip} | ${rb.card.slice(0, 90)}`);
++  }
+   const repoFab = f => fs.statSync(path.join(REPO, f)).size;
+   ok('Order: the three fab zips are linked on GitHub under pcb/kicad-boards, by repo path, not embedded',
+     o.zips.length === 3 && o.zips.every(z => z.href === 'https://github.com/BobStolb/TERMINAL-06-firmware/blob/pcb/kicad-boards/' + z.text && /^fab\/.*-fab\.zip$/.test(z.text) && fs.existsSync(path.join(REPO, z.text)))
+@@ -864,6 +879,23 @@ if (!ONLY_WIRING) {
+     ok(`lead ${v}: its length is within 180-200 mm (centre line ${l.len.toFixed(1)} mm, wires ${lo.toFixed(1)}-${hi.toFixed(1)} mm; the shortest way across is ${l.taut} mm)`, l.len >= 180 && l.len <= 200 && lo >= 180 && hi <= 200 && l.taut < lo,
+       `centre ${l.len.toFixed(2)}, wires ${l.wl.map(x => x.toFixed(1)).join(' / ')}`);
+   }
++  // fascia R rev B: the fascia's J1 is upright, so each wire meets its housing straight along the fascia's normal (back and 12 degrees
++  // down), at the case model's exit, and the housing stands off the back; no wire turns through 90 + 12 degrees at the base any more
++  {
++    const u = await page.evaluate(() => {
++      const V = window.TS06, f = V.frame(), l = V.lead.R, r = f.FASCIA_RAKE * Math.PI / 180, n = [0, Math.sin(r), Math.cos(r)];
++      const dirs = l.wires.map(w => { const P = w.pts, a = P[P.length - 5], b = P[P.length - 1], d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], L = Math.hypot(...d); return (d[0] * n[0] + d[1] * n[1] + d[2] * n[2]) / L; });
++      const h = l.housings[1], ex = V.model().fascia_variants.R.lead.slice(-1)[0];
++      let turn = 0;                                                   // the largest change of direction over any 6 mm of a wire's last 30 mm
++      for (const w of l.wires) { const P = w.pts, N = P.length; for (let i = N - 60; i + 12 < N; i++) { const a = P[i], b = P[i + 1], c = P[i + 11], d = P[i + 12];
++        const u1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], u2 = [d[0] - c[0], d[1] - c[1], d[2] - c[2]];
++        const cs = (u1[0] * u2[0] + u1[1] * u2[1] + u1[2] * u2[2]) / Math.hypot(...u1) / Math.hypot(...u2); turn = Math.max(turn, Math.acos(Math.min(1, cs)) * 180 / Math.PI); } }
++      return { dirs, upright: !!h.upright, at: h.at, ex: [ex[0], ex[1], -ex[2]], fj: (V.model().fascia_j1 || {}).fp, turn };
++    });
++    const exD = Math.hypot(u.at[0] - u.ex[0], u.at[1] - u.ex[1], u.at[2] - u.ex[2]);
++    ok('lead R (fascia R rev B): the six wires meet the upright J1’s housing straight along the fascia’s normal, at the case model’s exit; no 90 + 12 degree turn at the base',
++      u.upright && /B6B-PH-SM4-TB/.test(u.fj || '') && u.dirs.every(c => c > 0.98) && exD < 0.01 && u.turn < 60, `cos ${u.dirs.map(c => c.toFixed(3)).join(' ')}; exit ${exD.toFixed(3)} mm off; sharpest turn over 6 mm ${u.turn.toFixed(0)} deg; J1 ${u.fj}`);
++  }
+   // no wire point inside a board's box, a standoff or the case's walls
+   for (const v of ['R', 'F']) {
+     await page.click(`#fvseg button[data-fv="${v}"]`); await page.waitForTimeout(300);
+diff --git a/recovered/viewer2/tools/assembly.py b/recovered/viewer2/tools/assembly.py
+index dcfdd73..6b71cf8 100644
+--- a/recovered/viewer2/tools/assembly.py
++++ b/recovered/viewer2/tools/assembly.py
+@@ -22,6 +22,11 @@ def fascia_variant(cp, sexp, B, path):
+     cp.FASCIA_PCB = path
+     B2 = dict(B)
+     B2["fascia"] = cp._fascia(sexp)
++    j1_own = "pin_row_y" in B2["fascia"]["parts"].get("J1", {})
++    if not j1_own and hasattr(cp, "use_fascia_j1") and "fascia_j1" in B2:
++        # the case model draws the lead and the floor for fascia R rev B's upright J1 only: a board with the old side-entry J1 (A, W)
++        # gets R's J1 in its place, in its own frame, as the case model does for F's stand-in (use_fascia_j1)
++        cp.use_fascia_j1(B2)
+     d = cp.dims(B2)
+     G = cp.derive(B2, d)
+     try:
+@@ -38,7 +43,8 @@ def fascia_variant(cp, sexp, B, path):
+     return {"W": B2["fascia"]["W"], "H": B2["fascia"]["H"], "X0": round(v["FASCIA_X0"], 3),
+             "lead": [[round(c, 3) for c in p] for p in G["lead"]], "lead_path": v["LEAD_PATH"],
+             "bodies": [[b[0], round(b[1], 3), b[2], b[3], b[4], b[5]] for b in G["bodies"]],
+-            "checks": tally, "fascia_checks": fas_rows[:14]}
++            "checks": tally, "fascia_checks": fas_rows[:14], "j1": "own" if j1_own else "R's (upright, rev B)",
++            "j1_exit": [round(v["FJ_X"], 3), round(v["FJ_EXIT_Y"], 3), round(v["FJ_EXIT_Z"], 3)] if "FJ_EXIT_Y" in v else None}
+ 
+ 
+ def main(repo, out):
+@@ -48,6 +54,8 @@ def main(repo, out):
+     cp = importlib.util.module_from_spec(spec)
+     spec.loader.exec_module(cp)
+     B = json.load(open(os.path.join(here, "boards.json"), encoding="utf8"))
++    if hasattr(cp, "use_fascia_j1") and "fascia_j1" in B:
++        cp.use_fascia_j1(B)                                  # as the case model's main(): the ordered fascia R's upright J1 (rev B)
+     d = cp.dims(B)
+     G = cp.derive(B, d)
+     d2 = cp.dims(B)
+@@ -67,7 +75,9 @@ def main(repo, out):
+             "IN12_W", "IN12_H", "IN12_D", "IN12_SEAT", "IN17_FACE", "IN17_H", "IN17_D", "IN17_STEM",
+             "IN17_STANDOFF", "INS1_D", "LED_D", "LED_H", "SCREW_HEAD", "SCREW_HEAD_D", "CABLE_HALF",
+             "OUT_W", "OUT_H", "OUT_D", "Z_REAR_IN", "Z_REAR_OUT", "Y_FLOOR", "Y_TOP", "X_OUT_L", "X_OUT_R",
+-            "LEAD_PATH", "LEAD_LEN", "NANO_H", "USB_X", "USB_Y", "USB_Z"]
++            "LEAD_PATH", "LEAD_LEN", "NANO_H", "USB_X", "USB_Y", "USB_Z",
++            "FJ_X", "FJ_EXIT_Y", "FJ_EXIT_Z", "FJ_MATED_H", "FJ_HDR_H", "FJ_SLOPE", "FJ_DESCENT_RUN", "CABLE_R", "J1_MATED_H",
++            "FLOOR_REV_A", "Y_FLOOR_LEAD", "Y_FLOOR_SWEEP"]
+     frame = {k: round(v[k], 4) for k in keep if k in v}
+     names12 = ["H10", "H1", "M10", "M1"]
+     tubes = []
+@@ -111,7 +121,8 @@ def main(repo, out):
+                              "X0": round(vf["FASCIA_X0"], 3), "lead": [[round(c, 3) for c in q] for q in Gf["lead"]],
+                              "lead_path": vf["LEAD_PATH"], "bodies": [[b[0], round(b[1], 3), b[2], b[3], b[4], b[5]] for b in Gf["bodies"]],
+                              "checks": t, "fascia_checks": [{"status": r["status"], "what": r["what"], "result": r["result"]} for r in rows][:14],
+-                             "frame": {k: ff[k] for k in ("px0", "px1", "ribs") if k in ff}, "stand_in": True}
++                             "frame": {k: ff[k] for k in ("px0", "px1", "ribs") if k in ff}, "stand_in": True, "j1": "R's (upright, rev B)",
++                             "j1_exit": [round(vf["FJ_X"], 3), round(vf["FJ_EXIT_Y"], 3), round(vf["FJ_EXIT_Z"], 3)] if "FJ_EXIT_Y" in vf else None}
+     except Exception as e:                                       # an older case model without the frame
+         print("  (no fascia frame: %s)" % e)
+     model = {
+@@ -124,6 +135,7 @@ def main(repo, out):
+         "standoffs": [h[:2] for h in disp["holes"]],
+         "case_screws": [[h[0], h[1], h[2]] for h in G["drv_case_holes"]],
+         "fascia_holes": fas["holes"],
++        "fascia_j1": {k: B["fascia_j1"][k] for k in ("fp", "rev", "at", "box", "body", "pin_row_y") if k in B["fascia_j1"]} if "fascia_j1" in B else None,
+         "lead": [[round(c, 3) for c in p] for p in G["lead"]],
+         "bodies": [[b[0], round(b[1], 3), b[2], b[3], b[4], b[5]] for b in G["bodies"]],
+         "checks": tally,
+diff --git a/recovered/viewer2/tools/order.py b/recovered/viewer2/tools/order.py
+index 5e908f5..b6aaec6 100644
+--- a/recovered/viewer2/tools/order.py
++++ b/recovered/viewer2/tools/order.py
+@@ -7,6 +7,7 @@ Reads (the repository is only read):
+   fab/ORDER.md                       the three zips (size, layers, thickness, holes), the DFM table,
+                                      the owner's choices, what the prototype run closes
+   fab/*.zip                          the zips' sizes on disk
++  the rev B paragraph of ORDER.md    fascia R rev B: J1 the upright B6B-PH-SM4-TB, the rev A zip kept as -notordered, the case 2.8 mm lower
+   3d/populated/fit-table.json        the fit table (made from the placed 3D models), with its gold
+ It writes the numbers and sentences the page prints. Nothing is invented here: every figure is a cell
+ of ORDER.md or of the fit table, and the script stops if the sheet no longer has the shape it expects
+@@ -19,7 +20,8 @@ Placing the order is the owner's own hand: nothing here, and nothing on the page
+ import json, os, re, sys
+ 
+ REPO_URL = "https://github.com/BobStolb/TERMINAL-06-firmware/blob/%s/"
+-HOLES_ZIP = "fab/TS06-FASCIA-R-revA-divider-holes04-fab.zip"   # the ordered fascia zip (control holes opened, fab/HOLES-VARIANT.md): in ORDER.md
++HOLES_ZIP = "fab/TS06-FASCIA-R-revB-divider-holes04-fab.zip"   # the ordered fascia zip: rev B (upright J1), control holes opened (fab/HOLES-VARIANT.md); in ORDER.md
++REV_A_ZIP = "fab/TS06-FASCIA-R-revA-divider-holes04-notordered-fab.zip"   # rev A (side-entry J1), renamed: a record, not to be sent
+ 
+ 
+ def clean(s):
+@@ -125,6 +127,25 @@ def main(repo, out, branch="pcb/kicad-boards"):
+              for r in fit["rows"] if r["status"] != "PASS"]
+     frows.sort(key=lambda r: (r["status"] != "FAIL", r["margin"]))
+ 
++    # ---- fascia R rev B (7 October 2026): the upright J1; the sheet's own paragraph is checked, not rewritten
++    for need in ("Fascia R is now rev B", "B6B-PH-SM4-TB", "S6B-PH-SM4-TB", HOLES_ZIP, REV_A_ZIP, "do not send it", "2.8 mm lower"):
++        if need not in text:
++            sys.exit("order.py: fab/ORDER.md no longer says %r (fascia R rev B, the upright J1)" % need)
++    if not os.path.isfile(os.path.join(repo, REV_A_ZIP)):
++        sys.exit("order.py: %s (rev A, kept as a record) is not in the repository" % REV_A_ZIP)
++    if any("notordered" in b["zip"] for b in boards):
++        sys.exit("order.py: the zips table names a zip that is not ordered")
++    fascia_rev = {
++        "rev": "B", "date": "2026-10-07", "part": "JST B6B-PH-SM4-TB", "was": "JST S6B-PH-SM4-TB", "zip": HOLES_ZIP,
++        "title": "Fascia R is rev B: J1 is upright",
++        "body": "J1 on the fascia's back is now the upright JST B6B-PH-SM4-TB (top entry) instead of the side-entry S6B-PH-SM4-TB, so the six-wire lead "
++                "leaves the plug straight back and no longer bends 90 + 12 degrees at the base. This replaces the fascia zip (nothing had been placed): "
++                "send " + HOLES_ZIP + ". Everything else on the fascia is as rev A: the board, the gold, the holes, the leaders, the thickness, the finish. "
++                "The case is 2.8 mm lower with the upright part. The DISP and DRV zips are unchanged.",
++        "not_ordered": "Rev A's zip is kept in fab/ as a record, renamed with -notordered: do not send it. This page does not link it.",
++        "source": "fab/ORDER.md; PCB/TS06-FASCIA-rhythm/J1-UPRIGHT.md",
++    }
++
+     # ---- open items, then what the prototype closes
+     if HOLES_ZIP not in {b["zip"] for b in boards}:
+         sys.exit("order.py: %s (the fascia with its control holes opened) is not the fascia zip fab/ORDER.md names" % HOLES_ZIP)
+@@ -140,7 +161,7 @@ def main(repo, out, branch="pcb/kicad-boards"):
+          "body": "Picked by the owner (2026-10-02): the fascia zip above, " + HOLES_ZIP + ", has every control hole opened by 0.4 mm (the dial 9.2, the levers and buttons 8.4): "
+                  "0.29 mm a side round the bushings, where the holes as drawn (8.8 and 8.0) left 0.09 mm, less than a fab's drill tolerance. The price is play: "
+                  "until its nut is tightened a part can sit up to 0.29 mm off centre. A dry fit with real parts closes it. "
+-                 "The holes as drawn are the zip that was not ordered (fab/HOLES-VARIANT.md)."},
++                 "The holes as drawn are a zip that was not ordered (fab/HOLES-VARIANT.md)."},
+         {"id": "quote", "title": "Check the fab quote against the sheet", "blocking": True,
+          "body": "Quantity 10 of each; the fascia 2.0 mm, not 1.6 mm; ENIG on all three (with HASL the gold would be silver-grey); mask black, matte if it costs little; silk white; "
+                  "on the fascia ask for no fab order number on the face. No prices were looked up."},
+@@ -156,7 +177,7 @@ def main(repo, out, branch="pcb/kicad-boards"):
+     res = {
+         "branch": branch, "repo_url": REPO_URL % branch, "quantity": 10,
+         "status": "The three zips are built and checked; every row of the DFM check passes on all three boards. Nothing has been sent to a board house, and no price was looked up.",
+-        "boards": boards,
++        "boards": boards, "fascia_rev": fascia_rev,
+         "dfm": dfm, "dfm_note": "Limits are typical of a low-cost two-layer service (inferred, not a fab's own). Each rule was also run on a deliberately broken board first and fails there"
+                                 + (" (the self-test, %s rows)." % self_test.group(1) if self_test else "."),
+         "fit": {"tally": fit["tally"], "fascia": fit["fascia"], "gold": fit.get("gold", "none"), "rows": frows},
+@@ -165,6 +186,7 @@ def main(repo, out, branch="pcb/kicad-boards"):
+         "source": "fab/ORDER.md, fab/*.zip, 3d/populated/fit-table.json",
+     }
+     json.dump(res, open(out, "w", encoding="utf8"), ensure_ascii=False, indent=1)
++    print("order: fascia R rev %s (%s), zip %s" % (fascia_rev["rev"], fascia_rev["part"], HOLES_ZIP))
+     print("order: %d boards, %d DFM rows, %d fit rows to explain (%s), %d open items, %d prototype items" % (
+         len(boards), len(dfm["rows"]), len(frows), ", ".join("%d %s" % (n, s) for s, n in sorted(fit["tally"].items())), len(open_items), len(proto)))
+ 
+-- 
+2.43.0
+
