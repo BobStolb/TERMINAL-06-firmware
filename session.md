@@ -57,6 +57,8 @@
   HELD: told to commit what it has on its worktree branch and stop; keep its branch for the page run after the new boards, do
   not cherry-pick or publish. Fallback trigger 02:00Z disabled. Stopped 00:1x UTC, 0.31 M / 16 min: 308f005 (J1 rev B,
   built, tests not run) + 4eca120 (Fronts build step); saved as patches in `Claude outputs/held/page-update/`.
+  grill-bluprnt DONE 00:1x UTC, 0.23 M / 16 min, 0178bb4: buildable after changes, no own blocker (K4W411 #5 applies); new Needs X:
+  P tail over J2 spot (a), S bar +0.39 mm, coupon both 0.55 "3"s, gold mesh 0.141 and title 0.148 under 0.15, layers need a clipper.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
