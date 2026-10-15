@@ -59,6 +59,8 @@
   built, tests not run) + 4eca120 (Fronts build step); saved as patches in `Claude outputs/held/page-update/`.
   grill-bluprnt DONE 00:1x UTC, 0.23 M / 16 min, 0178bb4: buildable after changes, no own blocker (K4W411 #5 applies); new Needs X:
   P tail over J2 spot (a), S bar +0.39 mm, coupon both 0.55 "3"s, gold mesh 0.141 and title 0.148 under 0.15, layers need a clipper.
+  grill-organic DONE 00:2x UTC, 0.25 M / 20 min, d7c5138: both buildable after changes, no own blocker (K4W411 #5); S bar crosses
+  K4W411 stack bar (one pad set needs S on the stack), P clips behind P windows, GND rail 1.86 mm from screws (rule 3.0), raster -> vectors.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
