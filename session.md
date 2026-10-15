@@ -52,7 +52,10 @@
   grill-disp34 (0.5 M/60), grill-organic (2-1+2-2, 0.5 M/60), grill-scicel (science-2-3+celestial-3, 0.5 M/60), grill-bluprnt
   (0.4 M/50); opus worktree background; brief scratchpad grills/BRIEF.md; LAUNCH commons 6b280de. On each report: check
   trailers, cherry-pick, verify_pair, push, send the .md (+ marked png). After all four: launch routing-plan (0.6 M/75) ->
-  PCB/TS06-routing-plan.md. page-update still RUNNING (ask before publish).
+  PCB/TS06-routing-plan.md.
+  **Owner 00:0x: "you can also hold the page update since we will still need one when we build the new pcbs".** page-update
+  HELD: told to commit what it has on its worktree branch and stop; keep its branch for the page run after the new boards, do
+  not cherry-pick or publish. Fallback trigger 02:00Z disabled.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
