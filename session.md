@@ -64,6 +64,9 @@
   grill-disp34 DONE 00:2x UTC, 0.34 M / 24 min, d7071f7: buildable after changes on DISP rev C + DRV rev C + case; BLOCKER #7 lintel S3
   driven end on P return pad + gold (swap ends, BL_A10 on top band); N-FETs cannot switch shared-cathode lines (P-FETs); picks (b)
   2nd chip; sill 0.8 not 1.1; 7-wire harness; 11:1 brightness spread at 20 mA.
+  grill-scicel DONE 00:2x UTC, 0.30 M / 26 min, 0e39d39: both buildable after changes (K4W411 #5); science S screen off the common
+  base, A6 jog, J2 spot (b) on the screen, white lines 0.13; celestial = K4W411 minus stack, gold rails no-net (owner), P pads 1.0 wide.
+  All 4 grills: 1.12 M. routing-plan next.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
