@@ -69,6 +69,8 @@
   All 4 grills: 1.12 M. **routing-plan DONE** 01:0x UTC, 0.40 M / 35 min, 5ecca53: PCB/TS06-routing-plan.md (not routed, no DRC).
   Picks: (b) 2 chips 0x40/0x41, 21/32 ch; high-side P-FETs + master switch; J2 7-way level behind the pill; fascia R rev C one
   common back (rev B SMD layout); DISP rev C; DRV rev C; sill 0.8. Owner open: section 6, 10 items (button measure first).
+  10-19 21:58 UTC: TACHI (owner's local session) asked tube-display advice for the walker robot; answered in commons
+  mailbox/to-tachi.md (58274bb, 292 words). This session cannot message other sessions back.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
