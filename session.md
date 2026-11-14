@@ -94,6 +94,9 @@
   **11-14 23:1x UTC owner: "fold all decisions into review cards".** Commons still closed (add_repo denied a 4th time), so the
   cards are `PCB/TS06-decisions.md` (D1-D14 in four cards A-D; answers go in its Answer lines) and are shown in chat as
   question cards. This overrides "no cards in LOUD" for this ask only. After the answers: write them in, push, suggest /compact.
+  Card A shown 23:2x UTC: the owner chose "No preference" on D1, D2, D3 -> working default a on each, not final. Cards B-D NOT
+  pushed at the owner as blocking cards (three no-preference answers read as "make the cards, do not quiz me now"); the file is
+  the card deck; the owner answers when they like ("D4 a, D8 a ..."). Approvals D8-D10 have no default.
   For audit-report: the `case` check prints PASS while listing 3 FAIL inside (2 known rejected jack openings, 1 OPEN: the fascia
   boss on R5's pad).
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:

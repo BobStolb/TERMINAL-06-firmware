@@ -14,7 +14,7 @@ Answers are written in the **Answer** line when the owner gives them.
 * d. Nothing until rev C is drawn.
 
 Sources: audit verdict 3 and 4, steps 12 to 15; routing plan 6.10.
-**Answer:**
+**Answer:** no preference (owner, 2026-11-14). Working default: a. Not final.
 
 ### D2. Kit or finished unit?
 * **a. A kit the buyer solders** (recommended: the design is through-hole for this; a finished 185 V unit puts more safety
@@ -22,13 +22,13 @@ Sources: audit verdict 3 and 4, steps 12 to 15; routing plan 6.10.
 * b. A finished, tested unit.
 * c. Both.
 
-Source: BOM audit, product safety section. **Answer:**
+Source: BOM audit, product safety section. **Answer:** no preference (owner, 2026-11-14). Working default: a. Not final.
 
 ### D3. The 12 V adapter
 * **a. Ship a regulated 12 V adapter in the box** (recommended: a 19 to 24 V adapter kills the input diode; cost about 7 per unit).
 * b. Name one adapter type in the manual and label the jack.
 
-Source: BOM audit findings 7 and 8. **Answer:**
+Source: BOM audit findings 7 and 8. **Answer:** no preference (owner, 2026-11-14). Working default: a. Not final.
 
 ## Card B: rev C, the electrical choices
 
