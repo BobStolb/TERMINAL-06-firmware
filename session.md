@@ -91,6 +91,9 @@
   R44.2, 3 unfitted footprints by VT21/C7, BOM repair, "straight in" in every doc) order ONE bring-up set, not ten; rev C needs
   its own 5 V for the lights, a new strip pin map, KiCad interactive routing with a rules file. Owner decisions: report section
   "The owner's decisions" (5). No runs open. xstream not reachable from this container (add_repo denied 3 times).
+  **11-14 23:1x UTC owner: "fold all decisions into review cards".** Commons still closed (add_repo denied a 4th time), so the
+  cards are `PCB/TS06-decisions.md` (D1-D14 in four cards A-D; answers go in its Answer lines) and are shown in chat as
+  question cards. This overrides "no cards in LOUD" for this ask only. After the answers: write them in, push, suggest /compact.
   For audit-report: the `case` check prints PASS while listing 3 FAIL inside (2 known rejected jack openings, 1 OPEN: the fascia
   boss on R5's pad).
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
