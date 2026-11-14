@@ -24,3 +24,6 @@ fp-info-cache
 *.lck
 *-backups/
 *.kicad_prl
+
+# Agent worktrees (in-progress runs; never commit)
+.claude/worktrees/
