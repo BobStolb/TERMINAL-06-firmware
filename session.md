@@ -80,6 +80,13 @@
   05:2x UTC: audit-bom, audit-layout, audit-evidence, audit-routing (cap 0.5 M / 60 min each, worktree, background, docs only
   -> PCB/audit/TS06-audit-*.md). On each report: check trailers (Fable 5.2), cherry-pick, verify_pair, push. After all four:
   launch audit-report (0.4 M / 45) -> PCB/TS06-audit.md, send it. Estimate 1.5-2.0 M in all.
+  **Fresh-container setup (done 05:2x UTC, lost with the container):** `python3 -m pip install --break-system-packages numpy`;
+  `nohup dockerd &` (as root); `docker pull mirror.gcr.io/kicad/kicad:10.0` (3.5 GB). Then verify_pair: **27 PASS, 0 FAIL, 0 SKIP**.
+  Owner 05:3x: research into the public claims on the new model and board design is welcome. Done (0.08 M): all scores are the
+  vendor's own, no independent test; tips: real ERC/DRC output is the check, a clean DRC only proves the loaded rules, check pins
+  and footprints against datasheets. Sent to the four audit runs. Notes: scratchpad audit/research-model-electronics.md.
+  For audit-report: the `case` check prints PASS while listing 3 FAIL inside (2 known rejected jack openings, 1 OPEN: the fascia
+  boss on R5's pad).
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
