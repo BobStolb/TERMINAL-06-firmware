@@ -99,6 +99,18 @@
   the card deck; the owner answers when they like ("D4 a, D8 a ..."). Approvals D8-D10 have no default.
   For audit-report: the `case` check prints PASS while listing 3 FAIL inside (2 known rejected jack openings, 1 OPEN: the fascia
   boss on R5's pad).
+* **11-14 23:35 UTC: THE COMMONS IS OPEN AGAIN.** Owner: "how do we fix your review queue access? do you need to ask main", then
+  (after a change of this session's permissions) "try again with new perms". `add_repo` BobStolb/agent-commons (push) worked;
+  cloned to `/home/user/agent-commons` (shallow; push with `git -C /home/user/agent-commons -c push.negotiate=true push -u origin main`).
+  A fresh container must attach and clone it again. Found in the mailbox: the owner's 10-14 rules "stop sending to revieew queue
+  intil further notice" (22:23Z) and "no ASK cards in LOUD mode" (22:5x). I read "fold all decisions into review cards" plus the
+  access fix as the further notice **for this deck only**, and said so to xstream and to the owner.
+  Pushed to the commons (d26f524, 23:4x UTC): the late DONE for the audit (1.35 M + 0.08 M research); three cards
+  `embassy/review/nixie-decisions-b` (D4-D7, text only), `-c` (D8-D10, six October pictures as JPG), `-d` (D11-D14, text only);
+  an ASK to xstream (its state; do the research tips fit its 3D looks work), a pace-reading ask, a PING; a heartbeat line.
+  Card A not sent (answered: no preference, default a). **Waiting on:** xstream's carry and reply in `mailbox/to-nixie.md`
+  (pull the commons at the next wake); the owner's answers come back there as ANSWER lines -> write them into the **Answer:**
+  lines of `PCB/TS06-decisions.md`. No runs open.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.

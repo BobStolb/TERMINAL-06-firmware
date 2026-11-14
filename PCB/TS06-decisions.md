@@ -4,6 +4,9 @@ Made 2026-11-14 from `PCB/TS06-audit.md` ("The owner's decisions", "The plan's t
 `PCB/TS06-routing-plan.md` section 6. One card per decision. The first option is the recommended one, with its reason.
 Answers are written in the **Answer** line when the owner gives them.
 
+Cards B, C and D are also in the owner's review queue since 2026-11-14 (items `nixie-decisions-b`, `-c`, `-d`). Card A was
+answered in chat and is not in the queue. An answer in either place counts; this file is the record.
+
 ## Card A: the order and the product
 
 ### D1. What gets ordered first?
