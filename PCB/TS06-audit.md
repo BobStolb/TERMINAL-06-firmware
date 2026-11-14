@@ -44,7 +44,7 @@ After steps 1 to 11: yes, as one bring-up set.
 9. [ ] BOM: four DIP-16 sockets back; 72 socket contacts out; C7 and C8 by class; a 12 V adapter.
 10. [ ] "Straight in" in every doc (list below). Case model: `IN12_SEAT` 2.0, fascia R rev B as its fascia. Re-run it.
 11. [ ] Check run: SKIP fails; KiCad image pinned; open items counted; the fascia in the run, committed as ordered.
-    Test plan stage 3b: 157 to 174 V. Rebuild the zips.
+    Test plan stage 3b: 157 to 174 V (A). Rebuild the zips.
 
 **Then hardware.**
 
@@ -142,7 +142,7 @@ New with "straight in": a soldered tube does not come out. Light every tube on t
   1. Run the real ERC and DRC and read the output. Done.
   2. A clean DRC proves only the rules that were loaded. Finding 2 is a live case.
   3. ERC and DRC do not see a wrong pin map. Check each pin against the data sheet and the part: steps 1 to 3.
-  4. The vendor's own boards still had to be built and tested by people. So must this one.
+  4. Even the showcase boards had to be built and tested by people. So must this one.
 
 ## Not checked
 
