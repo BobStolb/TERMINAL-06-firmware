@@ -73,6 +73,13 @@
   mailbox/to-tachi.md (58274bb, 292 words). This session cannot message other sessions back.
   Owner 00:0x: "dont bother with the pictures for my digestion, only if you ned to check component dit in 3d": docs only, no
   marked pictures or sheets for the owner; pictures only to check fit. Sent to all four runs.
+* **11-14 05:0x UTC owner (model now Fable 5.2): "run a full audit on this project as an electronic product, reconsider bom, pcb
+  layout, evidence, tracing nethods and results. ise artifact too gather quick info and report back".** New container: scratchpad
+  wiped (old briefs, R-open.kicad_pcb gone), agent-commons not cloned and add_repo DENIED (no LAUNCH/DONE lines, no pace reading;
+  tell the owner, do not work around). verify_pair here: 16 PASS / 0 FAIL / 5 SKIP. Brief: PCB/audit/BRIEF.md. RUNNING since
+  05:2x UTC: audit-bom, audit-layout, audit-evidence, audit-routing (cap 0.5 M / 60 min each, worktree, background, docs only
+  -> PCB/audit/TS06-audit-*.md). On each report: check trailers (Fable 5.2), cherry-pick, verify_pair, push. After all four:
+  launch audit-report (0.4 M / 45) -> PCB/TS06-audit.md, send it. Estimate 1.5-2.0 M in all.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
