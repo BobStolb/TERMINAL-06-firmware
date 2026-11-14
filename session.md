@@ -85,6 +85,12 @@
   Owner 05:3x: research into the public claims on the new model and board design is welcome. Done (0.08 M): all scores are the
   vendor's own, no independent test; tips: real ERC/DRC output is the check, a clean DRC only proves the loaded rules, check pins
   and footprints against datasheets. Sent to the four audit runs. Notes: scratchpad audit/research-model-electronics.md.
+  **AUDIT DONE 06:1x UTC, 1.35 M in all** (evidence 0.23, layout 0.28, bom 0.28, routing 0.28, report 0.20, research 0.08):
+  `PCB/TS06-audit.md` (2028a39) + four docs in `PCB/audit/`. Verdict: no Stop; rev B sound as files, nothing proven as hardware;
+  do NOT order rev B as is; after steps 1-11 (5 bench tests, 0.8 mm rule made two-way + 2 tracks moved on DRV near XS23.4 and
+  R44.2, 3 unfitted footprints by VT21/C7, BOM repair, "straight in" in every doc) order ONE bring-up set, not ten; rev C needs
+  its own 5 V for the lights, a new strip pin map, KiCad interactive routing with a rules file. Owner decisions: report section
+  "The owner's decisions" (5). No runs open. xstream not reachable from this container (add_repo denied 3 times).
   For audit-report: the `case` check prints PASS while listing 3 FAIL inside (2 known rejected jack openings, 1 OPEN: the fascia
   boss on R5's pad).
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
