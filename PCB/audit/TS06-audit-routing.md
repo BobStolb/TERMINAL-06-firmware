@@ -16,7 +16,7 @@ commit 8e030d4. "Rev B" below means these two files. "Rev C" means the plan in `
 
 | # | About | Severity | Finding | Fix |
 |---|---|---|---|---|
-| R1 | rev B, DRV | **Fix before order** | The 0.8 mm HV rule is one-sided. A low-voltage pad next to a 185 V track gets 0.6. Two places: 0.65 and 0.70 mm | Make the rule cover any pad or any HV copper. Move two tracks by 0.15 mm |
+| R1 | rev B, DRV | **Fix before order** | The 0.8 mm HV rule is one-sided. A low-voltage pad next to a 185 V track gets 0.6. Two places: 0.65 and 0.70 mm | Make the rule two-sided: any pad to HV copper 0.8. Move two tracks by 0.15 and 0.10 mm |
 | R2 | rev C | **Fix before order** | The router cannot place a via. Rev C's DRV block is surface-mount. The plan does not say how the block gets routed | Choose the method before any rev C copper: KiCad's interactive router for DRV rev C |
 | R3 | rev B, DISP | Should fix | Net BL_K (10 pads) has no track. Only the pour joins it, and the pour is not stored filled. It holds today (KiCad: 0 unconnected). One pad drops off when the HV clearance is raised to 1.25 | Add a track spine through the ten pads |
 | R4 | rev B, both | Should fix | DRC-clean means "clean at 0.6 mm under solder mask". Against 1.25 mm (bare copper) 161 + 55 places fail. No creepage rule runs | Write the basis down. Add a creepage rule and a planted-error test for it |
@@ -51,8 +51,7 @@ tools/verify_pair.sh` (here, with numpy and Docker: **27 PASS, 0 FAIL, 0 SKIP**)
   compiler). It works one face at a time on a 0.1 mm grid, with 45 degree steps.
 * **No vias, by construction.** `netroute.py:2`: "A router that never places a via". A net changes face only at its own
   through-hole pads. My scan and KiCad both find 0.
-* **The saved route is the truth.** The router's result is `tools/mkpcb_drv_routes.json` (11,866 lines). A plain run of the
-  generator loads it and writes the board.
+* **The saved route is the truth:** `tools/mkpcb_drv_routes.json` (11,866 lines). A plain run of the generator loads it.
 * **The study and the baseline** (`Claude outputs/TS06-routing-study.md`, `routing-baseline/`) are about the retired
   one-board TS06-MAIN, routed by the older `tools/pcbroute.py` with 476 vias (R14). The pair's own comparison is the
   two-layout table in `Claude outputs/TS06-pair-review.md:455-482`.
@@ -70,7 +69,8 @@ better: each line has a reason beside it.
 moving one part voids every earlier look at the routed half (R7). There is no "move this one track".
 
 **Errors it can make that nothing catches.**
-1. A rule that is written too narrowly (R1). All three checkers copy the same rule, so all three pass.
+1. A rule that is written too narrowly (R1). The generator's check, the router and KiCad's rule file carry the same rule
+   (`mkpcb_drv.py:84-93`), so all pass.
 2. A net that should be in the HV class but is not on the pattern list (R9). I walked one part out from every HV net
    (`hvwalk.py`): 22 nets on DRV and 48 on DISP come up, all expected (cathodes, opto LED sides, GND, FB, strip neighbours).
    So membership is right in rev B (*inferred*). Rev C adds nets; nothing would flag a miss.
@@ -177,7 +177,7 @@ value in the same table is 0.4 mm, *assumed*), but it is not written down, and n
 about ten track changes.
 
 **Can this method deliver it?**
-* **DISP rev C: yes.** A handful of typed tracks. Keep the generator.
+* **DISP rev C: yes.** A handful of typed tracks.
 * **DRV rev C: not as it stands (R2).** The chips and FETs are surface-mount: their pads are on one face. The router changes
   face only at through-hole pads of the same net. A net that joins only surface-mount pads (a PWM output to a gate, the common
   source rail) can then never cross another one. The repo's other router, `pcbroute.py`, has vias, and its own study records why
@@ -210,8 +210,7 @@ about ten track changes.
 2. A netlist walk from every HV net, compared with the HV class (R9).
 3. Thresholds with an exit code (R8): acute corners 0; pour-only nets 0; boost hot loop under 100 mm2; HV beside A6, A7, FB
    under 5 mm; ground path ratio under 2; detour under 1.35x; the largest pour piece over 80 %.
-4. If any router copper stays: a fresh route compared with the saved one.
-5. The voltage drop of the light rail, from the real copper.
+4. A fresh route compared with the saved one, while any router copper stays. The light rail's voltage drop, from the copper.
 
 ## Reconsider
 
