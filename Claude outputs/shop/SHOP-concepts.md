@@ -193,6 +193,14 @@ Section 4's seven steps are the order. On top of them:
 4. Aircraft: is the product the display, with the sensor as an open recipe?
 5. Which face first: timer, git or sky? Or let the list decide?
 
+## 8. The owner's answers (review cards, 2026-11-15)
+
+1. **Payment and delivery abroad: yes.** The owner's route: bulk batches go to associates in Canada (Quebec), who repack and ship to buyers in the USA. So section 4's rule "foreign channels only when a payment route is confirmed" is met in principle. Still to settle before a foreign listing: who takes the money, customs on the bulk batch, and the cost of the second leg (not checked).
+2. **The drawer:** the owner will send phone photos on a separate card (posted). Counts by tube type go into section 3 when they come.
+3. **The stock boards' licence: checked.** The boards are AlexGyver's NixieClock v2.2, IN-12_norm. Its repository carries the MIT licence, "Copyright (c) 2020 AlexGyver" (read 2026-11-15). MIT permits use in units for sale; the copyright line and the licence text must go with each copy (put them in the unit's papers and on the product page). Not confirmed: the board says "Based on itworkclub PCB", and one search found no page or terms of that base's author. This is a reading of the licence text, not legal advice.
+4. **Aircraft: the sensor is sky1's scope.** The owner: "the sensor work and stuff is scope of sky1, this prodict just gets the combined info hower it gets to it". So concept A is the display only. It shows the combined data that sky1's system gives it (sound, radio or both). The "open recipe" question falls away: what the sensor is, costs and may claim is sky1's work. A's effort score (2) counted the wait for the sensor; the display alone is G's effort (4) once the data line is fixed (inferred).
+5. **Which face first:** it waits on the tier list. The rank card went out again as a tier list, one picture per concept: `Claude outputs/shop/tier/` (`make_cards.js` draws them; sketches, not designs).
+
 ## Not checked
 
 * The tube marketplace (blocked here): counts are from 2026-08-25.

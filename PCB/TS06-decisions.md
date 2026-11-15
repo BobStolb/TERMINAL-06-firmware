@@ -70,7 +70,7 @@ Source: BOM audit finding 1 and Reconsider. **Answer:** a: decide after bench st
 * b. Approve as drawn.
 * c. Not yet.
 
-Blocker to fix either way: the lintel's driven end (D12). **Answer:** c, not yet (owner, review card, 2026-11-15: "c, I want to see your go at the creative design process established here, make a fable version fascia and glyph layout"). A new pair is being drawn: `PCB/art/TS06-PAIR-YARN/BRIEF.md`.
+Blocker to fix either way: the lintel's driven end (D12). **Answer:** c, not yet (owner, review card, 2026-11-15: "c, I want to see your go at the creative design process established here, make a fable version fascia and glyph layout"). The new pair is drawn (2026-11-15): `PCB/art/TS06-PAIR-YARN.md`. Its card is open: Q1 the pair (approve / change / no), Q2 the thread, Q3 the back stitch, Q4 the default colours, with D9 and D10 asked again.
 
 ### D9. Fascias: which to approve (several may be picked)
 * organic-2-1 The print

@@ -120,7 +120,7 @@
   still has the chips on DRV: update it for D4 a before any rev C run. Card C: "c, I want to see your go at the creative design
   process established here, make a fable version fascia and glyph layout" -> D8 not yet; D9, D10 not answered (read: not yet).
   Card D not answered (moot while no Card C face is approved). All written into `PCB/TS06-decisions.md`.
-  **RUN OPEN: pair-yarn** (the owner's order above): one new pair, fascia + display light layout, concept YARN (the board is cloth,
+  **RUN (done 11-15, see below): pair-yarn** (the owner's order above): one new pair, fascia + display light layout, concept YARN (the board is cloth,
   the filaments are thread, one running stitch through both boards). Brief `PCB/art/TS06-PAIR-YARN/BRIEF.md`. Cap 0.9 M / 120 min,
   estimate 0.6-0.8 M. **When it reports:** check trailers, cherry-pick its 3 stage commits, `bash tools/verify_pair.sh`, look at
   the sheets, push, send the pair sheet to the owner, DONE line in the commons, then ONE ASK card (the pair: approve / change / no),
@@ -143,6 +143,23 @@
   study's five questions). **Open: one run, pair-yarn.** Answers to the cards come to `mailbox/to-nixie.md`.
 * **11-15 00:50 UTC mail:** Card D answered "as recommended for all" -> D11 a, D12 a, D13 a, D14 a (written into the deck; each
   takes effect when its face is approved). Open in the deck now: only the approvals D8-D10, waiting on the new pair.
+* **11-15 01:18 UTC: pair-yarn DONE** (0.54 M tokens / 53 min; cap 0.9 M / 120). Cherry-picked b406642, 053310b, d1f38c5; `verify_pair`
+  27 PASS; pushed. Write-up `PCB/art/TS06-PAIR-YARN.md`, script `PCB/art/TS06-PAIR-YARN/draw_yarn.py`. Pair sheet and dyed view sent
+  to the owner. **Runs open: 0.** Fascia: no change to the common light base. Display: 13 filaments, three new rigid bars under
+  the hem (not routed). My doubts: the dotted thread is hard to tell from the white weft; 13 slits may merge; 2700 gold dashes.
+* **Cards open (answers come to the commons `mailbox/to-nixie.md`):**
+  1. **YARN pair** (pictures `embassy/review/nixie-pair-yarn`): Q1 pair a approve / b change / c no (my view: b, a quiet channel
+     along the thread); Q2 thread a as drawn / b mirror the keys' zone; Q3 back stitch S2 a keep / b drop; Q4 a warm default /
+     b dyed default; D9 (which earlier fascias) and D10 (BLUPRNT) asked again.
+  2. **Shop tier list** (pictures `embassy/review/nixie-shop-tier`, source `Claude outputs/shop/tier/`): rank G, A, P, T, F.
+     The owner asked for this form: "reveiw queue now accepts tierlist just for a series of pics so repost this like that".
+  3. **Tube drawer photos:** the owner will attach phone photos; count by tube type into the shop doc section 3. Asked xstream
+     where attached photos land.
+* **Shop answers (card, 11-15), written into `Claude outputs/shop/SHOP-concepts.md` section 8:** 1 abroad yes, through associates
+  in Canada who repack bulk batches and ship to US buyers; 2 photos later; 3 "check": done, the stock boards (AlexGyver NixieClock
+  v2.2) are MIT, the itworkclub base is not confirmed; 4 "the sensor work and stuff is scope of sky1, this prodict just gets the
+  combined info hower it gets to it" (concept A = the display only; no answer from sky1 is needed now for the doc); 5 waits on
+  the tier list.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
