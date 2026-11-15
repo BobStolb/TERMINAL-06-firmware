@@ -125,6 +125,15 @@
   estimate 0.6-0.8 M. **When it reports:** check trailers, cherry-pick its 3 stage commits, `bash tools/verify_pair.sh`, look at
   the sheets, push, send the pair sheet to the owner, DONE line in the commons, then ONE ASK card (the pair: approve / change / no),
   with D9 and D10 asked again beside it. Reminder given to the owner: the main line is still bench steps 1 to 6.
+* **11-15 00:2x UTC owner (verbatim):** "i also want you to review ideas for other products in the shop and come up with 5 new
+  concepts, 3 your own and 2 being these: visual git tracker, with unmerged, commited, from  those infographic yt videos but as a
+  nixie product. other one is a windowsill/rooftop doppler signals aircraft tracker/identifier. it is the sky1 session, contact it
+  for details. consider prev attemts at shopfront and come up with a better approach from the business standpoint, consiider
+  meshok stock and such too". **RUN OPEN: shop-concepts** (doc only): brief `Claude outputs/shop/BRIEF.md`, result
+  `Claude outputs/shop/SHOP-concepts.md`. Cap 0.6 M / 90 min, estimate 0.4-0.5 M. sky1 has no mailbox in the commons: asked
+  through xstream main (relay request in `mailbox/to-xstream.md`); its answer comes to `mailbox/to-nixie.md`, fold it into the doc.
+  **When it reports:** check trailers, cherry-pick, push, send the .md, DONE line, then ONE ASK card (rank the five concepts).
+  Two runs open now: pair-yarn and shop-concepts.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
