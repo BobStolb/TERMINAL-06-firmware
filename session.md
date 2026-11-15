@@ -141,6 +141,8 @@
   P lit plate (no tubes), T tube tester, F focus timer; G, A, F share one four-digit ИН-12 core. No new board before one
   TERMINAL-06 runs 48 h. sky1 had not answered. Sent to the owner; DONE + two ASK cards in the commons (rank the five; the
   study's five questions). **Open: one run, pair-yarn.** Answers to the cards come to `mailbox/to-nixie.md`.
+* **11-15 00:50 UTC mail:** Card D answered "as recommended for all" -> D11 a, D12 a, D13 a, D14 a (written into the deck; each
+  takes effect when its face is approved). Open in the deck now: only the approvals D8-D10, waiting on the new pair.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.

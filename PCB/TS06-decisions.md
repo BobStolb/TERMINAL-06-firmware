@@ -88,31 +88,31 @@ Each is "buildable after changes" in its grill. All wait on the button measure (
 
 ## Card D: face details
 
-In the queue, not answered yet. With no face of Card C approved, D11 to D14 can wait: each one belongs to a face that is not approved.
+Answered on the card: all a. Each answer takes effect when its face is approved (none of Card C's faces is approved yet).
 
 ### D11. Organic's S light (only if an organic face is approved)
 * **a. Move S onto the plumb bar: a re-run of the two faces** (recommended: one back layout then serves every fascia).
 * b. A second back layout for organic boards only.
 
-Source: routing plan 6.5. **Answer:**
+Source: routing plan 6.5. **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D12. The lintel's short on disp-3-4
 * **a. Swap the bar's ends and route its line along the top band** (recommended: fixed in copper).
 * b. A polyimide dot on its right cap.
 
-Source: display grill #7; routing plan 6.8. **Answer:**
+Source: display grill #7; routing plan 6.8. **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D13. Sundials: the sun and the moons
 * **a. Apart: each on its own channel** (recommended: free with the 7-way pin map; day and night can differ).
 * b. Together on one duty.
 
-Source: routing plan 6.7. **Answer:**
+Source: routing plan 6.7. **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D14. Sundials: the gold rails
 * **a. Gold with no net** (recommended: rev B has no power on the face; a floating strip is safe and plates).
 * b. Rails that carry +5 V (needs the through-hole base, D5 b).
 
-Source: celestial grill; routing plan section 0. **Answer:**
+Source: celestial grill; routing plan section 0. **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ## Not cards yet (they wait on a measurement or on a card above)
 * **The case sill and variant D** (routing plan 6.9): after audit step 10. "Straight in" makes the case 2.5 mm shallower.
