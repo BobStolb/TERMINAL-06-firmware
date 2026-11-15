@@ -41,27 +41,27 @@ Source: BOM audit findings 7 and 8. **Answer:** no preference (owner, 2026-11-14
 * b. On DRV as the routing plan has it: two 16-channel chips, hand-soldered, plus a second 5 V module.
 * c. One chip with colour groups: fewer parts, but a later colour change means re-wiring.
 
-Sources: audit decision 2; BOM audit 13; layout L3; routing plan 6.3 and 6.6. **Answer:**
+Sources: audit decision 2; BOM audit 13; layout L3; routing plan 6.3 and 6.6. **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D5. The fascia's base board for rev C
 * **a. Rev B's surface-mount layout** (recommended by the routing plan: frees the pill for the connector, no plated holes on
   the face, no power on the face).
 * b. The through-hole T layout.
 
-Source: routing plan 6.2 (K4W411 grill #15). **Answer:**
+Source: routing plan 6.2 (K4W411 grill #15). **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D6. Spacing at 185 V in rev C
 * **a. 1.0 mm clearance, 1.25 mm creepage, as a DRC rule** (recommended for a new layout; rev B stays at 0.8 mm, made two-way).
 * b. Stay at 0.8 mm, two-way, in rev C too.
 
-Sources: layout Reconsider; routing R4 (at 1.25 mm today 161 + 55 places fail, so this only fits a new layout). **Answer:**
+Sources: layout Reconsider; routing R4 (at 1.25 mm today 161 + 55 places fail, so this only fits a new layout). **Answer:** a (owner, review card, 2026-11-15: "as recommended for all")
 
 ### D7. The seconds pair in the multiplex
 * **a. Decide after bench step 4** (recommended: the brightness at six slots is not known yet).
 * b. Take the ИН-17 pair out in rev C in any case: four slots, one more K155ID1, two fewer opto-couplers.
 * c. Keep six slots in any case.
 
-Source: BOM audit finding 1 and Reconsider. **Answer:**
+Source: BOM audit finding 1 and Reconsider. **Answer:** a: decide after bench step 4 (owner, review card, 2026-11-15: "as recommended for all")
 
 ## Card C: approvals (approved today: K4W411 only)
 
@@ -70,7 +70,7 @@ Source: BOM audit finding 1 and Reconsider. **Answer:**
 * b. Approve as drawn.
 * c. Not yet.
 
-Blocker to fix either way: the lintel's driven end (D12). **Answer:**
+Blocker to fix either way: the lintel's driven end (D12). **Answer:** c, not yet (owner, review card, 2026-11-15: "c, I want to see your go at the creative design process established here, make a fable version fascia and glyph layout"). A new pair is being drawn: `PCB/art/TS06-PAIR-YARN/BRIEF.md`.
 
 ### D9. Fascias: which to approve (several may be picked)
 * organic-2-1 The print
@@ -78,15 +78,17 @@ Blocker to fix either way: the lintel's driven end (D12). **Answer:**
 * science-2-3 Double slit
 * celestial-3 Sundials
 
-Each is "buildable after changes" in its grill. All wait on the button measure (audit step 2). **Answer:**
+Each is "buildable after changes" in its grill. All wait on the button measure (audit step 2). **Answer:** none picked on the card. Read as "not yet": to be asked again beside the new pair.
 
 ### D10. Fascia BLUPRNT
 * a. Approve.
 * b. Not yet.
 
-**Answer:**
+**Answer:** no answer on the card. Read as "not yet": to be asked again beside the new pair.
 
 ## Card D: face details
+
+In the queue, not answered yet. With no face of Card C approved, D11 to D14 can wait: each one belongs to a face that is not approved.
 
 ### D11. Organic's S light (only if an organic face is approved)
 * **a. Move S onto the plumb bar: a re-run of the two faces** (recommended: one back layout then serves every fascia).

@@ -111,6 +111,20 @@
   Card A not sent (answered: no preference, default a). **Waiting on:** xstream's carry and reply in `mailbox/to-nixie.md`
   (pull the commons at the next wake); the owner's answers come back there as ANSWER lines -> write them into the **Answer:**
   lines of `PCB/TS06-decisions.md`. No runs open.
+* **11-15 00:12 UTC: MAIL READ (owner: "read mail and cards").** xstream posted the 3 cards by hand (its relay was down since 10-19).
+  **Card path from now (commons KIT.md rule 11): one mailbox entry per decision in `mailbox/to-xstream.md`, header
+  `## <date> UTC nixie ASK`, first body line = the card title, pictures by naming their `embassy/` folder (6 per folder, 12 per card).
+  No item.json. The old card stops are lifted; "never hold a card to save cost".** Pace 23:49 UTC: weekly 28 %, reset 11-17 20:00 UTC;
+  no 5-hour bar now. The relay's "UTC" stamps read 1 h ahead of this container's clock.
+  **Answers:** Card B "as recommended for all" -> D4 a (plug-in light board, own 5 V module), D5 a, D6 a, D7 a. The routing plan
+  still has the chips on DRV: update it for D4 a before any rev C run. Card C: "c, I want to see your go at the creative design
+  process established here, make a fable version fascia and glyph layout" -> D8 not yet; D9, D10 not answered (read: not yet).
+  Card D not answered (moot while no Card C face is approved). All written into `PCB/TS06-decisions.md`.
+  **RUN OPEN: pair-yarn** (the owner's order above): one new pair, fascia + display light layout, concept YARN (the board is cloth,
+  the filaments are thread, one running stitch through both boards). Brief `PCB/art/TS06-PAIR-YARN/BRIEF.md`. Cap 0.9 M / 120 min,
+  estimate 0.6-0.8 M. **When it reports:** check trailers, cherry-pick its 3 stage commits, `bash tools/verify_pair.sh`, look at
+  the sheets, push, send the pair sheet to the owner, DONE line in the commons, then ONE ASK card (the pair: approve / change / no),
+  with D9 and D10 asked again beside it. Reminder given to the owner: the main line is still bench steps 1 to 6.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
