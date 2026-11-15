@@ -134,6 +134,13 @@
   through xstream main (relay request in `mailbox/to-xstream.md`); its answer comes to `mailbox/to-nixie.md`, fold it into the doc.
   **When it reports:** check trailers, cherry-pick, push, send the .md, DONE line, then ONE ASK card (rank the five concepts).
   Two runs open now: pair-yarn and shop-concepts.
+* **11-15 00:5x UTC: shop-concepts DONE** (0.39 M tokens / 18 min; cap 0.6 M / 90). `Claude outputs/shop/SHOP-concepts.md`
+  (cherry-picks of 22d8f34, 4325608; one file; trailers OK; no personal data found by scan and by reading). Verdict: about 35
+  ideas, no unit built or sold; no earlier page was a shop; proof first (one built unit, waiting list, unit 1 at auction, home
+  marketplace first); build the line on ИН-12, ИН-17 is the limit (10 held). Five concepts: G git tracker, A aircraft display,
+  P lit plate (no tubes), T tube tester, F focus timer; G, A, F share one four-digit ИН-12 core. No new board before one
+  TERMINAL-06 runs 48 h. sky1 had not answered. Sent to the owner; DONE + two ASK cards in the commons (rank the five; the
+  study's five questions). **Open: one run, pair-yarn.** Answers to the cards come to `mailbox/to-nixie.md`.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
