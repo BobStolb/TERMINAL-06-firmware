@@ -1,0 +1,59 @@
+YARN pair, draw_yarn.py fascia
+== fascia R rev B, face YARN: measures (raster 20 px per mm; a gap is the centre distance less one pixel)
+   the weave's white to a legend (names, 1-6, - and +)        rule 0.75  measured 0.83 at (36.9, 13.9)
+   the weave's gold to a legend                               rule 0.75  measured 0.84 at (27.0, 29.6)
+   the thread's dots and other white to a legend              rule 0.48  measured 0.65 at (19.5, 4.8)
+   white to a window                                          rule 0.35  measured 0.41 at (159.4, 6.9)
+   gold (mine and the base's) to a window                     rule 0.30  measured 0.35 at (63.8, 24.8)
+   white to gold                                              rule 0.15  measured 0.20 at (10.5, 1.9)
+   my gold to the base's gold (rings, link, marks, index)     rule 0.35  measured 0.35 at (75.6, 15.1)
+   a window to a legend                                       rule 0.30  measured 0.41 at (16.0, 4.5)
+   a window to a control's hole                               rule -     measured 5.20 at (63.6, 6.8)
+   gold to the board edge                                     rule 1.40  measured 1.52 at (10.8, 1.6)
+   white to the board edge                                    rule 0.30  measured 0.44 at (0.6, 0.9)
+   gold to a screw's centre (head r 2.25)                     rule 3.00  measured 5.00 at (10.8, 1.6)
+   a window to a pad of the light base (all 24, back)         rule 0.35  measured 0.64 at (13.6, 6.3)
+   a window to J2's courtyard (back)                          rule 0.30  measured 2.95 at (111.6, 9.6)
+   rev B's own back copper under a window (the board as ordered; rev C moves these, routing plan 4.1):
+      SW2 pad 1 (LEVA); SW2 pad 2 (A7); SW3 pad 1 (LEVB); SW3 pad 2 (A7); SW4 pad 1 (GND); SW5 pad 2 (D8); track +5V; track A7; track LEVA; track LEVB
+   each window against its own source's body (2.0 wide; a bar lights about 15.5 of its 18.5):
+      FIELD down           on FD  window x 57.90 to 70.10, y 25.20 to 26.40; 100 % of it over the body; ends 3.16 and 3.14 inside the bar's ends
+      SUB down             on SD  window x 81.25 to 93.45, y 25.20 to 26.40; 100 % of it over the body; ends 3.13 and 3.17 inside the bar's ends
+      SUB up               on SU  window x 81.25 to 93.45, y 5.60 to 6.80; 100 % of it over the body; ends 3.13 and 3.17 inside the bar's ends
+      FIELD up             on FU  window x 57.90 to 70.10, y 5.60 to 6.80; 100 % of it over the body; ends 3.16 and 3.14 inside the bar's ends
+      P, the noon stitch   on P   window x 153.30 to 168.50, y 5.25 to 7.35; 100 % of it over the body; ends 1.65 and 1.65 inside the bar's ends
+      S, the bobbin        on S1  window x 111.45 to 126.35, y 7.05 to 9.65; 91 % of it over the body; ends 1.81 and 1.78 inside the bar's ends
+   free board within 1.2 mm of some ink: 100.0 %; the largest empty spot has radius 1.62 at (9.9, 40.0)
+   symmetry, per zone (1.000 = the same pixels after the mirror):
+      levers   axis x 75.680, half width 23.88: the lights' ends are off their mirror image by 0.000 mm at most; pixels kept by the mirror: the weave 0.969, all my ink (the thread's dots, the card's data, the shuttle) 0.961
+      shuttle  axis x 118.885, half width 19.32: the lights' ends are off their mirror image by 0.000 mm at most; pixels kept by the mirror: the weave 0.997, all my ink (the thread's dots, the card's data, the shuttle) 0.924
+      keys     axis x 160.900, half width 22.69: the lights' ends are off their mirror image by 0.000 mm at most; pixels kept by the mirror: the weave 0.929, all my ink (the thread's dots, the card's data, the shuttle) 0.913
+      levers, up and down about y 16.0: the lights' ends off by 0.000 mm at most
+      the weave's drafts: cells that differ from their mirror image, levers 0, keys 0 (0 = exact)
+      MODE zone: plainly directional (a one-way 2/2 twill); the thread itself is directional everywhere
+   the weave: 1445 white dashes, 1376 gold dashes, 354 thread dots; white 0.18, gold 0.24 wide; warp pitch 0.974 (levers), 0.955 (keys), 1.000 elsewhere; weft pitch 1.000
+   the thread leaves the fascia's top edge at x 160.900
+   rev B's front gold not kept: 16 items 0.6 wide (the SUB box and its runs; the base's rings and link take their place)
+   the card: MODE codes [0, 205, 409, 614, 818, 1023] (firmware rounding (a + 102) / 205 + 1), lever codes [1023, 682, 512, 409]
+      row y 15.0  code    0  ..........
+      row y 16.5  code  205  ..OO..OO.O
+      row y 18.0  code  409  .OO..OO..O
+      row y 19.5  code  614  O..OO..OO.
+      row y 21.0  code  818  OO..OO..O.
+      row y 22.5  code 1023  OOOOOOOOOO
+      row y 24.6  code 1023  OOOOOOOOOO
+      row y 26.1  code  682  O.O.O.O.O.
+      row y 27.6  code  512  O.........
+      row y 29.1  code  409  .OO..OO..O
+   lights on the fascia:
+      MODE turn            38 flex    place M   CH1  drawn length 24.8  dyed warm
+      FIELD down           18.5 rigid place FD  CH2  drawn length 11.0  dyed green
+      SUB down             18.5 rigid place SD  CH3  drawn length 11.0  dyed green
+      SUB up               18.5 rigid place SU  CH3  drawn length 11.0  dyed green
+      FIELD up             18.5 rigid place FU  CH2  drawn length 11.0  dyed green
+      key + turn           38 flex    place KP  CH4  drawn length 26.2  dyed white
+      P, the noon stitch   18.5 rigid place P   CH6  drawn length 25.1  dyed pink
+      key - turn           38 flex    place KM  CH4  drawn length 26.2  dyed white
+      S, the bobbin        18.5 rigid place S1  CH5  drawn length 14.4  dyed blue
+   wrote yarn-fascia.png
+   wrote lights-back.png
