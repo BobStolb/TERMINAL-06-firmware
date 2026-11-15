@@ -1,4 +1,4 @@
-YARN pair, draw_yarn.py disp
+YARN pair, draw_yarn.py all
 == fascia R rev B, face YARN: measures (raster 20 px per mm; a gap is the centre distance less one pixel)
    the weave's white to a legend (names, 1-6, - and +)        rule 0.75  measured 0.83 at (36.9, 13.9)
    the weave's gold to a legend                               rule 0.75  measured 0.84 at (27.0, 29.6)
@@ -55,6 +55,8 @@ YARN pair, draw_yarn.py disp
       P, the noon stitch   18.5 rigid place P   CH6  drawn length 25.1  dyed pink
       key - turn           38 flex    place KM  CH4  drawn length 26.2  dyed white
       S, the bobbin        18.5 rigid place S1  CH5  drawn length 14.4  dyed blue
+   wrote yarn-fascia.png
+   wrote lights-back.png
 == display, light layout YARN: measures (raster 20 px per mm; a gap is the centre distance less one pixel)
    new holes (round, 1.0 drill, 1.8 pad) against the board's copper as in the file, less HL1-HL8, the BL_A tracks and M_A; HL9 3.0 lower:
       Bh (7.390, 36.40): other copper 3.15 (H1. no net); 185 V copper 8.58 (track ANODE_H10 B.Cu)
@@ -126,3 +128,6 @@ YARN pair, draw_yarn.py disp
       N, the needle      38 rigid   ch 12, BL_A10   2 holes      drawn 36.0  dyed white y 6.6, holes x 101.385 (driven) and 136.385
 == the pair: the thread leaves the fascia at x 160.900 and enters the display at x 160.900 (the two boards share one x frame: both are 191.4 wide and start at world X 0 in 3d/case-pair/case_pair.py)
    wrote yarn-disp.png
+   wrote yarn-pair.png
+   wrote yarn-colours.png
+   wrote detail-2x.png

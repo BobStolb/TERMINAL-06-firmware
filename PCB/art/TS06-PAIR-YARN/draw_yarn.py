@@ -4,6 +4,7 @@
     python3 PCB/art/TS06-PAIR-YARN/draw_yarn.py            # all pictures and all measures
     python3 PCB/art/TS06-PAIR-YARN/draw_yarn.py fascia     # only the fascia's pictures
     python3 PCB/art/TS06-PAIR-YARN/draw_yarn.py disp       # only the display's picture
+    python3 PCB/art/TS06-PAIR-YARN/draw_yarn.py pair       # only the pair, the dyed view and the detail
 
 Run it from the repo root. It reads the two board files (yarn_boards.py) and two firmware files (the
 card band's data), writes PNG pictures and measures.txt beside itself, and edits nothing else. The
@@ -615,9 +616,9 @@ def check_fascia(A):
 # ------------------------------------------------------------------------------------ drawing a board (SVG, mm units)
 GOLD_INK, WHITE_INK, MASK_INK, FR4 = "#d8a23a", "#ecebe4", "#0c0c0f", "#6e5a2c"
 DEFS = """<defs>
-<filter id="g1" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0.45"/></filter>
-<filter id="g2" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.5"/></filter>
-<filter id="g3" x="-30%" y="-30%" width="160%" height="160%" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3.2"/></filter>
+<filter id="g1" x="-20" y="-20" width="240" height="100" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0.45"/></filter>
+<filter id="g2" x="-20" y="-20" width="240" height="100" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.5"/></filter>
+<filter id="g3" x="-20" y="-20" width="240" height="100" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="3.2"/></filter>
 <radialGradient id="knob" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#3a3a40"/><stop offset="1" stop-color="#101013"/></radialGradient>
 <radialGradient id="steel" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#b9bcc4"/><stop offset="1" stop-color="#55585f"/></radialGradient>
 </defs>"""
@@ -1258,6 +1259,74 @@ def sheet_disp(A, D):
           [("", svg)], notes, int(round((A.w + 2 * m) * PX)) + 68)
 
 
+GAP = 5.0                                                 # drawn between the two boards (in the case the sill is there)
+
+
+def pair_svg(A, D, dye, px=PX, xr=None, m=3.0):
+    """The display above the fascia on one x axis; xr = (x0, x1) cuts a slice out of it."""
+    x0, x1 = xr if xr else (-m, A.w + m)
+    h = D.h + GAP + A.h + 2 * m
+    inner = ['<rect x="%.2f" y="0" width="%.2f" height="%.2f" fill="#16161a"/>' % (x0, x1 - x0, h)]
+    inner.append('<g transform="translate(0 %.2f)">%s</g>' % (m, svg_disp(D, dye=dye)))
+    inner.append('<g transform="translate(0 %.2f)">%s</g>' % (m + D.h + GAP, svg_fascia(A, dye=dye)))
+    xc = A.exit_x                                         # the crossing: a guide in the gap, not ink
+    for k in range(5):
+        inner.append('<circle cx="%.2f" cy="%.2f" r="0.2" fill="#ecebe4" opacity="0.55"/>' % (xc, m + D.h + 0.6 + k * 0.95))
+    if xr:
+        inner.append(label(xc - 1.2, m + D.h + GAP / 2 + 0.55, "the thread crosses here: x %.1f" % xc, 1.3, "#b9b9b4", "end"))
+    else:
+        inner.append(label(xc + 1.2, m + D.h + GAP / 2 + 0.55, "the thread crosses here: x %.1f" % xc, 1.55, "#b9b9b4"))
+        inner.append(label(xc - 1.2, m + D.h + GAP / 2 + 0.55, "display above, fascia below (the case's sill sits in this gap)", 1.55, "#77777a", "end"))
+    return ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="%.3f 0 %.3f %.3f">%s%s</svg>'
+            % (round((x1 - x0) * px), round(h * px), x0, x1 - x0, h, DEFS, "".join(inner)))
+
+
+def chip(c):
+    return '<span style="display:inline-block;width:26px;height:9px;border-radius:5px;background:%s;margin:0 5px 0 2px"></span>' % TINT[c][0]
+
+
+def sheet_pair(A, D, F, DD):
+    order_f = "MODE turn, FIELD down, FIELD up, SUB up, SUB down, the bobbin (S), P right, key + turn, key - turn, P left"
+    order_d = ", ".join(l["name"].split(",")[0] for l in D.lights)
+    notes = [
+        "<b>YARN: the board is the cloth, the LED filaments are the thread.</b> One thread runs through both boards. Where it lies on the cloth it is a lit filament; "
+        "where it runs under, a row of white dots. It starts on the spool (the MODE dial) and ends in a needle (the rigid bar over the seconds).",
+        "<b>On the fascia</b> (in the thread's order): %s. It leaves the top edge at x %.1f, between the two P stitches." % (order_f, A.exit_x),
+        "<b>On the display</b> it comes in at the same x through the m lamp, then: %s. Every gap between two filaments is a stretch under the cloth." % order_d,
+        "<b>Ground:</b> gold warp and white weft, true over and under, edge to edge. A diamond twill sits on each control pair and on each tube group; plain cloth and "
+        "herringbone seams lie between. The card band under the shuttle holds the firmware's ladder codes. "
+        "All %d filaments warm (%d on the fascia, %d on the display) and the m lamp." % (len(A.lights) + len(D.lights), len(A.lights), len(D.lights)),
+    ]
+    w = int(round((A.w + 6.0) * PX)) + 68
+    sheet("yarn-pair", "YARN, the pair: one thread from the spool to the needle",
+          "display (191.4 x 44) above fascia R rev B (191.4 x 40) on one x axis, 11.5 px per mm; lights on, all warm; what the case hides on the display is dimmed",
+          [("", pair_svg(A, D, False))], notes, w)
+    notes = [
+        "<b>The dyed view: a stitch's colour says what it does.</b> %s <b>warm</b>, the thread as it comes off the spool: the MODE turn, the hem, the four patches' own stitches (H, M, S, P) and the m lamp. "
+        "%s <b>green</b>, the guiding stitches: the four lever stitches on the fascia and the three row stitches under the patches. "
+        "%s <b>blue</b>, the seconds: the bobbin (S) on the fascia and the back stitch (S2) over the seconds. "
+        "%s <b>pink</b>, the dividers: the noon stitch (P) on the fascia, the colon's two stitches and its foot. "
+        "%s <b>white</b>, the steel: the needle, and the two key turns." % (chip(WARM), chip(GREEN), chip(BLUE), chip(PINK), chip(WHITE)),
+        "Every colour is on the sold list (bars: warm white, white, green, blue, pink; flex: yellow, white, green, blue, pink). A dye is a part swap; no place, slot or channel changes. "
+        "The picture's tints are a guess: through bare FR4 the fascia's colours come out warmer and paler (K4W411's grill, finding 13).",
+    ]
+    sheet("yarn-colours", "YARN, the dyed view: stitches coloured by what they do",
+          "the same pair, the same places; only the filaments' colours differ from the warm default", [("", pair_svg(A, D, True))], notes, w)
+    x0, x1 = 96.0, 168.0
+    notes = [
+        "<b>Twice the scale (23 px per mm), x %.0f to %.0f of both boards.</b> Above: the needle with its gold point, the seconds' two stitches, the row stitch under them, "
+        "the thread's dots in the two corridors, the m lamp where the thread comes in. Below: the shuttle with the bobbin's 13 slits (0.5 wide, 1.2 apart), the card band, "
+        "the left key turn and the noon stitch. The thread crosses at x %.1f." % (x0, x1, A.exit_x),
+        "<b>Finest features:</b> white %.2f, gold %.2f, white to gold %.2f at every crossing of the weave; the card's gold dots r 0.42 at 1.45 x 1.5; the thread's dots r %.2f. "
+        "Measured on the fascia: white to gold %.2f, ink to a window %.2f; on the display: gold to 185 V copper %.2f, gold to a filament's body %.2f."
+        % (W_WHITE, W_GOLD, WG, DOT_R, F["white to gold"][0], min(F["white to a window"][0], F["gold (mine and the base's) to a window"][0]),
+           DD["gold to 185 V copper on the front (pads, F.Cu tracks)"][0], DD["gold to a filament's body (2.0 wide; covers the bars' end caps)"][0]),
+    ]
+    sheet("detail-2x", "YARN, detail at twice the scale", "the same drawing, 23 px per mm", [("", pair_svg(A, D, False, px=2 * PX, xr=(x0, x1)))], notes,
+          int(round((x1 - x0) * 2 * PX)) + 68)
+
+
+
 TMP = tempfile.mkdtemp(prefix="yarn-")
 
 
@@ -1275,6 +1344,8 @@ def main():
         "start at world X 0 in 3d/case-pair/case_pair.py)" % (A.exit_x, Dp.entry_x))
     if what in ("all", "disp"):
         sheet_disp(Dp, D)
+    if what in ("all", "pair"):
+        sheet_pair(A, Dp, F, D)
     open(os.path.join(OUT, "measures.txt"), "w", encoding="utf-8").write("\n".join(LOG) + "\n")
 
 
