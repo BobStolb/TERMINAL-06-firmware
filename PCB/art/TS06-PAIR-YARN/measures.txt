@@ -1,4 +1,4 @@
-YARN pair, draw_yarn.py fascia
+YARN pair, draw_yarn.py disp
 == fascia R rev B, face YARN: measures (raster 20 px per mm; a gap is the centre distance less one pixel)
    the weave's white to a legend (names, 1-6, - and +)        rule 0.75  measured 0.83 at (36.9, 13.9)
    the weave's gold to a legend                               rule 0.75  measured 0.84 at (27.0, 29.6)
@@ -55,5 +55,74 @@ YARN pair, draw_yarn.py fascia
       P, the noon stitch   18.5 rigid place P   CH6  drawn length 25.1  dyed pink
       key - turn           38 flex    place KM  CH4  drawn length 26.2  dyed white
       S, the bobbin        18.5 rigid place S1  CH5  drawn length 14.4  dyed blue
-   wrote yarn-fascia.png
-   wrote lights-back.png
+== display, light layout YARN: measures (raster 20 px per mm; a gap is the centre distance less one pixel)
+   new holes (round, 1.0 drill, 1.8 pad) against the board's copper as in the file, less HL1-HL8, the BL_A tracks and M_A; HL9 3.0 lower:
+      Bh (7.390, 36.40): other copper 3.15 (H1. no net); 185 V copper 8.58 (track ANODE_H10 B.Cu)
+      Bh (42.390, 36.40): other copper 4.00 (track COLON_U F.Cu); 185 V copper 4.00 (track COLON_U F.Cu)
+      Bm (58.180, 36.40): other copper 4.17 (track COLON_RET F.Cu); 185 V copper 4.17 (track COLON_RET F.Cu)
+      Bm (93.180, 36.40): other copper 4.27 (track ANODE_M1 B.Cu); 185 V copper 4.27 (track ANODE_M1 B.Cu)
+      Bs (101.385, 36.40): other copper 6.64 (track KS7 B.Cu); 185 V copper 10.16 (track ANODE_M1 B.Cu)
+      Bs (136.385, 36.40): other copper 4.44 (track ANODE_S1 B.Cu); 185 V copper 4.44 (track ANODE_S1 B.Cu)
+   disp-3-4's slots and holes, the same check against rev B's copper as it is today (slot pads as their 1.8 x 3.3 boxes; holes r 0.9).
+   The earlier rounds re-route ANODE_H1 (final-3 item D6) and the BL_A lines; those moves are not in the board file, so H's driven slot reads as a clash here:
+      H  driven (39.480, 30.40): other copper -0.12 (track ANODE_H1 B.Cu); 185 V -0.12
+      H  return (39.480, 5.27): other copper 0.44 (track K6 B.Cu); 185 V 7.21
+      M  driven (61.100, 30.40): other copper 1.77 (V3.8 no net); 185 V 5.65
+      M  return (61.100, 5.27): other copper 1.01 (track K6 B.Cu); 185 V 8.62
+      P  driven (151.860, 30.40): other copper 1.00 (V9.8 no net); 185 V 1.48
+      P  return (138.400, 5.27): other copper 0.57 (XP12.13 no net); 185 V 15.01
+      F  driven (181.810, 34.00): other copper 5.45 (track ANODE_PM B.Cu); 185 V 5.45
+      F  return (2.800, 34.00): other copper 3.25 (H1. no net); 185 V 13.17
+      S  driven (139.570, 18.92): other copper 0.96 (track CAT_B_AMP B.Cu); 185 V 4.10
+      S  return (98.200, 18.92): other copper 2.44 (V4.5 K9); 185 V 6.95
+      S2 driven (100.600, 22.69): other copper 0.56 (track KS7 B.Cu); 185 V 6.92
+      S2 return (137.170, 22.69): other copper 1.21 (track KS8 F.Cu); 185 V 1.26
+      CF driven (58.285, 31.60): other copper 4.12 (V3.9 K1); 185 V 4.60
+      CF return (42.785, 31.60): other copper 1.19 (track ANODE_H1 B.Cu); 185 V 1.19
+      N  driven (101.385, 6.60): other copper 1.07 (track KS7 B.Cu); 185 V 16.43
+      N  return (136.385, 6.60): other copper 1.38 (track KS8 F.Cu); 185 V 14.06
+   gold to 185 V copper on the front (pads, F.Cu tracks)          rule 1.00  measured 1.06 at (51.6, 37.0)
+   gold to other copper on the front (pads, slots, KS tracks)     rule 0.35  measured 0.44 at (172.8, 9.2)
+   white to a pad, slot or hole                                   rule 0.30  measured 0.30 at (139.8, 1.2)
+   white to gold                                                  rule 0.15  measured 0.20 at (6.5, 1.8)
+   gold to a filament's body (2.0 wide; covers the bars' end caps) rule 0.30  measured 0.40 at (138.0, 12.9)
+   white to a filament's body                                     rule 0.30  measured 0.30 at (96.9, 9.9)
+   body to body, the closest pairs (rule 0.4 line to line; a minus means the drawn ends overlap):
+      P   to N   0.02 at (137.5, 5.9)
+      F   to Bh  0.40 at (6.7, 35.4)
+      F   to Bm  0.40 at (57.5, 35.4)
+      F   to Bs  0.40 at (100.7, 35.4)
+      F   to CF  0.40 at (42.1, 32.6)
+      S   to N   0.40 at (102.6, 7.6)
+      S   to S2  0.40 at (105.7, 10.4)
+      CF  to M   0.58 at (60.2, 30.8)
+      CF  to Q2  0.60 at (54.8, 30.0)
+      M   to S   0.60 at (97.2, 13.4)
+      Q1  to CF  0.60 at (45.9, 30.6)
+   the board the case shows (window x 3.0 to 182.0, y 2.6 to 39.0, less the brow, the glass, the lamps and the bodies): 1690 mm2; 100.0 % of it within 1.2 mm of ink; the largest empty spot has radius 1.10 at (48.1, 16.7)
+   the lowest lit body ends at y 37.40; the case's sill top is at y 39.0: no sill change (disp-3-4 needed 0.8 to 1.1)
+   symmetry (the lights' end points against their mirror image, mm):
+      seconds: S, S2, N, Bs                                                          axis x 118.885: off by 0.000
+      colon: Q1, Q2, CF                                                              axis x 50.535: off by 0.000
+      brackets and their row stitches: H, M, Bh, Bm (about the tubes' own middle)    axis x 50.285: off by 0.010
+      the hem F                                                                      axis x 92.305: off by 0.000
+      P (the AM/PM box): one piece, plainly directional, as in V3b; the colon's axis (50.535) and the tubes' middle (50.285) differ by 0.250, as the board's tubes do
+      the patches' draft: cells that differ from their mirror image 0 (0 = exact)
+   the weave: 1561 white dashes, 1325 gold dashes, 72 thread dots; the needle's gold point drawn
+   the thread enters the display's bottom edge at x 160.900 (the m lamp HL9's own x, from the board file)
+   lights on the display (13 filaments and the m lamp; disp-3-4 had 14):
+      F, the hem         185 flex   ch 3, BL_A8     slots        drawn 179.0  dyed warm  y 34.0, x 2.80 to 181.81
+      Bh, row stitch     38 rigid   ch 6, BL_A2     2 holes      drawn 36.0  dyed green y 36.4, holes x 7.39 and 42.39  NEW
+      Q1, colon          26 rigid   ch 5, harness   the shim     drawn 23.0  dyed pink  x 46.05, y 6.0 to 29.0
+      H, hours patch     95 flex    ch 0, BL_A1     slots, shim  drawn 89.9  dyed warm  slots (39.48, 5.27) and (39.48, 30.40)
+      CF, colon foot     18.5 rigid ch 10, BL_A12   2 holes      drawn 16.5  dyed pink  y 31.6, holes x 42.785 and 58.285
+      M, minutes patch   95 flex    ch 1, BL_A3     slots, shim  drawn 89.9  dyed warm  slots (61.10, 30.40) and (61.10, 5.27)
+      Q2, colon          26 rigid   ch 5, harness   the shim     drawn 23.0  dyed pink  x 55.02, y 6.0 to 29.0
+      Bm, row stitch     38 rigid   ch 8, BL_A4     2 holes      drawn 36.0  dyed green y 36.4, holes x 58.18 and 93.18  NEW
+      S, seconds patch   60 flex    ch 4, BL_A6     slots        drawn 57.0  dyed warm  slots (98.20, 18.92) and (139.57, 18.92), crown y 9.0
+      S2, back stitch    60 flex    ch 11, BL_A5    slots        drawn 54.3  dyed blue  slots (137.17, 22.69) and (100.60, 22.69), crown y 11.4
+      Bs, row stitch     38 rigid   ch 7, BL_A9     2 holes      drawn 36.0  dyed green y 36.4, holes x 101.385 and 136.385  NEW
+      P, AM/PM patch     95 flex    ch 2, BL_A7     slots, shim  drawn 89.9  dyed warm  slots (151.86, 30.40) and (138.40, 5.27)
+      N, the needle      38 rigid   ch 12, BL_A10   2 holes      drawn 36.0  dyed white y 6.6, holes x 101.385 (driven) and 136.385
+== the pair: the thread leaves the fascia at x 160.900 and enters the display at x 160.900 (the two boards share one x frame: both are 191.4 wide and start at world X 0 in 3d/case-pair/case_pair.py)
+   wrote yarn-disp.png

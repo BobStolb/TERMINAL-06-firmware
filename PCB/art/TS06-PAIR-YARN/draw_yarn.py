@@ -88,7 +88,7 @@ TINT = {WARM: ("#ff8a1c", "#ffd9a2"), PINK: ("#ff3f9a", "#ffc2de"), BLUE: ("#2f7
 class Art:
     """Everything drawn on one board, by ink. Lines are (points, width); dots are (x, y, r)."""
 
-    def __init__(self, board, w, h, corner):
+    def __init__(self, board, w, h, corner, edge_white=EDGE_WHITE, edge_gold=EDGE_GOLD):
         self.B, self.w, self.h, self.corner = board, w, h, corner
         self.white, self.wdots, self.gold, self.gdots, self.gpoly = [], [], [], [], []
         self.wbutt, self.gbutt = [], []             # the weave: straight dashes with square ends, (a, b)
@@ -100,8 +100,8 @@ class Art:
         self.kw = Mask(w, h, RES)                   # keep-outs for the weave's white, its gold, and the thread's dots
         self.kg = Mask(w, h, RES)
         self.kt = Mask(w, h, RES)
-        self.kw.a |= edge_inset(w, h, corner, RES, EDGE_WHITE + W_WHITE / 2)
-        self.kg.a |= edge_inset(w, h, corner, RES, EDGE_GOLD + W_GOLD / 2)
+        self.kw.a |= edge_inset(w, h, corner, RES, edge_white + W_WHITE / 2)
+        self.kg.a |= edge_inset(w, h, corner, RES, edge_gold + W_GOLD / 2)
         self.kt.a |= edge_inset(w, h, corner, RES, 0.3 + DOT_R)
 
     def keep(self, pts, half, cw, cg, ct):
@@ -831,6 +831,433 @@ def sheet_back(A, F):
           int(round((A.w + 2 * m) * PX)) + 68)
 
 
+# ------------------------------------------------------------------------------------ the display
+# disp-3-4's slots and holes (PCB/art/TS06-DISP-final-3.md section 5 and 6; its grill, finding 1), typed in:
+D_SLOT = {"H": ((39.48, 30.40), (39.48, 5.27)), "M": ((61.10, 30.40), (61.10, 5.27)), "P": ((151.86, 30.40), (138.40, 5.27)),
+          "F": ((181.81, 34.0), (2.80, 34.0)), "S": ((139.57, 18.92), (98.20, 18.92)), "S2": ((100.60, 22.69), (137.17, 22.69))}   # driven, return
+D_HOLE = {"CF": ((58.285, 31.60), (42.785, 31.60)), "N": ((101.385, 6.60), (136.385, 6.60))}      # driven, return (the needle: the plan's swap)
+Q_X, Q_Y = (46.05, 55.02), (6.0, 29.0)                   # the colon bars, in the shim
+GLASS12, GLASS17, LAMP_D = (19.47, 28.86, 8.0), (14.0, 20.0, 3.0), 6.97   # tools/disp_art.py; the corner radii are assumed
+CASE_WIN, VALANCE_Y = (3.0, 2.6, 182.0, 39.0), 4.0       # tools/disp_art.py: the case's window on the board, the brow over the seconds
+HL9_DOWN = 3.0                                            # V3b: the "m" lamp 3.0 lower
+HOLE_KEEP = 3.8                                           # standoff holes (tools/disp_art.py)
+HV_GOLD = 1.0                                             # the brief: new copper 1.0 or more from the 185 V nets
+
+
+def pad_gap(B, x, y, r):
+    """Nearest copper of another net to a round pad of radius r at (x, y): (gap, name), and the nearest 185 V copper.
+    The board as in the file, less what the plan removes: HL1 to HL8, every BL_A track, M_A; HL9 3.0 lower."""
+    best, besthv = (9e9, ""), (9e9, "")
+    for pd in B["pads"]:
+        if (pd["ref"].startswith("HL") and pd["ref"] != "HL9") or pd["net"] == "BL_K":
+            continue
+        px, py = pd["x"], pd["y"] + (HL9_DOWN if pd["ref"] == "HL9" else 0.0)
+        if pd["shape"] == "circle":
+            d = math.hypot(x - px, y - py) - pd["sx"] / 2 - r
+        else:
+            d = math.hypot(max(abs(x - px) - pd["sx"] / 2, 0), max(abs(y - py) - pd["sy"] / 2, 0)) - r
+        nm = "%s.%s %s" % (pd["ref"], pd["num"], pd["net"] or "no net")
+        if d < best[0]:
+            best = (d, nm)
+        if yb.hv(pd["net"]) and d < besthv[0]:
+            besthv = (d, nm)
+    for t in B["tracks"]:
+        if t["net"].startswith("BL_A") or t["net"] in ("BL_K", "M_A"):
+            continue
+        (ax, ay), (bx, by) = t["a"], t["b"]
+        dx, dy = bx - ax, by - ay
+        L = dx * dx + dy * dy
+        u = 0 if L == 0 else max(0.0, min(1.0, ((x - ax) * dx + (y - ay) * dy) / L))
+        d = math.hypot(x - ax - u * dx, y - ay - u * dy) - t["w"] / 2 - r
+        nm = "track %s %s" % (t["net"], t["layer"])
+        if d < best[0]:
+            best = (d, nm)
+        if yb.hv(t["net"]) and d < besthv[0]:
+            besthv = (d, nm)
+    return best, besthv
+
+
+def display():
+    B = yb.load(yb.DISP)
+    x0, y0, x1, y1 = B["box"]
+    A = Art(B, x1 - x0, y1 - y0, 0.0, edge_white=0.5, edge_gold=1.0)
+    part = {p["ref"]: p for p in B["parts"]}
+    A.t12 = [(part[r]["x"], part[r]["y"]) for r in ("V1", "V2", "V3", "V4", "V9", "V10")]
+    A.t17 = [(part[r]["x"], part[r]["y"]) for r in ("V5", "V6")]
+    A.lamps = [(part[r]["x"], part[r]["y"]) for r in ("V7", "V8")]
+    A.screws = [(p["x"], p["y"]) for p in B["parts"] if p["ref"].startswith("H") and not p["ref"].startswith("HL")]
+    A.bead = (part["HL9"]["x"], part["HL9"]["y"] + HL9_DOWN)
+    hx, mx = (A.t12[0][0] + A.t12[1][0]) / 2, (A.t12[2][0] + A.t12[3][0]) / 2          # 24.89, 75.68
+    sx, px_ = (A.t17[0][0] + A.t17[1][0]) / 2, (A.t12[4][0] + A.t12[5][0]) / 2          # 118.885, 160.9
+    cx, ty = A.lamps[0][0], A.t12[0][1]                                                  # 50.535, 17.834
+    A.axes = dict(hours=hx, minutes=mx, seconds=sx, ampm=px_, colon=cx, tubes=(hx + mx) / 2, frame=(2.80 + 181.81) / 2)
+    row_y = 36.4
+
+    # ---- the lights: disp-3-4's known lines, re-read as stitches; three new bars under the patches
+    def light(name, part_, pts, dye, ch, held, place, new=False):
+        A.lights.append(dict(name=name, part=part_, pts=pts, w=2.0, dye=dye, ch=ch, held=held, place=place, new=new))
+    F_ = [D_SLOT["F"][0], D_SLOT["F"][1]]
+    H_ = rounded([D_SLOT["H"][1], (4.97, 5.27), (4.97, 30.40), D_SLOT["H"][0]], 5.0)
+    M_ = rounded([D_SLOT["M"][0], (95.61, 30.40), (95.61, 5.27), D_SLOT["M"][1]], 5.0)
+    P_ = rounded([D_SLOT["P"][0], (179.64, 30.40), (179.64, 5.27), D_SLOT["P"][1]], 5.0)
+    S_ = rounded([D_SLOT["S"][1], (98.20, 9.0), (139.57, 9.0), D_SLOT["S"][0]], 8.4)
+    S2_ = rounded([D_SLOT["S2"][1], (137.17, 11.4), (100.60, 11.4), D_SLOT["S2"][0]], 6.0)
+    Q1_ = [(Q_X[0], Q_Y[1]), (Q_X[0], Q_Y[0])]
+    Q2_ = [(Q_X[1], Q_Y[0]), (Q_X[1], Q_Y[1])]
+    CF_ = [(D_HOLE["CF"][1][0] - 0.5, 31.6), (D_HOLE["CF"][0][0] + 0.5, 31.6)]
+    N_ = [(D_HOLE["N"][1][0] + 0.5, 6.6), (D_HOLE["N"][0][0] - 0.5, 6.6)]                # from the eye (right) to the point (left)
+    A.new_holes = {}
+    bars = {}
+    for nm, ax in (("Bh", hx), ("Bm", mx), ("Bs", sx)):                                   # 38 rigid: holes 35.0 apart (assumed, as the lintel's)
+        A.new_holes[nm] = ((ax - 17.5, row_y), (ax + 17.5, row_y))
+        bars[nm] = [(ax - 18.0, row_y), (ax + 18.0, row_y)]
+    light("F, the hem", "185 flex", F_, WARM, "ch 3, BL_A8", "slots", "y 34.0, x 2.80 to 181.81")
+    light("Bh, row stitch", "38 rigid", bars["Bh"], GREEN, "ch 6, BL_A2", "2 holes", "y 36.4, holes x %.2f and %.2f" % (hx - 17.5, hx + 17.5), True)
+    light("Q1, colon", "26 rigid", Q1_, PINK, "ch 5, harness", "the shim", "x 46.05, y 6.0 to 29.0")
+    light("H, hours patch", "95 flex", H_, WARM, "ch 0, BL_A1", "slots, shim", "slots (39.48, 5.27) and (39.48, 30.40)")
+    light("CF, colon foot", "18.5 rigid", CF_, PINK, "ch 10, BL_A12", "2 holes", "y 31.6, holes x 42.785 and 58.285")
+    light("M, minutes patch", "95 flex", M_, WARM, "ch 1, BL_A3", "slots, shim", "slots (61.10, 30.40) and (61.10, 5.27)")
+    light("Q2, colon", "26 rigid", Q2_, PINK, "ch 5, harness", "the shim", "x 55.02, y 6.0 to 29.0")
+    light("Bm, row stitch", "38 rigid", bars["Bm"], GREEN, "ch 8, BL_A4", "2 holes", "y 36.4, holes x %.2f and %.2f" % (mx - 17.5, mx + 17.5), True)
+    light("S, seconds patch", "60 flex", S_, WARM, "ch 4, BL_A6", "slots", "slots (98.20, 18.92) and (139.57, 18.92), crown y 9.0")
+    light("S2, back stitch", "60 flex", S2_, BLUE, "ch 11, BL_A5", "slots", "slots (137.17, 22.69) and (100.60, 22.69), crown y 11.4")
+    light("Bs, row stitch", "38 rigid", bars["Bs"], GREEN, "ch 7, BL_A9", "2 holes", "y 36.4, holes x %.3f and %.3f" % (sx - 17.5, sx + 17.5), True)
+    light("P, AM/PM patch", "95 flex", P_, WARM, "ch 2, BL_A7", "slots, shim", "slots (151.86, 30.40) and (138.40, 5.27)")
+    light("N, the needle", "38 rigid", N_, WHITE, "ch 12, BL_A10", "2 holes", "y 6.6, holes x 101.385 (driven) and 136.385")
+
+    # ---- keep-outs: pads, holes, 185 V copper, lit bodies, the lamps, the bead
+    A.padlist = []                                                   # (x, y, sx, sy, shape, drill, net) as built
+    for pd in B["pads"]:
+        if pd["ref"].startswith("HL") and pd["ref"] != "HL9":
+            continue
+        y = pd["y"] + (HL9_DOWN if pd["ref"] == "HL9" else 0.0)
+        A.padlist.append(dict(x=pd["x"], y=y, sx=pd["sx"], sy=pd["sy"], shape=pd["shape"], drill=pd["drill"], net=pd["net"], kind=pd["kind"]))
+    for nm, (a, b) in D_SLOT.items():                                # slot pads 1.8 x 3.3, long axis across the filament
+        for (x, y) in (a, b):
+            level = nm in ("S", "S2")                                # the legs are plumb there, so the slot lies level
+            A.padlist.append(dict(x=x, y=y, sx=3.3 if level else 1.8, sy=1.8 if level else 3.3, shape="slot",
+                                  drill=(2.5, 1.0) if level else (1.0, 2.5), net=nm, kind="new"))
+    for nm, (a, b) in list(D_HOLE.items()) + list(A.new_holes.items()):
+        for (x, y) in (a, b):
+            A.padlist.append(dict(x=x, y=y, sx=1.8, sy=1.8, shape="circle", drill=(1.0, 1.0), net=nm, kind="new"))
+    for pd in A.padlist:
+        hvp = yb.hv(pd["net"])
+        r = max(pd["sx"], pd["sy"]) / 2 if pd["shape"] == "circle" else math.hypot(pd["sx"], pd["sy"]) / 2
+        c = (pd["x"], pd["y"])
+        if pd["kind"] == "np_thru_hole" and 3.1 <= pd["sx"] < 4:     # the standoff holes
+            for m in (A.kw, A.kg, A.kt):
+                m.disc(c, HOLE_KEEP)
+            continue
+        A.kw.disc(c, r + 0.32 + W_WHITE / 2)
+        A.kt.disc(c, r + 0.30 + DOT_R)
+        A.kg.disc(c, r + (HV_GOLD + 0.07 if hvp else C_GOLD) + W_GOLD / 2)
+    for t in B["tracks"]:
+        if t["layer"] == "F.Cu":
+            A.kg.seg(t["a"], t["b"], t["w"] / 2 + (HV_GOLD + 0.07 if yb.hv(t["net"]) else C_GOLD) + W_GOLD / 2)
+    for l in A.lights:
+        A.kw.line(l["pts"], 1.0 + 0.32 + W_WHITE / 2)
+        A.kg.line(l["pts"], 1.0 + 0.40 + W_GOLD / 2)
+        A.kt.line(l["pts"], 1.0 + 0.32 + DOT_R)
+    for c in A.lamps:
+        for m in (A.kw, A.kg, A.kt):
+            m.disc(c, LAMP_D / 2 + 0.3)
+    for m in (A.kw, A.kg, A.kt):
+        m.disc(A.bead, 1.9 + 0.35)
+    for t in B["texts"]:
+        if t["layer"] == "F.SilkS":
+            hw_ = 0.45 * t["h"] * len(t["s"]) + 0.5
+            for m in (A.kw, A.kg, A.kt):
+                m.rect(t["x"] - hw_, t["y"] - t["h"] * 0.6 - 0.5, t["x"] + hw_, t["y"] + t["h"] * 0.6 + 0.5)
+
+    # ---- the needle's point: gold, clear of the driven cap
+    A.needle_tip = [(99.5, 5.75), (99.5, 7.45), (97.4, 6.6)]
+    A.kg.a_backup = None
+    probe = Mask(A.w, A.h, RES)                                      # the point against copper only (not against its own bar)
+    for pd in A.padlist:
+        if pd["net"] != "N" and pd["kind"] != "np_thru_hole":
+            probe.disc((pd["x"], pd["y"]), math.hypot(pd["sx"], pd["sy"]) / 2 + (HV_GOLD if yb.hv(pd["net"]) else C_GOLD))
+    for t in B["tracks"]:
+        if t["layer"] == "F.Cu":
+            probe.seg(t["a"], t["b"], t["w"] / 2 + (HV_GOLD if yb.hv(t["net"]) else C_GOLD))
+    for l in A.lights:
+        if not l["name"].startswith("N"):
+            probe.line(l["pts"], 1.3)
+    tipm = Mask(A.w, A.h, RES)
+    tipm.poly(A.needle_tip)
+    A.needle_tip_drawn = not (tipm.a & probe.a).any()
+    if A.needle_tip_drawn:
+        A.gpoly.append(A.needle_tip)
+        A.keep(A.needle_tip + [A.needle_tip[0]], 0.0, C_WHITE_GOLD, C_GOLD, C_WHITE_GOLD)
+
+    # ---- the thread, in order
+    T = A.thread
+    A.entry_x = A.bead[0]
+    T.append(("under", [(A.bead[0], A.h), (A.bead[0], A.bead[1])]))
+    T.append(("under", rounded([(A.bead[0] + 1.4, A.bead[1] - 1.4), (A.bead[0] + 3.2, row_y), (180.6, row_y), (181.81, 35.0)], 1.0)))
+    T.append(("lit", F_))
+    T.append(("under", rounded([(2.80, 34.0), (2.80, row_y), bars["Bh"][0]], 1.0)))
+    T.append(("lit", bars["Bh"]))
+    T.append(("under", rounded([bars["Bh"][1], (Q_X[0], row_y), Q1_[0]], 1.2)))
+    T.append(("lit", Q1_))
+    T.append(("under", [Q1_[1], D_SLOT["H"][1]]))
+    T.append(("lit", H_))
+    T.append(("under", [D_SLOT["H"][0], CF_[0]]))
+    T.append(("lit", CF_))
+    T.append(("under", [CF_[1], D_SLOT["M"][0]]))
+    T.append(("lit", M_))
+    T.append(("under", [D_SLOT["M"][1], Q2_[0]]))
+    T.append(("lit", Q2_))
+    T.append(("under", rounded([Q2_[1], (Q_X[1], row_y), bars["Bm"][0]], 1.2)))
+    T.append(("lit", bars["Bm"]))
+    T.append(("under", rounded([bars["Bm"][1], (98.20, row_y), D_SLOT["S"][1]], 1.6)))
+    T.append(("lit", S_))
+    T.append(("under", rounded([D_SLOT["S"][0], (139.57, 25.4), (137.17, 25.4), D_SLOT["S2"][1]], 1.15)))
+    T.append(("lit", S2_))
+    T.append(("under", rounded([D_SLOT["S2"][0], (100.60, row_y), bars["Bs"][0]], 0.6)))
+    T.append(("lit", bars["Bs"]))
+    T.append(("under", rounded([bars["Bs"][1], (151.86, row_y), D_SLOT["P"][0]], 1.6)))
+    T.append(("lit", P_))
+    T.append(("under", [D_SLOT["P"][1], N_[0]]))
+    T.append(("lit", N_))
+    A.n_dots = sum(A.dots(pts, pitch=1.0, r=0.22) for kind, pts in T if kind == "under")
+
+    # ---- the ground: each tube group is a patch with its own diamond twill; plain cloth round them
+    half = (A.t12[1][0] - A.t12[0][0]) / 2 + GLASS12[0] / 2 + 0.25           # a patch reaches 0.25 past its glass
+    A.seams = [hx - half, hx + half, mx - half, mx + half, px_ - half, px_ + half]
+    rows = [ty - 17 + k for k in range(44) if 0.6 < ty - 17 + k < A.h - 0.6]
+    for xs in A.seams:
+        for y in rows:
+            v = [(xs - 0.55, y + 0.3), (xs, y - 0.3), (xs + 0.55, y + 0.3)]
+            for a, b in zip(v, v[1:]):
+                for p_, q_ in clip_run(a, b, A.kw, least=0.3):
+                    A.white.append(([p_, q_], 0.18))
+        A.kw.rect(xs - 0.9, 0, xs + 0.9, A.h)
+        A.kg.rect(xs - 0.9, 0, xs + 0.9, A.h)
+
+    def patch(i, j):
+        return ((abs(i) + abs(j)) % 4 < 2) if abs(j) <= 14 else plain(i, j)
+
+    def herring(i, j):
+        return (abs(i) + j) % 4 < 2
+    S = A.seams
+    A.zones = [(0.0, S[0], 1.0, 1.5, plain, "left edge, plain"), (S[0], S[1], 1.0, hx, patch, "hours patch, diamond twill"),
+               (S[1], S[2], 1.0, cx, herring, "colon, herringbone"), (S[2], S[3], 1.0, mx, patch, "minutes patch, diamond twill"),
+               (S[3], S[4], 1.0, sx, patch, "seconds patch, diamond twill"), (S[4], S[5], 1.0, px_, patch, "AM/PM patch, diamond twill"),
+               (S[5], A.w, 1.0, 186.5, plain, "right edge, plain")]
+    A.n_white, A.n_gold = weave(A, [z[:5] for z in A.zones], rows, ty)
+    A.draft_bad = draft_mismatch(patch, 0, 21, 14)
+    return A
+
+
+def check_disp(A):
+    say("== display, light layout YARN: measures (raster %d px per mm; a gap is the centre distance less one pixel)" % RES)
+    B, res, out = A.B, RES, {}
+    M = inks(A)
+    say("   new holes (round, 1.0 drill, 1.8 pad) against the board's copper as in the file, less HL1-HL8, the BL_A tracks and M_A; HL9 3.0 lower:")
+    worst, worsthv = 9e9, 9e9
+    for nm, pair in list(A.new_holes.items()):
+        for (x, y) in pair:
+            b, h = pad_gap(B, x, y, 0.9)
+            worst, worsthv = min(worst, b[0]), min(worsthv, h[0])
+            say("      %s (%.3f, %.2f): other copper %.2f (%s); 185 V copper %.2f (%s)" % (nm, x, y, b[0], b[1], h[0], h[1]))
+    out["new_other"], out["new_hv"] = worst, worsthv
+    say("   disp-3-4's slots and holes, the same check against rev B's copper as it is today (slot pads as their 1.8 x 3.3 boxes; holes r 0.9).")
+    say("   The earlier rounds re-route ANODE_H1 (final-3 item D6) and the BL_A lines; those moves are not in the board file, so H's driven slot reads as a clash here:")
+    for nm, (a, b_) in list(D_SLOT.items()) + list(D_HOLE.items()):
+        for tag, (x, y) in (("driven", a), ("return", b_)):
+            if nm in D_SLOT:
+                hx_, hy_ = (1.65, 0.9) if nm in ("S", "S2") else (0.9, 1.65)
+                rim = [(x + hx_ * u, y + hy_ * v) for u in (-1, 1) for v in [k / 8.0 - 1 for k in range(17)]]
+                rim += [(x + hx_ * v, y + hy_ * u) for u in (-1, 1) for v in [k / 8.0 - 1 for k in range(17)]]
+                res_ = [pad_gap(B, qx, qy, 0.0) for qx, qy in rim]
+                g, h = min(r_[0] for r_ in res_), min(r_[1] for r_ in res_)
+            else:
+                g, h = pad_gap(B, x, y, 0.9)
+            say("      %-2s %s (%.3f, %.2f): other copper %.2f (%s); 185 V %.2f" % (nm, tag, x, y, g[0], g[1], h[0]))
+    hvm, cum, padm, body = Mask(A.w, A.h, res), Mask(A.w, A.h, res), Mask(A.w, A.h, res), Mask(A.w, A.h, res)
+    for pd in A.padlist:
+        if pd["kind"] == "np_thru_hole":
+            continue
+        for m in ([padm] + ([hvm] if yb.hv(pd["net"]) else [cum])):
+            if pd["shape"] == "circle":
+                m.disc((pd["x"], pd["y"]), pd["sx"] / 2)
+            else:
+                m.rect(pd["x"] - pd["sx"] / 2, pd["y"] - pd["sy"] / 2, pd["x"] + pd["sx"] / 2, pd["y"] + pd["sy"] / 2)
+    for t in B["tracks"]:
+        if t["layer"] == "F.Cu":
+            (hvm if yb.hv(t["net"]) else cum).seg(t["a"], t["b"], t["w"] / 2)
+    for l in A.lights:
+        body.line(l["pts"], 1.0)
+
+    def row(label, rule, got):
+        out[label] = got
+        say("   %-62s rule %-5s measured %s" % (label, rule, "none in reach" if got is None else "%.2f at (%.1f, %.1f)" % (got[0], got[1][0], got[1][1])))
+    row("gold to 185 V copper on the front (pads, F.Cu tracks)", "1.00", gap(edt(hvm.a, res, 3.0), M["gold"].a, res))
+    row("gold to other copper on the front (pads, slots, KS tracks)", "0.35", gap(edt(cum.a, res, 3.0), M["gold"].a, res))
+    row("white to a pad, slot or hole", "0.30", gap(edt(padm.a, res, 3.0), M["white"].a, res))
+    row("white to gold", "0.15", gap(edt(M["gold"].a, res, 3.0), M["white"].a, res))
+    d_body = edt(body.a, res, 3.0)
+    row("gold to a filament's body (2.0 wide; covers the bars' end caps)", "0.30", gap(d_body, M["gold"].a, res))
+    row("white to a filament's body", "0.30", gap(d_body, M["white"].a, res))
+    say("   body to body, the closest pairs (rule 0.4 line to line; a minus means the drawn ends overlap):")
+    names = [l["name"].split(",")[0] for l in A.lights]
+    masks = []
+    for l in A.lights:
+        m = Mask(A.w, A.h, res)
+        m.line(l["pts"], 1.0)
+        masks.append(m.a)
+    pairs = []
+    for i in range(len(masks)):
+        di = edt(masks[i], res, 1.2)
+        for j in range(i + 1, len(masks)):
+            g = gap(di, masks[j], res)
+            if g and g[0] < 1.0:
+                pairs.append((g[0], names[i], names[j], g[1]))
+    for g, a, b_, at in sorted(pairs):
+        say("      %-3s to %-3s %.2f at (%.1f, %.1f)" % (a, b_, g, at[0], at[1]))
+    out["pairs"] = sorted(pairs)
+    # what the case shows: its window less the brow, the glass, the lamps, the bodies
+    seen = Mask(A.w, A.h, res)
+    seen.rect(*CASE_WIN)
+    hid = Mask(A.w, A.h, res)
+    hid.rect(97.505, 0, 140.265, VALANCE_Y)
+    for (x, y) in A.t12:
+        hid.poly(rrect(x - GLASS12[0] / 2, y - GLASS12[1] / 2, x + GLASS12[0] / 2, y + GLASS12[1] / 2, GLASS12[2]))
+    for (x, y) in A.t17:
+        hid.poly(rrect(x - GLASS17[0] / 2, y - GLASS17[1] / 2, x + GLASS17[0] / 2, y + GLASS17[1] / 2, GLASS17[2]))
+    for c in A.lamps:
+        hid.disc(c, LAMP_D / 2)
+    for c in A.screws:
+        hid.disc(c, 2.75)
+    hid.disc(A.bead, 1.9)
+    free = seen.a & ~hid.a & ~body.a
+    ink = M["white"].a | M["gold"].a | padm.a | body.a
+    d_ink = edt(ink | hid.a, res, 3.0)
+    far = np.where(free, d_ink, 0)
+    j, i = np.unravel_index(np.argmax(far), far.shape)
+    out["cover"] = 100.0 * float(((d_ink <= 1.2) & free).sum()) / float(free.sum())
+    out["empty"] = (float(far[j, i]), ((i + 0.5) / res, (j + 0.5) / res))
+    say("   the board the case shows (window x %.1f to %.1f, y %.1f to %.1f, less the brow, the glass, the lamps and the bodies): %.0f mm2;"
+        " %.1f %% of it within 1.2 mm of ink; the largest empty spot has radius %.2f at (%.1f, %.1f)"
+        % (CASE_WIN[0], CASE_WIN[2], CASE_WIN[1], CASE_WIN[3], free.sum() / res ** 2, out["cover"], far[j, i], (i + 0.5) / res, (j + 0.5) / res))
+    lowest = max(max(p[1] for p in l["pts"]) + 1.0 for l in A.lights)
+    out["lowest"] = lowest
+    say("   the lowest lit body ends at y %.2f; the case's sill top is at y %.1f: no sill change (disp-3-4 needed 0.8 to 1.1)" % (lowest, CASE_WIN[3]))
+    say("   symmetry (the lights' end points against their mirror image, mm):")
+    L = {l["name"].split(",")[0]: l["pts"] for l in A.lights}
+
+    def dev(names_, xa):
+        ends = [p for n_ in names_ for p in (L[n_][0], L[n_][-1])]
+        return max(min(math.hypot(2 * xa - p[0] - e[0], p[1] - e[1]) for e in ends) for p in ends)
+    for label_, names_, xa in (("seconds: S, S2, N, Bs", ("S", "S2", "N", "Bs"), A.axes["seconds"]), ("colon: Q1, Q2, CF", ("Q1", "Q2", "CF"), A.axes["colon"]),
+                               ("brackets and their row stitches: H, M, Bh, Bm (about the tubes' own middle)", ("H", "M", "Bh", "Bm"), A.axes["tubes"]),
+                               ("the hem F", ("F",), A.axes["frame"])):
+        d = dev(names_, xa)
+        out["sym " + label_] = d
+        say("      %-78s axis x %.3f: off by %.3f" % (label_, xa, d))
+    say("      P (the AM/PM box): one piece, plainly directional, as in V3b; the colon's axis (%.3f) and the tubes' middle (%.3f) differ by %.3f, as the board's tubes do"
+        % (A.axes["colon"], A.axes["tubes"], A.axes["colon"] - A.axes["tubes"]))
+    say("      the patches' draft: cells that differ from their mirror image %d (0 = exact)" % A.draft_bad)
+    say("   the weave: %d white dashes, %d gold dashes, %d thread dots; the needle's gold point %s"
+        % (A.n_white, A.n_gold, A.n_dots, "drawn" if A.needle_tip_drawn else "NOT drawn (copper in the way)"))
+    say("   the thread enters the display's bottom edge at x %.3f (the m lamp HL9's own x, from the board file)" % A.entry_x)
+    say("   lights on the display (13 filaments and the m lamp; disp-3-4 had 14):")
+    for l in A.lights:
+        say("      %-18s %-10s %-15s %-12s drawn %.1f  dyed %-5s %s%s" % (l["name"], l["part"], l["ch"], l["held"], length(l["pts"]), l["dye"], l["place"], "  NEW" if l["new"] else ""))
+    return out, M
+
+
+def svg_disp(A, dye=False, lit=True, digits=("1", "2", "3", "4", "5", "6", "A", "M")):
+    s = ['<rect x="0" y="0" width="%.2f" height="%.2f" fill="%s"/>' % (A.w, A.h, MASK_INK)]
+    s.append(svg_inks(A))
+    for pd in A.padlist:                                             # pads, slots, holes
+        x, y = pd["x"], pd["y"]
+        if pd["kind"] == "np_thru_hole":
+            s.append('<circle cx="%.3f" cy="%.3f" r="%.3f" fill="#000"/>' % (x, y, pd["sx"] / 2))
+            continue
+        if pd["shape"] == "circle":
+            s.append('<circle cx="%.3f" cy="%.3f" r="%.3f" fill="%s"/>' % (x, y, pd["sx"] / 2, GOLD_INK))
+        else:
+            s.append('<rect x="%.3f" y="%.3f" width="%.3f" height="%.3f" rx="%.2f" fill="%s"/>'
+                     % (x - pd["sx"] / 2, y - pd["sy"] / 2, pd["sx"], pd["sy"], 0.4 if pd["shape"] == "slot" else 0.1, GOLD_INK))
+        if pd["drill"]:
+            dx, dy = pd["drill"]
+            s.append('<rect x="%.3f" y="%.3f" width="%.3f" height="%.3f" rx="%.3f" fill="#000"/>' % (x - dx / 2, y - dy / 2, dx, dy, min(dx, dy) / 2))
+    for (x, y) in A.screws:
+        s.append('<circle cx="%.2f" cy="%.2f" r="2.75" fill="url(#steel)"/><path d="M%.2f %.2f L%.2f %.2f" stroke="#2a2a2e" stroke-width="0.5"/>'
+                 % (x, y, x - 1.6, y - 1.0, x + 1.6, y + 1.0))
+    for (x, y) in A.lamps:                                           # the colon's neon lamps
+        s.append('<circle cx="%.2f" cy="%.2f" r="%.3f" fill="#150d07" stroke="#6b5136" stroke-width="0.2"/>' % (x, y, LAMP_D / 2))
+        if lit:
+            s.append('<circle cx="%.2f" cy="%.2f" r="2.6" fill="#ff7a1a" opacity="0.55" filter="url(#g2)"/><circle cx="%.2f" cy="%.2f" r="1.15" fill="#ffd9a2"/>' % (x, y, x, y))
+    x, y = A.bead                                                    # the m lamp: the bead the thread comes in through
+    s.append('<circle cx="%.2f" cy="%.2f" r="1.9" fill="#3a2a14"/>' % (x, y))
+    if lit:
+        s.append('<circle cx="%.2f" cy="%.2f" r="2.6" fill="#ff8a1c" opacity="0.6" filter="url(#g2)"/>' % (x, y))
+    s.append('<circle cx="%.2f" cy="%.2f" r="1.5" fill="%s"/>' % (x, y, "#ffb65c" if lit else "#7a5a2c"))
+    for (x, y) in A.t12 + A.t17:                                     # the tubes hide the board behind them
+        w_, h_, r_ = GLASS17 if (x, y) in A.t17 else GLASS12
+        s.append('<rect x="%.3f" y="%.3f" width="%.2f" height="%.2f" rx="%.1f" fill="#0a0705" fill-opacity="0.80"/>' % (x - w_ / 2, y - h_ / 2, w_, h_, r_))
+    if lit:                                                          # the filaments
+        for layer in (3, 2, 1, 0):
+            for l in A.lights:
+                glow, core = TINT[l["dye"] if dye else WARM]
+                d = d_of(l["pts"])
+                if layer == 3:
+                    s.append('<path d="%s" fill="none" stroke="%s" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.30" filter="url(#g3)"/>' % (d, glow))
+                elif layer == 2:
+                    s.append('<path d="%s" fill="none" stroke="%s" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" filter="url(#g2)"/>' % (d, glow))
+                elif layer == 1:
+                    s.append('<path d="%s" fill="none" stroke="%s" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>' % (d, glow))
+                else:
+                    s.append('<path d="%s" fill="none" stroke="%s" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" filter="url(#g1)"/>' % (d, core))
+    k = 0
+    for (x, y) in A.t12[:4] + A.t17 + A.t12[4:]:                     # the glass's edge, then the digit
+        w_, h_, r_ = GLASS17 if (x, y) in A.t17 else GLASS12
+        s.append('<rect x="%.3f" y="%.3f" width="%.2f" height="%.2f" rx="%.1f" fill="#1a0f06" fill-opacity="0.18" stroke="#d9b98f" stroke-opacity="0.45" stroke-width="0.22"/>'
+                 % (x - w_ / 2, y - h_ / 2, w_, h_, r_))
+        if lit:
+            fs = 12.5 if (x, y) in A.t17 else 23.0
+            t = ('<text x="%.2f" y="%.2f" font-family="Inter, DejaVu Sans" font-weight="200" font-size="%.1f" text-anchor="middle" fill="%%s"%%s>%s</text>'
+                 % (x, y + fs * 0.355, fs, digits[k]))
+            s.append(t % ("#ff6a10", ' opacity="0.75" filter="url(#g2)"'))
+            s.append(t % ("#ffcf9a", ""))
+        k += 1
+    x0_, y0_, x1_, y1_ = CASE_WIN                                     # what the case hides, dimmed
+    s.append('<path d="M0 0H%.2fV%.2fH0Z M%.2f %.2fV%.2fH%.2fV%.2fZ" fill="#000" fill-opacity="0.5" fill-rule="evenodd"/>' % (A.w, A.h, x0_, y0_, y1_, x1_, y0_))
+    s.append('<rect x="97.505" y="%.2f" width="%.3f" height="%.2f" fill="#000" fill-opacity="0.5"/>' % (y0_, 140.265 - 97.505, VALANCE_Y - y0_))
+    s.append('<rect x="%.2f" y="%.2f" width="%.2f" height="%.2f" fill="none" stroke="#8a8a90" stroke-opacity="0.5" stroke-width="0.12" stroke-dasharray="1 0.7"/>'
+             % (x0_, y0_, x1_ - x0_, y1_ - y0_))
+    return "".join(s)
+
+
+def sheet_disp(A, D):
+    notes = [
+        "<b>The idea.</b> The thread comes up from the fascia at x %.1f, through the m lamp (a bead on the hem), and sews the display once round: "
+        "the hem (F) from right to left; then back along a row of stitches under the patches, climbing into each patch on the way: up one colon stitch, round "
+        "the hours, across the colon's foot, round the minutes, down the other colon stitch; over the seconds and back; round AM/PM. It ends in the needle: "
+        "the rigid 38 bar over the seconds, with a gold point." % A.entry_x,
+        "<b>Lights: 13 filaments and the m lamp</b> (disp-3-4 had 14). Kept from disp-3-4, same slots and holes: F, H, M, P, S, S2, the colon bars Q1 and Q2 (shim), "
+        "the colon foot CF, and the lintel, now the needle N (driven at its point, as the routing plan swapped it). <b>New: three 38 rigid bars</b> Bh, Bm, Bs at y 36.4, "
+        "one under each patch on the patch's own axis (they take the place of the four 60 flex F2 and F3). Dropped: F2L, F2R, F3L, F3R. All warm here.",
+        "<b>What it mends in disp-3-4:</b> no line below y 37.4, so the case's sill stays where it is; rigid bars under the hem hold themselves (the flex twins hung on their "
+        "ends 0.4 from the next line); the needle's eye end and P's return pad are one net. Hidden by the case: dimmed (outside the dashed window; the brow over the seconds).",
+        "<b>Ground:</b> each tube group is a patch with its own diamond twill, centred on the group; herringbone seams and a herringbone colon; plain cloth below and at the ends. "
+        "Gold warp %.2f, white weft %.2f. The dotted links are the thread under the cloth; most of them run under the glass." % (W_GOLD, W_WHITE),
+        "<b>Measured (0.05 mm raster; copper as in the board file, less HL1 to HL8 and the BL_A tracks):</b> the six new holes keep %.2f or more from other copper and %.2f from 185 V copper; "
+        "gold to 185 V copper on the front %.2f (rule 1.0), to other pads %.2f; white to a pad %.2f; ink to a body %.2f / %.2f (gold / white); the seen board within 1.2 mm of ink: %.1f %%."
+        % (D["new_other"], D["new_hv"], D["gold to 185 V copper on the front (pads, F.Cu tracks)"][0], D["gold to other copper on the front (pads, slots, KS tracks)"][0],
+           D["white to a pad, slot or hole"][0], D["gold to a filament's body (2.0 wide; covers the bars' end caps)"][0], D["white to a filament's body"][0], D["cover"]),
+        "<b>Buildable?</b> Needs a DISP rev C as disp-3-4 did (slots, holes, the shim, the BL_A routes), with six round holes more and eight slots fewer. "
+        "The three new bars' drive tracks are not routed. Glass outlines and corner radii are assumed, as before.",
+    ]
+    m = 3.0
+    svg = board_svg('<g transform="translate(%.2f %.2f)">%s</g>' % (m, m, svg_disp(A)), A.w + 2 * m, A.h + 2 * m)
+    sheet("yarn-disp", "YARN, the display: four patches sewn on, a hem, a row of stitches, a needle",
+          "TS06-DISP (191.4 x 44), outline, pads, holes and copper from the board file; slots and holes of disp-3-4 from its write-up; 11.5 px per mm; lights on, all warm",
+          [("", svg)], notes, int(round((A.w + 2 * m) * PX)) + 68)
+
+
 TMP = tempfile.mkdtemp(prefix="yarn-")
 
 
@@ -842,6 +1269,12 @@ def main():
     if what in ("all", "fascia"):
         sheet_fascia(A, F)
         sheet_back(A, F)
+    Dp = display()
+    D, DM = check_disp(Dp)
+    say("== the pair: the thread leaves the fascia at x %.3f and enters the display at x %.3f (the two boards share one x frame: both are 191.4 wide and "
+        "start at world X 0 in 3d/case-pair/case_pair.py)" % (A.exit_x, Dp.entry_x))
+    if what in ("all", "disp"):
+        sheet_disp(Dp, D)
     open(os.path.join(OUT, "measures.txt"), "w", encoding="utf-8").write("\n".join(LOG) + "\n")
 
 
