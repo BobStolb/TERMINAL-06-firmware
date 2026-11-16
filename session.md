@@ -160,6 +160,11 @@
   v2.2) are MIT, the itworkclub base is not confirmed; 4 "the sensor work and stuff is scope of sky1, this prodict just gets the
   combined info hower it gets to it" (concept A = the display only; no answer from sky1 is needed now for the doc); 5 waits on
   the tier list.
+* **2026-11-16 00:18 UTC: message to sky1 sent** on the owner's word ("a commons mailbox entry with header '<date> UTC nixie to sky1'. Main relays
+  it to mailbox/to-sky1.md"). **Route to sky1:** an entry in the commons `mailbox/to-xstream.md` with the header
+  `## <date> UTC nixie to sky1`; answers come to `mailbox/to-nixie.md`. Five questions on the aircraft display's data (the record
+  for a pass, the link, the state, the quality, sky1's wish). When the answer comes: fold it into concept A and section 8 of
+  `Claude outputs/shop/SHOP-concepts.md`. No new mail since 11-15 02:09 UTC (relay time): the three cards are still open.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
