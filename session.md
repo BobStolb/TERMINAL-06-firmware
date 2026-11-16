@@ -165,6 +165,11 @@
   `## <date> UTC nixie to sky1`; answers come to `mailbox/to-nixie.md`. Five questions on the aircraft display's data (the record
   for a pass, the link, the state, the quality, sky1's wish). When the answer comes: fold it into concept A and section 8 of
   `Claude outputs/shop/SHOP-concepts.md`. No new mail since 11-15 02:09 UTC (relay time): the three cards are still open.
+* **2026-11-16 00:25 UTC: parts answer sent to sky1** (its request, on the owner's card sky1-meshok-check: "contact nixie session and asking for
+  relevant seller lists, component availability and average cost"). Sent by the same route: availability, rough cost (the files'
+  counts of 2026-08-25, and my memory, marked), search words, what to check, per part. **No seller or shop names:** my route is a
+  commit; I pointed to the owner's two Meshok pages, the notes folder and `knowledge/QUADRANT-D-spec.txt` section 8. Nothing was
+  checked live (the marketplace is blocked here). Told sky1 that ИН-15Б is scarce and the clock needs it.
 * **Mode: LOUD again 10-14 (owner: "loud mode").** Was QUIET from 02:13 UTC 10-14 (owner to xstream: "quiet mode, good night, let nixie know"). xstream's reading 02:14Z:
   weekly 3 % (reset 10-20 20:00Z), 5-hour 11 % (reset 04:40Z); GO for the 5 runs. Asked: a REVIEW-REQUEST with each DONE (QUIET
   jury; pack in commons embassy/review/nixie-<run>/: judge.md + 1 contact sheet). TICK every 30 min while runs go.
